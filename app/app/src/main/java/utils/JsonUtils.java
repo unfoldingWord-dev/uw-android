@@ -1,7 +1,7 @@
 package utils;
 
 /**
- * Created by thasleem on 3/12/14.
+ * Created by Acts Media Inc on 3/12/14.
  */
 public interface JsonUtils {
     String DATE_MODIFIED = "date_modified";
@@ -22,6 +22,21 @@ public interface JsonUtils {
     String NUMBER = "number";
     String REF = "ref";
     String TITLE = "title";
+    String IMAGE_URL = "img";
+    String TEXT = "txt";
+
     String ID = "id";
     String LANGUAGE_NAME = "string";
+    String APP_WORDS = "app_words";
+    String CANCEL = "cancel";
+    String CHAPTERS_l = "chapters";
+    String LANGUAGES = "languages";
+    String NEXT_CHAPTER = "next_chapter";
+    String OK = "ok";
+    String REMOVE_LOCALLY = "remove_locally";
+    String REMOVE_THIS_STRING = "remove_this_string";
+    String SELECT_A_LANGUAGE = "select_a_language";
+    String SAVE_THIS_STRING = "save_this_string";
+    String SAVE_LOCALLY = "save_locally";
+
 }

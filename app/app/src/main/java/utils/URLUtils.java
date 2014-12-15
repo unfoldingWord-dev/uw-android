@@ -1,7 +1,7 @@
 package utils;
 
 /**
- * Created by thasleem on 3/12/14.
+ * Created by Acts Media Inc on 3/12/14.
  */
 public interface URLUtils {
     String LANGUAGE_INFO = "https://api.unfoldingword.org/obs/txt/1/obs-catalog.json";
@@ -16,4 +16,6 @@ public interface URLUtils {
 
 
     String TRUE = "true";
+    String BROAD_CAST_DOWN_COMP = "org.unfoldingword.mobile.DOWNLOAD_COMPLETED";
+    String BROAD_CAST_DOWN_ERROR = "org.unfoldingword.mobile.DOWNLOAD_WHILE_ERROR";
 }

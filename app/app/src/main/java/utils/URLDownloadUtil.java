@@ -12,10 +12,10 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 /**
- * Created by thasleem on 3/12/14.
+ * Created by Acts Media Inc on 3/12/14.
  */
 public class URLDownloadUtil {
-    static int connectiontimeout = 15000;
+    static int connectiontimeout = 20000;
     static int sockettimeout = 10000;
 
     /**

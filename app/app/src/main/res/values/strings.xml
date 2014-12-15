@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UnFoldingWord</string>
+    <string name="app_name">unfoldingWord</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="checking_entity">Checking Entity :</string>
+    <string name="checking_level">Checking Level :</string>
+    <string name="version">Version : 2.0.0</string>
+    <string name="publish_date">Publish Date :</string>
+    <string name="about_text">We use a three-level, Church-centric approach for identifying the fidelity of translated Biblical content :</string>
+    <string name="finish">Finish</string>
+    <string name="level_one">Level 1 : internal - Translator (or team) affirms that translation is in line with Statement of faith and Translation Guidelines.</string>
+    <string name="level_two">Level 2 : external - Translation is independently checked and confirmed by at least two others not on the translation team.</string>
+    <string name="level_three">Level 3 : authenticated - Translation is checked and confirmed by leadership of at least on Church network with native speakers of the language.</string>
 
 </resources>

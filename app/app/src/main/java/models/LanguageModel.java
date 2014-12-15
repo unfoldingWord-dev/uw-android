@@ -6,6 +6,7 @@ package models;
 public class LanguageModel {
 
     public String id = "";
+    public String auto_id = "";
     public String dateModified = "";
     public String direction = "";
     public String language = "";

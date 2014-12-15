@@ -7,7 +7,7 @@ import android.net.NetworkInfo;
 /**
  * Check device's network connectivity
  *
- * @author thasneem
+ * @author Created by Acts Media Inc
  */
 public class NetWorkUtil {
 
