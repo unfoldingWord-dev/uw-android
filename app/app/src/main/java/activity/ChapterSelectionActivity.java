@@ -55,6 +55,7 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
         mActionBar.setDisplayShowHomeEnabled(true);
         mActionBar.setHomeButtonEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);
+
         mDbManager = DBManager.getInstance(this);
         prepareListView();
     }

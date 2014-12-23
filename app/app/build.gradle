@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.0.2"
     defaultConfig {
         applicationId 'org.unfoldingword.mobile'
-        minSdkVersion 10
+        minSdkVersion 11
         targetSdkVersion 21
         versionCode 1
         versionName "2.0.0"

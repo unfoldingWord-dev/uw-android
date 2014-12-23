@@ -188,6 +188,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
             String lastBitFromUrl = getLastBitFromUrl(imgUrl);
             String s = lastBitFromUrl.replaceAll("[}]", "");
 
+            /*
             if (NetWorkUtil.isConnected(context)) {
                 if (imgUrl.contains("{{")) {
                     String replace = imgUrl.replace("{{", "");
@@ -200,8 +201,9 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
                     mImageLoader.displayImage(imgUrl, chapterImageView, options, this);
                 }
             } else {
-                mImageLoader.displayImage("file:///mnt/sdcard/" + AppUtils.DIR_NAME + s, chapterImageView, options, this);
-            }
+            */
+                mImageLoader.displayImage("assets://images/" + s, chapterImageView, options, this);
+            //}
 
 
         }

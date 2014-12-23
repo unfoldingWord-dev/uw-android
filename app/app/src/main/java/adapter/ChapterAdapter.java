@@ -49,7 +49,7 @@ public class ChapterAdapter extends ArrayAdapter<ChaptersModel> implements Image
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .resetViewBeforeLoading(true)
                 .showImageOnLoading(new ColorDrawable(Color.WHITE))
-                .showImageOnFail(new ColorDrawable(Color.WHITE)).build();
+                .showImageOnFail(new ColorDrawable(Color.BLACK)).build();
     }
 
     @Override
@@ -89,6 +89,7 @@ public class ChapterAdapter extends ArrayAdapter<ChaptersModel> implements Image
         String imgUrl = list.get(position).imgUrl;
         String lastBitFromUrl = getLastBitFromUrl(imgUrl);
         String s = lastBitFromUrl.replaceAll("[{//:}]", "");
+        /*
         if (NetWorkUtil.isConnected(context)) {
             if (imgUrl.contains("{{")) {
                 String replace = imgUrl.replace("{{", "");
@@ -100,10 +101,10 @@ public class ChapterAdapter extends ArrayAdapter<ChaptersModel> implements Image
                 imageLoader.displayImage(imgUrl, holder.chapterScreenImageView, options, this);
             }
         } else {
+*/
+            imageLoader.displayImage("assets://images/" + s, holder.chapterScreenImageView, options, this);
 
-            imageLoader.displayImage("file:///mnt/sdcard/" + AppUtils.DIR_NAME + s, holder.chapterScreenImageView, options, this);
-
-        }
+  //      }
 
 
         holder.chapterNameTextView.setText(list.get(position).title);
