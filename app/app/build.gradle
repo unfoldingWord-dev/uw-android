@@ -4,19 +4,31 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.0.2"
     defaultConfig {
-        applicationId 'org.unfoldingword.mobile'
+        applicationId 'com.unfoldingword.androidapp'
         minSdkVersion 11
         targetSdkVersion 21
-        versionCode 1
+        versionCode 32
         versionName "2.0.0"
     }
+
+    signingConfigs {
+        release {
+            storeFile file("PATH_TO_FILE")
+            storePassword "KEYSTORE_PASSWORD"
+            keyAlias "KEY_ALIAS"
+            keyPassword "KEY_PASSWORD"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
-    }
-    productFlavors {
+        debug {
+
+        }
     }
 }
 
