@@ -6,6 +6,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import models.ChaptersModel;
 import models.LanguageModel;
@@ -52,6 +56,7 @@ public class JsonParser {
 
     }
 
+
     /**
      * Getting Languages info from json
      *
@@ -65,7 +70,14 @@ public class JsonParser {
         for (int pos = 0; pos < array.length(); pos++) {
             LanguageModel model = new LanguageModel();
             JSONObject object = array.getJSONObject(pos);
-            model.dateModified = object.has(JsonUtils.DATE_MODIFIED) ? object.getString(JsonUtils.DATE_MODIFIED) : "";
+
+            int date = -1;
+            if(object.has(JsonUtils.DATE_MODIFIED)){
+                String dateString = object.getString(JsonUtils.DATE_MODIFIED);
+                date = getSecondsFromDateString(dateString);
+;            }
+
+            model.dateModified = date > 0 ? date : -1;
             model.direction = object.has(JsonUtils.DIRECTION) ? object.getString(JsonUtils.DIRECTION) : "";
             model.language = object.has(JsonUtils.LANGUAGE) ? object.getString(JsonUtils.LANGUAGE) : "";
             model.languageName = object.has(JsonUtils.LANGUAGE_NAME) ? object.getString(JsonUtils.LANGUAGE_NAME) : "";
@@ -84,6 +96,21 @@ public class JsonParser {
             models.add(model);
         }
         return models;
+    }
+
+    private int getSecondsFromDateString(String date){
+//        20141207
+        TimeZone gmt = TimeZone.getTimeZone("GMT");
+        GregorianCalendar calDate = new GregorianCalendar(gmt);
+
+        int year = Integer.parseInt(date.substring(0, 4));
+        int month = Integer.parseInt(date.substring(4, 6));
+        int day = Integer.parseInt(date.substring(6, 8));
+
+        calDate.set(year, month, day);
+
+        int seconds = calDate.get(Calendar.SECOND);
+        return  seconds;
     }
 
     /**
@@ -119,18 +146,19 @@ public class JsonParser {
             model.title = jsonObject.has(JsonUtils.TITLE) ? jsonObject.getString(JsonUtils.TITLE) : "";
             model.jsonArray = jsonObject.has(JsonUtils.FRAMES) ? jsonObject.getString(JsonUtils.FRAMES) : "";
             model.loadedLanguage = language;
+            model.imgUrl = detailsJson.has(JsonUtils.IMAGE_URL) ? detailsJson.getString(JsonUtils.IMAGE_URL) : "";
             models.add(model);
         }
         return models;
     }
 
-    public ArrayList<ArrayList<ChaptersModel>> getIfChangedData(String date, String languages) throws IOException, JSONException {
+    public ArrayList<ArrayList<ChaptersModel>> getIfChangedData(int date, String languages) throws IOException, JSONException {
         String json = URLDownloadUtil.downloadJson(URLUtils.LANGUAGE_INFO);
         ArrayList<LanguageModel> info = getLanguagesInfo(json);
         ArrayList<ArrayList<ChaptersModel>> list = new ArrayList<ArrayList<ChaptersModel>>();
 
         for (int i = 0; i < info.size(); i++) {
-            if (!info.get(i).dateModified.equals(date) && languages.equals(info.get(i).language)) {
+            if (info.get(i).dateModified < date && languages.equals(info.get(i).language)) {
                 String chapters = URLDownloadUtil.downloadJson(URLUtils.CHAPTER_INFO + languages + "/obs-" + languages + ".json");
                 ArrayList<ChaptersModel> chapterFromLanguage = getChapterFromLanguage(languages, chapters);
                 list.add(chapterFromLanguage);

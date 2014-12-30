@@ -4,6 +4,7 @@ package utils;
  * Created by Acts Media Inc on 3/12/14.
  */
 public interface URLUtils {
+
     String LANGUAGE_INFO = "https://api.unfoldingword.org/obs/txt/1/obs-catalog.json";
 
     // This url will be append language ex:

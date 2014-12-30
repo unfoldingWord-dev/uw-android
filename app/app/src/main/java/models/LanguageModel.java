@@ -7,7 +7,7 @@ public class LanguageModel {
 
     public String id = "";
     public String auto_id = "";
-    public String dateModified = "";
+    public int dateModified;
     public String direction = "";
     public String language = "";
     public String checkingEntity = "";

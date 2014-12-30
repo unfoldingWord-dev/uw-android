@@ -25,12 +25,12 @@
 
                 <ImageView
                     android:id="@+id/languageTypeImageView"
-                    android:layout_width="30dp"
-                    android:layout_height="30dip"
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
                     android:cropToPadding="true"
-                    android:scaleType="fitCenter"
+                    android:scaleType="center"
                     android:src="@color/white" />
 
                 <TextView

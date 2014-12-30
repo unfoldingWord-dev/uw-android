@@ -47,13 +47,15 @@ import utils.NetWorkUtil;
 public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListener {
 
 
+    private static final String TAG = "ViewPagerAdapter";
+
     DisplayImageOptions options;
     View view = null;
     DBManager dbManager = null;
     private String languages;
     private Intent intent;
     private Activity activity;
-    private Context context;
+    private static Context context;
     private TextView actionbarTextView;
     private ArrayList<ChaptersModel> models;
     private ImageLoader mImageLoader;
@@ -62,7 +64,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     private ViewGroup container;
 
     public ViewPagerAdapter(Object context, ArrayList<ChaptersModel> models, ImageLoader mImageLoader, String nextChapter, String chapter_number, TextView actionbarTextView, Intent intent, String languages) {
-        this.context = (Context) context;
+        context = (Context) context;
         this.models = models;
         this.mImageLoader = mImageLoader;
         next = nextChapter;
@@ -75,29 +77,37 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
         this.languages = languages;
     }
 
-    public static boolean storeImage(Bitmap imageData, String filename) {
+    public static boolean storeImage(Context currentContex, Bitmap imageData, String fileName) {
         //get path to external storage (SD card)
 
-        File sdIconStorageDir = new File(AppUtils.DIR_NAME);
+        Log.i(TAG, "Will Store Image: " + fileName);
+
+//        File sdIconStorageDir = new File(AppUtils.DIR_NAME);
+        File prelimFile = new File(currentContex.getFilesDir(), fileName);
 
         //create storage directories, if they don't exist
-        if (!sdIconStorageDir.isDirectory()) {
-            sdIconStorageDir.mkdirs();
-        }
+//        if (!sdIconStorageDir.isDirectory()) {
+//            sdIconStorageDir.mkdirs();
+//        }
 
         try {
-            File resolveMeSDCard = new File(AppUtils.DIR_NAME + filename);
-            resolveMeSDCard.createNewFile();
-//            String filePath = sdIconStorageDir.toString() + filename;
-            FileOutputStream fileOutputStream = new FileOutputStream(resolveMeSDCard);
 
-            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+//            File resolveMeSDCard = new File(AppUtils.DIR_NAME + fileName);
+//            resolveMeSDCard.createNewFile();
+
+            File saveFile = new File(currentContex.getFilesDir(), fileName);
+            saveFile.createNewFile();
+//            String filePath = sdIconStorageDir.toString() + filename;
+
+            FileOutputStream fileOutputStream = currentContex.openFileOutput(fileName, Context.MODE_PRIVATE);
+
+            BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
 
             //choose another format if PNG doesn't suit you
-            imageData.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            imageData.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 
-            bos.flush();
-            bos.close();
+            outputStream.flush();
+            outputStream.close();
 
         } catch (FileNotFoundException e) {
             Log.w("TAG", "Error saving image file: " + e.getMessage());
@@ -260,7 +270,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
                 lastBitFromUrl = getLastBitFromUrl(replace);
             } else {
                 lastBitFromUrl = getLastBitFromUrl(url);
-                storeImage(bitmap, lastBitFromUrl);
+                storeImage(context, bitmap, lastBitFromUrl);
             }
         }
 

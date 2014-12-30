@@ -27,8 +27,9 @@ import utils.JsonUtils;
  */
 public class DBManager extends SQLiteOpenHelper {
 
+    private static String TAG = "DBManager";
+
     private static DBManager dbManager;
-    private static String DATABASE_NAME = "_un_folding_word";
     private Context context;
     private String DB_PATH = "";
 
@@ -88,10 +89,10 @@ public class DBManager extends SQLiteOpenHelper {
      */
     private void copyDataBase() throws IOException {
         // Open your local db as the input stream
-        InputStream inputStream = context.getAssets().open(DATABASE_NAME);
+        InputStream inputStream = context.getAssets().open(DBUtils.DB_NAME);
 
         // Path to the just created empty db
-        String outFileName = DB_PATH + DATABASE_NAME;
+        String outFileName = DB_PATH + DBUtils.DB_NAME;
 
         // Open the empty db as the output stream
         FileOutputStream outputStream = new FileOutputStream(outFileName);
@@ -118,7 +119,7 @@ public class DBManager extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            String myPath = DB_PATH + DATABASE_NAME;
+            String myPath = DB_PATH + DBUtils.DB_NAME;;
             checkDB = SQLiteDatabase.openDatabase(myPath, null,
                     SQLiteDatabase.OPEN_READONLY);
 
@@ -243,7 +244,7 @@ public class DBManager extends SQLiteOpenHelper {
             while (cursor.moveToNext()) {
                 LanguageModel model = new LanguageModel();
 
-                model.dateModified = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG));
+                model.dateModified = cursor.getInt(cursor.getColumnIndex(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG));
                 model.direction = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_DIRECTION_TABLE_LANGUAGE_CATALOG));
                 model.checkingEntity = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHECKING_ENTITY_TABLE_LANGUAGE_CATALOG));
                 model.checkingLevel = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHECKING_LEVEL_TABLE_LANGUAGE_CATALOG));
@@ -442,6 +443,9 @@ public class DBManager extends SQLiteOpenHelper {
      * @return
      */
     public boolean updateChapter(String language, ChaptersModel model) {
+
+        Log.i(TAG, "Updating chapter: " + model.title + " for language: " + language);
+
         SQLiteDatabase database = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO, model.number);

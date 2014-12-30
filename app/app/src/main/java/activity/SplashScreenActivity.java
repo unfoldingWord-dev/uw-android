@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
@@ -19,12 +20,16 @@ import utils.URLUtils;
  * Created by Acts Media Inc. on 2/12/14.
  */
 public class SplashScreenActivity extends Activity {
+
+    private static String TAG = "SplashScreenActivity";
+
     DBManager dbManager = null;
     AsyncTask<String, Void, String> execute = null;
     boolean cancelValue = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         setUI();

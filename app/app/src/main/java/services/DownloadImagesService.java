@@ -2,6 +2,9 @@ package services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,17 +19,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import adapter.ViewPagerAdapter;
 import db.DBManager;
 import models.ChaptersModel;
 import models.LanguageModel;
 import parser.JsonParser;
+import utils.AsyncImageLoader;
 import utils.URLDownloadUtil;
 import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc on 11/12/14.
  */
-public class DownloadImagesService extends Service {
+public class DownloadImagesService extends Service implements AsyncImageLoader.onProgressUpdateListener {
+
+    private static final String TAG = "DownloadImagesService";
+
     public static final int STATUS_RUNNING = 0;
     public static final int STATUS_FINISHED = 1;
     public static final int STATUS_ERROR = 2;
@@ -97,16 +105,17 @@ public class DownloadImagesService extends Service {
                 ArrayList<LanguageModel> info = JsonParser.getInstance().getLanguagesInfo(json);
                 for (LanguageModel model : languages) {
                     for (int i = 0; i < info.size(); i++) {
-                        if (!info.get(i).dateModified.equals(allDate[i]) && model.language.equals(info.get(i).language)) {
+//                        if ( model.dateModified < info.get(i).dateModified && model.language.equals(info.get(i).language)) {
                             boolean value = dbManager.upDateLanguage(info.get(i));
                             String chapterJson = URLDownloadUtil.downloadJson(URLUtils.CHAPTER_INFO +
                                     info.get(i).language + "/obs-" + info.get(i).language + ".json");
                             ArrayList<ChaptersModel> chaptersModels = JsonParser.getInstance().getChapterFromLanguage(info.get(i).language, chapterJson);
                             for (ChaptersModel chaptersModel : chaptersModels) {
                                 boolean valuea = dbManager.updateChapter(info.get(i).language, chaptersModel);
+                                downloadImage(chaptersModel.imgUrl);
                                 Log.d("INSERT", "" + valuea);
                             }
-                        }
+//                        }
                     }
                 }
 
@@ -122,5 +131,33 @@ public class DownloadImagesService extends Service {
                 getApplicationContext().sendBroadcast(new Intent(URLUtils.BROAD_CAST_DOWN_COMP));
 
         }
+    }
+
+    private void downloadImage(final String imageURL){
+
+        Log.i(TAG, "will download image url: " + imageURL);
+
+        AsyncImageLoader loader = new AsyncImageLoader(
+                new AsyncImageLoader.onImageLoaderListener() {
+
+                    @Override
+                    public void onImageLoaded(Bitmap image,
+                                              String response) {
+                        ViewPagerAdapter.storeImage(getApplicationContext() ,image, imageURL);
+                    }
+
+                }, false, false,
+                this);
+        if (Build.VERSION.SDK_INT >= 11)
+            loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                    imageURL);
+        else
+            loader.execute(imageURL);
+
+    }
+
+    @Override
+    public void doUpdateProgress(int progress) {
+
     }
 }

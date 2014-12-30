@@ -42,6 +42,8 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
 
     @Override
     public View getView(final int pos, View view, ViewGroup parent) {
+
+
         ViewHolderForGroup holder = null;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -113,6 +115,8 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
         } else if (models.get(pos).checkingLevel.equals("3")) {
             holder.languageTypeImageView.setImageResource(R.drawable.level_three_dark);
         }
+
+//        holder.languageTypeImageView.set
         holder.languageNameTextView.setText(models.get(pos).languageName + " [" + models.get(pos).language + "]");
         holder.checkingEntityTextView.setText(models.get(pos).checkingEntity);
         holder.checkingEntityTextView.setText(models.get(pos).checkingEntity);

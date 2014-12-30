@@ -3,6 +3,7 @@ package utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 /**
  * Check device's network connectivity
@@ -11,6 +12,7 @@ import android.net.NetworkInfo;
  */
 public class NetWorkUtil {
 
+    private static String TAG = "NetWorkUtil";
     /**
      * Get the network info
      *
@@ -29,8 +31,13 @@ public class NetWorkUtil {
      * @return
      */
     public static boolean isConnected(Context context) {
+
         NetworkInfo info = NetWorkUtil.getNetworkInfo(context);
-        return (info != null && info.isConnected());
+
+        boolean isConnected = (info != null && info.isConnected());
+        Log.i(TAG, "is connected to web: " + isConnected);
+
+        return isConnected;
     }
 
     /**
@@ -41,6 +48,8 @@ public class NetWorkUtil {
      * @return
      */
     public static boolean isConnectedWifi(Context context) {
+
+        Log.i(TAG, "Connected to wifi");
         NetworkInfo info = NetWorkUtil.getNetworkInfo(context);
         return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI);
     }
@@ -53,6 +62,7 @@ public class NetWorkUtil {
      * @return
      */
     public static boolean isConnectedMobile(Context context) {
+        Log.i(TAG, "Connected to mobile web");
         NetworkInfo info = NetWorkUtil.getNetworkInfo(context);
         return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_MOBILE);
     }

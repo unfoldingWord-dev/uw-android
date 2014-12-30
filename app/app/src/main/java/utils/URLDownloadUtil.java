@@ -1,5 +1,7 @@
 package utils;
 
+import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -15,8 +17,10 @@ import java.io.IOException;
  * Created by Acts Media Inc on 3/12/14.
  */
 public class URLDownloadUtil {
-    static int connectiontimeout = 20000;
-    static int sockettimeout = 10000;
+
+    private static String TAG = "URLDownloadUtil";
+    static int connectionTimeout = 20000;
+    static int socketTimeout = 10000;
 
     /**
      * Download JSON data from url
@@ -25,13 +29,16 @@ public class URLDownloadUtil {
      * @return
      */
     public static String downloadJson(String url) throws IOException {
-        HttpParams httpparameters = new BasicHttpParams();
 
-        HttpConnectionParams.setConnectionTimeout(httpparameters,
-                connectiontimeout);
-        HttpConnectionParams.setSoTimeout(httpparameters, sockettimeout);
+        Log.i(TAG, "Will download url: " + url);
 
-        HttpClient httpClient = new DefaultHttpClient(httpparameters);
+        HttpParams httpParameters = new BasicHttpParams();
+
+        HttpConnectionParams.setConnectionTimeout(httpParameters,
+                connectionTimeout);
+        HttpConnectionParams.setSoTimeout(httpParameters, socketTimeout);
+
+        HttpClient httpClient = new DefaultHttpClient(httpParameters);
         HttpGet get = new HttpGet(url);
         HttpResponse response = httpClient.execute(get);
         return EntityUtils.toString(response.getEntity());
