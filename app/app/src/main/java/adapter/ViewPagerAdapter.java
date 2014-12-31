@@ -65,6 +65,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
 
     public ViewPagerAdapter(Object context, ArrayList<ChaptersModel> models, ImageLoader mImageLoader, String nextChapter, String chapter_number, TextView actionbarTextView, Intent intent, String languages) {
         this.context = (Context) context;
+        models.add(new ChaptersModel());
         this.models = models;
         this.mImageLoader = mImageLoader;
         next = nextChapter;
@@ -167,6 +168,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
                         }
                         try {
                             ViewPagerAdapter.this.models = JsonParser.parseStory(nextChapter.jsonArray);
+                            ViewPagerAdapter.this.models.add(new ChaptersModel());
                             intent.removeExtra(ChapterSelectionActivity.CHAPTERS_MODEL_INSTANCE);
                             AppVariable.MODELS = nextChapter;
                             notifyDataSetChanged();
