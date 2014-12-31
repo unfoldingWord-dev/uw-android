@@ -166,6 +166,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
                         } catch (Exception e) {
 
                         }
+                        
                         try {
                             ViewPagerAdapter.this.models = JsonParser.parseStory(nextChapter.jsonArray);
                             ViewPagerAdapter.this.models.add(new ChaptersModel());
