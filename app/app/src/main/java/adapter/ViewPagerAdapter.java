@@ -64,7 +64,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     private ViewGroup container;
 
     public ViewPagerAdapter(Object context, ArrayList<ChaptersModel> models, ImageLoader mImageLoader, String nextChapter, String chapter_number, TextView actionbarTextView, Intent intent, String languages) {
-        context = (Context) context;
+        this.context = (Context) context;
         this.models = models;
         this.mImageLoader = mImageLoader;
         next = nextChapter;

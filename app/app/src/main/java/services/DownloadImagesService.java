@@ -105,17 +105,17 @@ public class DownloadImagesService extends Service implements AsyncImageLoader.o
                 ArrayList<LanguageModel> info = JsonParser.getInstance().getLanguagesInfo(json);
                 for (LanguageModel model : languages) {
                     for (int i = 0; i < info.size(); i++) {
-//                        if ( model.dateModified < info.get(i).dateModified && model.language.equals(info.get(i).language)) {
+                        if ( model.dateModified < info.get(i).dateModified && model.language.equals(info.get(i).language)) {
                             boolean value = dbManager.upDateLanguage(info.get(i));
                             String chapterJson = URLDownloadUtil.downloadJson(URLUtils.CHAPTER_INFO +
                                     info.get(i).language + "/obs-" + info.get(i).language + ".json");
                             ArrayList<ChaptersModel> chaptersModels = JsonParser.getInstance().getChapterFromLanguage(info.get(i).language, chapterJson);
                             for (ChaptersModel chaptersModel : chaptersModels) {
                                 boolean valuea = dbManager.updateChapter(info.get(i).language, chaptersModel);
-                                downloadImage(chaptersModel.imgUrl);
+//                                downloadImage(chaptersModel.imgUrl);
                                 Log.d("INSERT", "" + valuea);
                             }
-//                        }
+                        }
                     }
                 }
 
