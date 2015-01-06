@@ -147,12 +147,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
                         ChaptersModel nextChapter = null;
                         try {
                             int current_value = Integer.parseInt(chapter_number);
-                            if (current_value < 10) {
-                                nextChapter = dbManager.getNextChapter("0" + (current_value + 1) + "", languages);
-                            } else {
-                                nextChapter = dbManager.getNextChapter((current_value + 1) + "", languages);
-                            }
-
+                            nextChapter = dbManager.getNextChapter(String.format("%02d", (current_value + 1)) + "", languages);
                             chapter_number = nextChapter.number;
                             actionbarTextView.setText(nextChapter.title);
                             languages = nextChapter.loadedLanguage;
