@@ -49,6 +49,7 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
 
         mActionBar = getSupportActionBar();
         View view = getLayoutInflater().inflate(R.layout.actionbar_custom_view, null);
+        view.setPadding(0,0,70,0);
         actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
         mActionBar.setCustomView(view);
         mActionBar.setDisplayShowCustomEnabled(true);

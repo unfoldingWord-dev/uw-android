@@ -25,12 +25,15 @@
         </activity>
         <activity
             android:name="activity.ChapterSelectionActivity"
+            android:theme="@style/Theme.AppCompat"
             android:configChanges="orientation|keyboardHidden" />
         <activity
             android:name="activity.LanguageChooserActivity"
+            android:theme="@style/Theme.AppCompat"
             android:configChanges="orientation|keyboardHidden" />
         <activity
             android:name="activity.ChapterReadingActivity"
+            android:theme="@style/Theme.AppCompat"
             android:configChanges="orientation|keyboardHidden" />
 
         <service android:name="services.DownloadImagesService" />

@@ -2,21 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="30dp"
+    android:paddingRight="20dp"
+    android:paddingEnd="20dp"
     >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
+        <view.FontFitTextView
             android:id="@+id/actionbarTextView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:gravity="center|top"
-            android:text="New Text"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Genesis 1 God Created the Earth"
             android:textColor="@color/white_mix_gary"
-            android:textSize="17dp"
-            android:textStyle="bold" />
-    </FrameLayout>
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignParentStart="false" />
+
 </RelativeLayout>
