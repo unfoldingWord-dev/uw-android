@@ -1,18 +1,11 @@
 package activity;
 
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -20,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -31,7 +23,7 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 
 import adapter.ViewPagerAdapter;
-import models.ChaptersModel;
+import models.ChapterModel;
 import parser.JsonParser;
 import utils.AppVariable;
 
@@ -39,6 +31,9 @@ import utils.AppVariable;
  * Created by Acts Media Inc on 5/12/14.
  */
 public class ChapterReadingActivity extends ActionBarActivity {
+
+    public static ChapterModel chapterModel = null;
+
     ViewPager readingViewPager = null;
     ImageLoader mImageLoader;
     ActionBar mActionBar = null;
@@ -72,30 +67,10 @@ public class ChapterReadingActivity extends ActionBarActivity {
         mImageLoader = ImageLoader.getInstance();
         mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
 //        ViewPagerAdapter adapter = new ViewPagerAdapter(this, );
-        ChaptersModel model =
-                (ChaptersModel) getIntent().getSerializableExtra(ChapterSelectionActivity.CHAPTERS_MODEL_INSTANCE);
 
-        ArrayList<ChaptersModel> models = null;
-        try {
-            if (model == null) {
-                if (AppVariable.MODELS != null) {
-                    model = AppVariable.MODELS;
-                    models = JsonParser.parseStory(model.jsonArray);
-                }
-            } else {
+        actionbarTextView.setText(chapterModel.title);
 
-                models = JsonParser.parseStory(model.jsonArray);
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-
-        }
-
-        actionbarTextView.setText(model.title);
-
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this, models, mImageLoader, model.next_chapter, model.number, actionbarTextView, getIntent(), model.loadedLanguage);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this, chapterModel.pageModels, mImageLoader, chapterModel.parentBook.appWords.next_chapter, chapterModel.number, actionbarTextView, getIntent(), chapterModel.parentBook.language);
         readingViewPager.setAdapter(adapter);
 
         setupTouchListener(readingViewPager);
@@ -118,7 +93,7 @@ public class ChapterReadingActivity extends ActionBarActivity {
     }
 
 
-    private void handleDeviceOrientation(boolean hide){
+    private void handleActionBarHidden(boolean hide){
 
         if( hide){
             mActionBar.hide();
@@ -183,10 +158,24 @@ public class ChapterReadingActivity extends ActionBarActivity {
         });
     }
 
+    private int getScreenOrientation()
+    {
+        Display getOrient = getWindowManager().getDefaultDisplay();
+
+        int orientation = getOrient.getOrientation();
+
+        // Sometimes you may get undefined orientation Value is 0
+        // simple logic solves the problem compare the screen
+        // X,Y Co-ordinates and determine the Orientation in such cases
+
+        return orientation % 2; // return value 0 is portrait and 1 is Landscape Mode
+    }
+
+
     private void checkShouldChangeNavBarHidden(){
 
-        boolean shouldHide = mActionBar.isShowing();
+        boolean shouldHide = (getScreenOrientation() == 1)? mActionBar.isShowing() : false;
 
-        handleDeviceOrientation(shouldHide);
+        handleActionBarHidden(shouldHide);
     }
 }

@@ -8,9 +8,8 @@ android {
         minSdkVersion 9
         targetSdkVersion 21
         versionCode 32
-        versionName "2.0.0"
+        versionName '2.0.1'
     }
-
     signingConfigs {
         release {
             storeFile file("PATH_TO_FILE")
@@ -19,7 +18,6 @@ android {
             keyPassword "KEY_PASSWORD"
         }
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -30,10 +28,12 @@ android {
 
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile files('lib/universal-image-loader-1.9.2-SNAPSHOT-with-sources.jar')
 }

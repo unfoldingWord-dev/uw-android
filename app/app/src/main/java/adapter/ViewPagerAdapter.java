@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,23 +22,17 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import org.json.JSONException;
 import org.unfoldingword.mobile.R;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import activity.ChapterSelectionActivity;
 import db.DBManager;
-import models.ChaptersModel;
-import parser.JsonParser;
-import utils.AppUtils;
+import db.ImageDatabaseHandler;
+import models.ChapterModel;
+import models.PageModel;
 import utils.AppVariable;
-import utils.NetWorkUtil;
+import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -57,15 +50,16 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     private Activity activity;
     private static Context context;
     private TextView actionbarTextView;
-    private ArrayList<ChaptersModel> models;
+    private ArrayList<PageModel> models;
     private ImageLoader mImageLoader;
     private String chapter_number;
     private String next;
     private ViewGroup container;
 
-    public ViewPagerAdapter(Object context, ArrayList<ChaptersModel> models, ImageLoader mImageLoader, String nextChapter, String chapter_number, TextView actionbarTextView, Intent intent, String languages) {
+
+    public ViewPagerAdapter(Object context, ArrayList<PageModel> models, com.nostra13.universalimageloader.core.ImageLoader mImageLoader, String nextChapter, String chapter_number, TextView actionbarTextView, Intent intent, String languages) {
         this.context = (Context) context;
-        models.add(new ChaptersModel());
+//        models.add(new ChapterModel());
         this.models = models;
         this.mImageLoader = mImageLoader;
         next = nextChapter;
@@ -76,49 +70,6 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
         this.activity = (Activity) context;
         this.intent = intent;
         this.languages = languages;
-    }
-
-    public static boolean storeImage(Context currentContex, Bitmap imageData, String fileName) {
-        //get path to external storage (SD card)
-
-        Log.i(TAG, "Will Store Image: " + fileName);
-
-//        File sdIconStorageDir = new File(AppUtils.DIR_NAME);
-        File prelimFile = new File(currentContex.getFilesDir(), fileName);
-
-        //create storage directories, if they don't exist
-//        if (!sdIconStorageDir.isDirectory()) {
-//            sdIconStorageDir.mkdirs();
-//        }
-
-        try {
-
-//            File resolveMeSDCard = new File(AppUtils.DIR_NAME + fileName);
-//            resolveMeSDCard.createNewFile();
-
-            File saveFile = new File(currentContex.getFilesDir(), fileName);
-            saveFile.createNewFile();
-//            String filePath = sdIconStorageDir.toString() + filename;
-
-            FileOutputStream fileOutputStream = currentContex.openFileOutput(fileName, Context.MODE_PRIVATE);
-
-            BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
-
-            //choose another format if PNG doesn't suit you
-            imageData.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-
-            outputStream.flush();
-            outputStream.close();
-
-        } catch (FileNotFoundException e) {
-            Log.w("TAG", "Error saving image file: " + e.getMessage());
-            return false;
-        } catch (IOException e) {
-            Log.w("TAG", "Error saving image file: " + e.getMessage());
-            return false;
-        }
-
-        return true;
     }
 
     @Override
@@ -144,37 +95,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
                 nextButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ChaptersModel nextChapter = null;
-                        try {
-                            int current_value = Integer.parseInt(chapter_number);
-                            nextChapter = dbManager.getNextChapter(String.format("%02d", (current_value + 1)) + "", languages);
-                            chapter_number = nextChapter.number;
-                            actionbarTextView.setText(nextChapter.title);
-                            languages = nextChapter.loadedLanguage;
-                            // increment chapter selection
-                            int prv_pos = PreferenceManager.getDefaultSharedPreferences(context).getInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, -1);
-                            if (prv_pos != -1) {
-                                PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, prv_pos + 1).commit();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-
-                        }
-
-                        try {
-                            ViewPagerAdapter.this.models = JsonParser.parseStory(nextChapter.jsonArray);
-                            ViewPagerAdapter.this.models.add(new ChaptersModel());
-                            intent.removeExtra(ChapterSelectionActivity.CHAPTERS_MODEL_INSTANCE);
-                            AppVariable.MODELS = nextChapter;
-                            notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-
-                        }
-                        ((ViewPager) ViewPagerAdapter.this.container).setCurrentItem(0);
-
+                        moveToNextChapter();
                     }
                 });
             } else {
@@ -192,33 +113,51 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
             ImageView chapterImageView = (ImageView) view.findViewById(R.id.chapterImageView);
             TextView storyTextView = (TextView) view.findViewById(R.id.storyTextView);
             storyTextView.setText(models.get(position).text);
-            String imgUrl = models.get(position).imgUrl;
-            String lastBitFromUrl = getLastBitFromUrl(imgUrl);
-            String s = lastBitFromUrl.replaceAll("[}]", "");
+            String imgUrl = models.get(position).imageUrl;
+            String lastBitFromUrl = URLUtils.getLastBitFromUrl(imgUrl);
+            String path = lastBitFromUrl.replaceAll("[}]", "");
 
-            /*
-            if (NetWorkUtil.isConnected(context)) {
-                if (imgUrl.contains("{{")) {
-                    String replace = imgUrl.replace("{{", "");
-                    if (replace.contains("}}")) {
-                        String lastURL = replace.replace("}}", "");
-                        mImageLoader.displayImage(lastURL, chapterImageView, options, this);
-                    }
-                } else {
+            boolean fileHasBeenSaved =  ImageDatabaseHandler.fileHasBeenSaved(context, path);
 
-                    mImageLoader.displayImage(imgUrl, chapterImageView, options, this);
-                }
-            } else {
-            */
-                mImageLoader.displayImage("assets://images/" + s, chapterImageView, options, this);
-            //}
+            Bitmap image = ImageDatabaseHandler.loadImageFrom(context, path);
+            if(image != null){
+                chapterImageView.setImageBitmap(image);
+            }
+            else{
+                String imagePath = "assets://images/" + path;
 
+                mImageLoader.displayImage(imagePath, chapterImageView, options, this);
+            }
 
         }
         ((ViewPager) container).addView(view);
         return view;
     }
 
+    private void moveToNextChapter(){
+
+        ChapterModel currentChapter = models.get(0).parentChapter;
+        ChapterModel nextChapter = currentChapter.parentBook.getNextChapter(currentChapter);
+
+        ArrayList<PageModel> newPages = nextChapter.pageModels;
+
+        int current_value = Integer.parseInt(chapter_number);
+        chapter_number = nextChapter.number;
+        actionbarTextView.setText(nextChapter.title);
+        languages = nextChapter.parentBook.language;
+        // increment chapter selection
+        int prv_pos = PreferenceManager.getDefaultSharedPreferences(context).getInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, -1);
+        if (prv_pos != -1) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, prv_pos + 1).commit();
+        }
+
+        models = newPages;
+        intent.removeExtra(ChapterSelectionActivity.CHAPTERS_MODEL_INSTANCE);
+        AppVariable.MODELS = nextChapter;
+        notifyDataSetChanged();
+
+        ((ViewPager) this.container).setCurrentItem(0);
+    }
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == ((RelativeLayout) object);
@@ -247,10 +186,10 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     public void onLoadingFailed(String url, View view, FailReason failReason) {
         ImageView imageView = (ImageView) view.findViewById(R.id.chapterImageView);
         if (url.contains("file")) {
-            String w = getLastBitFromUrl(url);
+            String w = URLUtils.getLastBitFromUrl(url);
             mImageLoader.displayImage("assets://images/" + w, imageView, options);
         } else {
-            String lastBitFromUrl = getLastBitFromUrl(url);
+            String lastBitFromUrl = URLUtils.getLastBitFromUrl(url);
             String s = lastBitFromUrl.replaceAll("[}]", "");
             mImageLoader.displayImage("assets://images/" + s, imageView, options);
         }
@@ -259,16 +198,17 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
 
     @Override
     public void onLoadingComplete(String url, View view, Bitmap bitmap) {
-        if (url.contains("file")) {
 
+        if (url.contains("file")) {
+            System.out.println("It worked!");
         } else {
             String lastBitFromUrl = "";
             if (url.contains("}}")) {
                 String replace = url.replace("}}", "");
-                lastBitFromUrl = getLastBitFromUrl(replace);
+                lastBitFromUrl = URLUtils.getLastBitFromUrl(replace);
             } else {
-                lastBitFromUrl = getLastBitFromUrl(url);
-                storeImage(context, bitmap, lastBitFromUrl);
+                lastBitFromUrl = URLUtils.getLastBitFromUrl(url);
+                ImageDatabaseHandler.storeImage(context, bitmap, lastBitFromUrl);
             }
         }
 
@@ -280,7 +220,4 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
 
     }
 
-    public String getLastBitFromUrl(String url) {
-        return url.replaceFirst(".*/([^/?]+).*", "$1");
-    }
 }

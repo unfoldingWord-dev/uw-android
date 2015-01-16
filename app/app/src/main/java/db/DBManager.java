@@ -15,9 +15,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import models.ChaptersModel;
+import models.BookModel;
+import models.ChapterModel;
 import models.LanguageModel;
 import utils.DBUtils;
 import utils.JsonUtils;
@@ -175,19 +178,9 @@ public class DBManager extends SQLiteOpenHelper {
      */
     public boolean addLanguage(LanguageModel model) {
         SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG, model.dateModified);
-        values.put(DBUtils.COLUMN_DIRECTION_TABLE_LANGUAGE_CATALOG, model.direction);
-        values.put(DBUtils.COLUMN_LANGUAGE_TABLE_LANGUAGE_CATALOG, model.language);
-        values.put(DBUtils.COLUMN_CHECKING_ENTITY_TABLE_LANGUAGE_CATALOG, model.checkingEntity);
-        values.put(DBUtils.COLUMN_CHECKING_LEVEL_TABLE_LANGUAGE_CATALOG, model.checkingLevel);
-        values.put(DBUtils.COLUMN_COMMENTS_TABLE_LANGUAGE_CATALOG, model.comments);
-        values.put(DBUtils.COLUMN_CONTRIBUTORS_TABLE_LANGUAGE_CATALOG, model.contributors);
-        values.put(DBUtils.COLUMN_PUBLISH_DATE_TABLE_LANGUAGE_CATALOG, model.publishDate);
-        values.put(DBUtils.COLUMN_SOURCE_TEXT_TABLE_LANGUAGE_CATALOG, model.sourceText);
-        values.put(DBUtils.COLUMN_SOURCE_TEXT_VERSION_TABLE_LANGUAGE_CATALOG, model.sourceTextVersion);
-        values.put(DBUtils.COLUMN_VERSION_TABLE_LANGUAGE_CATALOG, model.version);
-        values.put(DBUtils.COLUMN_LANGUAGE_NAME_TABLE_LANGUAGE_CATALOG, model.languageName);
+
+        ContentValues values = model.getModelAsContentValues();
+
         long insert = database.insert(DBUtils.TABLE_LANGUAGE_CATALOG, null, values);
         database.close();
         if (insert > 0) {
@@ -201,26 +194,12 @@ public class DBManager extends SQLiteOpenHelper {
     /**
      * Adding chapters to db
      *
-     * @param model $ChaptersModel
+     * @param model $ChapterModel
      * @return
      */
-    public boolean addChapters(ChaptersModel model) {
+    public boolean addChapters(ChapterModel model) {
         SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO, model.number);
-        values.put(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO, model.references);
-        values.put(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO, model.title);
-        values.put(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO, model.jsonArray);
-        values.put(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO, model.loadedLanguage);
-        values.put(DBUtils.COLUMN_CANCEL_LANGUAGE_TABLE_FRAME_INFO, model.cancel);
-        values.put(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO, model.chapters);
-        values.put(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO, model.languages);
-        values.put(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO, model.next_chapter);
-        values.put(DBUtils.COLUMN_OK_LANGUAGE_TABLE_FRAME_INFO, model.ok);
-        values.put(DBUtils.COLUMN_REMOVE_LOCALLY_LANGUAGE_TABLE_FRAME_INFO, model.remove_locally);
-        values.put(DBUtils.COLUMN_OK_REMOVE_THIS_STRING_TABLE_FRAME_INFO, model.remove_this_string);
-        values.put(DBUtils.COLUMN_SAVE_LOCALLY_LANGUAGE_TABLE_FRAME_INFO, model.save_locally);
-        values.put(DBUtils.COLUMN_SAVE_THIS_STRING_LANGUAGE_TABLE_FRAME_INFO, model.save_this_string);
+        ContentValues values = model.getModelAsContentValues();
         long insert = database.insert(DBUtils.TABLE_FRAME_INFO, null, values);
         database.close();
         if (insert > 0) {
@@ -242,22 +221,24 @@ public class DBManager extends SQLiteOpenHelper {
         Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_ALL_LANGUAGES, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                LanguageModel model = new LanguageModel();
-
-                model.dateModified = cursor.getInt(cursor.getColumnIndex(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG));
-                model.direction = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_DIRECTION_TABLE_LANGUAGE_CATALOG));
-                model.checkingEntity = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHECKING_ENTITY_TABLE_LANGUAGE_CATALOG));
-                model.checkingLevel = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHECKING_LEVEL_TABLE_LANGUAGE_CATALOG));
-                model.comments = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_COMMENTS_TABLE_LANGUAGE_CATALOG));
-                model.contributors = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CONTRIBUTORS_TABLE_LANGUAGE_CATALOG));
-                model.publishDate = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_PUBLISH_DATE_TABLE_LANGUAGE_CATALOG));
-                model.sourceText = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_SOURCE_TEXT_TABLE_LANGUAGE_CATALOG));
-                model.sourceTextVersion = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_SOURCE_TEXT_VERSION_TABLE_LANGUAGE_CATALOG));
-                model.version = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_VERSION_TABLE_LANGUAGE_CATALOG));
-                model.language = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGE_TABLE_LANGUAGE_CATALOG));
-                model.languageName = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGE_NAME_TABLE_LANGUAGE_CATALOG));
-
+                LanguageModel model = getLanguageFromCursor(cursor);
                 models.add(model);
+            }
+        }
+        if (cursor != null)
+            cursor.close();
+        database.close();
+        return models;
+    }
+
+    public Map<String,  LanguageModel> getAllLanguagesAsMap() {
+        Map<String,  LanguageModel> models = new HashMap<String, LanguageModel>();
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_ALL_LANGUAGES, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                LanguageModel model = getLanguageFromCursor(cursor);
+                models.put(model.id, model);
             }
         }
         if (cursor != null)
@@ -267,43 +248,132 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     /**
+     * loads a LanguageModel from a cursor
+     * @param cursor
+     * @return
+     */
+    private LanguageModel getLanguageFromCursor(Cursor cursor){
+
+        LanguageModel model = new LanguageModel();
+
+        model.dateModified =  cursor.getLong(cursor.getColumnIndex(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG));
+        model.direction = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_DIRECTION_TABLE_LANGUAGE_CATALOG));
+        model.status.checkingEntity = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHECKING_ENTITY_TABLE_LANGUAGE_CATALOG));
+        model.status.checkingLevel = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHECKING_LEVEL_TABLE_LANGUAGE_CATALOG));
+        model.status.comments = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_COMMENTS_TABLE_LANGUAGE_CATALOG));
+        model.status.contributors = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CONTRIBUTORS_TABLE_LANGUAGE_CATALOG));
+        model.status.publishDate = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_PUBLISH_DATE_TABLE_LANGUAGE_CATALOG));
+        model.status.sourceText = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_SOURCE_TEXT_TABLE_LANGUAGE_CATALOG));
+        model.status.sourceTextVersion = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_SOURCE_TEXT_VERSION_TABLE_LANGUAGE_CATALOG));
+        model.status.version = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_VERSION_TABLE_LANGUAGE_CATALOG));
+        model.language = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGE_TABLE_LANGUAGE_CATALOG));
+        model.languageName = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGE_NAME_TABLE_LANGUAGE_CATALOG));
+
+        try {
+            model.books = getAllChapters(model);
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+
+    /**
      * Getting all chapter details from db
      *
      * @return ArrayList
      */
-    public ArrayList<ChaptersModel> getAllChapters(String languageName) throws JSONException {
-        ArrayList<ChaptersModel> models = null;
+    public ArrayList<BookModel> getAllChapters(LanguageModel languageModel) throws JSONException {
+
+        BookModel bookModel = new BookModel(languageModel);
+
+        ArrayList<BookModel> bookModels = null;
+
         SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_CHAPTER_BASED_ON_LANGUAGE, new String[]{languageName});
+        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_CHAPTER_BASED_ON_LANGUAGE, new String[]{languageModel.language});
         if (cursor != null) {
-            models = new ArrayList<ChaptersModel>();
+            bookModels = new ArrayList<BookModel>();
+            bookModels.add(bookModel);
             while (cursor.moveToNext()) {
-                ChaptersModel model = new ChaptersModel();
-
-                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
-                model.references = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO));
-                model.title = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO));
-                model.jsonArray = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO));
-                model.loadedLanguage = languageName;
-                model.languages = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO));
-                model.loadedLanguage = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO));
-                model.chapters = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO));
-                model.next_chapter = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO));
-                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
-                model.auto_id = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_AUTO_GENERATED_ID_TABLE_FRAME_INFO));
-                JSONArray array = new JSONArray(model.jsonArray);
-                JSONObject object = array.getJSONObject(0);
-
-                model.imgUrl = object.has(JsonUtils.IMAGE_URL) ? object.getString(JsonUtils.IMAGE_URL) : "";
-                model.id = object.has(JsonUtils.ID) ? object.getString(JsonUtils.ID) : "";
-                models.add(model);
+                ChapterModel model = getModelFromCursor(cursor, bookModel);
+                bookModel.chapters.add(model);
             }
         }
         if (cursor != null)
             cursor.close();
         database.close();
-        return models;
+
+
+        return bookModels;
     }
+
+
+    /**
+     * loads a ChapterModel from a Cursor
+     * @param cursor
+     * @param parentBook
+     * @return
+     * @throws JSONException
+     */
+    private ChapterModel getModelFromCursor(Cursor cursor,  BookModel parentBook) throws JSONException{
+
+        ChapterModel model = new ChapterModel(parentBook);
+
+        model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
+        model.reference = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO));
+        model.title = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO));
+        model.setFramesJson(cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO)));
+        model.parentBook.appWords.languages = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO));
+        model.parentBook.language = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO));
+        model.parentBook.appWords.chapters = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO));
+        model.parentBook.appWords.next_chapter = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO));
+        model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
+        model.auto_id = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_AUTO_GENERATED_ID_TABLE_FRAME_INFO));
+        JSONArray array = new JSONArray(model.getFramesJson());
+        JSONObject object = array.getJSONObject(0);
+
+        model.id = object.has(JsonUtils.ID) ? object.getString(JsonUtils.ID) : "";
+
+        return model;
+    }
+
+//    /**
+//     * Getting all chapter details from db
+//     *
+//     * @return ArrayList
+//     */
+//    public ArrayList<ChapterModel> getAllChapters(String languageName) throws JSONException {
+//        ArrayList<ChapterModel> models = null;
+//        SQLiteDatabase database = getReadableDatabase();
+//        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_CHAPTER_BASED_ON_LANGUAGE, new String[]{languageName});
+//        if (cursor != null) {
+//            models = new ArrayList<ChapterModel>();
+//            while (cursor.moveToNext()) {
+//                ChapterModel model = new ChapterModel();
+//
+//                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
+//                model.reference = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO));
+//                model.title = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO));
+//                model.setFramesJson(cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO)));
+//                model.parentBook.appWords.languages = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO));
+//                model.parentBook.language = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO));
+//                model.parentBook.appWords.chapters = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO));
+//                model.parentBook.appWords.next_chapter = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO));
+//                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
+//                model.auto_id = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_AUTO_GENERATED_ID_TABLE_FRAME_INFO));
+//                JSONArray array = new JSONArray(model.getFramesJson());
+//                JSONObject object = array.getJSONObject(0);
+//
+//                model.id = object.has(JsonUtils.ID) ? object.getString(JsonUtils.ID) : "";
+//                models.add(model);
+//            }
+//        }
+//        if (cursor != null)
+//            cursor.close();
+//        database.close();
+//        return models;
+//    }
 
     /**
      * Display words depends on Languages
@@ -326,43 +396,45 @@ public class DBManager extends SQLiteOpenHelper {
         return name;
     }
 
-    /**
-     * Getting next chapters
-     *
-     * @param chapter_id
-     * @return
-     * @throws JSONException
-     */
-    public ChaptersModel getNextChapter(String chapter_id, String languages) throws JSONException {
-
-        SQLiteDatabase database = getReadableDatabase();
-        ChaptersModel model = new ChaptersModel();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_NEXT_CHAPTER, new String[]{chapter_id, languages});
-        if (cursor != null) {
-            if (cursor.moveToNext()) {
-
-
-                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
-                model.references = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO));
-                model.title = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO));
-                model.jsonArray = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO));
-                model.languages = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO));
-                model.chapters = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO));
-                model.next_chapter = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO));
-                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
-                model.auto_id = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_AUTO_GENERATED_ID_TABLE_FRAME_INFO));
-                JSONArray array = new JSONArray(model.jsonArray);
-                model.loadedLanguage = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO));
-                JSONObject object = array.getJSONObject(0);
-                model.imgUrl = object.has(JsonUtils.IMAGE_URL) ? object.getString(JsonUtils.IMAGE_URL) : "";
-                model.id = object.has(JsonUtils.ID) ? object.getString(JsonUtils.ID) : "";
-            }
-        }
-        if (cursor != null)
-            cursor.close();
-        database.close();
-        return model;
-    }
+//    /**
+//     * Getting next chapters
+//     *
+//     * @param chapter_id
+//     * @return
+//     * @throws JSONException
+//     */
+//    public ChapterModel getNextChapter(String chapter_id, String languages) throws JSONException {
+//
+//        SQLiteDatabase database = getReadableDatabase();
+//        ChapterModel model = new ChapterModel();
+//        Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_NEXT_CHAPTER, new String[]{chapter_id, languages});
+//        if (cursor != null) {
+//            if (cursor.moveToNext()) {
+//
+//
+//                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
+//                model.reference = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO));
+//                model.title = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO));
+//                model.setFramesJson(cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO)));
+//                model.parentBook.appWords.languages = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO));
+//                model.parentBook.language = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO));
+//                model.parentBook.appWords.chapters = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO));
+//                model.parentBook.appWords.next_chapter = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO));
+//                model.number = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO));
+//                model.auto_id = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_AUTO_GENERATED_ID_TABLE_FRAME_INFO));
+//
+//                JSONArray array = new JSONArray(model.getFramesJson());
+//                model.parentBook.language = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO));
+//                JSONObject object = array.getJSONObject(0);
+//
+//                model.id = object.has(JsonUtils.ID) ? object.getString(JsonUtils.ID) : "";
+//            }
+//        }
+//        if (cursor != null)
+//            cursor.close();
+//        database.close();
+//        return model;
+//    }
 
     /**
      * Getting Frame count
@@ -384,27 +456,27 @@ public class DBManager extends SQLiteOpenHelper {
         return count;
     }
 
-    /**
-     * Getting all modified date from DB
-     *
-     * @return
-     */
-    public String[] getAllDate() {
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_MOD_DATE, null);
-        String[] list = null;
-        if (cursor != null) {
-            list = new String[cursor.getCount()];
-            int i = 0;
-            while (cursor.moveToNext()) {
-                list[i] = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG));
-                i++;
-            }
-            cursor.close();
-            database.close();
-        }
-        return list;
-    }
+//    /**
+//     * Getting all modified date from DB
+//     *
+//     * @return
+//     */
+//    public String[] getAllDate() {
+//        SQLiteDatabase database = getReadableDatabase();
+//        Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_MOD_DATE, null);
+//        String[] list = null;
+//        if (cursor != null) {
+//            list = new String[cursor.getCount()];
+//            int i = 0;
+//            while (cursor.moveToNext()) {
+//                list[i] = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG));
+//                i++;
+//            }
+//            cursor.close();
+//            database.close();
+//        }
+//        return list;
+//    }
 
 
     /**
@@ -413,26 +485,25 @@ public class DBManager extends SQLiteOpenHelper {
      * @param model
      * @return
      */
-    public boolean upDateLanguage(LanguageModel model) {
+    public ArrayList<ChapterModel> updateLanguage(LanguageModel model) {
         SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DBUtils.COLUMN_DATE_MODIFIED_TABLE_LANGUAGE_CATALOG, model.dateModified);
-        values.put(DBUtils.COLUMN_DIRECTION_TABLE_LANGUAGE_CATALOG, model.direction);
-        values.put(DBUtils.COLUMN_LANGUAGE_TABLE_LANGUAGE_CATALOG, model.language);
-        values.put(DBUtils.COLUMN_CHECKING_ENTITY_TABLE_LANGUAGE_CATALOG, model.checkingEntity);
-        values.put(DBUtils.COLUMN_CHECKING_LEVEL_TABLE_LANGUAGE_CATALOG, model.checkingLevel);
-        values.put(DBUtils.COLUMN_COMMENTS_TABLE_LANGUAGE_CATALOG, model.comments);
-        values.put(DBUtils.COLUMN_CONTRIBUTORS_TABLE_LANGUAGE_CATALOG, model.contributors);
-        values.put(DBUtils.COLUMN_PUBLISH_DATE_TABLE_LANGUAGE_CATALOG, model.publishDate);
-        values.put(DBUtils.COLUMN_SOURCE_TEXT_TABLE_LANGUAGE_CATALOG, model.sourceText);
-        values.put(DBUtils.COLUMN_SOURCE_TEXT_VERSION_TABLE_LANGUAGE_CATALOG, model.sourceTextVersion);
-        values.put(DBUtils.COLUMN_VERSION_TABLE_LANGUAGE_CATALOG, model.version);
-        values.put(DBUtils.COLUMN_LANGUAGE_NAME_TABLE_LANGUAGE_CATALOG, model.languageName);
+        ContentValues values = model.getModelAsContentValues();
+
         int update = database.update(DBUtils.TABLE_LANGUAGE_CATALOG, values, DBUtils.COLUMN_LANGUAGE_TABLE_LANGUAGE_CATALOG + "=?", new String[]{model.language});
-        if (update > 0) {
-            return true;
+
+        ArrayList<ChapterModel> chapters = new ArrayList<ChapterModel>();
+        for (ChapterModel chapterModel : model.books.get(0).chapters) {
+            boolean valuea = dbManager.updateChapter(model.language, chapterModel);
+
+            chapters.add(chapterModel);
         }
-        return false;
+
+        if (update > 0 && !chapters.isEmpty()) {
+            return chapters;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -442,27 +513,15 @@ public class DBManager extends SQLiteOpenHelper {
      * @param model
      * @return
      */
-    public boolean updateChapter(String language, ChaptersModel model) {
+    public boolean updateChapter(String language, ChapterModel model) {
 
         Log.i(TAG, "Updating chapter: " + model.title + " for language: " + language);
 
         SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO, model.number);
-        values.put(DBUtils.COLUMN_REFERENCE_TABLE_FRAME_INFO, model.references);
-        values.put(DBUtils.COLUMN_TITLE_TABLE_FRAME_INFO, model.title);
-        values.put(DBUtils.COLUMN_FRAMES_TABLE_FRAME_INFO, model.jsonArray);
-        values.put(DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO, model.loadedLanguage);
-        values.put(DBUtils.COLUMN_CANCEL_LANGUAGE_TABLE_FRAME_INFO, model.cancel);
-        values.put(DBUtils.COLUMN_CHAPTERS_LANGUAGE_TABLE_FRAME_INFO, model.chapters);
-        values.put(DBUtils.COLUMN_LANGUAGES_LANGUAGE_TABLE_FRAME_INFO, model.languages);
-        values.put(DBUtils.COLUMN_NEXT_CHAPTER_LANGUAGE_TABLE_FRAME_INFO, model.next_chapter);
-        values.put(DBUtils.COLUMN_OK_LANGUAGE_TABLE_FRAME_INFO, model.ok);
-        values.put(DBUtils.COLUMN_REMOVE_LOCALLY_LANGUAGE_TABLE_FRAME_INFO, model.remove_locally);
-        values.put(DBUtils.COLUMN_OK_REMOVE_THIS_STRING_TABLE_FRAME_INFO, model.remove_this_string);
-        values.put(DBUtils.COLUMN_SAVE_LOCALLY_LANGUAGE_TABLE_FRAME_INFO, model.save_locally);
-        values.put(DBUtils.COLUMN_SAVE_THIS_STRING_LANGUAGE_TABLE_FRAME_INFO, model.save_this_string);
-        int update = database.update(DBUtils.TABLE_FRAME_INFO, values, DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO + "=? AND " + DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO + "=?", new String[]{model.number, model.loadedLanguage});
+        ContentValues values = model.getModelAsContentValues();
+        int update = database.update(DBUtils.TABLE_FRAME_INFO, values, DBUtils.COLUMN_NUMBER_TABLE_FRAME_INFO
+                + "=? AND " + DBUtils.COLUMN_LOADED_LANGUAGE_TABLE_FRAME_INFO
+                + "=?", new String[]{model.number, model.parentBook.language});
         if (update > 0) {
             return true;
         }

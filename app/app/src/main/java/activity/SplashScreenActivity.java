@@ -97,8 +97,8 @@ public class SplashScreenActivity extends Activity {
 //                        for (int i = 0; i < languageModels.size(); i++) {
 //                            String chapterJson = URLDownloadUtil.downloadJson(params[1] +
 //                                    languageModels.get(i).language + "/obs-" + languageModels.get(i).language + ".json");
-//                            ArrayList<ChaptersModel> chaptersModels = parser.getChapterFromLanguage(languageModels.get(i).language, chapterJson);
-//                            for (ChaptersModel model : chaptersModels) {
+//                            ArrayList<ChapterModel> chaptersModels = parser.getChapterFromLanguage(languageModels.get(i).language, chapterJson);
+//                            for (ChapterModel model : chaptersModels) {
 //                                boolean value = dbManager.addChapters(model);
 //                            }
 //

@@ -24,7 +24,7 @@ import java.util.List;
 import adapter.LanguageListAdapter;
 import db.DBManager;
 import models.LanguageModel;
-import services.DownloadImagesService;
+import services.UpdateService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
 
@@ -167,8 +167,7 @@ public class LanguageChooserActivity extends ActionBarActivity implements Adapte
         } else {
             visibleLayout.setVisibility(View.VISIBLE);
             // to handle new data from network
-            startService(new Intent(this, DownloadImagesService.class));
-
+            startService(new Intent(this, UpdateService.class));
         }
 
     }

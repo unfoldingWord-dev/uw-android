@@ -1,8 +1,10 @@
 package services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,14 +17,20 @@ import android.util.Log;
 
 import org.json.JSONException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import adapter.ViewPagerAdapter;
 import db.DBManager;
-import models.ChaptersModel;
+import db.ImageDatabaseHandler;
+import models.ChapterModel;
 import models.LanguageModel;
+import models.PageModel;
 import parser.JsonParser;
 import utils.AsyncImageLoader;
 import utils.URLDownloadUtil;
@@ -31,9 +39,9 @@ import utils.URLUtils;
 /**
  * Created by Acts Media Inc on 11/12/14.
  */
-public class DownloadImagesService extends Service implements AsyncImageLoader.onProgressUpdateListener {
+public class UpdateService extends Service implements AsyncImageLoader.onProgressUpdateListener {
 
-    private static final String TAG = "DownloadImagesService";
+    private static final String TAG = "UpdateService";
 
     public static final int STATUS_RUNNING = 0;
     public static final int STATUS_FINISHED = 1;
@@ -43,7 +51,7 @@ public class DownloadImagesService extends Service implements AsyncImageLoader.o
     private ServiceHandler mServiceHandler;
     private String downloadUrl;
     private boolean serviceState = false;
-    private boolean oncomplete = true;
+    private boolean onComplete = true;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -95,25 +103,28 @@ public class DownloadImagesService extends Service implements AsyncImageLoader.o
 
         @Override
         public void handleMessage(Message msg) {
-//            String[] dates = dbManager.getAllDate();
+
             List<LanguageModel> languages = dbManager.getAllLanguages();
-            String[] allDate = dbManager.getAllDate();
 
             String json = null;
             try {
-                json = URLDownloadUtil.downloadJson(URLUtils.LANGUAGE_INFO);
+                json = URLDownloadUtil.downloadJson(URLUtils.getUrlForLanguageUpdate());
                 ArrayList<LanguageModel> info = JsonParser.getInstance().getLanguagesInfo(json);
-                for (LanguageModel model : languages) {
-                    for (int i = 0; i < info.size(); i++) {
-                        if ( model.dateModified < info.get(i).dateModified && model.language.equals(info.get(i).language)) {
-                            boolean value = dbManager.upDateLanguage(info.get(i));
-                            String chapterJson = URLDownloadUtil.downloadJson(URLUtils.CHAPTER_INFO +
-                                    info.get(i).language + "/obs-" + info.get(i).language + ".json");
-                            ArrayList<ChaptersModel> chaptersModels = JsonParser.getInstance().getChapterFromLanguage(info.get(i).language, chapterJson);
-                            for (ChaptersModel chaptersModel : chaptersModels) {
-                                boolean valuea = dbManager.updateChapter(info.get(i).language, chaptersModel);
-//                                downloadImage(chaptersModel.imgUrl);
-                                Log.d("INSERT", "" + valuea);
+                boolean didUpdateImages = false;
+                for (LanguageModel currentModel : languages) {
+                    for (LanguageModel newModel : info) {
+                        if (currentModel.language.equals(newModel.language) && (currentModel.dateModified < newModel.dateModified)) {
+
+                            Log.i(TAG, "Old date: " + currentModel.dateModified + " new Date: "  + newModel.dateModified);
+                            String bookJson = URLDownloadUtil.downloadJson(URLUtils.getUrlForBookUpdate(newModel.language));
+                            newModel.addBooksFromJson(bookJson);
+
+                            dbManager.updateLanguage(newModel);
+
+                            if(!didUpdateImages) {
+                                Map<String,  PageModel> oldChapters = currentModel.getAllPagesAsDictionary();
+                                Map<String,  PageModel>  newChapters = newModel.getAllPagesAsDictionary();
+                                didUpdateImages = updateImagesForChapters(oldChapters, newChapters);
                             }
                         }
                     }
@@ -123,37 +134,52 @@ public class DownloadImagesService extends Service implements AsyncImageLoader.o
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (Exception e) {
-
             }
 
-            if (oncomplete)
+            if (onComplete)
                 getApplicationContext().sendBroadcast(new Intent(URLUtils.BROAD_CAST_DOWN_COMP));
 
         }
     }
 
-    private void downloadImage(final String imageURL){
+    /**
+     * Compares the page's image url and updates if necessary
+     * @param oldPages
+     * @param newPages
+     * @return
+     */
+    private boolean updateImagesForChapters( Map<String,  PageModel>  oldPages,  Map<String,  PageModel> newPages){
+
+        if(oldPages == null || newPages == null){
+            return false;
+        }
+        Log.i(TAG, "Will Update Images");
+        boolean wasSuccessful = true;
+
+        for(String key : oldPages.keySet()){
+
+            PageModel newPage = newPages.get(key);
+            PageModel oldPage = oldPages.get(key);
+
+            String newPageUrl = newPage.getComparableImageUrl();
+            String oldPageUrl = oldPage.getComparableImageUrl();
+
+            if(!newPageUrl.equalsIgnoreCase(oldPageUrl) ){
+                boolean wasSaved = downloadAndSaveImage(newPage.getComparableImageUrl());
+                if(!wasSaved){
+                    wasSuccessful = false;
+                }
+            }
+        }
+        return wasSuccessful;
+    }
+
+    private boolean downloadAndSaveImage(final String imageURL){
 
         Log.i(TAG, "will download image url: " + imageURL);
 
-        AsyncImageLoader loader = new AsyncImageLoader(
-                new AsyncImageLoader.onImageLoaderListener() {
-
-                    @Override
-                    public void onImageLoaded(Bitmap image,
-                                              String response) {
-                        ViewPagerAdapter.storeImage(getApplicationContext() ,image, imageURL);
-                    }
-
-                }, false, false,
-                this);
-        if (Build.VERSION.SDK_INT >= 11)
-            loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                    imageURL);
-        else
-            loader.execute(imageURL);
-
+        Bitmap image = AsyncImageLoader.downloadImage(imageURL);
+        return ImageDatabaseHandler.storeImage(getApplicationContext(), image, URLUtils.getLastBitFromUrl(imageURL));
     }
 
     @Override

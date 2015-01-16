@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 public class FontFitTextView extends TextView {
 
-    private static final float fontHigh = 45;
+    private static final float fontHigh = 35;
     private Paint mTestPaint;
 
 

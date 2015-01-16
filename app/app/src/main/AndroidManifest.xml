@@ -36,7 +36,7 @@
             android:theme="@style/Theme.AppCompat"
             android:configChanges="orientation|keyboardHidden" />
 
-        <service android:name="services.DownloadImagesService" />
+        <service android:name="services.UpdateService" />
     </application>
 
 </manifest>

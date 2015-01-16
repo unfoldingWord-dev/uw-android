@@ -21,8 +21,9 @@
             android:id="@+id/chapterImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:src="@color/white" />
+            android:scaleType="centerCrop"
+            android:src="@color/white"
+            android:layout_gravity="center_horizontal|top" />
 
         <TextView
             android:id="@+id/storyTextView"

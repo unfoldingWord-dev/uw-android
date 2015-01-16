@@ -108,21 +108,21 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
             else
                 setColorChange(holder, context.getResources().getColor(R.color.black_light));
         }
-        if (models.get(pos).checkingLevel.equals("1")) {
+        if (models.get(pos).status.checkingLevel.equals("1")) {
             holder.languageTypeImageView.setImageResource(R.drawable.level_one_dark);
-        } else if (models.get(pos).checkingLevel.equals("2")) {
+        } else if (models.get(pos).status.checkingLevel.equals("2")) {
             holder.languageTypeImageView.setImageResource(R.drawable.level_two_dark);
-        } else if (models.get(pos).checkingLevel.equals("3")) {
+        } else if (models.get(pos).status.checkingLevel.equals("3")) {
             holder.languageTypeImageView.setImageResource(R.drawable.level_three_dark);
         }
 
 //        holder.languageTypeImageView.set
         holder.languageNameTextView.setText(models.get(pos).languageName + " [" + models.get(pos).language + "]");
-        holder.checkingEntityTextView.setText(models.get(pos).checkingEntity);
-        holder.checkingEntityTextView.setText(models.get(pos).checkingEntity);
-        holder.checkingLevelTextView.setText(models.get(pos).checkingLevel);
-        holder.versionTextView.setText(models.get(pos).version);
-        holder.publishDateTextView.setText(models.get(pos).publishDate);
+        holder.checkingEntityTextView.setText(models.get(pos).status.checkingEntity);
+        holder.checkingEntityTextView.setText(models.get(pos).status.checkingEntity);
+        holder.checkingLevelTextView.setText(models.get(pos).status.checkingLevel);
+        holder.versionTextView.setText(models.get(pos).status.version);
+        holder.publishDateTextView.setText(models.get(pos).status.publishDate);
 
 
         return view;

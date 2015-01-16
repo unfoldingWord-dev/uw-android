@@ -13,7 +13,7 @@
             android:gravity="center"
             android:text="Genesis 1 God Created the Earth"
             android:textColor="@color/white_mix_gary"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:layout_alignParentStart="false" />
 

@@ -18,10 +18,12 @@ import org.json.JSONException;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import adapter.ChapterAdapter;
 import db.DBManager;
-import models.ChaptersModel;
+import models.ChapterModel;
+import models.LanguageModel;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
@@ -65,21 +67,30 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String languageName = extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
-            ArrayList<ChaptersModel> chaptersModels = null;
-            try {
-                chaptersModels = mDbManager.getAllChapters(languageName);
-                actionbarTextView.setText(chaptersModels.get(0).chapters);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
+            List<LanguageModel> models = mDbManager.getAllLanguages();
+            ArrayList<ChapterModel> chapterModels = null;
 
+            for(LanguageModel language : models){
+                if(language.language.equalsIgnoreCase(languageName)){
+                    chapterModels = language.books.get(0).chapters;
+                }
             }
+//            try {
+//                chapterModels = mDbManager.getAllChapters(languageName);
+            actionbarTextView.setText(chapterModels.get(0).title);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            } catch (Exception e) {
+
+//            }
 
             mChapterListView = (ListView) findViewById(R.id.chapterListView);
             mChapterListView.setOnItemClickListener(this);
             mImageLoader = ImageLoader.getInstance();
             mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
-            mChapterListView.setAdapter(new ChapterAdapter(this, chaptersModels, mImageLoader));
+            if(chapterModels != null) {
+                mChapterListView.setAdapter(new ChapterAdapter(this, chapterModels, mImageLoader));
+            }
         }
 
     }
@@ -121,11 +132,13 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Object itemAtPosition = adapterView.getItemAtPosition(i);
-        if (itemAtPosition instanceof ChaptersModel) {
-            ChaptersModel model = (ChaptersModel) itemAtPosition;
+        if (itemAtPosition instanceof ChapterModel) {
+            ChapterModel model = (ChapterModel) itemAtPosition;
+
             // put selected position  to sharedprefences
             PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTED_CHAPTER_POS, i).commit();
-            startActivity(new Intent(this, ChapterReadingActivity.class).putExtra(CHAPTERS_MODEL_INSTANCE, model));
+            ChapterReadingActivity.chapterModel = model;
+            startActivity(new Intent(this, ChapterReadingActivity.class));
             overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
         }
     }

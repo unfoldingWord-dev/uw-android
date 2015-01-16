@@ -22,20 +22,18 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 
 import activity.ChapterSelectionActivity;
-import models.ChaptersModel;
-import utils.AppUtils;
-import utils.NetWorkUtil;
+import models.ChapterModel;
 
 /**
  * Created by Acts Media Inc on 4/12/14.
  */
-public class ChapterAdapter extends ArrayAdapter<ChaptersModel> implements ImageLoadingListener {
+public class ChapterAdapter extends ArrayAdapter<ChapterModel> implements ImageLoadingListener {
     protected ImageLoader imageLoader;
     DisplayImageOptions options;
     private Context context;
-    private ArrayList<ChaptersModel> list;
+    private ArrayList<ChapterModel> list;
 
-    public ChapterAdapter(Context context, ArrayList<ChaptersModel> list, ImageLoader imageLoader) {
+    public ChapterAdapter(Context context, ArrayList<ChapterModel> list, ImageLoader imageLoader) {
         super(context, R.layout.row_for_frames, list);
         this.context = context;
         this.list = list;
@@ -86,7 +84,7 @@ public class ChapterAdapter extends ArrayAdapter<ChaptersModel> implements Image
         }
 
         // setup image view
-        String imgUrl = list.get(position).imgUrl;
+        String imgUrl = list.get(position).pageModels.get(0).imageUrl;
         String lastBitFromUrl = getLastBitFromUrl(imgUrl);
         String s = lastBitFromUrl.replaceAll("[{//:}]", "");
         /*
@@ -108,7 +106,7 @@ public class ChapterAdapter extends ArrayAdapter<ChaptersModel> implements Image
 
 
         holder.chapterNameTextView.setText(list.get(position).title);
-        holder.referenceTextView.setText(list.get(position).references);
+        holder.referenceTextView.setText(list.get(position).reference);
         return convertView;
     }
 
