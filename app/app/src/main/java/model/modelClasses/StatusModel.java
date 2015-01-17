@@ -1,4 +1,4 @@
-package models;
+package model.modelClasses;
 
 import android.content.ContentValues;
 import android.util.Log;
@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import utils.DBUtils;
-import utils.JsonUtils;
 
 /**
  * Created by Fechner on 1/9/15.
@@ -15,6 +14,16 @@ import utils.JsonUtils;
 public class StatusModel {
 
     private static final String TAG = "StatusModel";
+
+    private static final String CHECKING_ENTITY = "checking_entity";
+    private static final String CHECKING_LEVEL = "checking_level";
+    private static final String COMMENTS = "comments";
+    private static final String CONTRIBUTORS = "contributors";
+    private static final String PUBLISH_DATE = "publish_date";
+    private static final String SOURCE_TEXT = "source_text";
+    private static final String SOURCE_TEXT_VERSION = "source_text_version";
+    private static final String VERSION = "version";
+
 
     public String checkingEntity = "";
     public String checkingLevel = "";
@@ -40,15 +49,15 @@ public class StatusModel {
         StatusModel model = new StatusModel(language);
 
         try {
-            model.checkingEntity = jsonObj.has(JsonUtils.CHECKING_ENTITY) ? jsonObj.getString(JsonUtils.CHECKING_ENTITY) : "";
-            model.checkingLevel = jsonObj.has(JsonUtils.CHECKING_LEVEL) ? jsonObj.getString(JsonUtils.CHECKING_LEVEL) : "";
-            model.checkingLevel = jsonObj.has(JsonUtils.CHECKING_LEVEL) ? jsonObj.getString(JsonUtils.CHECKING_LEVEL) : "";
-            model.comments = jsonObj.has(JsonUtils.COMMENTS) ? jsonObj.getString(JsonUtils.COMMENTS) : "";
-            model.contributors = jsonObj.has(JsonUtils.CONTRIBUTORS) ? jsonObj.getString(JsonUtils.CONTRIBUTORS) : "";
-            model.publishDate = jsonObj.has(JsonUtils.PUBLISH_DATE) ? jsonObj.getString(JsonUtils.PUBLISH_DATE) : "";
-            model.sourceText = jsonObj.has(JsonUtils.SOURCE_TEXT) ? jsonObj.getString(JsonUtils.SOURCE_TEXT) : "";
-            model.sourceTextVersion = jsonObj.has(JsonUtils.SOURCE_TEXT_VERSION) ? jsonObj.getString(JsonUtils.SOURCE_TEXT_VERSION) : "";
-            model.version = jsonObj.has(JsonUtils.VERSION) ? jsonObj.getString(JsonUtils.VERSION) : "";
+            model.checkingEntity = jsonObj.has(CHECKING_ENTITY) ? jsonObj.getString(CHECKING_ENTITY) : "";
+            model.checkingLevel = jsonObj.has(CHECKING_LEVEL) ? jsonObj.getString(CHECKING_LEVEL) : "";
+            model.checkingLevel = jsonObj.has(CHECKING_LEVEL) ? jsonObj.getString(CHECKING_LEVEL) : "";
+            model.comments = jsonObj.has(COMMENTS) ? jsonObj.getString(COMMENTS) : "";
+            model.contributors = jsonObj.has(CONTRIBUTORS) ? jsonObj.getString(CONTRIBUTORS) : "";
+            model.publishDate = jsonObj.has(PUBLISH_DATE) ? jsonObj.getString(PUBLISH_DATE) : "";
+            model.sourceText = jsonObj.has(SOURCE_TEXT) ? jsonObj.getString(SOURCE_TEXT) : "";
+            model.sourceTextVersion = jsonObj.has(SOURCE_TEXT_VERSION) ? jsonObj.getString(SOURCE_TEXT_VERSION) : "";
+            model.version = jsonObj.has(VERSION) ? jsonObj.getString(VERSION) : "";
         }
         catch (JSONException e){
             Log.e(TAG, "StatusModel JSON Exception: " + e.toString());

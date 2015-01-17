@@ -1,21 +1,18 @@
 package parser;
 
+import org.apache.http.util.LangUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
-import models.BookModel;
-import models.ChapterModel;
-import models.LanguageModel;
-import utils.JsonUtils;
-import utils.URLDownloadUtil;
-import utils.URLUtils;
+import model.modelClasses.LanguageModel;
+import model.modelClasses.PageModel;
 
 /**
  * Created by Acts Media Inc on 3/12/14.
@@ -31,12 +28,7 @@ public class JsonParser {
      *
      * @return
      */
-    public static JsonParser getInstance() {
-        if (jsonParser == null) {
-            jsonParser = new JsonParser();
-        }
-        return jsonParser;
-    }
+
 
 //    public static ArrayList<ChapterModel> parseStory(String jsonArray) throws JSONException {
 //        ArrayList<ChapterModel> models = new ArrayList<ChapterModel>();
@@ -52,9 +44,7 @@ public class JsonParser {
 //        return models;
 //    }
 
-    private void JsonParser() {
 
-    }
 
 
     /**
@@ -64,17 +54,21 @@ public class JsonParser {
      * @return ArrayList instance
      * @throws JSONException
      */
-    public ArrayList<LanguageModel> getLanguagesInfo(String json) throws JSONException {
+    public static Map<String, LanguageModel> getLanguagesInfo(String json) throws JSONException {
+
+        Map<String, LanguageModel> languageMap = new HashMap<String, LanguageModel>();
+
         JSONArray array = new JSONArray(json);
-        ArrayList<LanguageModel> models = new ArrayList<LanguageModel>();
         for (int pos = 0; pos < array.length(); pos++) {
 
-            JSONObject object = array.getJSONObject(pos);
+            JSONObject jObject = array.getJSONObject(pos);
 
-            models.add(LanguageModel.getLanguageModelFromJsonObject(object));
-
+            LanguageModel model = new LanguageModel();
+            model.initModelFromJsonObject(jObject);
+            languageMap.put(model.language, model);
         }
-        return models;
+
+        return languageMap;
     }
 
 
@@ -102,23 +96,23 @@ public class JsonParser {
 //        return models;
 //    }
 
-    public ArrayList<LanguageModel> getIfChangedData(int date, String languages) throws IOException, JSONException {
-        String json = URLDownloadUtil.downloadJson(URLUtils.LANGUAGE_INFO);
-        ArrayList<LanguageModel> info = getLanguagesInfo(json);
-
-        for (int i = 0; i < info.size(); i++) {
-            LanguageModel languageMod = info.get(i);
-            if (languageMod.dateModified < date && languages.equals(languageMod.language)) {
-
-                String chapters = URLDownloadUtil.downloadJson(URLUtils.CHAPTER_INFO + languages + "/obs-" + languages + ".json");
-                JSONObject object = new JSONObject(chapters);
-                BookModel book = BookModel.getBookModelFromJsonObject(object, languageMod);
-                languageMod.books.add(book);
-            }
-        }
-
-        return info;
-    }
+//    public ArrayList<LanguageModel> getIfChangedData(int date, String languages) throws IOException, JSONException {
+//        String json = URLDownloadUtil.downloadJson(URLUtils.LANGUAGE_INFO);
+//        ArrayList<LanguageModel> info = getLanguagesInfo(json);
+//
+//        for (int i = 0; i < info.size(); i++) {
+//            LanguageModel languageMod = info.get(i);
+//            if (languageMod.dateModified < date && languages.equals(languageMod.language)) {
+//
+//                String chapters = URLDownloadUtil.downloadJson(URLUtils.CHAPTER_INFO + languages + "/obs-" + languages + ".json");
+//                JSONObject object = new JSONObject(chapters);
+//                BookModel book = BookModel.getBookModelFromJsonObject(object);
+//                languageMod..books.add(book);
+//            }
+//        }
+//
+//        return info;
+//    }
 
     public static long getSecondsFromDateString(String date){
 //        20141207

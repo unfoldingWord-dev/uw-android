@@ -22,7 +22,8 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 
 import activity.ChapterSelectionActivity;
-import models.ChapterModel;
+import model.modelClasses.ChapterModel;
+import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc on 4/12/14.
@@ -83,27 +84,15 @@ public class ChapterAdapter extends ArrayAdapter<ChapterModel> implements ImageL
             }
         }
 
-        // setup image view
-        String imgUrl = list.get(position).pageModels.get(0).imageUrl;
-        String lastBitFromUrl = getLastBitFromUrl(imgUrl);
-        String s = lastBitFromUrl.replaceAll("[{//:}]", "");
-        /*
-        if (NetWorkUtil.isConnected(context)) {
-            if (imgUrl.contains("{{")) {
-                String replace = imgUrl.replace("{{", "");
-                if (replace.contains("}}")) {
-                    String lastURL = replace.replace("}}", "");
-                    imageLoader.displayImage(lastURL, holder.chapterScreenImageView, options, this);
-                }
-            } else {
-                imageLoader.displayImage(imgUrl, holder.chapterScreenImageView, options, this);
-            }
-        } else {
-*/
-            imageLoader.displayImage("assets://images/" + s, holder.chapterScreenImageView, options, this);
 
-  //      }
+        String imgUrl = list.get(position).getChildModels(context).get(0).imageUrl;
+        String lastBitFromUrl = URLUtils.getLastBitFromUrl(imgUrl);
+        String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
+        String imagePath = "assets://images/" + path;
+
+
+        imageLoader.displayImage(imagePath, holder.chapterScreenImageView, options, this);
 
         holder.chapterNameTextView.setText(list.get(position).title);
         holder.referenceTextView.setText(list.get(position).reference);

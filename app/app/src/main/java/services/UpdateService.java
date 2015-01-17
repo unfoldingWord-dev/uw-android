@@ -1,12 +1,8 @@
 package services;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,21 +12,19 @@ import android.os.Message;
 import android.util.Log;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import adapter.ViewPagerAdapter;
-import db.DBManager;
-import db.ImageDatabaseHandler;
-import models.ChapterModel;
-import models.LanguageModel;
-import models.PageModel;
+import model.db.DBManager;
+import model.db.ImageDatabaseHandler;
+import model.modelClasses.BookModel;
+import model.modelClasses.ChapterModel;
+import model.modelClasses.LanguageModel;
+import model.modelClasses.PageModel;
 import parser.JsonParser;
 import utils.AsyncImageLoader;
 import utils.URLDownloadUtil;
@@ -109,25 +103,25 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
             String json = null;
             try {
                 json = URLDownloadUtil.downloadJson(URLUtils.getUrlForLanguageUpdate());
-                ArrayList<LanguageModel> info = JsonParser.getInstance().getLanguagesInfo(json);
-                boolean didUpdateImages = false;
-                for (LanguageModel currentModel : languages) {
-                    for (LanguageModel newModel : info) {
+                Map<String, LanguageModel> newMap = JsonParser.getLanguagesInfo(json);
+                boolean shouldUpdateImages = true;
+
+                if(languages.size() > 0) {
+
+                    for (LanguageModel currentModel : languages) {
+
+                        LanguageModel newModel = newMap.get(currentModel.language);
+
                         if (currentModel.language.equals(newModel.language) && (currentModel.dateModified < newModel.dateModified)) {
 
-                            Log.i(TAG, "Old date: " + currentModel.dateModified + " new Date: "  + newModel.dateModified);
-                            String bookJson = URLDownloadUtil.downloadJson(URLUtils.getUrlForBookUpdate(newModel.language));
-                            newModel.addBooksFromJson(bookJson);
-
-                            dbManager.updateLanguage(newModel);
-
-                            if(!didUpdateImages) {
-                                Map<String,  PageModel> oldChapters = currentModel.getAllPagesAsDictionary();
-                                Map<String,  PageModel>  newChapters = newModel.getAllPagesAsDictionary();
-                                didUpdateImages = updateImagesForChapters(oldChapters, newChapters);
-                            }
+                            Log.i(TAG, "Old date: " + currentModel.dateModified + " new Date: " + newModel.dateModified);
+                            updateLanguage(newModel, shouldUpdateImages);
+                            shouldUpdateImages = false;
                         }
                     }
+                }
+                else{
+                    initializedDatabase(newMap);
                 }
 
             } catch (IOException e) {
@@ -142,35 +136,62 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         }
     }
 
-    /**
-     * Compares the page's image url and updates if necessary
-     * @param oldPages
-     * @param newPages
-     * @return
-     */
-    private boolean updateImagesForChapters( Map<String,  PageModel>  oldPages,  Map<String,  PageModel> newPages){
+    private void updateLanguage(LanguageModel newModel, boolean shouldUpdateImages) throws IOException, JSONException{
 
-        if(oldPages == null || newPages == null){
-            return false;
-        }
-        Log.i(TAG, "Will Update Images");
-        boolean wasSuccessful = true;
+        dbManager.updateModel(newModel);
 
-        for(String key : oldPages.keySet()){
+        String bookJson = URLDownloadUtil.downloadJson(URLUtils.getUrlForBookUpdate(newModel.language));
+        JSONObject bookObj = new JSONObject(bookJson);
 
-            PageModel newPage = newPages.get(key);
-            PageModel oldPage = oldPages.get(key);
+        BookModel bookModel = new BookModel();
+        bookModel.initModelFromJsonObject(bookObj);
+        dbManager.updateModel(bookModel);
 
-            String newPageUrl = newPage.getComparableImageUrl();
-            String oldPageUrl = oldPage.getComparableImageUrl();
+        for(ChapterModel chapter : bookModel.getChildModels(getApplicationContext())){
 
-            if(!newPageUrl.equalsIgnoreCase(oldPageUrl) ){
-                boolean wasSaved = downloadAndSaveImage(newPage.getComparableImageUrl());
-                if(!wasSaved){
-                    wasSuccessful = false;
+            dbManager.updateModel(chapter);
+
+            for (PageModel page : chapter.getChildModels(getApplicationContext())){
+                if(shouldUpdateImages){
+                    updateImageForPage(page);
                 }
+                dbManager.updateModel(page);
+
             }
         }
+    }
+
+    private void initializedDatabase(Map<String, LanguageModel> languages) throws JSONException, IOException{
+
+        for ( String key : languages.keySet()) {
+
+                LanguageModel model = languages.get(key);
+                dbManager.updateModel(model);
+                updateLanguage(model, false);
+        }
+    }
+
+    /**
+     * Compares the page's image url and updates if necessary
+     * @param newModel
+     * @return
+     */
+    private boolean updateImageForPage( PageModel newModel){
+
+        boolean wasSuccessful = true;
+        PageModel oldModel = dbManager.getPageForKey(newModel.languageChapterAndPage);
+
+        String newPageUrl = newModel.getComparableImageUrl();
+        String oldPageUrl = oldModel.getComparableImageUrl();
+
+        if(!newPageUrl.equalsIgnoreCase(oldPageUrl) ){
+            boolean wasSaved = downloadAndSaveImage(newPageUrl);
+
+            if(!wasSaved){
+                wasSuccessful = false;
+            }
+        }
+
         return wasSuccessful;
     }
 

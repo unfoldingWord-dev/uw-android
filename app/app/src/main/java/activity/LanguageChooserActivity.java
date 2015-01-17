@@ -17,13 +17,14 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
 import adapter.LanguageListAdapter;
-import db.DBManager;
-import models.LanguageModel;
+import model.db.DBManager;
+import model.modelClasses.LanguageModel;
 import services.UpdateService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
@@ -52,8 +53,15 @@ public class LanguageChooserActivity extends ActionBarActivity implements Adapte
 //                Toast.makeText(context, "Download error", Toast.LENGTH_SHORT).show();
             }
             visibleLayout.setVisibility(View.GONE);
+           reload();
         }
     };
+
+    private void reload(){
+
+        mDbManager = DBManager.getInstance(getApplicationContext());
+        prepareListData();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +84,6 @@ public class LanguageChooserActivity extends ActionBarActivity implements Adapte
         View actionView = infi.inflate(R.layout.actionbar_custom_view, null);
         actionbarTextView = (TextView) actionView.findViewById(R.id.actionbarTextView);
 
-
         mActionBar.setDisplayShowHomeEnabled(false);
         mActionBar.setDisplayHomeAsUpEnabled(false);
         mActionBar.setCustomView(actionView);
@@ -94,6 +101,14 @@ public class LanguageChooserActivity extends ActionBarActivity implements Adapte
         // inflating footer view
         LayoutInflater inflater = getLayoutInflater();
         View mview = inflater.inflate(R.layout.footerview, null);
+
+
+        // change version number
+        TextView tView = (TextView) mview.findViewById(R.id.textView);
+        String versionName = BuildConfig.VERSION_NAME;
+
+        tView.setText(versionName);
+
 
         View mview1 = inflater.inflate(R.layout.header_view, null);
         visibleLayout = (FrameLayout) mview1.findViewById(R.id.refreshView);
@@ -115,7 +130,7 @@ public class LanguageChooserActivity extends ActionBarActivity implements Adapte
     }
 
     /**
-     * Getting data from db and populating to ExpandableListView
+     * Getting data from model.db and populating to ExpandableListView
      */
     private void prepareListData() {
 
@@ -123,7 +138,6 @@ public class LanguageChooserActivity extends ActionBarActivity implements Adapte
         List<LanguageModel> models = mDbManager.getAllLanguages();
 
         adapter = new LanguageListAdapter(this, models, actionbarTextView, this);
-
         actionbarTextView.setText("Languages");
 
         mLanguageListView.setAdapter(adapter);

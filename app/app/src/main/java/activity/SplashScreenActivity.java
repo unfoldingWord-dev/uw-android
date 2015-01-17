@@ -6,14 +6,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
 import java.io.IOException;
 
-import db.DBManager;
+import model.db.DBManager;
 import utils.URLUtils;
 
 /**
@@ -68,53 +67,14 @@ public class SplashScreenActivity extends Activity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                dbManager.createDataBase();
+                dbManager.createDataBase(false);
 
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
 
-            if (dbManager.getDataCount() > 0) {
-//                try {
-//                    Thread.sleep(1000 * 3);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//
-//                }
-            } else {
-//                JsonParser parser = JsonParser.getInstance();
-//                try {
-//                    String languageJson = URLDownloadUtil.downloadJson(params[0]);
-//
-//                    if (!languageJson.equals(URLUtils.ERROR)) {
-//                        ArrayList<LanguageModel> languageModels = parser.getLanguagesInfo(languageJson);
-//                        for (LanguageModel model : languageModels) {
-//                            dbManager.addLanguage(model);
-//                        }
-//                        for (int i = 0; i < languageModels.size(); i++) {
-//                            String chapterJson = URLDownloadUtil.downloadJson(params[1] +
-//                                    languageModels.get(i).language + "/obs-" + languageModels.get(i).language + ".json");
-//                            ArrayList<ChapterModel> chaptersModels = parser.getChapterFromLanguage(languageModels.get(i).language, chapterJson);
-//                            for (ChapterModel model : chaptersModels) {
-//                                boolean value = dbManager.addChapters(model);
-//                            }
-//
-//                        }
-//
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return URLUtils.ERROR;
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    return URLUtils.ERROR;
-//                }
-
-
-            }
             cancelValue = true;
             return URLUtils.TRUE;
         }

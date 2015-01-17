@@ -17,33 +17,37 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import org.json.JSONException;
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-
 import adapter.ViewPagerAdapter;
-import models.ChapterModel;
-import parser.JsonParser;
-import utils.AppVariable;
+import model.db.DBManager;
+import model.modelClasses.ChapterModel;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
 public class ChapterReadingActivity extends ActionBarActivity {
 
-    public static ChapterModel chapterModel = null;
-
     ViewPager readingViewPager = null;
     ImageLoader mImageLoader;
     ActionBar mActionBar = null;
     TextView actionbarTextView = null;
 
+    ChapterModel chapterModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reading);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String languageCode= extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
+            String chapterNumber = extras.getString(ChapterSelectionActivity.SELECTED_CHAPTER_POS);
+
+            chapterModel = DBManager.getInstance(getApplicationContext()).getChapterForLanguageAndNumber(languageCode, chapterNumber);
+        }
+
         setUI();
 
     }
@@ -64,13 +68,23 @@ public class ChapterReadingActivity extends ActionBarActivity {
         mActionBar.setHomeButtonEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);
         readingViewPager = (ViewPager) findViewById(R.id.myViewPager);
+
         mImageLoader = ImageLoader.getInstance();
+
+        if(mImageLoader.isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+
         mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
+
 //        ViewPagerAdapter adapter = new ViewPagerAdapter(this, );
 
         actionbarTextView.setText(chapterModel.title);
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this, chapterModel.pageModels, mImageLoader, chapterModel.parentBook.appWords.next_chapter, chapterModel.number, actionbarTextView, getIntent(), chapterModel.parentBook.language);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this, chapterModel.getChildModels(getApplicationContext()),
+                mImageLoader, "next chapter",
+                actionbarTextView, getIntent(), "eng?");
+
         readingViewPager.setAdapter(adapter);
 
         setupTouchListener(readingViewPager);
@@ -80,6 +94,7 @@ public class ChapterReadingActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            ImageLoader.getInstance().destroy();
             overridePendingTransition(R.anim.left_in, R.anim.right_out);
         }
         return super.onOptionsItemSelected(item);
@@ -89,6 +104,7 @@ public class ChapterReadingActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         finish();
+        ImageLoader.getInstance().destroy();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
@@ -174,8 +190,9 @@ public class ChapterReadingActivity extends ActionBarActivity {
 
     private void checkShouldChangeNavBarHidden(){
 
-        boolean shouldHide = (getScreenOrientation() == 1)? mActionBar.isShowing() : false;
+//        boolean shouldHide = (getScreenOrientation() == 1)? mActionBar.isShowing() : false;
 
+        boolean shouldHide = mActionBar.isShowing();
         handleActionBarHidden(shouldHide);
     }
 }

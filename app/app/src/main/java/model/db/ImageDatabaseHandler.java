@@ -1,22 +1,14 @@
-package db;
+package model.db;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import models.PageModel;
 
 /**
  * Created by Fechner on 1/9/15.
@@ -37,7 +29,7 @@ public class ImageDatabaseHandler {
 
         try {
 
-            File saveFile = new File(currentContext.getFilesDir(), fileName);
+            File saveFile = new File(currentContext.getPackageResourcePath(), fileName);
             saveFile.createNewFile();
 
             FileOutputStream fileOutputStream = currentContext.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -59,30 +51,5 @@ public class ImageDatabaseHandler {
         }
 
         return true;
-    }
-
-    public static Bitmap loadImageFrom(Context currentContext, String name)
-    {
-        Log.i(TAG, "trying to load image named: " + name);
-        try {
-            File saveFile = new File(currentContext.getFilesDir(), name);
-            return BitmapFactory.decodeStream(new FileInputStream(saveFile));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static boolean fileHasBeenSaved(Context currentContext, String fileName){
-
-        File saveFile = new File(currentContext.getFilesDir(), fileName);
-
-        if(saveFile.exists()){
-            return true;
-        }
-        else{
-            return false;
-        }
-
     }
 }

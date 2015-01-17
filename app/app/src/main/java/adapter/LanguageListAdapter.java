@@ -19,13 +19,14 @@ import java.util.List;
 
 import activity.ChapterSelectionActivity;
 import activity.LanguageChooserActivity;
-import models.LanguageModel;
+import model.modelClasses.LanguageModel;
 import utils.CustomSlideAnimationRelativeLayout;
 
 /**
  * Created by Acts Media Inc on 4/12/14.
  */
 public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
+
     private static final String SELECTED_POS = "SELECTED_POS";
     private final List<LanguageModel> models;
     private final ActionBarActivity activity;
@@ -33,6 +34,7 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
     private Context context;
 
     public LanguageListAdapter(Context context, List<LanguageModel> models, TextView actionbarTextView, ActionBarActivity activity) {
+
         super(context, R.layout.row_language_chooser_group, models);
         this.context = context;
         this.models = models;
@@ -42,6 +44,7 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
 
     @Override
     public View getView(final int pos, View view, ViewGroup parent) {
+
 
 
         ViewHolderForGroup holder = null;
@@ -129,6 +132,7 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
     }
 
     public void setColorChange(ViewHolderForGroup holder, int color) {
+
         holder.languageNameTextView.setTextColor(color);
         holder.checkingEntityTextView.setTextColor(color);
         holder.checkingEntityTextView.setTextColor(color);
@@ -136,7 +140,6 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
         holder.versionTextView.setTextColor(color);
         holder.publishDateTextView.setTextColor(color);
 
-        //
         holder.checkingEntiityConstantTextView.setTextColor(color);
         holder.checkinglevelConstantTextView.setTextColor(color);
         holder.versionConstantTextView.setTextColor(color);
@@ -144,6 +147,7 @@ public class LanguageListAdapter extends ArrayAdapter<LanguageModel> {
     }
 
     private static class ViewHolderForGroup {
+
         TextView languageNameTextView;
         ImageView languageTypeImageView;
         ImageView clickLanguageImageView;

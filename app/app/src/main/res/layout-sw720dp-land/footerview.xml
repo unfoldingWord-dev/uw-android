@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="50dp"
-                    android:text="@string/version_num"
+                    android:text="preliminary"
                     android:textColor="@color/white_mix_gary" />
             </LinearLayout>
         </LinearLayout>

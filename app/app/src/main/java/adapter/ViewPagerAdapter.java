@@ -27,10 +27,9 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 
 import activity.ChapterSelectionActivity;
-import db.DBManager;
-import db.ImageDatabaseHandler;
-import models.ChapterModel;
-import models.PageModel;
+import model.db.DBManager;
+import model.modelClasses.ChapterModel;
+import model.modelClasses.PageModel;
 import utils.AppVariable;
 import utils.URLUtils;
 
@@ -57,19 +56,22 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     private ViewGroup container;
 
 
-    public ViewPagerAdapter(Object context, ArrayList<PageModel> models, com.nostra13.universalimageloader.core.ImageLoader mImageLoader, String nextChapter, String chapter_number, TextView actionbarTextView, Intent intent, String languages) {
+    public ViewPagerAdapter(Object context, ArrayList<PageModel> models, com.nostra13.universalimageloader.core.ImageLoader mImageLoader, String nextChapter, TextView actionbarTextView, Intent intent, String languages) {
         this.context = (Context) context;
 //        models.add(new ChapterModel());
         this.models = models;
         this.mImageLoader = mImageLoader;
         next = nextChapter;
-        this.chapter_number = chapter_number;
+        this.chapter_number = models.get(0).chapterNumber;
         this.actionbarTextView = actionbarTextView;
         setImageOptions();
         dbManager = DBManager.getInstance(this.context);
         this.activity = (Activity) context;
         this.intent = intent;
         this.languages = languages;
+
+
+
     }
 
     @Override
@@ -83,7 +85,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
         this.container = container;
 
         // getting last row values of data base
-        int frameCount = dbManager.getFrameCount();
+        int frameCount = models.size();
 
         if (position == getCount() - 1) {
             if (frameCount != Integer.parseInt(chapter_number)) {
@@ -115,19 +117,11 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
             storyTextView.setText(models.get(position).text);
             String imgUrl = models.get(position).imageUrl;
             String lastBitFromUrl = URLUtils.getLastBitFromUrl(imgUrl);
-            String path = lastBitFromUrl.replaceAll("[}]", "");
+            String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
-            boolean fileHasBeenSaved =  ImageDatabaseHandler.fileHasBeenSaved(context, path);
+            String imagePath = "assets://images/" + path;
 
-            Bitmap image = ImageDatabaseHandler.loadImageFrom(context, path);
-            if(image != null){
-                chapterImageView.setImageBitmap(image);
-            }
-            else{
-                String imagePath = "assets://images/" + path;
-
-                mImageLoader.displayImage(imagePath, chapterImageView, options, this);
-            }
+            mImageLoader.displayImage(imagePath, chapterImageView, options, this);
 
         }
         ((ViewPager) container).addView(view);
@@ -136,15 +130,22 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
 
     private void moveToNextChapter(){
 
-        ChapterModel currentChapter = models.get(0).parentChapter;
-        ChapterModel nextChapter = currentChapter.parentBook.getNextChapter(currentChapter);
+        int chapterNumber = Integer.parseInt(models.get(0).chapterNumber);
+        String languageName = models.get(0).languageAndChapter.substring(0, 2);
+        String nextChapterNumber = Integer.toString(chapterNumber + 1);
+        if(nextChapterNumber.length() == 1){
+            nextChapterNumber = "0" + nextChapterNumber;
+        }
 
-        ArrayList<PageModel> newPages = nextChapter.pageModels;
+        ChapterModel currentChapter = dbManager.getChapterForLanguageAndNumber(languageName, models.get(0).chapterNumber);
+        ChapterModel nextChapter = dbManager.getChapterForLanguageAndNumber(languageName, nextChapterNumber);
+
+        ArrayList<PageModel> newPages = nextChapter.getChildModels(context);
 
         int current_value = Integer.parseInt(chapter_number);
         chapter_number = nextChapter.number;
         actionbarTextView.setText(nextChapter.title);
-        languages = nextChapter.parentBook.language;
+        languages = nextChapter.language;
         // increment chapter selection
         int prv_pos = PreferenceManager.getDefaultSharedPreferences(context).getInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, -1);
         if (prv_pos != -1) {
@@ -199,19 +200,19 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     @Override
     public void onLoadingComplete(String url, View view, Bitmap bitmap) {
 
-        if (url.contains("file")) {
-            System.out.println("It worked!");
-        } else {
-            String lastBitFromUrl = "";
-            if (url.contains("}}")) {
-                String replace = url.replace("}}", "");
-                lastBitFromUrl = URLUtils.getLastBitFromUrl(replace);
-            } else {
-                lastBitFromUrl = URLUtils.getLastBitFromUrl(url);
-                ImageDatabaseHandler.storeImage(context, bitmap, lastBitFromUrl);
-            }
-        }
-
+//        if (url.contains("file")) {
+//            System.out.println("It worked!");
+//        } else {
+//            String lastBitFromUrl = "";
+//            if (url.contains("}}")) {
+//                String replace = url.replace("}}", "");
+//                lastBitFromUrl = URLUtils.getLastBitFromUrl(replace);
+//            } else {
+//                lastBitFromUrl = URLUtils.getLastBitFromUrl(url);
+//                ImageDatabaseHandler.storeImage(context, bitmap, lastBitFromUrl);
+//            }
+//        }
+//
 
     }
 

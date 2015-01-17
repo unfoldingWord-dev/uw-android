@@ -14,21 +14,21 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import org.json.JSONException;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import adapter.ChapterAdapter;
-import db.DBManager;
-import models.ChapterModel;
-import models.LanguageModel;
+import model.db.DBManager;
+import model.modelClasses.BookModel;
+import model.modelClasses.ChapterModel;
+import model.modelClasses.LanguageModel;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
  */
 public class ChapterSelectionActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+
     public static final String SELECTED_CHAPTER_POS = "SELECTED_CHAPTER_POS";
     public static String CHAPTERS_MODEL_INSTANCE = "CHAPTERS_MODEL_INSTANCE";
     ListView mChapterListView = null;
@@ -41,6 +41,7 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chapter_screen);
+
         setUI();
     }
 
@@ -67,28 +68,24 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String languageName = extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
-            List<LanguageModel> models = mDbManager.getAllLanguages();
-            ArrayList<ChapterModel> chapterModels = null;
 
-            for(LanguageModel language : models){
-                if(language.language.equalsIgnoreCase(languageName)){
-                    chapterModels = language.books.get(0).chapters;
-                }
-            }
-//            try {
-//                chapterModels = mDbManager.getAllChapters(languageName);
-            actionbarTextView.setText(chapterModels.get(0).title);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            } catch (Exception e) {
+            BookModel book = DBManager.getInstance(getApplicationContext()).getBookModelForLanguage(languageName);
+            ArrayList<ChapterModel> chapterModels = book.getChildModels(getApplicationContext());
 
-//            }
-
-            mChapterListView = (ListView) findViewById(R.id.chapterListView);
-            mChapterListView.setOnItemClickListener(this);
-            mImageLoader = ImageLoader.getInstance();
-            mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
             if(chapterModels != null) {
+                actionbarTextView.setText(chapterModels.get(0).title);
+
+                mChapterListView = (ListView) findViewById(R.id.chapterListView);
+                mChapterListView.setOnItemClickListener(this);
+
+                mImageLoader = ImageLoader.getInstance();
+
+                if(mImageLoader.isInited()) {
+                    ImageLoader.getInstance().destroy();
+                }
+
+                mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
+
                 mChapterListView.setAdapter(new ChapterAdapter(this, chapterModels, mImageLoader));
             }
         }
@@ -98,8 +95,9 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
     @Override
     public void onBackPressed() {
         storedValues();
+        ImageLoader.getInstance().destroy();
         //reset  Preference
-//        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTED_CHAPTER_POS, -1).commit();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTED_CHAPTER_POS, -1).commit();
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
@@ -108,8 +106,9 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
         if (mDbManager != null) {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                String languageName = extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
-                String dispName = mDbManager.getLanguageDisp(languageName);
+                String languageId = extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
+                LanguageModel model = mDbManager.getLanguageModelForLanguage(languageId);
+                String dispName = model.languageName;
                 PreferenceManager.getDefaultSharedPreferences(this).edit().putString(LanguageChooserActivity.LAGRANGE_DEP_NAME, dispName).commit();
             }
 
@@ -137,8 +136,10 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
 
             // put selected position  to sharedprefences
             PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTED_CHAPTER_POS, i).commit();
-            ChapterReadingActivity.chapterModel = model;
-            startActivity(new Intent(this, ChapterReadingActivity.class));
+            ImageLoader.getInstance().destroy();
+            startActivity(new Intent(this, ChapterReadingActivity.class).putExtra(
+                    LanguageChooserActivity.LANGUAGE_CODE, model.language).putExtra(
+                    SELECTED_CHAPTER_POS, model.number));
             overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
         }
     }
