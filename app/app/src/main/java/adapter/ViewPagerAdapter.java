@@ -137,8 +137,8 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
             nextChapterNumber = "0" + nextChapterNumber;
         }
 
-        ChapterModel currentChapter = dbManager.getChapterForLanguageAndNumber(languageName, models.get(0).chapterNumber);
-        ChapterModel nextChapter = dbManager.getChapterForLanguageAndNumber(languageName, nextChapterNumber);
+        ChapterModel currentChapter = dbManager.getChapterModelForKey(languageName, models.get(0).chapterNumber);
+        ChapterModel nextChapter = dbManager.getChapterModelForKey(languageName, nextChapterNumber);
 
         ArrayList<PageModel> newPages = nextChapter.getChildModels(context);
 

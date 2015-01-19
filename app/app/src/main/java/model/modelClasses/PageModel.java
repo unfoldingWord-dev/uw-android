@@ -34,7 +34,7 @@ public class PageModel extends AMDatabaseModelAbstractObject {
     public ChapterModel getParent(Context context){
 
         if(parent == null){
-            parent = DBManager.getInstance(context).getChapterForLanguageNumberKey(languageAndChapter);
+            parent = DBManager.getInstance(context).getChapterModelForKey(languageAndChapter);
         }
 
         return parent;
@@ -128,6 +128,14 @@ public class PageModel extends AMDatabaseModelAbstractObject {
         return null;
     }
 
+    public AMDatabaseModelAbstractObject getChildModelFromCursor(Cursor cursor){
+        return null;
+    }
+
+    public String getSelectModelQuery(){
+
+        return DBUtils.QUERY_SELECT_PAGE_FROM_KEY;
+    }
     //endregion
 
 

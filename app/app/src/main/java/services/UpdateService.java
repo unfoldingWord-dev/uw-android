@@ -98,22 +98,28 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         @Override
         public void handleMessage(Message msg) {
 
+            // Get current list of languages
             List<LanguageModel> languages = dbManager.getAllLanguages();
 
             String json = null;
             try {
+
+                // Download current LanguageJSON
                 json = URLDownloadUtil.downloadJson(URLUtils.getUrlForLanguageUpdate());
                 Map<String, LanguageModel> newMap = JsonParser.getLanguagesInfo(json);
                 boolean shouldUpdateImages = true;
 
                 if(languages.size() > 0) {
 
+                    // Iterate through the current Models
                     for (LanguageModel currentModel : languages) {
 
                         LanguageModel newModel = newMap.get(currentModel.language);
 
+                        // Check if current
                         if (currentModel.language.equals(newModel.language) && (currentModel.dateModified < newModel.dateModified)) {
 
+                            // Update
                             Log.i(TAG, "Old date: " + currentModel.dateModified + " new Date: " + newModel.dateModified);
                             updateLanguage(newModel, shouldUpdateImages);
                             shouldUpdateImages = false;
@@ -136,31 +142,55 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         }
     }
 
+    /**
+     * Updates the passed model, will update the images by comparing the PageModel image urls if
+     * shouldUpdateImages == true
+     * @param newModel
+     * @param shouldUpdateImages
+     * @throws IOException
+     * @throws JSONException
+     */
     private void updateLanguage(LanguageModel newModel, boolean shouldUpdateImages) throws IOException, JSONException{
 
+        //update the Language Model
         dbManager.updateModel(newModel);
 
+        //download Language's companion JSON
         String bookJson = URLDownloadUtil.downloadJson(URLUtils.getUrlForBookUpdate(newModel.language));
         JSONObject bookObj = new JSONObject(bookJson);
 
         BookModel bookModel = new BookModel();
         bookModel.initModelFromJsonObject(bookObj);
+
+        // Update the Book
         dbManager.updateModel(bookModel);
 
+        // Iterate through book's chapters
         for(ChapterModel chapter : bookModel.getChildModels(getApplicationContext())){
 
+            // Update the chapter
             dbManager.updateModel(chapter);
 
+            // iterate through Pages
             for (PageModel page : chapter.getChildModels(getApplicationContext())){
+
+                // Optionally update images
                 if(shouldUpdateImages){
                     updateImageForPage(page);
                 }
+                // Update page
                 dbManager.updateModel(page);
 
             }
         }
     }
 
+    /**
+     * Method for initializing the Database from JSON if no database exists.
+     * @param languages
+     * @throws JSONException
+     * @throws IOException
+     */
     private void initializedDatabase(Map<String, LanguageModel> languages) throws JSONException, IOException{
 
         for ( String key : languages.keySet()) {
@@ -172,19 +202,27 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
     }
 
     /**
-     * Compares the page's image url and updates if necessary
+     * Compares the page's image url to what currently exists in the DB and updates if necessary
      * @param newModel
      * @return
      */
     private boolean updateImageForPage( PageModel newModel){
 
         boolean wasSuccessful = true;
-        PageModel oldModel = dbManager.getPageForKey(newModel.languageChapterAndPage);
+        // get the old Page
+        PageModel oldModel = dbManager.getPageModelForKey(newModel.languageChapterAndPage);
+
+        if(oldModel == null){
+            return false;
+        }
 
         String newPageUrl = newModel.getComparableImageUrl();
         String oldPageUrl = oldModel.getComparableImageUrl();
 
+        // compare the urls
         if(!newPageUrl.equalsIgnoreCase(oldPageUrl) ){
+
+            // download/save updated image
             boolean wasSaved = downloadAndSaveImage(newPageUrl);
 
             if(!wasSaved){
@@ -195,6 +233,11 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         return wasSuccessful;
     }
 
+    /**
+     * Downloads and saves the image located at the passed url String
+     * @param imageURL
+     * @return
+     */
     private boolean downloadAndSaveImage(final String imageURL){
 
         Log.i(TAG, "will download image url: " + imageURL);

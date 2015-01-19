@@ -69,11 +69,11 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
         if (extras != null) {
             String languageName = extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
 
-            BookModel book = DBManager.getInstance(getApplicationContext()).getBookModelForLanguage(languageName);
+            BookModel book = DBManager.getInstance(getApplicationContext()).getBookModelForKey(languageName);
             ArrayList<ChapterModel> chapterModels = book.getChildModels(getApplicationContext());
 
             if(chapterModels != null) {
-                actionbarTextView.setText(chapterModels.get(0).title);
+                actionbarTextView.setText(book.appWords.chapters);
 
                 mChapterListView = (ListView) findViewById(R.id.chapterListView);
                 mChapterListView.setOnItemClickListener(this);
@@ -107,7 +107,7 @@ public class ChapterSelectionActivity extends ActionBarActivity implements Adapt
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 String languageId = extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
-                LanguageModel model = mDbManager.getLanguageModelForLanguage(languageId);
+                LanguageModel model = mDbManager.getLanguageModelForKey(languageId);
                 String dispName = model.languageName;
                 PreferenceManager.getDefaultSharedPreferences(this).edit().putString(LanguageChooserActivity.LAGRANGE_DEP_NAME, dispName).commit();
             }

@@ -38,7 +38,7 @@ public class BookModel extends AMDatabaseModelAbstractObject {
     public LanguageModel getParent(Context context){
 
         if(parent == null){
-            parent = DBManager.getInstance(context).getLanguageModelForLanguage(language);
+            parent = DBManager.getInstance(context).getLanguageModelForKey(language);
         }
 
         return parent;
@@ -51,7 +51,7 @@ public class BookModel extends AMDatabaseModelAbstractObject {
     public ArrayList<ChapterModel> getChildModels(Context context){
 
         if(chapters == null){
-            chapters = DBManager.getInstance(context).getAllChaptersForBook(this);
+            chapters = DBManager.getInstance(context).getChildModelsForBook(this);
         }
 
         return chapters;
@@ -60,41 +60,6 @@ public class BookModel extends AMDatabaseModelAbstractObject {
         super();
         appWords = new AppWordsModel(this);
     }
-
-//    public ChapterModel getNextChapter(ChapterModel chapter){
-//
-//        int index = chapters.indexOf(chapter);
-//
-//        ChapterModel nextChapter = chapters.get(index + 1);
-//        return nextChapter;
-//    }
-
-//    public Map<String,  PageModel> getAllPagesAsDictionary(){
-//
-//        Map<String,  PageModel> chapterMap = new HashMap<String, PageModel>();
-//
-//        for(ChapterModel chapter : chapters){
-//            chapterMap.putAll(chapter.getAllPagesAsDictionary());
-//        }
-//
-//        if(chapterMap.size() > 0){
-//            return chapterMap;
-//        }
-//        else{
-//            return null;
-//        }
-//    }
-
-//    public ChapterModel getChapterForNumber(String chapterNumber){
-//
-//        for(ChapterModel chapter : chapters){
-//            if(chapterNumber.equalsIgnoreCase(chapter.number)){
-//                return chapter;
-//            }
-//        }
-//
-//        return null;
-//    }
 
     //region DatabaseInterface
 
@@ -181,6 +146,19 @@ public class BookModel extends AMDatabaseModelAbstractObject {
 
     public String getChildrenQuery(){
         return DBUtils.QUERY_SELECT_CHAPTER_BASED_ON_BOOK;
+    }
+
+    public AMDatabaseModelAbstractObject getChildModelFromCursor(Cursor cursor){
+
+        ChapterModel model = new ChapterModel();
+        model.initModelFromCursor(cursor);
+
+        return model;
+    }
+
+    public String getSelectModelQuery(){
+
+        return DBUtils.QUERY_SELECT_BOOK_FROM_BOOK_KEY;
     }
 
     //endregion

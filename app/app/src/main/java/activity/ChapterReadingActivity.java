@@ -45,7 +45,7 @@ public class ChapterReadingActivity extends ActionBarActivity {
             String languageCode= extras.getString(LanguageChooserActivity.LANGUAGE_CODE);
             String chapterNumber = extras.getString(ChapterSelectionActivity.SELECTED_CHAPTER_POS);
 
-            chapterModel = DBManager.getInstance(getApplicationContext()).getChapterForLanguageAndNumber(languageCode, chapterNumber);
+            chapterModel = DBManager.getInstance(getApplicationContext()).getChapterModelForKey(languageCode, chapterNumber);
         }
 
         setUI();

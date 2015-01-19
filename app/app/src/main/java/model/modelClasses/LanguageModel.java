@@ -41,7 +41,7 @@ public class LanguageModel extends AMDatabaseModelAbstractObject {
     public ArrayList<BookModel> getChildModels(Context context){
 
         if(books == null){
-            books = DBManager.getInstance(context).getAllBooksForLanguage(this);
+            books = DBManager.getInstance(context).getChildModelsForLanguage(this);
         }
 
         return books;
@@ -51,41 +51,6 @@ public class LanguageModel extends AMDatabaseModelAbstractObject {
         super();
     };
 
-//    public ArrayList<BookModel> getBooks(Context context){
-//
-//        try {
-//            ArrayList<BookModel> books = DBManager.getInstance(context).getAllBooksForLanguage(this);
-//            return books;
-//        }
-//        catch(JSONException e){
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
-//    public ChapterModel findChapterForNumber(Context context, String chapterNumber){
-//
-//        ChapterModel chapter = this.getBooks(context).get(0).getChapterForNumber(chapterNumber);
-//
-//        return chapter;
-//    }
-//
-//    public Map<String,  PageModel> getAllPagesAsDictionary(Context context){
-//
-//        Map<String,  PageModel> chapterMap = new HashMap<String, PageModel>();
-//
-//        for(BookModel book : getBooks(context)){
-//
-//            chapterMap.putAll(book.getAllPagesAsDictionary());
-//        }
-//
-//        if(chapterMap.size() > 0){
-//            return chapterMap;
-//        }
-//        else{
-//            return null;
-//        }
-//    }
 
     //region DatabaseInterface
 
@@ -145,6 +110,14 @@ public class LanguageModel extends AMDatabaseModelAbstractObject {
         this.languageName = cursor.getString(cursor.getColumnIndex(DBUtils.COLUMN_LANGUAGE_NAME_TABLE_LANGUAGE_CATALOG));
     }
 
+    public AMDatabaseModelAbstractObject getChildModelFromCursor(Cursor cursor){
+
+        BookModel model = new BookModel();
+        model.initModelFromCursor(cursor);
+
+        return model;
+    }
+
     public String getSqlTableName() {
         return DBUtils.TABLE_LANGUAGE;
     }
@@ -160,6 +133,12 @@ public class LanguageModel extends AMDatabaseModelAbstractObject {
     public String getChildrenQuery(){
         return DBUtils.QUERY_SELECT_BOOK_BASED_ON_LANGUAGE;
     }
+
+    public String getSelectModelQuery(){
+
+        return DBUtils.QUERY_SELECT_LANGUAGE_FROM_LANGUAGE_KEY;
+    }
+
     //endregion
 
 

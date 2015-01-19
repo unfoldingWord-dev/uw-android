@@ -37,7 +37,7 @@ public class ChapterModel extends AMDatabaseModelAbstractObject {
     public BookModel getParent(Context context){
 
         if(parent == null){
-            parent = DBManager.getInstance(context).getBookModelForLanguage(language);
+            parent = DBManager.getInstance(context).getBookModelForKey(language);
         }
 
         return parent;
@@ -50,7 +50,7 @@ public class ChapterModel extends AMDatabaseModelAbstractObject {
     public ArrayList<PageModel> getChildModels(Context context){
 
         if(pages == null){
-            pages = DBManager.getInstance(context).getAllPagesForChapter(this);
+            pages = DBManager.getInstance(context).getChildModelsForChapter(this);
         }
 
         return pages;
@@ -134,6 +134,18 @@ public class ChapterModel extends AMDatabaseModelAbstractObject {
         return DBUtils.QUERY_SELECT_PAGE_BASED_ON_CHAPTER;
     }
 
+    public AMDatabaseModelAbstractObject getChildModelFromCursor(Cursor cursor){
+
+        PageModel model = new PageModel();
+        model.initModelFromCursor(cursor);
+
+        return model;
+    }
+
+    public String getSelectModelQuery() {
+
+        return DBUtils.QUERY_SELECT_CHAPTER_WITH_LANG_NUMB;
+    }
     //endregion
 
 

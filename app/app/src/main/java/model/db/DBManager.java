@@ -26,14 +26,14 @@ import utils.DBUtils;
  */
 public class DBManager extends SQLiteOpenHelper {
 
-    private static final int desiredDBVersionNumber = 2;
-
     private static String TAG = "DBManager";
 
-    private static DBManager dbManager;
+    /// Current DB model version should be put here
+    private static final int desiredDBVersionNumber = 2;
     private Context context;
     private String DB_PATH = "";
 
+    private static DBManager dbManager;
     /**
      * This is a singleton class
      * <p/>
@@ -73,15 +73,16 @@ public class DBManager extends SQLiteOpenHelper {
         Log.i(TAG, "Will update database from version: " + i + " To version: " + i2);
     }
 
-    //region Initialization
+    //region Initialization / loading
 
 
 
 
-    //endregion
     /**
      * Creates a empty database on the system and rewrites it with your own
      * database.
+     * @param forceCreate
+     * @throws IOException
      */
     public void createDataBase(boolean forceCreate) throws IOException {
         boolean value = checkDBExist();
@@ -123,11 +124,14 @@ public class DBManager extends SQLiteOpenHelper {
         return exists;
     }
 
+    //endregion
 
     /**
      * Copies your database from your local assets-folder to the just created
-     * empty database in the system folder, from where it can be accessed and
-     * handled. This is done by transfering bytestream.
+     * empty database (or overrides/deletes it if it exists) in the system folder, from where it can be accessed and
+     * handled. This is done by transferring ByteStream.
+     *
+     * @throws IOException
      */
     private void copyDataBase() throws IOException {
         // Open your local model.db as the input stream
@@ -165,28 +169,8 @@ public class DBManager extends SQLiteOpenHelper {
 
     //region GetterQueries
 
-    public LanguageModel getLanguageModelForLanguage(String language){
-
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_LANGUAGE_FROM_LANGUAGE_KEY, new String[]{language});
-
-        LanguageModel model = null;
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                model = new LanguageModel();
-                model.initModelFromCursor(cursor);
-            }
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
-
-        return model;
-    }
-
     /**
-     * Getting all languages
+     * Gets all languages from the DB
      *
      * @return Return list of LanguageModels
      */
@@ -208,166 +192,148 @@ public class DBManager extends SQLiteOpenHelper {
         return models;
     }
 
-    public BookModel getBookModelForLanguage(String language){
+    //region Getters using parent Model
 
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_BOOK_BASED_ON_LANGUAGE, new String[]{language});
+    /**
+     * gets the children of the passed AMDatabaseModelAbstractObject
+     * @param model
+     * @return
+     */
+    private ArrayList<AMDatabaseModelAbstractObject> getChildModelsForModel(AMDatabaseModelAbstractObject model){
 
-        BookModel model = null;
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                model = new BookModel();
-                model.initModelFromCursor(cursor);
-            }
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
+        ArrayList<AMDatabaseModelAbstractObject> models = AMDatabaseManager.loadChildrenModelsForModel(getReadableDatabase(), model);
 
-        return model;
+        return models;
     }
 
-    public ArrayList<BookModel> getAllBooksForLanguage(LanguageModel languageModel) {
+    /**
+     * gets the children of the passed LanguageModel
+     * @param model
+     * @return
+     */
+    public ArrayList<BookModel> getChildModelsForLanguage(LanguageModel model){
 
-        ArrayList<BookModel> bookModels = null;
+        ArrayList<BookModel> books = new ArrayList<BookModel>();
+        ArrayList<AMDatabaseModelAbstractObject> models = getChildModelsForModel(model);
 
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = AMDatabaseManager.getCursorForChildren(database, languageModel);
-        if (cursor != null) {
-            bookModels = new ArrayList<BookModel>();
-            while (cursor.moveToNext()) {
-                BookModel model = new BookModel();
-                model.initModelFromCursor(cursor);
-            }
+        for(AMDatabaseModelAbstractObject abstModel : models){
+            books.add((BookModel) abstModel);
         }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
 
-        return bookModels;
+        return books;
     }
 
-    public ChapterModel getChapterForLanguageNumberKey(String langNumKey ){
+    /**
+     * gets the children of the passed BookModel
+     * @param model
+     * @return
+     */
+    public ArrayList<ChapterModel> getChildModelsForBook(BookModel model){
 
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_CHAPTER_WITH_LANG_NUMB, new String[]{langNumKey});
+        ArrayList<ChapterModel> books = new ArrayList<ChapterModel>();
+        ArrayList<AMDatabaseModelAbstractObject> models = getChildModelsForModel(model);
 
-        ChapterModel model = null;
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                model = new ChapterModel();
-                model.initModelFromCursor(cursor);
-            }
+        for(AMDatabaseModelAbstractObject abstModel : models){
+            books.add((ChapterModel) abstModel);
         }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
 
-        return model;
+        return books;
     }
 
-    public ChapterModel getChapterForLanguageAndNumber(String language, String number ){
+    /**
+     * gets the children of the passed ChapterModel
+     * @param model
+     * @return
+     */
+    public ArrayList<PageModel> getChildModelsForChapter(ChapterModel model){
 
+        ArrayList<PageModel> books = new ArrayList<PageModel>();
+        ArrayList<AMDatabaseModelAbstractObject> models = getChildModelsForModel(model);
 
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_SELECT_CHAPTER_WITH_LANGUAGE_AND_NUMBER, new String[]{language, number});
-
-        ChapterModel model = null;
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                model = new ChapterModel();
-                model.initModelFromCursor(cursor);
-            }
+        for(AMDatabaseModelAbstractObject abstModel : models){
+            books.add((PageModel) abstModel);
         }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
 
-        return model;
-    }
-
-
-    public ArrayList<ChapterModel> getAllChaptersForBook(BookModel bookModel){
-
-
-        ArrayList<ChapterModel> chapterModels = null;
-
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = AMDatabaseManager.getCursorForChildren(database, bookModel);
-        if (cursor != null) {
-            chapterModels = new ArrayList<ChapterModel>();
-            while (cursor.moveToNext()) {
-                ChapterModel model = new ChapterModel();
-                model.initModelFromCursor(cursor);
-                chapterModels.add(model);
-            }
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
-
-        return chapterModels;
-    }
-
-    public ArrayList<PageModel> getAllPagesForChapter(ChapterModel chapterModel){
-
-        ArrayList<PageModel> chapterModels = null;
-
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = AMDatabaseManager.getCursorForChildren(database, chapterModel);
-        if (cursor != null) {
-            chapterModels = new ArrayList<PageModel>();
-            while (cursor.moveToNext()) {
-                PageModel model = new PageModel();
-                model.initModelFromCursor(cursor);
-                chapterModels.add(model);
-            }
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
-
-        return chapterModels;
-    }
-
-    public PageModel getPageForKey(String key){
-
-
-        PageModel pageModel = null;
-
-        SQLiteDatabase database = getReadableDatabase();
-
-        String query = DBUtils.QUERY_SELECT_PAGE_FROM_KEY;
-        String[] args = new String[]{key};
-        Cursor cursor = database.rawQuery(query, args);
-        if (cursor != null) {
-
-            while (cursor.moveToNext()) {
-                PageModel model = new PageModel();
-                model.initModelFromCursor(cursor);
-                pageModel = model;
-            }
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        database.close();
-
-        return pageModel;
-
+        return books;
     }
 
     //endregion
 
+    //region getUsingKey
+
+    /**
+     * Gets a LanguageModel from the DB using the passed key
+     * @param key
+     * @return
+     */
+    public LanguageModel getLanguageModelForKey(String key){
+        LanguageModel newModel = new LanguageModel();
+        newModel = (LanguageModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
+
+        return newModel;
+    }
+
+    /**
+     * Gets a BookModel from the DB using the passed key
+     * @param key
+     * @return
+     */
+    public BookModel getBookModelForKey(String key){
+
+        BookModel newModel = new BookModel();
+        newModel = (BookModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
+
+        return newModel;
+    }
+
+    /**
+     * Gets a ChapterModel from the DB using the passed keys
+     * @param language
+     * @param number
+     * @return
+     */
+    public ChapterModel getChapterModelForKey(String language, String number ){
+
+        return getChapterModelForKey(language + number);
+    }
+    /**
+     * Gets a ChapterModel from the DB using the passed key
+     * @param key
+     * @return
+     */
+    public ChapterModel getChapterModelForKey(String key){
+
+        ChapterModel newModel = new ChapterModel();
+        newModel = (ChapterModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
+
+        return newModel;
+    }
+
+    /**
+     * Gets a PageModel from the DB using the passed key
+     * @param key
+     * @return
+     */
+    public PageModel getPageModelForKey(String key){
+
+        PageModel newModel = new PageModel();
+        newModel = (PageModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
+
+        return newModel;
+    }
+
+
+    //endRegion
+    //endregion
 
     //region Updating
 
+
+    /**
+     * updates the passed model in the database
+     * @param model
+     * @return
+     */
     public boolean updateModel(AMDatabaseModelAbstractObject model){
 
         SQLiteDatabase database = getReadableDatabase();
@@ -379,11 +345,11 @@ public class DBManager extends SQLiteOpenHelper {
 
     //endregion
 
-
     //region Other
 
     /**
      * Copies database to the external SD card
+     * @throws IOException
      */
     private void backupDatabase() throws IOException {
 
@@ -416,5 +382,4 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     //endregion
-
 }

@@ -83,6 +83,10 @@ public interface DBUtils {
             DBUtils.TABLE_BOOK + " WHERE " +
             DBUtils.COLUMN_BOOK_LANGUAGE_ABBREVIATION + "=?";
 
+    String QUERY_SELECT_BOOK_FROM_BOOK_KEY = "SELECT * FROM " +
+            DBUtils.TABLE_BOOK + " WHERE " +
+            DBUtils.COLUMN_BOOK_LANGUAGE_ABBREVIATION + "=?";
+
     // Table columns of TABLE_BOOK
     String COLUMN_BOOK_AUTO_GENERATED_ID_TABLE_BOOK = "_column_auto_generated_id_table_book";
     String COLUMN_BOOK_MODIFIED = "_column_modified";
@@ -131,11 +135,6 @@ public interface DBUtils {
     String QUERY_SELECT_CHAPTER_BASED_ON_BOOK = "SELECT * FROM " +
             DBUtils.TABLE_CHAPTER + " WHERE " +
             DBUtils.COLUMN_CHAPTER_BOOK_LANGUAGE_KEY + "=?";
-
-    String QUERY_SELECT_CHAPTER_WITH_LANGUAGE_AND_NUMBER = "SELECT * FROM " +
-            DBUtils.TABLE_CHAPTER + " WHERE " +
-            DBUtils.COLUMN_CHAPTER_BOOK_LANGUAGE_KEY + "=? AND " +
-            DBUtils.COLUMN_CHAPTER_NUMBER + "=?" ;
 
     String QUERY_SELECT_CHAPTER_WITH_LANG_NUMB = "SELECT * FROM " +
             DBUtils.TABLE_CHAPTER + " WHERE " +
