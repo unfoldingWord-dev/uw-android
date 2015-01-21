@@ -18,7 +18,7 @@ public class AppWordsModel {
     private static final String CANCEL = "cancel";
     private static final String CHAPTERS = "chapters";
     private static final String LANGUAGES = "languages";
-    private static final String NEXT_CHAPTER = "nextChapter";
+    private static final String NEXT_CHAPTER = "next_chapter";
     private static final String OK = "ok";
     private static final String REMOVE_LOCALLY = "remove_locally";
     private static final String REMOVE_THIS_STRING = "remove_this_string";
@@ -86,5 +86,21 @@ public class AppWordsModel {
         
         return model;
     }
-    
+
+    @Override
+    public String toString() {
+        return "AppWordsModel{" +
+                "cancel='" + cancel + '\'' +
+                ", chapters='" + chapters + '\'' +
+                ", languages='" + languages + '\'' +
+                ", nextChapter='" + nextChapter + '\'' +
+                ", ok='" + ok + '\'' +
+                ", removeLocally='" + removeLocally + '\'' +
+                ", removeThisString='" + removeThisString + '\'' +
+                ", saveLocally='" + saveLocally + '\'' +
+                ", saveThisString='" + saveThisString + '\'' +
+                ", selectALanguage='" + selectALanguage + '\'' +
+                ", bookParent=" + bookParent +
+                '}';
+    }
 }

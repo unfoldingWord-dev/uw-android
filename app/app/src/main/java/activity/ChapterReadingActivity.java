@@ -81,9 +81,9 @@ public class ChapterReadingActivity extends ActionBarActivity {
 
         actionbarTextView.setText(chapterModel.title);
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this, chapterModel.getChildModels(getApplicationContext()),
-                mImageLoader, "next chapter",
-                actionbarTextView, getIntent(), "eng?");
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this, chapterModel,
+                mImageLoader,
+                actionbarTextView, getIntent());
 
         readingViewPager.setAdapter(adapter);
 

@@ -120,6 +120,7 @@ public class DBManager extends SQLiteOpenHelper {
             return checkDB != null ? true : false;
         }
 
+//        backupDatabase();
         boolean exists = (checkDB != null);
         return exists;
     }
@@ -351,34 +352,39 @@ public class DBManager extends SQLiteOpenHelper {
      * Copies database to the external SD card
      * @throws IOException
      */
-    private void backupDatabase() throws IOException {
+    private void backupDatabase() {
 
-        // Open your local model.db as the input stream
-        File dbFile = new File(this.getReadableDatabase().getPath());
-        InputStream inputStream = new FileInputStream(dbFile);
+        try {
+            // Open your local model.db as the input stream
+            File dbFile = new File(this.getReadableDatabase().getPath());
+            InputStream inputStream = new FileInputStream(dbFile);
 
-        File sd = Environment.getExternalStorageDirectory();
+            File sd = Environment.getExternalStorageDirectory();
 
-        String backupDBPath = "/unfoldingword/backupWords.sqlite";
-        File backupDB = new File(sd, backupDBPath);
+            String backupDBPath = "/unfoldingword/backupWords.sqlite";
+            File backupDB = new File(sd, backupDBPath);
 
-        // Path to the just created empty model.db
+            // Path to the just created empty model.db
 //            String outFileName =  Environment.getExternalStorageDirectory();
 
-        // Open the empty model.db as the output stream
-        FileOutputStream outputStream = new FileOutputStream(backupDB);
+            // Open the empty model.db as the output stream
+            FileOutputStream outputStream = new FileOutputStream(backupDB);
 
-        // transfer bytes from the inputfile to the outputfile
-        byte[] buffer = new byte[1024];
-        int length;
+            // transfer bytes from the inputfile to the outputfile
+            byte[] buffer = new byte[1024];
+            int length;
 
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            // Close the streams
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
         }
-        // Close the streams
-        outputStream.flush();
-        outputStream.close();
-        inputStream.close();
+        catch (IOException e){
+            e.toString();
+        }
     }
 
     //endregion
