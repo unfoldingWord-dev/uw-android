@@ -58,6 +58,8 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
     public ViewPagerAdapter(Object context, ChapterModel model, com.nostra13.universalimageloader.core.ImageLoader mImageLoader, TextView actionbarTextView, Intent intent) {
         this.context = (Context) context;
         currentChapter = model;
+        getCount();
+        currentChapter.AddBlankPageToEnd();
         this.mImageLoader = mImageLoader;
         this.actionbarTextView = actionbarTextView;
         setImageOptions();
@@ -65,6 +67,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
         this.activity = (Activity) context;
         this.intent = intent;
         lastChapterNumber = currentChapter.getParent(this.context).getChildModels(this.context).size();
+
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ViewPagerAdapter extends PagerAdapter implements ImageLoadingListen
         this.container = container;
 
         // getting last row values of data base
-        int frameCount = currentChapter.getChildModels(context).size();
+        int frameCount = currentChapter.getChildModels(context).size() + 1;
 
         if (position == getCount() - 1) {
 

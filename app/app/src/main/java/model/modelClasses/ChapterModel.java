@@ -56,7 +56,10 @@ public class ChapterModel extends AMDatabaseModelAbstractObject {
         return pages;
     }
 
-
+    public void AddBlankPageToEnd(){
+        PageModel pageModel = pages.get(0);
+        pages.add(pageModel);
+    }
 
     public ChapterModel() {
         super();
