@@ -37,13 +37,13 @@ public class AppWordsModel {
     public String saveThisString = "";
     public String selectALanguage = "";
     
-    BookModel bookParent;
+    //BookModel bookParent;
 
     public AppWordsModel(){
         
     }
     public AppWordsModel(BookModel parent){
-        this.bookParent = parent;
+        //this.bookParent = parent;
     }
 
 
@@ -100,7 +100,7 @@ public class AppWordsModel {
                 ", saveLocally='" + saveLocally + '\'' +
                 ", saveThisString='" + saveThisString + '\'' +
                 ", selectALanguage='" + selectALanguage + '\'' +
-                ", bookParent=" + bookParent +
+                //", bookParent=" + bookParent +
                 '}';
     }
 }

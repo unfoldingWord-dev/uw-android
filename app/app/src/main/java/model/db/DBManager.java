@@ -26,12 +26,19 @@ import utils.DBUtils;
  */
 public class DBManager extends SQLiteOpenHelper {
 
+    /**
+     * This needs to match up with the most recently updated Language model
+     */
+    private static final int LAST_UPDATED = 20150210;
+
     private static String TAG = "DBManager";
 
     /// Current DB model version should be put here
     private static final int desiredDBVersionNumber = 2;
     private Context context;
     private String DB_PATH = "";
+
+
 
     private static DBManager dbManager;
     /**
@@ -85,13 +92,12 @@ public class DBManager extends SQLiteOpenHelper {
      * @throws IOException
      */
     public void createDataBase(boolean forceCreate) throws IOException {
-        boolean value = checkDBExist();
-        if (value) {
-            // do nothing the data base existe.printStackTrace();
-        } else if (forceCreate || !value) {
+
+        if(forceCreate || shouldLoadSavedDb()){
             getReadableDatabase();
             copyDataBase();
         }
+//        backupDatabase();
     }
 
     /**
@@ -99,11 +105,11 @@ public class DBManager extends SQLiteOpenHelper {
      *
      * @return
      */
-    private boolean checkDBExist() {
+    private boolean shouldLoadSavedDb() {
         SQLiteDatabase checkDB = null;
 
         try {
-            String myPath = DB_PATH + DBUtils.DB_NAME;;
+            String myPath = DB_PATH + DBUtils.DB_NAME;
             checkDB = SQLiteDatabase.openDatabase(myPath, null,
                     SQLiteDatabase.OPEN_READONLY);
 
@@ -122,7 +128,12 @@ public class DBManager extends SQLiteOpenHelper {
 
 //        backupDatabase();
         boolean exists = (checkDB != null);
-        return exists;
+
+        if(exists){
+            exists = this.dbIsUpdated();
+        }
+        boolean shouldUpdate = ! exists;
+        return shouldUpdate;
     }
 
     //endregion
@@ -348,6 +359,19 @@ public class DBManager extends SQLiteOpenHelper {
 
     //region Other
 
+    private boolean dbIsUpdated(){
+
+        List<LanguageModel> languages = this.getAllLanguages();
+
+        for(LanguageModel model : languages ){
+            if(model.dateModified >= LAST_UPDATED){
+                Log.i(TAG, "DB is up to date");
+                return true;
+            }
+        }
+        Log.i(TAG, "DB is not up to date");
+        return false;
+    }
     /**
      * Copies database to the external SD card
      * @throws IOException
@@ -355,6 +379,7 @@ public class DBManager extends SQLiteOpenHelper {
     private void backupDatabase() {
 
         try {
+            Log.i(TAG, "is backing up database");
             // Open your local model.db as the input stream
             File dbFile = new File(this.getReadableDatabase().getPath());
             InputStream inputStream = new FileInputStream(dbFile);
@@ -381,9 +406,11 @@ public class DBManager extends SQLiteOpenHelper {
             outputStream.flush();
             outputStream.close();
             inputStream.close();
+            Log.i(TAG, "finished backup");
         }
         catch (IOException e){
-            e.toString();
+            Log.e(TAG, "backup error");
+            e.printStackTrace();
         }
     }
 
