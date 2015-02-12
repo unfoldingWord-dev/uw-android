@@ -2,6 +2,7 @@ package model.db;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
@@ -122,9 +123,13 @@ public class DBManager extends SQLiteOpenHelper {
 
                 checkDB.close();
             }
-        } catch (Exception e) {
-            return checkDB != null ? true : false;
         }
+        catch (Exception e) {
+            Log.i(TAG, "DB exception in shouldLoadSavedDb");
+            return (checkDB == null)? true : false;
+        }
+
+
 
 //        backupDatabase();
         boolean exists = (checkDB != null);
