@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import model.modelClasses.BookModel;
@@ -30,7 +31,7 @@ public class DBManager extends SQLiteOpenHelper {
     /**
      * This needs to match up with the most recently updated Language model
      */
-    private static final int LAST_UPDATED = 20150210;
+    private static final int LAST_UPDATED = 20150226;
 
     private static String TAG = "DBManager";
 
@@ -98,7 +99,7 @@ public class DBManager extends SQLiteOpenHelper {
             getReadableDatabase();
             copyDataBase();
         }
-//        backupDatabase();
+        backupDatabase();
     }
 
     /**
@@ -185,6 +186,19 @@ public class DBManager extends SQLiteOpenHelper {
 
 
     //region GetterQueries
+
+
+    public HashMap<String, LanguageModel> getLanguagesAsHashMap(){
+
+        List<LanguageModel> languages = getAllLanguages();
+        HashMap<String, LanguageModel> languageMap = new HashMap<String, LanguageModel>();
+
+        for(LanguageModel language : languages){
+            languageMap.put(language.language, language);
+        }
+
+        return languageMap;
+    }
 
     /**
      * Gets all languages from the DB

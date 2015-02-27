@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +100,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         public void handleMessage(Message msg) {
 
             // Get current list of languages
-            List<LanguageModel> languages = dbManager.getAllLanguages();
+            HashMap<String, LanguageModel> languages = dbManager.getLanguagesAsHashMap();
 
             String json = null;
             try {
@@ -112,15 +113,19 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                 if(languages.size() > 0) {
 
                     // Iterate through the current Models
-                    for (LanguageModel currentModel : languages) {
+                    for (LanguageModel newModel : newMap.values()) {
 
-                        LanguageModel newModel = newMap.get(currentModel.language);
+                        LanguageModel currentModel = (languages.containsKey(newModel.language))? languages.get(newModel.language) : null;
 
                         // Check if current
-                        if (currentModel.language.equals(newModel.language) && (currentModel.dateModified < newModel.dateModified)) {
+                        if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
 
+                            String dateModified = (currentModel == null)? "null" : Long.toString(currentModel.dateModified);
+                            if(currentModel == null){
+                                shouldUpdateImages = false;
+                            }
                             // Update
-                            Log.i(TAG, "Old date: " + currentModel.dateModified + " new Date: " + newModel.dateModified);
+                            Log.i(TAG, "Old date: " + dateModified + " new Date: " + newModel.dateModified);
                             updateLanguage(newModel, shouldUpdateImages);
                             shouldUpdateImages = false;
                         }

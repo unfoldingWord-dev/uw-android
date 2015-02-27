@@ -27,7 +27,7 @@ public class AMDatabaseManager {
      */
     public static boolean updateModel(AMDatabaseModelAbstractObject model, SQLiteDatabase database) {
 
-        Log.i(TAG, "Updating model: " + model.toString());
+//        Log.i(TAG, "Updating model: " + model.toString());
 
         ContentValues values = model.getModelAsContentValues();
         int update = database.update(model.getSqlTableName(), values,
@@ -53,10 +53,10 @@ public class AMDatabaseManager {
         long insert = database.insert(model.getSqlTableName(), null, values);
         database.close();
         if (insert > 0) {
-            Log.d("DB", "" + true);
+//            Log.d("DB", "" + true);
             return true;
         }
-        Log.d("DB", "" + false);
+//        Log.d("DB", "" + false);
         return false;
     }
 
