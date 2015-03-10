@@ -1,8 +1,6 @@
 package model.db;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
@@ -14,14 +12,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import model.modelClasses.BookModel;
-import model.modelClasses.ChapterModel;
-import model.modelClasses.LanguageModel;
-import model.modelClasses.PageModel;
-import utils.DBUtils;
+import adapter.selectionAdapters.StoriesChapterAdapter;
+import model.datasource.AMDatabaseIndex;
+import model.datasource.LanguageDataSource;
+import model.datasource.ProjectDataSource;
+import model.modelClasses.mainData.BibleChapterModel;
+import model.modelClasses.mainData.LanguageModel;
+import model.modelClasses.mainData.ProjectModel;
+import model.modelClasses.mainData.StoriesChapterModel;
+import model.modelClasses.mainData.VersionModel;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
@@ -31,15 +31,38 @@ public class DBManager extends SQLiteOpenHelper {
     /**
      * This needs to match up with the most recently updated Language model
      */
-    private static final int LAST_UPDATED = 20150226;
+    private static final int LAST_UPDATED = 20150227;
 
     private static String TAG = "DBManager";
 
     /// Current DB model version should be put here
-    private static final int desiredDBVersionNumber = 2;
     private Context context;
     private String DB_PATH = "";
 
+    static ArrayList<String> availableLanguages = null;
+    static public ArrayList<String> getAvailableLanguages(Context context){
+        if(availableLanguages == null){
+            availableLanguages = new LanguageDataSource(context).getAvailableLanguages();
+        }
+        return availableLanguages;
+    }
+
+    static public ArrayList<String> getAvailableLanguages(Context context, ArrayList<ProjectModel> projects) {
+
+        ArrayList<String> availLanguages = DBManager.getAvailableLanguages(context);
+        ArrayList<String> languages = new ArrayList<String>();
+
+        for(String language : availLanguages){
+
+            for(ProjectModel project : projects){
+                if(project.containsLanguage(language, context) && !languages.contains(language)){
+                    languages.add(language.toLowerCase());
+                    break;
+                }
+            }
+        }
+        return languages;
+    }
 
 
     private static DBManager dbManager;
@@ -59,7 +82,7 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     private DBManager(Context context) {
-        super(context, DBUtils.DB_NAME, null, DBUtils.DB_VERSION);
+        super(context, AMDatabaseIndex.DB_NAME, null, AMDatabaseIndex.DB_VERSION);
         this.context = context;
         DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
     }
@@ -69,11 +92,7 @@ public class DBManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-
-        database.execSQL(DBUtils.CREATE_TABLE_PAGE_INFO);
-        database.execSQL(DBUtils.CREATE_TABLE_LANGUAGE_CATALOG);
-        database.execSQL(DBUtils.CREATE_TABLE_BOOK_INFO);
-        database.execSQL(DBUtils.CREATE_TABLE_CHAPTER);
+        AMDatabaseIndex.createTables(database, this.context);
     }
 
     @Override
@@ -84,9 +103,6 @@ public class DBManager extends SQLiteOpenHelper {
 
     //region Initialization / loading
 
-
-
-
     /**
      * Creates a empty database on the system and rewrites it with your own
      * database.
@@ -96,10 +112,11 @@ public class DBManager extends SQLiteOpenHelper {
     public void createDataBase(boolean forceCreate) throws IOException {
 
         if(forceCreate || shouldLoadSavedDb()){
-            getReadableDatabase();
             copyDataBase();
+            getReadableDatabase();
+
         }
-        backupDatabase();
+//        backupDatabase();
     }
 
     /**
@@ -111,17 +128,16 @@ public class DBManager extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            String myPath = DB_PATH + DBUtils.DB_NAME;
+            String myPath = DB_PATH + AMDatabaseIndex.DB_NAME;
             checkDB = SQLiteDatabase.openDatabase(myPath, null,
                     SQLiteDatabase.OPEN_READONLY);
 
             int version = checkDB.getVersion();
-            if(version < desiredDBVersionNumber){
-                return false;
+            if(version < AMDatabaseIndex.DB_VERSION){
+                return true;
             }
 
             if (checkDB != null) {
-
                 checkDB.close();
             }
         }
@@ -130,9 +146,6 @@ public class DBManager extends SQLiteOpenHelper {
             return (checkDB == null)? true : false;
         }
 
-
-
-//        backupDatabase();
         boolean exists = (checkDB != null);
 
         if(exists){
@@ -153,10 +166,10 @@ public class DBManager extends SQLiteOpenHelper {
      */
     private void copyDataBase() throws IOException {
         // Open your local model.db as the input stream
-        InputStream inputStream = context.getAssets().open(DBUtils.DB_NAME);
+        InputStream inputStream = context.getAssets().open(AMDatabaseIndex.DB_NAME);
 
         // Path to the just created empty model.db
-        String outFileName = DB_PATH + DBUtils.DB_NAME;
+        String outFileName = DB_PATH + AMDatabaseIndex.DB_NAME;
 
         File currentFile = new File(outFileName);
 
@@ -185,204 +198,13 @@ public class DBManager extends SQLiteOpenHelper {
     //endregion
 
 
-    //region GetterQueries
-
-
-    public HashMap<String, LanguageModel> getLanguagesAsHashMap(){
-
-        List<LanguageModel> languages = getAllLanguages();
-        HashMap<String, LanguageModel> languageMap = new HashMap<String, LanguageModel>();
-
-        for(LanguageModel language : languages){
-            languageMap.put(language.language, language);
-        }
-
-        return languageMap;
-    }
-
-    /**
-     * Gets all languages from the DB
-     *
-     * @return Return list of LanguageModels
-     */
-    public List<LanguageModel> getAllLanguages() {
-
-        List<LanguageModel> models = new ArrayList<LanguageModel>();
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(DBUtils.QUERY_GET_ALL_LANGUAGES, null);
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                LanguageModel model = new LanguageModel();
-                model.initModelFromCursor(cursor);
-                models.add(model);
-            }
-        }
-        if (cursor != null)
-            cursor.close();
-        database.close();
-        return models;
-    }
-
-    //region Getters using parent Model
-
-    /**
-     * gets the children of the passed AMDatabaseModelAbstractObject
-     * @param model
-     * @return
-     */
-    private ArrayList<AMDatabaseModelAbstractObject> getChildModelsForModel(AMDatabaseModelAbstractObject model){
-
-        ArrayList<AMDatabaseModelAbstractObject> models = AMDatabaseManager.loadChildrenModelsForModel(getReadableDatabase(), model);
-
-        return models;
-    }
-
-    /**
-     * gets the children of the passed LanguageModel
-     * @param model
-     * @return
-     */
-    public ArrayList<BookModel> getChildModelsForLanguage(LanguageModel model){
-
-        ArrayList<BookModel> books = new ArrayList<BookModel>();
-        ArrayList<AMDatabaseModelAbstractObject> models = getChildModelsForModel(model);
-
-        for(AMDatabaseModelAbstractObject abstModel : models){
-            books.add((BookModel) abstModel);
-        }
-
-        return books;
-    }
-
-    /**
-     * gets the children of the passed BookModel
-     * @param model
-     * @return
-     */
-    public ArrayList<ChapterModel> getChildModelsForBook(BookModel model){
-
-        ArrayList<ChapterModel> books = new ArrayList<ChapterModel>();
-        ArrayList<AMDatabaseModelAbstractObject> models = getChildModelsForModel(model);
-
-        for(AMDatabaseModelAbstractObject abstModel : models){
-            books.add((ChapterModel) abstModel);
-        }
-
-        return books;
-    }
-
-    /**
-     * gets the children of the passed ChapterModel
-     * @param model
-     * @return
-     */
-    public ArrayList<PageModel> getChildModelsForChapter(ChapterModel model){
-
-        ArrayList<PageModel> books = new ArrayList<PageModel>();
-        ArrayList<AMDatabaseModelAbstractObject> models = getChildModelsForModel(model);
-
-        for(AMDatabaseModelAbstractObject abstModel : models){
-            books.add((PageModel) abstModel);
-        }
-
-        return books;
-    }
-
-    //endregion
-
-    //region getUsingKey
-
-    /**
-     * Gets a LanguageModel from the DB using the passed key
-     * @param key
-     * @return
-     */
-    public LanguageModel getLanguageModelForKey(String key){
-        LanguageModel newModel = new LanguageModel();
-        newModel = (LanguageModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
-
-        return newModel;
-    }
-
-    /**
-     * Gets a BookModel from the DB using the passed key
-     * @param key
-     * @return
-     */
-    public BookModel getBookModelForKey(String key){
-
-        BookModel newModel = new BookModel();
-        newModel = (BookModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
-
-        return newModel;
-    }
-
-    /**
-     * Gets a ChapterModel from the DB using the passed keys
-     * @param language
-     * @param number
-     * @return
-     */
-    public ChapterModel getChapterModelForKey(String language, String number ){
-
-        return getChapterModelForKey(language + number);
-    }
-    /**
-     * Gets a ChapterModel from the DB using the passed key
-     * @param key
-     * @return
-     */
-    public ChapterModel getChapterModelForKey(String key){
-
-        ChapterModel newModel = new ChapterModel();
-        newModel = (ChapterModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
-
-        return newModel;
-    }
-
-    /**
-     * Gets a PageModel from the DB using the passed key
-     * @param key
-     * @return
-     */
-    public PageModel getPageModelForKey(String key){
-
-        PageModel newModel = new PageModel();
-        newModel = (PageModel) AMDatabaseManager.getModelForKey(getReadableDatabase(), newModel, key);
-
-        return newModel;
-    }
-
-
-    //endRegion
-    //endregion
-
-    //region Updating
-
-
-    /**
-     * updates the passed model in the database
-     * @param model
-     * @return
-     */
-    public boolean updateModel(AMDatabaseModelAbstractObject model){
-
-        SQLiteDatabase database = getReadableDatabase();
-        boolean success = AMDatabaseManager.updateModel(model, database);
-
-        database.close();
-        return success;
-    }
-
-    //endregion
-
     //region Other
 
     private boolean dbIsUpdated(){
 
-        List<LanguageModel> languages = this.getAllLanguages();
+        ArrayList<ProjectModel> models =  new ProjectDataSource(this.context).getAllProjects();
 
-        for(LanguageModel model : languages ){
+        for(ProjectModel model : models ){
             if(model.dateModified >= LAST_UPDATED){
                 Log.i(TAG, "DB is up to date");
                 return true;
@@ -397,19 +219,26 @@ public class DBManager extends SQLiteOpenHelper {
      */
     private void backupDatabase() {
 
+//        if(shouldLoadSavedDb()){
+//            return;
+//        }
         try {
             Log.i(TAG, "is backing up database");
             // Open your local model.db as the input stream
             File dbFile = new File(this.getReadableDatabase().getPath());
             InputStream inputStream = new FileInputStream(dbFile);
 
-            File sd = Environment.getExternalStorageDirectory();
+            File sdCard = Environment.getExternalStorageDirectory();
+//
+            String backupDBPath = "unfoldingword/backupWords.sqlite";
 
-            String backupDBPath = "/unfoldingword/backupWords.sqlite";
-            File backupDB = new File(sd, backupDBPath);
+            File backupDB = new File(sdCard, backupDBPath);
 
+            if(!backupDB.exists()){
+                backupDB.mkdir();
+            }
             // Path to the just created empty model.db
-//            String outFileName =  Environment.getExternalStorageDirectory();
+            String outFileName =  backupDB.getPath();
 
             // Open the empty model.db as the output stream
             FileOutputStream outputStream = new FileOutputStream(backupDB);

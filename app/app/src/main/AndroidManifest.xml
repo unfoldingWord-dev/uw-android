@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.unfoldingword.mobile">
+    package="org.unfoldingword.mobile" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,34 +9,52 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
+
         <activity
             android:name="activity.SplashScreenActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="activity.ChapterSelectionActivity"
-            android:theme="@style/Theme.AppCompat"
-            android:configChanges="orientation|keyboardHidden" />
+            android:name="activity.selectionActivities.ChapterSelectionActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.LanguageChooserActivity"
-            android:theme="@style/Theme.AppCompat"
-            android:configChanges="orientation|keyboardHidden" />
+            android:name="activity.selectionActivities.InitialPageActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.ChapterReadingActivity"
-            android:theme="@style/Theme.AppCompat"
-            android:configChanges="orientation|keyboardHidden" />
+            android:name="activity.selectionActivities.BookSelectionActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="activity.selectionActivities.VersionSelectionActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="activity.ReadingActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="activity.StoryReadingActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="activity.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
 
         <service android:name="services.UpdateService" />
+
+
     </application>
 
 </manifest>

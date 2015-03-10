@@ -1,6 +1,7 @@
 package services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -9,27 +10,38 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unfoldingword.mobile.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import model.datasource.BibleChapterDataSource;
+import model.datasource.BookDataSource;
+import model.datasource.StoriesChapterDataSource;
+import model.datasource.LanguageDataSource;
+import model.datasource.PageDataSource;
+import model.datasource.ProjectDataSource;
+import model.datasource.VersionDataSource;
 import model.db.DBManager;
 import model.db.ImageDatabaseHandler;
-import model.modelClasses.BookModel;
-import model.modelClasses.ChapterModel;
-import model.modelClasses.LanguageModel;
-import model.modelClasses.PageModel;
-import parser.JsonParser;
+import model.modelClasses.mainData.BibleChapterModel;
+import model.modelClasses.mainData.BookModel;
+import model.modelClasses.mainData.StoriesChapterModel;
+import model.modelClasses.mainData.LanguageModel;
+import model.modelClasses.mainData.PageModel;
+import model.modelClasses.mainData.ProjectModel;
+import model.modelClasses.mainData.VersionModel;
 import utils.AsyncImageLoader;
 import utils.URLDownloadUtil;
 import utils.URLUtils;
+import utils.USFMParser;
 
 /**
  * Created by Acts Media Inc on 11/12/14.
@@ -47,6 +59,8 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
     private String downloadUrl;
     private boolean serviceState = false;
     private boolean onComplete = true;
+
+    private boolean hasUpdatedImages;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -100,40 +114,10 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         public void handleMessage(Message msg) {
 
             // Get current list of languages
-            HashMap<String, LanguageModel> languages = dbManager.getLanguagesAsHashMap();
-
-            String json = null;
             try {
 
-                // Download current LanguageJSON
-                json = URLDownloadUtil.downloadJson(URLUtils.getUrlForLanguageUpdate());
-                Map<String, LanguageModel> newMap = JsonParser.getLanguagesInfo(json);
-                boolean shouldUpdateImages = true;
-
-                if(languages.size() > 0) {
-
-                    // Iterate through the current Models
-                    for (LanguageModel newModel : newMap.values()) {
-
-                        LanguageModel currentModel = (languages.containsKey(newModel.language))? languages.get(newModel.language) : null;
-
-                        // Check if current
-                        if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
-
-                            String dateModified = (currentModel == null)? "null" : Long.toString(currentModel.dateModified);
-                            if(currentModel == null){
-                                shouldUpdateImages = false;
-                            }
-                            // Update
-                            Log.i(TAG, "Old date: " + dateModified + " new Date: " + newModel.dateModified);
-                            updateLanguage(newModel, shouldUpdateImages);
-                            shouldUpdateImages = false;
-                        }
-                    }
-                }
-                else{
-                    initializedDatabase(newMap);
-                }
+                hasUpdatedImages = false;
+                updateProjects();
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -141,81 +125,235 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                 e.printStackTrace();
             }
 
-            if (onComplete)
+//            if (onComplete)
                 getApplicationContext().sendBroadcast(new Intent(URLUtils.BROAD_CAST_DOWN_COMP));
 
         }
     }
 
-    /**
-     * Updates the passed model, will update the images by comparing the PageModel image urls if
-     * shouldUpdateImages == true
-     * @param newModel
-     * @param shouldUpdateImages
-     * @throws IOException
-     * @throws JSONException
-     */
-    private void updateLanguage(LanguageModel newModel, boolean shouldUpdateImages) throws IOException, JSONException{
+    private void updateProjects() throws JSONException, IOException{
 
-        //update the Language Model
-        dbManager.updateModel(newModel);
+        Log.i(TAG, " Updating Projects");
+        String url = PreferenceManager.getDefaultSharedPreferences(this).getString("base_url",  getResources().getString(R.string.pref_default_base_url));
+        String json = URLDownloadUtil.downloadJson(url);
 
-        //download Language's companion JSON
-        String bookJson = URLDownloadUtil.downloadJson(URLUtils.getUrlForBookUpdate(newModel.language));
-        JSONObject bookObj = new JSONObject(bookJson);
+        JSONArray jsonArray = new JSONArray(json);
+        ProjectDataSource dataSource = new ProjectDataSource(this.getApplicationContext());
 
-        BookModel bookModel = new BookModel();
-        bookModel.initModelFromJsonObject(bookObj);
+        if(jsonArray.length() > 0) {
 
-        // Update the Book
-        dbManager.updateModel(bookModel);
+            // Iterate through the current Models
+            for (int i = 0; i < jsonArray.length(); i++) {
 
-        // Iterate through book's chapters
-        for(ChapterModel chapter : bookModel.getChildModels(getApplicationContext())){
+                ProjectModel newModel = new ProjectModel(jsonArray.getJSONObject(i));
+                ProjectModel currentModel = dataSource.getModelForSlug(newModel.slug);
 
-            // Update the chapter
-            dbManager.updateModel(chapter);
-
-            // iterate through Pages
-            for (PageModel page : chapter.getChildModels(getApplicationContext())){
-
-                // Optionally update images
-                if(shouldUpdateImages){
-                    updateImageForPage(page);
+                if(currentModel != null) {
+                    newModel.uid = currentModel.uid;
                 }
-                // Update page
-                dbManager.updateModel(page);
 
+                if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
+                    dataSource.saveModel(newModel);
+                    updateLanguages(dataSource.getModelForSlug(newModel.slug));
+                }
             }
         }
     }
 
-    /**
-     * Method for initializing the Database from JSON if no database exists.
-     * @param languages
-     * @throws JSONException
-     * @throws IOException
-     */
-    private void initializedDatabase(Map<String, LanguageModel> languages) throws JSONException, IOException{
+    private void updateLanguages(ProjectModel parent) throws JSONException, IOException{
 
-        for ( String key : languages.keySet()) {
+        Log.i(TAG, " Updating Languages");
+        String json = URLDownloadUtil.downloadJson(parent.languageUrl);
 
-                LanguageModel model = languages.get(key);
-                dbManager.updateModel(model);
-                updateLanguage(model, false);
+        JSONArray jsonArray = new JSONArray(json);
+        LanguageDataSource dataSource = new LanguageDataSource(this.getApplicationContext());
+
+        if(jsonArray.length() > 0) {
+
+            // Iterate through the current Models
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                LanguageModel newModel = new LanguageModel(jsonArray.getJSONObject(i), parent);
+                LanguageModel currentModel = dataSource.getModelForSlug(newModel.slug);
+
+                if(currentModel != null) {
+                    newModel.uid = currentModel.uid;
+                }
+
+                if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
+                    dataSource.saveModel(newModel);
+                    updateVersions(dataSource.getModelForSlug(newModel.slug));
+                }
+            }
         }
     }
+
+    private void updateVersions(LanguageModel parent) throws JSONException, IOException{
+
+        Log.i(TAG, " Updating Versions");
+        String json = URLDownloadUtil.downloadJson(parent.resourceUrl);
+
+        JSONArray jsonArray = new JSONArray(json);
+        VersionDataSource dataSource = new VersionDataSource(this.getApplicationContext());
+
+        if(jsonArray.length() > 0) {
+
+            // Iterate through the current Models
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                VersionModel newModel = new VersionModel(jsonArray.getJSONObject(i), parent);
+                VersionModel currentModel = dataSource.getModelForSlug(newModel.slug);
+
+                if(currentModel != null) {
+                    newModel.uid = currentModel.uid;
+                }
+
+                if (currentModel == null ||  (currentModel.dateModified < newModel.dateModified)) {
+
+                    dataSource.saveModel(newModel);
+
+                    if(newModel.usfmUrl.length() > 1){
+                        this.parseUSFMForVersion(dataSource.getModelForSlug(newModel.slug));
+                    }
+                    else {
+                        updateBooks(dataSource.getModelForSlug(newModel.slug));
+                    }
+                }
+            }
+        }
+    }
+
+    private void parseUSFMForVersion(VersionModel version) throws IOException{
+
+        Log.i(TAG, " parsing usfm");
+
+        byte[] usfmText = URLDownloadUtil.downloadUsfm(version.usfmUrl);
+
+        Map<String, String> usfmMap = USFMParser.parseUsfm(usfmText);
+
+        ArrayList<BibleChapterModel> chapters = version.getBibleChildModels(getApplicationContext());
+
+        Context context = getApplicationContext();
+        for (Map.Entry<String, String> entry : usfmMap.entrySet()){
+            BibleChapterModel chapter = new BibleChapterModel();
+            chapter.parentId = version.uid;
+            chapter.number = entry.getKey();
+            chapter.text = entry.getValue();
+
+            for(BibleChapterModel oldChapter : chapters){
+                if(Long.parseLong(oldChapter.number.replaceAll("[^0-9]", "")) == Long.parseLong(chapter.number.replaceAll("[^0-9]", ""))){
+                    chapter.uid = oldChapter.uid;
+                }
+            }
+
+            new BibleChapterDataSource(context).saveModel(chapter);
+        }
+    }
+
+
+    private void updateBooks(VersionModel parent) throws JSONException, IOException{
+
+        Log.i(TAG, " Updating Books");
+
+        String json = URLDownloadUtil.downloadJson(parent.sourceUrl);
+
+        JSONObject jsonObject = new JSONObject(json);
+        BookDataSource dataSource = new BookDataSource(this.getApplicationContext());
+
+        BookModel newModel = new BookModel(jsonObject, parent);
+        BookModel currentModel = dataSource.getModelForLanguage(newModel.language);
+
+        if(currentModel != null) {
+            newModel.uid = currentModel.uid;
+        }
+
+        if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
+
+
+
+            dataSource.saveModel(newModel);
+            updateStoryChapters(dataSource.getModelForSlug(newModel.slug) , jsonObject.getJSONArray("chapters"));
+
+            hasUpdatedImages = true;
+        }
+    }
+
+    private void updateStoryChapters(BookModel parent, JSONArray jsonArray) throws JSONException, IOException{
+
+        Log.i(TAG, " Updating Chapters");
+
+
+        StoriesChapterDataSource dataSource = new StoriesChapterDataSource(this.getApplicationContext());
+
+//        // Iterate through the current Models
+        for (int i = 0; i < jsonArray.length(); i++) {
+
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+            StoriesChapterModel newModel = new StoriesChapterModel(jsonObject, parent);
+            StoriesChapterModel currentModel = dataSource.getModelForSlug(newModel.slug);
+
+            if(currentModel != null) {
+                newModel.uid = currentModel.uid;
+            }
+
+                dataSource.saveModel(newModel);
+                updateStoryPage(dataSource.getModelForSlug(newModel.slug), jsonObject.getJSONArray("frames"));
+        }
+    }
+
+    private void updateStoryPage(StoriesChapterModel parent, JSONArray jsonArray) throws JSONException, IOException{
+
+        Log.i(TAG, " Updating Page");
+
+
+        PageDataSource dataSource = new PageDataSource(this.getApplicationContext());
+
+//        // Iterate through the current Models
+        for (int i = 0; i < jsonArray.length(); i++) {
+
+            PageModel newModel = new PageModel(jsonArray.getJSONObject(i), parent);
+            PageModel currentModel = dataSource.getModelForSlug(newModel.slug);
+
+            if(currentModel != null) {
+                newModel.uid = currentModel.uid;
+            }
+
+            if(!hasUpdatedImages){
+//                updateImageForPages(currentModel, newModel );
+            }
+
+
+            dataSource.saveModel(newModel);
+    }
+}
+
+    private void updateImages(BookModel currentBook, BookModel newBook){
+        Log.i(TAG, " Updating Images");
+
+        if(currentBook == null || newBook == null){
+            return;
+        }
+
+        Log.i(TAG, " Updating Images");
+        Map<Long, PageModel> currentPages = currentBook.getPages(this.getApplicationContext());
+        Map<Long, PageModel> newPages = newBook.getPages(this.getApplicationContext());
+
+        for (Map.Entry<Long, PageModel> entry : currentPages.entrySet()){
+
+            updateImageForPages(entry.getValue(), newPages.get(entry.getKey()));
+        }
+    }
+
 
     /**
      * Compares the page's image url to what currently exists in the DB and updates if necessary
      * @param newModel
      * @return
      */
-    private boolean updateImageForPage( PageModel newModel){
+    private boolean updateImageForPages(PageModel oldModel, PageModel newModel){
 
         boolean wasSuccessful = true;
-        // get the old Page
-        PageModel oldModel = dbManager.getPageModelForKey(newModel.languageChapterAndPage);
 
         if(oldModel == null){
             return false;

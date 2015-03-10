@@ -5,7 +5,19 @@ package utils;
  */
 public class URLUtils {
 
-    private static final String BASE_URL = "https://api.unfoldingword.org/obs/txt/1/";
+    private static final String BASE_URL = "https://api.unfoldingword.org/";
+    private static final String TRANSLATION_STUDIO_TAG = "ts/";
+    private static final String TEXT_TAG = "txt/";
+    private static final String VERSION_TAG = "2/";
+
+    private static final String CATALOG_TAG = "catalog.json";
+
+    public static String getCatalogUrl(){
+        String url = BASE_URL + TRANSLATION_STUDIO_TAG + TEXT_TAG + VERSION_TAG + CATALOG_TAG;
+        return url;
+    }
+
+
     private static final String LANGUAGE_INFO_TAG = "obs-catalog";
     public static final String LANGUAGE_INFO = "https://api.unfoldingword.org/obs/txt/1/obs-catalog.json";
 
@@ -15,11 +27,9 @@ public class URLUtils {
     public static final String CHAPTER_POST_LANGUAGE_TAG = "/obs-";
     public static final String JSON_TAG = ".json";
 
-
     // error strings
 
     public static final String ERROR = "error";
-
 
     public static final String TRUE = "true";
     public static final String BROAD_CAST_DOWN_COMP = "org.unfoldingword.mobile.DOWNLOAD_COMPLETED";
@@ -38,6 +48,11 @@ public class URLUtils {
     public static String getLastBitFromUrl(String url) {
         String changedUrl = url.replaceFirst(".*/([^/?]+).*", "$1");
         return changedUrl;
+    }
+
+    public static String getMainUpdateUrl(){
+        String url = BASE_URL + TRANSLATION_STUDIO_TAG + TEXT_TAG + VERSION_TAG + CATALOG_TAG;
+        return url;
     }
 
 }

@@ -14,4 +14,6 @@
     <string name="level_two">Level 2 : external - Translation is independently checked and confirmed by at least two others not on the translation team.</string>
     <string name="level_three">Level 3 : authenticated - Translation is checked and confirmed by leadership of at least one Church network with native speakers of the language.</string>
 
+    <string name="selected_language">"SELECTED_LANGUAGE"</string>
+
 </resources>
