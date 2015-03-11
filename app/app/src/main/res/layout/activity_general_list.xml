@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/light_brown"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/generalList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:choiceMode="none"
+        android:divider="@color/lightgrey"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/layout_button_click" />
+
+</RelativeLayout>

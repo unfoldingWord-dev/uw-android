@@ -6,12 +6,31 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import utils.DBUtils;
+import model.modelClasses.mainData.VersionModel;
 
 /**
  * Created by Fechner on 1/9/15.
  */
 public class StatusModel {
+
+    // Table columns of TABLE_RESOURCES
+    static String RESOURCES_COLUMN_AUTO_GENERATED_ID = "_column_table_resources_auto_generated_id";
+    static String RESOURCES_COLUMN_LANGUAGES_SLUG = "_column_table_resources_languages_slug";
+    static String RESOURCES_COLUMN_SLUG = "_column_table_resources_slug";
+    static String RESOURCES_COLUMN_NAME = "_column_table_resources_name";
+    static String RESOURCES_COLUMN_MODIFIED_DATE = "_column_table_resources_modified_date";
+    static String RESOURCES_COLUMN_SOURCE_URL = "_column_table_resources_source_url";
+    static String RESOURCES_COLUMN_TERMS_URL = "_column_table_resources_terms_url";
+    static String RESOURCES_COLUMN_NOTES_URL = "_column_table_resources_notes_url";
+    static String RESOURCES_COLUMN_STATUS_CHECKING_ENTITY = "_column_table_resources_checking_entity";
+    static String RESOURCES_COLUMN_STATUS_CHECKING_LEVEL = "_column_table_resources_checking_level";
+    static String RESOURCES_COLUMN_STATUS_COMMENTS = "_column_table_resources_comments";
+    static String RESOURCES_COLUMN_STATUS_CONTRIBUTORS = "_column_table_resources_contributors";
+    static String RESOURCES_COLUMN_STATUS_PUBLISH_DATE = "_column_table_resources_public_date";
+    static String RESOURCES_COLUMN_STATUS_SOURCE_TEXT = "_column_table_resources_source_text";
+    static String RESOURCES_COLUMN_STATUS_SOURCE_TEXT_VERSION = "_column_table_resources_source_text_version";
+    static String RESOURCES_COLUMN_STATUS_VERSION = "_column_table_resources_status_version";
+
 
     private static final String TAG = "StatusModel";
 
@@ -33,20 +52,20 @@ public class StatusModel {
     public String sourceText = "";
     public String sourceTextVersion = "";
     public String version = "";
-    public LanguageModel parentLanguage;
+    public VersionModel parentResource;
 
 
     public StatusModel(){
         super();
     }
-    public StatusModel(LanguageModel parent) {
+    public StatusModel(VersionModel parent) {
         this();
-        this.parentLanguage = parent;
+        this.parentResource = parent;
     }
 
-    public static StatusModel getStatusModelFromJsonObject(JSONObject jsonObj, LanguageModel language){
+    public static StatusModel getStatusModelFromJsonObject(JSONObject jsonObj, VersionModel resource){
 
-        StatusModel model = new StatusModel(language);
+        StatusModel model = new StatusModel(resource);
 
         try {
             model.checkingEntity = jsonObj.has(CHECKING_ENTITY) ? jsonObj.getString(CHECKING_ENTITY) : "";
@@ -70,24 +89,22 @@ public class StatusModel {
 
         ContentValues values = new ContentValues();
 
-        values.put(DBUtils.COLUMN_CHECKING_ENTITY_TABLE_LANGUAGE_CATALOG, this.checkingEntity);
-        values.put(DBUtils.COLUMN_CHECKING_LEVEL_TABLE_LANGUAGE_CATALOG, this.checkingLevel);
-        values.put(DBUtils.COLUMN_COMMENTS_TABLE_LANGUAGE_CATALOG, this.comments);
-        values.put(DBUtils.COLUMN_CONTRIBUTORS_TABLE_LANGUAGE_CATALOG, this.contributors);
-        values.put(DBUtils.COLUMN_PUBLISH_DATE_TABLE_LANGUAGE_CATALOG, this.publishDate);
-        values.put(DBUtils.COLUMN_SOURCE_TEXT_TABLE_LANGUAGE_CATALOG, this.sourceText);
-        values.put(DBUtils.COLUMN_SOURCE_TEXT_VERSION_TABLE_LANGUAGE_CATALOG, this.sourceTextVersion);
-        values.put(DBUtils.COLUMN_VERSION_TABLE_LANGUAGE_CATALOG, this.version);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_CHECKING_ENTITY, this.checkingEntity);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_CHECKING_LEVEL, this.checkingLevel);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_COMMENTS, this.comments);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_CONTRIBUTORS, this.contributors);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_PUBLISH_DATE, this.publishDate);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_SOURCE_TEXT, this.sourceText);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_SOURCE_TEXT_VERSION, this.sourceTextVersion);
+        values.put(StatusModel.RESOURCES_COLUMN_STATUS_VERSION, this.version);
 
         return values;
     }
-    
-    
 
     @Override
     public String toString() {
         return "StatusModel{" +
-                ", checkingEntity='" + checkingEntity + '\'' +
+                "checkingEntity='" + checkingEntity + '\'' +
                 ", checkingLevel='" + checkingLevel + '\'' +
                 ", comments='" + comments + '\'' +
                 ", contributors='" + contributors + '\'' +

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/rows"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/clickableRow"
+                android:layout_width="900dp"
+                android:layout_height="80dp"
+                android:background="@drawable/layout_button_click"
+                android:focusable="false"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/languageTypeImageView"
+                    android:layout_width="55sp"
+                    android:layout_height="55sp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:cropToPadding="true"
+                    android:scaleType="center"
+                    android:src="@color/white" />
+
+                <TextView
+                    android:id="@+id/languageNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:focusable="true"
+                    android:singleLine="true"
+                    android:text="New Text"
+                    android:textColor="@color/black_light"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:typeface="sans" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center">
+
+                <ImageView
+                    android:id="@+id/goFrameClickImageView"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="15dp"
+
+                    android:background="@drawable/layout_button_click"
+                    android:focusable="true"
+                    android:src="@drawable/info_icon" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/visibleLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/checkingEntityConstanttextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@string/checking_entity"
+                        android:textColor="@color/black_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/checkingEntitytextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="15dp"
+                        android:singleLine="false"
+                        android:text="New Text"
+                        android:textColor="@color/black_light" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/checkingLevelConstanttextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@string/checking_level"
+                        android:textColor="@color/black_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/checkingLevelTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+
+                        android:layout_marginTop="15dp"
+                        android:singleLine="true"
+                        android:text="New Text"
+                        android:textColor="@color/black_light" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/versionConstanttextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@string/version"
+                        android:textColor="@color/black_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/versionTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="15dp"
+                        android:singleLine="true"
+
+                        android:text="New Text"
+                        android:textColor="@color/black_light" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/publishDateConstanttextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@string/publish_date"
+                        android:textColor="@color/black_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/publishDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+
+                        android:layout_marginTop="15dp"
+                        android:singleLine="true"
+                        android:text="New Text"
+                        android:textColor="@color/black_light" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

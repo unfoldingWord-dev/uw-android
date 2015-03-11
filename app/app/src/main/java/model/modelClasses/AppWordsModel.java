@@ -6,7 +6,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import utils.DBUtils;
+import model.modelClasses.mainData.BookModel;
 
 /**
  * Created by Fechner on 1/9/15.
@@ -47,21 +47,6 @@ public class AppWordsModel {
     }
 
 
-    public ContentValues getModelAsContentValues(){
-        ContentValues values = new ContentValues();
-        values.put(DBUtils.COLUMN_BOOK_WORDS_CANCEL, cancel);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_CHAPTERS, chapters);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_LANGUAGES, languages);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_NEXT_CHAPTER, nextChapter);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_OK, ok);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_REMOVE_LOCALLY, removeLocally);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_REMOVE_THIS_STRING, removeThisString);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_SAVE_LOCALLY, saveLocally);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_SAVE_THIS_STRING, saveThisString);
-        values.put(DBUtils.COLUMN_BOOK_WORDS_SELECT_A_LANGUAGE, selectALanguage);
-
-        return values;
-    }
 
     public static AppWordsModel getAppWordsModelFromJsonObject(JSONObject jsonObj, BookModel parent){
         
@@ -100,7 +85,6 @@ public class AppWordsModel {
                 ", saveLocally='" + saveLocally + '\'' +
                 ", saveThisString='" + saveThisString + '\'' +
                 ", selectALanguage='" + selectALanguage + '\'' +
-                //", bookParent=" + bookParent +
                 '}';
     }
 }

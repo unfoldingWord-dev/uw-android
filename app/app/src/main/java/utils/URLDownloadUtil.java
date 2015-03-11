@@ -22,13 +22,7 @@ public class URLDownloadUtil {
     static int connectionTimeout = 20000;
     static int socketTimeout = 10000;
 
-    /**
-     * Download JSON data from url
-     *
-     * @param url
-     * @return
-     */
-    public static String downloadJson(String url) throws IOException {
+    static public HttpResponse downloadUrl(String url) throws IOException {
 
         Log.i(TAG, "Will download url: " + url);
 
@@ -41,6 +35,26 @@ public class URLDownloadUtil {
         HttpClient httpClient = new DefaultHttpClient(httpParameters);
         HttpGet get = new HttpGet(url);
         HttpResponse response = httpClient.execute(get);
+        return response;
+    }
+    /**
+     * Download JSON data from url
+     *
+     * @param url
+     * @return
+     */
+    public static String downloadJson(String url) throws IOException {
+
+        HttpResponse response =  downloadUrl(url);
+
         return EntityUtils.toString(response.getEntity());
+    }
+
+    public static byte[] downloadUsfm(String url) throws IOException {
+
+        HttpResponse response =  downloadUrl(url);
+
+        return EntityUtils.toByteArray(response.getEntity());
+
     }
 }

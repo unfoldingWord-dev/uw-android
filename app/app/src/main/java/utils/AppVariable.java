@@ -1,10 +1,10 @@
 package utils;
 
-import model.modelClasses.ChapterModel;
+import model.modelClasses.mainData.StoriesChapterModel;
 
 /**
  * Created by Acts Media Inc. on 9/12/14.
  */
 public class AppVariable {
-    public static ChapterModel MODELS = null;
+    public static StoriesChapterModel MODELS = null;
 }

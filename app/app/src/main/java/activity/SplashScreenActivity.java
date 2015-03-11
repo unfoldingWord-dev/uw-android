@@ -11,7 +11,9 @@ import android.widget.Toast;
 import org.unfoldingword.mobile.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import activity.selectionActivities.InitialPageActivity;
 import model.db.DBManager;
 import utils.URLUtils;
 
@@ -67,7 +69,7 @@ public class SplashScreenActivity extends Activity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                dbManager.createDataBase(false);
+                dbManager.createDataBase(true);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,7 +90,7 @@ public class SplashScreenActivity extends Activity {
         protected void onPostExecute(String result) {
             if (cancelValue) {
                 if (result.equals(URLUtils.TRUE)) {
-                    startActivity(new Intent(SplashScreenActivity.this, LanguageChooserActivity.class));
+                    startActivity(new Intent(SplashScreenActivity.this, InitialPageActivity.class));
                     finish();
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 } else {
@@ -96,6 +98,7 @@ public class SplashScreenActivity extends Activity {
                 }
             } else {
                 finish();
+                startActivity(new Intent(SplashScreenActivity.this, SplashScreenActivity.class));
             }
 
         }
