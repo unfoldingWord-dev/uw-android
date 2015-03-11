@@ -1,4 +1,4 @@
-package activity.selectionActivities;
+package activity.bookSelection;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,12 +12,11 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import activity.ReadingActivity;
-import activity.StoryReadingActivity;
-import adapter.selectionAdapters.GeneralRowInterface;
-import adapter.selectionAdapters.StoriesChapterAdapter;
+import activity.reading.ReadingActivity;
+import activity.reading.StoryReadingActivity;
+import adapters.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.StoriesChapterAdapter;
 import model.datasource.VersionDataSource;
-import model.db.DBManager;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.LanguageModel;

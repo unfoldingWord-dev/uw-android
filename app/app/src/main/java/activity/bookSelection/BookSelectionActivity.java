@@ -1,4 +1,4 @@
-package activity.selectionActivities;
+package activity.bookSelection;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,10 +9,10 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import adapter.selectionAdapters.GeneralRowInterface;
-import adapter.selectionAdapters.InitialPageModel;
+import adapters.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.InitialPageModel;
 import model.datasource.ProjectDataSource;
-import model.db.DBManager;
+import model.database.DBManager;
 import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
 

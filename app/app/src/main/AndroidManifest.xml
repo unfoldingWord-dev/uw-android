@@ -24,27 +24,27 @@
         </activity>
 
         <activity
-            android:name="activity.selectionActivities.ChapterSelectionActivity"
+            android:name="activity.bookSelection.ChapterSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.selectionActivities.InitialPageActivity"
+            android:name="activity.bookSelection.InitialPageActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.selectionActivities.BookSelectionActivity"
+            android:name="activity.bookSelection.BookSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.selectionActivities.VersionSelectionActivity"
+            android:name="activity.bookSelection.VersionSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.ReadingActivity"
+            android:name="activity.reading.ReadingActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="activity.StoryReadingActivity"
+            android:name="activity.reading.StoryReadingActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity

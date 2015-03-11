@@ -1,7 +1,6 @@
-package activity.selectionActivities;
+package activity.bookSelection;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,9 +18,9 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
-import adapter.selectionAdapters.GeneralAdapter;
-import adapter.selectionAdapters.GeneralRowInterface;
-import model.db.DBManager;
+import adapters.selectionAdapters.GeneralAdapter;
+import adapters.selectionAdapters.GeneralRowInterface;
+import model.database.DBManager;
 import view.popover.ActionItem;
 import view.popover.QuickAction;
 
@@ -105,6 +103,7 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
                 i++;
             }
         }
+
         return "Language";
     }
 
@@ -206,7 +205,7 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
     @Override
     protected void onResume() {
         super.onResume();
-        prepareListView();
+        setUI();
     }
 
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

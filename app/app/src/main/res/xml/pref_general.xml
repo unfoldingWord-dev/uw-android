@@ -11,5 +11,8 @@
         android:singleLine="true"
         android:maxLines="1" />
 
+    <Preference android:title="@string/reset_base_url"
+        android:key="reset_url"/>
+
 
 </PreferenceScreen>

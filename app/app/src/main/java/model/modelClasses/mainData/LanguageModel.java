@@ -8,9 +8,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import adapter.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.LanguageDataSource;
-import model.db.DBManager;
+import model.database.DBManager;
 
 /**
  * Created by Acts Media Inc. on 3/12/14.

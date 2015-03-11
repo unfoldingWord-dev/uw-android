@@ -1,4 +1,4 @@
-package activity.selectionActivities;
+package activity.bookSelection;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -11,23 +11,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import activity.SettingsActivity;
-import adapter.selectionAdapters.GeneralAdapter;
-import adapter.selectionAdapters.GeneralRowInterface;
-import adapter.selectionAdapters.InitialPageModel;
+import adapters.selectionAdapters.GeneralAdapter;
+import adapters.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.InitialPageModel;
 import model.datasource.ProjectDataSource;
-import model.db.DBManager;
+import model.database.DBManager;
 import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
 import services.UpdateService;
@@ -45,6 +42,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     FrameLayout visibleLayout = null;
     Button mRefreshButton = null;
+    Button settingsButton = null;
     /**
      * This broadcast for When the update is completed
      */
@@ -101,19 +99,22 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     protected void setUI() {
         super.setUI();
 
-        LayoutInflater inflater = getLayoutInflater();
-        View footerView = inflater.inflate(R.layout.settings_footer, null);
+        if(settingsButton == null) {
+            LayoutInflater inflater = getLayoutInflater();
+            View footerView = inflater.inflate(R.layout.settings_footer, null);
 
 
-        // change version number
-        Button footerButton = (Button) footerView.findViewById(R.id.settings_button);
-        footerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moveToSettings();
-            }
-        });
-        mListView.addFooterView(footerView);
+            // change version number
+            settingsButton = (Button) footerView.findViewById(R.id.settings_button);
+            settingsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    moveToSettings();
+                }
+            });
+            mListView.addFooterView(footerView);
+            this.actionbarTextView.setText("Unfolding Word");
+        }
     }
 
     private void moveToSettings(){
@@ -164,7 +165,12 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
         super.onlySuperOnWindowFocusChanged(hasFocus);
         int width = this.languagesButton.getMeasuredWidth();
-        actionbarTextView.setPadding(width, 0, 5, 0);
+        if(width > 1) {
+            actionbarTextView.setPadding(width, 0, 5, 0);
+        }
+        else{
+            actionbarTextView.setPadding(200, 0, 5, 0);
+        }
     }
 
     @Override

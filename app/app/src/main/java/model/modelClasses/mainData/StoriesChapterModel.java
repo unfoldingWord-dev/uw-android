@@ -8,9 +8,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import adapter.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.StoriesChapterDataSource;
-import model.db.DBManager;
 
 /**
  * Created by Acts Media Inc. on 3/12/14.

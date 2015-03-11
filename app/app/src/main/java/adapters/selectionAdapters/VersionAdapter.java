@@ -1,4 +1,4 @@
-package adapter.selectionAdapters;
+package adapters.selectionAdapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +16,8 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import activity.selectionActivities.ChapterSelectionActivity;
-import activity.selectionActivities.GeneralSelectionActivity;
+import activity.bookSelection.ChapterSelectionActivity;
+import activity.bookSelection.GeneralSelectionActivity;
 import model.modelClasses.mainData.VersionModel;
 import utils.CustomSlideAnimationRelativeLayout;
 

@@ -1,4 +1,4 @@
-package adapter;
+package adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,7 +25,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
-import model.db.DBManager;
+import model.database.DBManager;
 import model.modelClasses.mainData.StoriesChapterModel;
 import utils.URLUtils;
 

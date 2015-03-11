@@ -1,4 +1,4 @@
-package model.db;
+package model.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,15 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import adapter.selectionAdapters.StoriesChapterAdapter;
 import model.datasource.AMDatabaseIndex;
 import model.datasource.LanguageDataSource;
 import model.datasource.ProjectDataSource;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
-import model.modelClasses.mainData.StoriesChapterModel;
-import model.modelClasses.mainData.VersionModel;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.

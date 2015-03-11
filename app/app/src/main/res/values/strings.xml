@@ -16,4 +16,5 @@
 
     <string name="selected_language">"SELECTED_LANGUAGE"</string>
 
+    <string name="reset_base_url">Reset Url</string>
 </resources>

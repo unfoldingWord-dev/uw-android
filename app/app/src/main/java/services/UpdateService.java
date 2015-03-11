@@ -29,8 +29,8 @@ import model.datasource.LanguageDataSource;
 import model.datasource.PageDataSource;
 import model.datasource.ProjectDataSource;
 import model.datasource.VersionDataSource;
-import model.db.DBManager;
-import model.db.ImageDatabaseHandler;
+import model.database.DBManager;
+import model.database.ImageDatabaseHandler;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.StoriesChapterModel;
@@ -115,9 +115,8 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
             // Get current list of languages
             try {
-
                 hasUpdatedImages = false;
-                updateProjects();
+                updateProjects(true);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -131,7 +130,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
         }
     }
 
-    private void updateProjects() throws JSONException, IOException{
+    private void updateProjects(boolean forceUpdate) throws JSONException, IOException{
 
         Log.i(TAG, " Updating Projects");
         String url = PreferenceManager.getDefaultSharedPreferences(this).getString("base_url",  getResources().getString(R.string.pref_default_base_url));
@@ -152,15 +151,15 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                     newModel.uid = currentModel.uid;
                 }
 
-                if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
+                if (currentModel == null || (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
                     dataSource.saveModel(newModel);
-                    updateLanguages(dataSource.getModelForSlug(newModel.slug));
+                    updateLanguages(dataSource.getModelForSlug(newModel.slug), forceUpdate);
                 }
             }
         }
     }
 
-    private void updateLanguages(ProjectModel parent) throws JSONException, IOException{
+    private void updateLanguages(ProjectModel parent, boolean forceUpdate) throws JSONException, IOException{
 
         Log.i(TAG, " Updating Languages");
         String json = URLDownloadUtil.downloadJson(parent.languageUrl);
@@ -180,15 +179,15 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                     newModel.uid = currentModel.uid;
                 }
 
-                if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
+                if (currentModel == null || (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
                     dataSource.saveModel(newModel);
-                    updateVersions(dataSource.getModelForSlug(newModel.slug));
+                    updateVersions(dataSource.getModelForSlug(newModel.slug), forceUpdate);
                 }
             }
         }
     }
 
-    private void updateVersions(LanguageModel parent) throws JSONException, IOException{
+    private void updateVersions(LanguageModel parent, boolean forceUpdate) throws JSONException, IOException{
 
         Log.i(TAG, " Updating Versions");
         String json = URLDownloadUtil.downloadJson(parent.resourceUrl);
@@ -208,7 +207,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                     newModel.uid = currentModel.uid;
                 }
 
-                if (currentModel == null ||  (currentModel.dateModified < newModel.dateModified)) {
+                if (currentModel == null ||  (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
 
                     dataSource.saveModel(newModel);
 
@@ -216,7 +215,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                         this.parseUSFMForVersion(dataSource.getModelForSlug(newModel.slug));
                     }
                     else {
-                        updateBooks(dataSource.getModelForSlug(newModel.slug));
+                        updateBooks(dataSource.getModelForSlug(newModel.slug), forceUpdate);
                     }
                 }
             }
@@ -251,7 +250,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
     }
 
 
-    private void updateBooks(VersionModel parent) throws JSONException, IOException{
+    private void updateBooks(VersionModel parent, boolean forceUpdate) throws JSONException, IOException{
 
         Log.i(TAG, " Updating Books");
 
@@ -267,7 +266,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
             newModel.uid = currentModel.uid;
         }
 
-        if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {
+        if (currentModel == null || (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
 
 
 

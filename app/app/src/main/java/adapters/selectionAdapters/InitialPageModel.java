@@ -1,4 +1,4 @@
-package adapter.selectionAdapters;
+package adapters.selectionAdapters;
 
 /**
  * Created by Fechner on 2/27/15.

@@ -1,4 +1,4 @@
-package activity;
+package activity.reading;
 
 
 import android.content.Context;
@@ -6,36 +6,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
-import activity.selectionActivities.GeneralSelectionActivity;
-import adapter.selectionAdapters.GeneralRowInterface;
-import adapter.StoryPagerAdapter;
-import model.datasource.StoriesChapterDataSource;
+import activity.bookSelection.GeneralSelectionActivity;
+import adapters.ReadingPagerAdapter;
+import adapters.selectionAdapters.GeneralRowInterface;
+import model.datasource.BibleChapterDataSource;
+import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.LanguageModel;
-import model.modelClasses.mainData.StoriesChapterModel;
+import model.modelClasses.mainData.VersionModel;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
-public class StoryReadingActivity extends GeneralSelectionActivity {
+public class ReadingActivity extends GeneralSelectionActivity {
 
     ViewPager readingViewPager = null;
-    ImageLoader mImageLoader;
 
-    StoriesChapterModel storiesChapterModel = null;
+    VersionModel versionModel = null;
+    BibleChapterModel chapterModel = null;
 
     @Override
     protected int getContentView() {
@@ -44,11 +41,10 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
     @Override
     protected ArrayList<String> getListOfLanguages() {
 
-        if(storiesChapterModel == null){
-            setChapter();
+        if(versionModel == null){
+            setVersion();
         }
-
-        return storiesChapterModel.getAvailableLanguages(getApplicationContext());
+        return versionModel.getAvailableLanguages(getApplicationContext());
     }
     @Override
     protected ArrayList<GeneralRowInterface> getData() {
@@ -66,20 +62,20 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
         return null;
     }
 
-
-    @Override
-    protected String getActionBarTitle() {
-        return this.storiesChapterModel.getTitle();
-    }
-
     @Override
     protected void updateListView() {
-        setChapter();
+        setVersion();
         this.setUIWithCurrentIndex();
     }
 
+    @Override
+    protected String getActionBarTitle() {
+        return chapterModel.getTitle();
+    }
+
     protected void setUIWithCurrentIndex() {
-        int index =readingViewPager.getCurrentItem();
+        int index = readingViewPager.getCurrentItem();
+
         setUI();
         readingViewPager.setCurrentItem(index);
     }
@@ -92,36 +88,36 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
         super.setUI();
 
         readingViewPager = (ViewPager) findViewById(R.id.myViewPager);
-        mImageLoader = ImageLoader.getInstance();
 
-        if(mImageLoader.isInited()) {
-            ImageLoader.getInstance().destroy();
+        if(versionModel == null){
+            this.setVersion();
         }
-
-        mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
-
-        if(storiesChapterModel == null){
-            this.setChapter();
-        }
-        actionbarTextView.setText(storiesChapterModel.getTitle());
-        StoryPagerAdapter adapter = new StoryPagerAdapter(this, storiesChapterModel,
-                mImageLoader,
+        actionbarTextView.setText(chapterModel.getTitle());
+        ReadingPagerAdapter adapter = new ReadingPagerAdapter(this, versionModel.getBibleChildModels(getApplicationContext()),
                 actionbarTextView, getIntent());
 
         readingViewPager.setAdapter(adapter);
-
         setupTouchListener(readingViewPager);
+        int currentItem = Integer.parseInt(chapterModel.number.replaceAll("[^0-9]", "")) - 1;
+        readingViewPager.setCurrentItem(currentItem);
+
     }
 
-    private void setChapter(){
+    private void setVersion(){
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
+        if(chapterModel == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
 
-            String chosenChapter = extras.getString(CHOSEN_ID);
-            StoriesChapterModel chapter = (new StoriesChapterDataSource(this.getApplicationContext())).getModel(chosenChapter);
+                String chosenChapter = extras.getString(CHOSEN_ID);
+                BibleChapterModel chapter = (new BibleChapterDataSource(this.getApplicationContext())).getModel(chosenChapter);
+                chapterModel = chapter;
 
-            this.storiesChapterModel = chapter;
+                this.versionModel = chapter.getParent(getApplicationContext());
+                checkForLanguageChange();
+            }
+        }
+        else{
             checkForLanguageChange();
         }
     }
@@ -133,12 +129,12 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
 
         Context context = getApplicationContext();
 
-        if(!storiesChapterModel.getParent(context).getParent(context).getParent(context).languageName.equalsIgnoreCase(selectedLanguage)){
+        if(!chapterModel.getParent(context).getParent(context).languageName.equalsIgnoreCase(selectedLanguage)){
             LanguageModel correctLanguage = null;
 
-            ArrayList<LanguageModel> languages = storiesChapterModel.getParent(context).
+            ArrayList<LanguageModel> languages = chapterModel.getParent(context).
                     getParent(getApplicationContext()).getParent(getApplicationContext()).
-                    getParent(context).getChildModels(getApplicationContext());
+                    getChildModels(getApplicationContext());
 
             for(LanguageModel model : languages){
                 if(selectedLanguage.equalsIgnoreCase(model.languageName)){
@@ -148,14 +144,13 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
             }
 
             if(correctLanguage != null){
+                ArrayList<BibleChapterModel> chapters = correctLanguage.getChildModels(context)
+                        .get(0).getBibleChildModels(context);
 
-                ArrayList<StoriesChapterModel> chapters = correctLanguage.getChildModels(context)
-                        .get(0).getStoriesChildModels(context).get(0).getChildModels(context);
-
-                for(StoriesChapterModel model : chapters){
-
-                    if(model.number.equalsIgnoreCase(storiesChapterModel.number)){
-                        storiesChapterModel = model;
+                for(BibleChapterModel model : chapters){
+                    if(model.number.equalsIgnoreCase(chapterModel.number)){
+                        chapterModel = model;
+                        this.versionModel = chapterModel.getParent(context);
                         break;
                     }
                 }
@@ -169,7 +164,6 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
-            ImageLoader.getInstance().destroy();
             overridePendingTransition(R.anim.left_in, R.anim.right_out);
         }
         return super.onOptionsItemSelected(item);
@@ -179,7 +173,6 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
     @Override
     public void onBackPressed() {
         finish();
-        ImageLoader.getInstance().destroy();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
@@ -270,4 +263,6 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
         boolean shouldHide = mActionBar.isShowing();
         handleActionBarHidden(shouldHide);
     }
+
+
 }

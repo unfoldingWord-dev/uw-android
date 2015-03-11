@@ -83,6 +83,10 @@ public class USFMParser {
             verse = verse.replaceAll(sRegex, "");
 //            System.out.println(verse);
             verse = verse.replace("\\b", "");
+            verse = verse.replace("\\q1", "<br/>&nbsp&nbsp&nbsp&nbsp");
+            verse = verse.replace("\\q2", "<br/>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp");
+            verse = verse.replace("\\q3", "<br/>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp");
+            verse = verse.replace("\\q", "<br/>&nbsp&nbsp&nbsp&nbsp");
 
 
             finalChapterString += verse;

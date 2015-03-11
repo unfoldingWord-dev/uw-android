@@ -7,13 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-import adapter.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.BibleChapterDataSource;
-import model.datasource.StoriesChapterDataSource;
 import model.datasource.VersionDataSource;
-import model.db.DBManager;
+import model.database.DBManager;
 import model.modelClasses.StatusModel;
 
 /**

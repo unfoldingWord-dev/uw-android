@@ -1,4 +1,4 @@
-package activity.selectionActivities;
+package activity.bookSelection;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,8 +12,8 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
-import adapter.selectionAdapters.GeneralRowInterface;
-import adapter.selectionAdapters.VersionAdapter;
+import adapters.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.VersionAdapter;
 import model.datasource.LanguageDataSource;
 import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.VersionModel;

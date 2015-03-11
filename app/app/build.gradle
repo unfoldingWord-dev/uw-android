@@ -37,4 +37,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.android.support:support-v4:21.0.3'
+    compile files('libs/prov-1.51.0.0.jar')
 }

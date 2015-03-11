@@ -11,10 +11,9 @@ import android.widget.Toast;
 import org.unfoldingword.mobile.R;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import activity.selectionActivities.InitialPageActivity;
-import model.db.DBManager;
+import activity.bookSelection.InitialPageActivity;
+import model.database.DBManager;
 import utils.URLUtils;
 
 /**
@@ -42,7 +41,7 @@ public class SplashScreenActivity extends Activity {
     private void setUI() {
         dbManager = DBManager.getInstance(this);
 
-        PreferenceManager.getDefaultSharedPreferences(this).edit().clear().commit();
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         execute = new GetLanguageListAndFrames().execute(URLUtils.LANGUAGE_INFO, URLUtils.CHAPTER_INFO);
     }
 

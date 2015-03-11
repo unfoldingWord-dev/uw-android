@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import adapter.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.ProjectDataSource;
 
 /**

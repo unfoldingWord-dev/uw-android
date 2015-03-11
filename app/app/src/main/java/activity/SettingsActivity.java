@@ -3,6 +3,7 @@ package activity;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -60,6 +61,20 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         addPreferencesFromResource(R.xml.pref_general);
+
+        Preference button = (Preference)findPreference("reset_url");
+        button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+
+                Resources resources = getResources();
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).
+                        edit().putString("base_url", resources.getString(R.string.pref_default_base_url)).commit();
+                setPreferenceScreen(null);
+                setupSimplePreferencesScreen();
+                return true;
+            }
+        });
 
         // Add 'notifications' preferences, and a corresponding header.
 //        PreferenceCategory fakeHeader = new PreferenceCategory(this);
@@ -124,9 +139,7 @@ public class SettingsActivity extends PreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
 
-
-                preference.setSummary(stringValue);
-
+            preference.setSummary(stringValue);
             return true;
         }
     };

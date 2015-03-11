@@ -1,4 +1,4 @@
-package adapter.selectionAdapters;
+package adapters.selectionAdapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
