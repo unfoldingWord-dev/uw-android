@@ -6,7 +6,8 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import model.modelClasses.mainData.AMDatabaseModelAbstractObject;
+import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.StoriesChapterModel;
 
@@ -40,13 +41,15 @@ public class BookDataSource extends AMDatabaseDataSourceAbstract {
         super(context);
     }
 
-    public ArrayList<StoriesChapterModel> getChildModels(BookModel model) {
+    public ArrayList<StoriesChapterModel> getChildModels(BookModel parentModel) {
 
         ArrayList<StoriesChapterModel> modelList = new ArrayList<StoriesChapterModel>();
-        ArrayList<AMDatabaseModelAbstractObject> models = this.loadChildrenModelsFromDatabase(model);
+        ArrayList<AMDatabaseModelAbstractObject> models = this.loadChildrenModelsFromDatabase(parentModel);
 
         for(AMDatabaseModelAbstractObject mod : models){
-            modelList.add((StoriesChapterModel) mod);
+            StoriesChapterModel model = (StoriesChapterModel) mod;
+            model.setParent(parentModel);
+            modelList.add( model);
         }
         return modelList;
     }

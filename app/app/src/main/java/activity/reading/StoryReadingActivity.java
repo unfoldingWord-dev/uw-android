@@ -31,6 +31,8 @@ import model.modelClasses.mainData.StoriesChapterModel;
  */
 public class StoryReadingActivity extends GeneralSelectionActivity {
 
+    static String STORY_INDEX_STRING = "STORY_INDEX_STRING";
+
     ViewPager readingViewPager = null;
     ImageLoader mImageLoader;
 
@@ -54,11 +56,8 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
         return null;
     }
     @Override
-    protected void storedValues() {
-    }
-    @Override
     protected String getIndexStorageString() {
-        return null;
+        return STORY_INDEX_STRING;
     }
     @Override
     protected Class getChildClass() {
@@ -105,11 +104,18 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
         actionbarTextView.setText(storiesChapterModel.getTitle());
         StoryPagerAdapter adapter = new StoryPagerAdapter(this, storiesChapterModel,
                 mImageLoader,
-                actionbarTextView, getIntent());
+                actionbarTextView, getIndexStorageString());
 
         readingViewPager.setAdapter(adapter);
 
         setupTouchListener(readingViewPager);
+
+        int currentItem = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(getIndexStorageString(), -1);
+
+        if(currentItem > 0){
+            readingViewPager.setCurrentItem(currentItem);
+        }
+
     }
 
     private void setChapter(){
@@ -159,27 +165,21 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
                     }
                 }
             }
-
         }
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
             ImageLoader.getInstance().destroy();
-            overridePendingTransition(R.anim.left_in, R.anim.right_out);
         }
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
-        finish();
         ImageLoader.getInstance().destroy();
-        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+        super.onBackPressed();
     }
 
 
@@ -192,7 +192,6 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
             mActionBar.show();
         }
     }
-
 
     private void setupTouchListener(View view){
 
@@ -240,7 +239,6 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
                             checkShouldChangeNavBarHidden();
                             return true;
                         }
-
                 }
 
                 return false;

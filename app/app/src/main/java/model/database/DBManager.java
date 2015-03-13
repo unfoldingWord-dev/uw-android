@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import model.datasource.AMDatabaseIndex;
+import model.datasource.AMDatabase.AMDatabaseIndex;
 import model.datasource.LanguageDataSource;
 import model.datasource.ProjectDataSource;
 import model.modelClasses.mainData.ProjectModel;
@@ -26,39 +26,13 @@ public class DBManager extends SQLiteOpenHelper {
     /**
      * This needs to match up with the most recently updated Language model
      */
-    private static final int LAST_UPDATED = 20150227;
+    private static final int LAST_UPDATED = 20150310;
 
     private static String TAG = "DBManager";
 
     /// Current DB model version should be put here
     private Context context;
     private String DB_PATH = "";
-
-    static ArrayList<String> availableLanguages = null;
-    static public ArrayList<String> getAvailableLanguages(Context context){
-        if(availableLanguages == null){
-            availableLanguages = new LanguageDataSource(context).getAvailableLanguages();
-        }
-        return availableLanguages;
-    }
-
-    static public ArrayList<String> getAvailableLanguages(Context context, ArrayList<ProjectModel> projects) {
-
-        ArrayList<String> availLanguages = DBManager.getAvailableLanguages(context);
-        ArrayList<String> languages = new ArrayList<String>();
-
-        for(String language : availLanguages){
-
-            for(ProjectModel project : projects){
-                if(project.containsLanguage(language, context) && !languages.contains(language)){
-                    languages.add(language.toLowerCase());
-                    break;
-                }
-            }
-        }
-        return languages;
-    }
-
 
     private static DBManager dbManager;
     /**
@@ -83,7 +57,6 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     //region Overrides
-
 
     @Override
     public void onCreate(SQLiteDatabase database) {
@@ -137,7 +110,7 @@ public class DBManager extends SQLiteOpenHelper {
             }
         }
         catch (Exception e) {
-            Log.i(TAG, "DB exception in shouldLoadSavedDb");
+            Log.e(TAG, "DB exception in shouldLoadSavedDb");
             return (checkDB == null)? true : false;
         }
 

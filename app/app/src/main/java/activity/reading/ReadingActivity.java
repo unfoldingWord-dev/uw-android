@@ -29,6 +29,8 @@ import model.modelClasses.mainData.VersionModel;
  */
 public class ReadingActivity extends GeneralSelectionActivity {
 
+    static String BOOK_INDEX_STRING = "READING_INDEX_STRING";
+
     ViewPager readingViewPager = null;
 
     VersionModel versionModel = null;
@@ -51,11 +53,8 @@ public class ReadingActivity extends GeneralSelectionActivity {
         return null;
     }
     @Override
-    protected void storedValues() {
-    }
-    @Override
     protected String getIndexStorageString() {
-        return null;
+        return BOOK_INDEX_STRING;
     }
     @Override
     protected Class getChildClass() {
@@ -94,13 +93,16 @@ public class ReadingActivity extends GeneralSelectionActivity {
         }
         actionbarTextView.setText(chapterModel.getTitle());
         ReadingPagerAdapter adapter = new ReadingPagerAdapter(this, versionModel.getBibleChildModels(getApplicationContext()),
-                actionbarTextView, getIntent());
+                actionbarTextView, getIndexStorageString());
 
         readingViewPager.setAdapter(adapter);
         setupTouchListener(readingViewPager);
-        int currentItem = Integer.parseInt(chapterModel.number.replaceAll("[^0-9]", "")) - 1;
-        readingViewPager.setCurrentItem(currentItem);
+        int currentItem = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(getIndexStorageString(), -1);
 
+        if(currentItem < 0){
+            currentItem = Integer.parseInt(chapterModel.number.replaceAll("[^0-9]", "")) - 1;
+        }
+        readingViewPager.setCurrentItem(currentItem);
     }
 
     private void setVersion(){
@@ -155,27 +157,8 @@ public class ReadingActivity extends GeneralSelectionActivity {
                     }
                 }
             }
-
         }
     }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            overridePendingTransition(R.anim.left_in, R.anim.right_out);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        finish();
-        overridePendingTransition(R.anim.left_in, R.anim.right_out);
-    }
-
 
     private void handleActionBarHidden(boolean hide){
 

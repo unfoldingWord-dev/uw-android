@@ -6,25 +6,15 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="invisible" />
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/chapterImageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@color/white"
-            android:layout_gravity="center_horizontal|top" />
+            android:scaleType="fitStart"
+            android:src="@color/white"/>
 
         <TextView
             android:id="@+id/storyTextView"
@@ -32,11 +22,12 @@
             android:layout_height="match_parent"
             android:gravity="bottom"
             android:paddingBottom="2dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="New Text"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            />
     </FrameLayout>
 </RelativeLayout>

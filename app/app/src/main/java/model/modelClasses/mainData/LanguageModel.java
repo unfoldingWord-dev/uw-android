@@ -9,8 +9,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
+import model.database.ModelCaching;
 import model.datasource.LanguageDataSource;
 import model.database.DBManager;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Acts Media Inc. on 3/12/14.
@@ -113,7 +115,7 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
 
     public ArrayList<String> getAvailableLanguages(Context context) {
 
-        ArrayList<String> availLanguages = DBManager.getAvailableLanguages(context);
+        ArrayList<String> availLanguages = ModelCaching.getAvailableLanguages(context);
         ArrayList<String> languages = new ArrayList<String>();
 
         for(String language : availLanguages){

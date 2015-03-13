@@ -5,36 +5,42 @@
     android:background="@color/white"
     android:clickable="false">
 
+
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-        <ScrollView
-            android:id="@+id/chapterScrollView"
-            android:layout_width="fill_parent"
+        <WebView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            android:gravity="top"
-            android:fillViewport="true">
+            android:id="@+id/chapterWebView" />
 
-            <TextView
-                android:id="@+id/chapterTextView"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:gravity="top"
-                android:paddingBottom="30dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:paddingTop="30dp"
-                android:text="New Text"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:lineSpacingExtra="8dp"
-                android:textStyle="normal"/>
-        </ScrollView>
+        <!--<ScrollView-->
+            <!--android:id="@+id/chapterScrollView"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:scrollbars="vertical"-->
+            <!--android:gravity="top"-->
+            <!--android:fillViewport="true">-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/chapterTextView"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_weight="1.0"-->
+                <!--android:gravity="top"-->
+                <!--android:paddingBottom="30dp"-->
+                <!--android:paddingLeft="30dp"-->
+                <!--android:paddingRight="30dp"-->
+                <!--android:paddingTop="30dp"-->
+                <!--android:text="New Text"-->
+                <!--android:textColor="@color/black"-->
+                <!--android:textSize="18sp"-->
+                <!--android:lineSpacingExtra="8dp"-->
+                <!--android:textStyle="normal"/>-->
+        <!--</ScrollView>-->
 
 
     </FrameLayout>

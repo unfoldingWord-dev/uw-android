@@ -28,7 +28,7 @@ import model.modelClasses.mainData.VersionModel;
  */
 public class ChapterSelectionActivity extends GeneralSelectionActivity{
 
-    static String CHAPTERS_INDEX_STRING = "VERSIONS_INDEX_STRING";
+    public static String CHAPTERS_INDEX_STRING = "CHAPTERS_INDEX_STRING";
 
     private VersionModel chosenVersion = null;
     ImageLoader mImageLoader;
@@ -171,51 +171,4 @@ public class ChapterSelectionActivity extends GeneralSelectionActivity{
             this.chosenVersion = version;
         }
     }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//        if(!isStoryBook){
-//            return super.onOptionsItemSelected(item);
-//        }
-//
-//
-//        if (item.getItemId() == android.R.id.home) {
-//            storedValues();
-//            //reset  Preference
-//            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getIndexStorageString(), -1).commit();
-//            finish();
-//            overridePendingTransition(R.anim.left_in, R.anim.right_out);
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-//
-//
-//    @Override
-//    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//        if(!isStoryBook){
-//            super.onItemClick(adapterView, view, i, l);
-//            return;
-//        }
-//
-//        Object itemAtPosition = adapterView.getItemAtPosition(i);
-//        if (itemAtPosition instanceof ChapterModel) {
-//            ChapterModel model = (ChapterModel) itemAtPosition;
-//
-//            // put selected position  to sharedprefences
-//            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getIndexStorageString(), i).commit();
-//            ImageLoader.getInstance().destroy();
-//            startActivity(new Intent(this, StoryReadingActivity.class).putExtra(
-//                    LanguageChooserActivity.LANGUAGE_CODE, model.language).putExtra(
-//                    SELECTED_CHAPTER_POS, model.number));
-//            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
-//        }
-//    }
-
-    @Override
-    protected void storedValues() {
-
-    }
-
-
 }

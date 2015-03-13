@@ -9,10 +9,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
+import model.database.ModelCaching;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.VersionDataSource;
 import model.database.DBManager;
 import model.modelClasses.StatusModel;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Fechner on 1/22/15.
@@ -118,7 +120,7 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
 
     public ArrayList<String> getAvailableLanguages(Context context) {
 
-        ArrayList<String> availLanguages = DBManager.getAvailableLanguages(context);
+        ArrayList<String> availLanguages = ModelCaching.getAvailableLanguages(context);
         ArrayList<String> languages = new ArrayList<String>();
 
         for(String language : availLanguages){

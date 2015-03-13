@@ -27,11 +27,12 @@ public class VersionSelectionActivity extends GeneralSelectionActivity {
 
     VersionAdapter adapter;
 
+    private View footerView = null;
     private LanguageModel chosenLanguage = null;
 
     @Override
     protected int getContentView() {
-        return R.layout.activity_version_selector;
+        return R.layout.activity_general_list;
     }
 
     @Override
@@ -63,17 +64,17 @@ public class VersionSelectionActivity extends GeneralSelectionActivity {
     protected void setUI() {
         super.setUI();
 
-        LayoutInflater inflater = getLayoutInflater();
-        View footerView = inflater.inflate(R.layout.footerview, null);
+        if(footerView == null) {
+            LayoutInflater inflater = getLayoutInflater();
+            footerView = inflater.inflate(R.layout.footerview, null);
 
+            // change version number
+            TextView tView = (TextView) footerView.findViewById(R.id.textView);
+            String versionName = BuildConfig.VERSION_NAME;
 
-        // change version number
-        TextView tView = (TextView) footerView.findViewById(R.id.textView);
-        String versionName = BuildConfig.VERSION_NAME;
-
-        tView.setText(versionName);
-        mListView.addFooterView(footerView);
-
+            tView.setText(versionName);
+            mListView.addFooterView(footerView);
+        }
     }
 
     protected ArrayList<GeneralRowInterface> getData(){
@@ -99,7 +100,6 @@ public class VersionSelectionActivity extends GeneralSelectionActivity {
             if(correctLanguage != null){
                 chosenLanguage = correctLanguage;
             }
-
         }
 
         ArrayList<VersionModel> versions = this.chosenLanguage.getChildModels(getApplicationContext());
@@ -127,7 +127,7 @@ public class VersionSelectionActivity extends GeneralSelectionActivity {
     protected void prepareListView(){
 
         //getting instance of ExpandableListView
-        mListView = (ListView) findViewById(R.id.languageChooserExpandableListView);
+        mListView = (ListView) findViewById(R.id.generalList);
         mListView.setOnItemClickListener(this);
 
         ArrayList<GeneralRowInterface> data = this.getData();
@@ -141,11 +141,5 @@ public class VersionSelectionActivity extends GeneralSelectionActivity {
 
         actionbarTextView.setText(getActionBarTitle());
     }
-
-    @Override
-    protected void storedValues() {
-
-    }
-
 
 }

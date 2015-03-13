@@ -116,7 +116,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
             // Get current list of languages
             try {
                 hasUpdatedImages = false;
-                updateProjects(true);
+                updateProjects(false);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -132,7 +132,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void updateProjects(boolean forceUpdate) throws JSONException, IOException{
 
-        Log.i(TAG, " Updating Projects");
+//        Log.i(TAG, " Updating Projects");
         String url = PreferenceManager.getDefaultSharedPreferences(this).getString("base_url",  getResources().getString(R.string.pref_default_base_url));
         String json = URLDownloadUtil.downloadJson(url);
 
@@ -161,7 +161,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void updateLanguages(ProjectModel parent, boolean forceUpdate) throws JSONException, IOException{
 
-        Log.i(TAG, " Updating Languages");
+//        Log.i(TAG, " Updating Languages");
         String json = URLDownloadUtil.downloadJson(parent.languageUrl);
 
         JSONArray jsonArray = new JSONArray(json);
@@ -189,7 +189,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void updateVersions(LanguageModel parent, boolean forceUpdate) throws JSONException, IOException{
 
-        Log.i(TAG, " Updating Versions");
+//        Log.i(TAG, " Updating Versions");
         String json = URLDownloadUtil.downloadJson(parent.resourceUrl);
 
         JSONArray jsonArray = new JSONArray(json);
@@ -224,7 +224,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void parseUSFMForVersion(VersionModel version) throws IOException{
 
-        Log.i(TAG, " parsing usfm");
+//        Log.i(TAG, " parsing usfm");
 
         byte[] usfmText = URLDownloadUtil.downloadUsfm(version.usfmUrl);
 
@@ -252,7 +252,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void updateBooks(VersionModel parent, boolean forceUpdate) throws JSONException, IOException{
 
-        Log.i(TAG, " Updating Books");
+//        Log.i(TAG, " Updating Books");
 
         String json = URLDownloadUtil.downloadJson(parent.sourceUrl);
 
@@ -279,7 +279,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void updateStoryChapters(BookModel parent, JSONArray jsonArray) throws JSONException, IOException{
 
-        Log.i(TAG, " Updating Chapters");
+//        Log.i(TAG, " Updating Chapters");
 
 
         StoriesChapterDataSource dataSource = new StoriesChapterDataSource(this.getApplicationContext());
@@ -303,7 +303,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 
     private void updateStoryPage(StoriesChapterModel parent, JSONArray jsonArray) throws JSONException, IOException{
 
-        Log.i(TAG, " Updating Page");
+//        Log.i(TAG, " Updating Page");
 
 
         PageDataSource dataSource = new PageDataSource(this.getApplicationContext());
@@ -319,7 +319,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
             }
 
             if(!hasUpdatedImages){
-//                updateImageForPages(currentModel, newModel );
+                updateImageForPages(currentModel, newModel );
             }
 
 
@@ -328,13 +328,13 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 }
 
     private void updateImages(BookModel currentBook, BookModel newBook){
-        Log.i(TAG, " Updating Images");
+//        Log.i(TAG, " Updating Images");
 
         if(currentBook == null || newBook == null){
             return;
         }
 
-        Log.i(TAG, " Updating Images");
+//        Log.i(TAG, " Updating Images");
         Map<Long, PageModel> currentPages = currentBook.getPages(this.getApplicationContext());
         Map<Long, PageModel> newPages = newBook.getPages(this.getApplicationContext());
 
@@ -382,10 +382,10 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
      */
     private boolean downloadAndSaveImage(final String imageURL){
 
-        Log.i(TAG, "will download image url: " + imageURL);
+//        Log.i(TAG, "will download image url: " + imageURL);
 
         Bitmap image = AsyncImageLoader.downloadImage(imageURL);
-        return ImageDatabaseHandler.storeImage(getApplicationContext(), image, URLUtils.getLastBitFromUrl(imageURL));
+        return ImageDatabaseHandler.storeImage(getApplicationContext(), image, AsyncImageLoader.getLastBitFromUrl(imageURL));
     }
 
     @Override

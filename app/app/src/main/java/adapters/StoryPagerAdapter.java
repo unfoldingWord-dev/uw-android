@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -25,8 +26,10 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
+import activity.bookSelection.ChapterSelectionActivity;
 import model.database.DBManager;
 import model.modelClasses.mainData.StoriesChapterModel;
+import utils.AsyncImageLoader;
 import utils.URLUtils;
 
 /**
@@ -36,6 +39,8 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
 
 
     private static final String TAG = "ViewPagerAdapter";
+
+    protected String SELECTED_POS = "";
 
     DisplayImageOptions options;
     View view = null;
@@ -51,7 +56,7 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
     private int lastChapterNumber = -1;
 
 
-    public StoryPagerAdapter(Object context, StoriesChapterModel model, com.nostra13.universalimageloader.core.ImageLoader mImageLoader, TextView actionbarTextView, Intent intent) {
+    public StoryPagerAdapter(Object context, StoriesChapterModel model, ImageLoader mImageLoader, TextView actionbarTextView, String positionHolder) {
         this.context = (Context) context;
         currentChapter = model;
         getCount();
@@ -61,8 +66,8 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
         setImageOptions();
         dbManager = DBManager.getInstance(this.context);
         this.activity = (Activity) context;
-        this.intent = intent;
         lastChapterNumber = currentChapter.getParent(this.context).getChildModels(this.context).size();
+        SELECTED_POS = positionHolder;
     }
 
     @Override
@@ -110,7 +115,7 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
             TextView storyTextView = (TextView) view.findViewById(R.id.storyTextView);
             storyTextView.setText(currentChapter.getChildModels(context).get(position).text);
             String imgUrl = currentChapter.getChildModels(context).get(position).imageUrl;
-            String lastBitFromUrl = URLUtils.getLastBitFromUrl(imgUrl);
+            String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
             String imagePath = "assets://images/" + path;
@@ -131,19 +136,19 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
             nextChapterNumber = "0" + nextChapterNumber;
         }
 
-
         ArrayList<StoriesChapterModel> chapters = currentChapter.getParent(context).getChildModels(context);
 
         StoriesChapterModel nextChapter = null;
+        int newChapterNumber = Integer.parseInt(this.currentChapter.number);
         for(StoriesChapterModel chapter : chapters){
-            if(Integer.parseInt(chapter.number) == Integer.parseInt(this.currentChapter.number) + 1){
+            if(Integer.parseInt(chapter.number) == newChapterNumber + 1){
                 nextChapter = chapter;
                 break;
             }
         }
 
-
         this.currentChapter = nextChapter;
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(ChapterSelectionActivity.CHAPTERS_INDEX_STRING, newChapterNumber).commit();
         getCount();
         currentChapter.AddBlankPageToEnd();
 //        ArrayList<PageModel> newPages = nextChapter.getChildModels(context);
@@ -190,10 +195,10 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
     public void onLoadingFailed(String url, View view, FailReason failReason) {
         ImageView imageView = (ImageView) view.findViewById(R.id.chapterImageView);
         if (url.contains("file")) {
-            String w = URLUtils.getLastBitFromUrl(url);
+            String w = AsyncImageLoader.getLastBitFromUrl(url);
             mImageLoader.displayImage("assets://images/" + w, imageView, options);
         } else {
-            String lastBitFromUrl = URLUtils.getLastBitFromUrl(url);
+            String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(url);
             String s = lastBitFromUrl.replaceAll("[}]", "");
             mImageLoader.displayImage("assets://images/" + s, imageView, options);
         }
@@ -222,6 +227,12 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
     @Override
     public void onLoadingCancelled(String s, View view) {
 
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        super.setPrimaryItem(container, position, object);
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(SELECTED_POS, position).commit();
     }
 
 }

@@ -34,6 +34,7 @@
         android:clickable="true"
         android:background="@drawable/language_button_click"
         android:textStyle="normal"
+        android:textAllCaps="false"
         android:layout_marginRight="-10dp" />
 
 </RelativeLayout>

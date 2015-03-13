@@ -6,7 +6,8 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import model.modelClasses.mainData.AMDatabaseModelAbstractObject;
+import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.PageModel;
 

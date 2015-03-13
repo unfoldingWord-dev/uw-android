@@ -137,4 +137,9 @@ public class AsyncImageLoader extends AsyncTask<String, Integer, Bitmap> {
 			return null;
 		}
 	}
+
+    public static String getLastBitFromUrl(String url) {
+        String changedUrl = url.replaceFirst(".*/([^/?]+).*", "$1");
+        return changedUrl;
+    }
 }

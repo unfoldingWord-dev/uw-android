@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.ProjectDataSource;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Fechner on 1/22/15.

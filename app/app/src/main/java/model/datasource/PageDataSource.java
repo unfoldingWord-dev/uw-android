@@ -4,7 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import model.modelClasses.mainData.AMDatabaseModelAbstractObject;
+import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.PageModel;
 
 /**

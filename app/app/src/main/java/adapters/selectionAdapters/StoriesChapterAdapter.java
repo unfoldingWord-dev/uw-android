@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import org.unfoldingword.mobile.R;
 import java.util.List;
 
 import model.modelClasses.mainData.StoriesChapterModel;
+import utils.AsyncImageLoader;
 import utils.URLUtils;
 
 /**
@@ -63,25 +65,13 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
             holder = (ViewHolder) convertView.getTag();
         }
         // setting color to particular listview
-//        int selected_pos = PreferenceManager.getDefaultSharedPreferences(context).getInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, -1);
-//        if (selected_pos != -1) {
-//            if (selected_pos == position) {
-//                setColor(holder, context.getResources().getColor(R.color.cyan));
-//            } else {
-//                setColor(holder, context.getResources().getColor(R.color.black_light));
-//            }
-//        } else {
-//            if (position == 0) {
-//                setColor(holder, context.getResources().getColor(R.color.cyan));
-//            } else {
-//                setColor(holder, context.getResources().getColor(R.color.black_light));
-//            }
-//        }
+        int selectionPosition = PreferenceManager.getDefaultSharedPreferences(context).getInt(SELECTED_POS, -1);
+        setColorChange(holder, getColorForState(selectionPosition, position));
 
 
         StoriesChapterModel positionModel = (StoriesChapterModel) models.get(position);
         String imgUrl = positionModel.getChildModels(context).get(0).imageUrl;
-        String lastBitFromUrl = URLUtils.getLastBitFromUrl(imgUrl);
+        String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
         String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
         String imagePath = "assets://images/" + path;
@@ -94,7 +84,7 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
         return convertView;
     }
 
-    private void setColor(ViewHolder holder, int color) {
+    public void setColorChange(ViewHolder holder, int color) {
         holder.chapterNameTextView.setTextColor(color);
         holder.referenceTextView.setTextColor(color);
     }

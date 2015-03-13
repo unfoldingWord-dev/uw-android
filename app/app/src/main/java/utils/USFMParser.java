@@ -16,82 +16,151 @@ import java.util.regex.Pattern;
  */
 public class USFMParser {
 
-    static public  Map<String, String> parseUsfm(byte[] usfmBytes) throws CharacterCodingException {
+    private static final Pattern CHAPTER_REGEX = Pattern.compile("\\\\c(.*?)(\\\\c|$)", Pattern.DOTALL);
+    private static final Pattern VERSE_REGEX = Pattern.compile("\\\\v\\s([0-9-])*\\s", Pattern.DOTALL);
+    private static final Pattern NUMBER_REGEX = Pattern.compile("\\s*(\\d*)");
+    private static final Pattern Q_NUMBER_REGEX = Pattern.compile("\\\\q\\d");
+    private static final Pattern Q_REGEX = Pattern.compile("\\\\q[0-9]*\\s*\\n*.+");
+
+
+    static public Map<String, String> parseUsfm(byte[] usfmBytes) throws CharacterCodingException {
 
         Charset utfSet = Charset.forName("UTF-8");
         CharsetDecoder decoder = utfSet.newDecoder();
         CharBuffer buffer = decoder.decode(ByteBuffer.wrap(usfmBytes));
 
         String usfmString = String.valueOf(buffer.array());
-        String splitString = "!!!";
+        ArrayList<String> chaptersArray = getChapters(usfmString);
 
-        usfmString = usfmString.replace("\\c ", splitString);
-        String[] stringArray = usfmString.split(splitString);
         Map<String, String> chapters = new HashMap<String, String>();
 
-        for(int i = 1; i < stringArray.length; i++){
+        for (String chapter : chaptersArray) {
 
-            String chapter = stringArray[i];
-            String chapterRex = "^\\d*";
-            Pattern MY_PATTERN = Pattern.compile(chapterRex);
-            Matcher m = MY_PATTERN.matcher(chapter);
+            String finalChapterText = "<div =\"chapter-div\">";
+            Matcher numberMatcher = NUMBER_REGEX.matcher(chapter);
 
             String chapterNumber = "";
-            while (m.find()) {
-                chapterNumber = m.group(0);
+            while (numberMatcher.find()) {
+                chapterNumber = numberMatcher.group(0);
                 break;
             }
 
-            int chapterStartIndex = chapter.indexOf("\\v");
+            int chapterStartIndex = chapter.indexOf("\\");
             chapter = chapter.substring(chapterStartIndex);
 
-            chapter = chapter.replace("\\v ", splitString);
-            String[] verses = chapter.split(splitString);
-            String finalChapter = handleVerses(verses);
-            chapters.put(chapterNumber, finalChapter);
+            chapter = replaceQs(chapter);
+            chapter = replaceVerseTags(chapter);
+            chapter = addLinebreaks(chapter);
+            chapter = cleanUp(chapter);
+
+            finalChapterText = "<p>" + chapter + "</p></div>";
+//            System.out.println(finalChapterText);
+            chapters.put(chapterNumber, finalChapterText);
         }
 
         return chapters;
     }
 
-    static public String handleVerses(String[] verses){
+    static public ArrayList<String> getChapters(String chapters) {
 
-        String finalChapterString = "";
+        String[] chapterArray = chapters.split("\\\\c");
 
-        for(int i = 1; i < verses.length; i++){
-            String verse = verses[i];
+        ArrayList<String> chapterList = new ArrayList<String>();
 
-            String chapterRex = "^\\d+";
-            Pattern MY_PATTERN = Pattern.compile(chapterRex);
-            Matcher m = MY_PATTERN.matcher(verse);
-
-            String verseNumber = "";
-            while (m.find()) {
-                verseNumber = m.group(0);
-                break;
-            }
-//            System.out.println(verseNumber);
-
-            int verseStartIndex = verse.indexOf(" ");
-            verse = "<small> " + verseNumber + " </small>" +  verse.substring(verseStartIndex);
-
-            verse = verse.replace("\\p", "<br/><br/>");
-
-            verse = verse.replace("\\s", "!!!");
-
-            String sRegex = "!!!\\d*";
-            verse = verse.replaceAll(sRegex, "");
-//            System.out.println(verse);
-            verse = verse.replace("\\b", "");
-            verse = verse.replace("\\q1", "<br/>&nbsp&nbsp&nbsp&nbsp");
-            verse = verse.replace("\\q2", "<br/>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp");
-            verse = verse.replace("\\q3", "<br/>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp");
-            verse = verse.replace("\\q", "<br/>&nbsp&nbsp&nbsp&nbsp");
-
-
-            finalChapterString += verse;
+        for (int i = 1; i < chapterArray.length; i++) {
+            chapterList.add(chapterArray[i]);
         }
 
-        return finalChapterString;
+        return chapterList;
+    }
+
+    static public String replaceVerseTags(String text) {
+
+        Matcher verseMatcher = VERSE_REGEX.matcher(text);
+
+        ArrayList<String> verseText = new ArrayList<String>();
+        while (verseMatcher.find()) {
+            verseText.add(verseMatcher.group(0));
+        }
+
+        if (verseText.isEmpty()) {
+            return text;
+        }
+
+
+        for (String verseString : verseText) {
+
+
+            String verseLessString = verseString;
+
+            verseLessString = verseLessString.replace("\\v ", "");
+            verseLessString = "<span class=\"verse\"> " + verseLessString + "</span>";
+
+            text = text.replace(verseString, verseLessString);
+        }
+
+        return text;
+    }
+
+    static public String replaceQs(String text) {
+
+
+        Matcher qMatcher = Q_REGEX.matcher(text);
+
+        ArrayList<String> qText = new ArrayList<String>();
+        while (qMatcher.find()) {
+            qText.add(qMatcher.group(0));
+        }
+
+        if (qText.isEmpty()) {
+            return text;
+        }
+
+        String qlessTex = "";
+
+        for (String qString : qText) {
+
+            String qLessString = qString;
+            Matcher numberMatcher = Q_NUMBER_REGEX.matcher(qLessString);
+
+            String qNumber = "";
+            while (numberMatcher.find()) {
+                qNumber = (String) numberMatcher.group(0);
+                break;
+            }
+            if(qNumber.length() < 1){
+//                System.out.println("here");
+            }
+            else{
+                qNumber = qNumber.substring(2);
+//                System.out.println("or there");
+            }
+
+            qLessString = qLessString.replace("\\q" + qNumber, "<span class=\"q" + qNumber + "\">") + "</span>";
+
+            text = text.replace(qString, qLessString);
+        }
+
+        return text;
+    }
+
+    static public String addLinebreaks(String text) {
+        if (text.substring(0, 2).equalsIgnoreCase("\\p")) {
+            text = text.substring(2);
+        }
+        text = text.replace("\\b", "<br/><br/>");
+        String sRegex = "\\\\pi\\d*";
+        text = text.replaceAll(sRegex, "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        text = text.replace("\\p", "<br/>");
+        return text;
+
+    }
+
+    static public String cleanUp(String text) {
+
+        String sRegex = "\\\\s\\d*";
+        text = text.replaceAll(sRegex, "");
+        text = text.replace("\n", " ");
+        return text;
     }
 }

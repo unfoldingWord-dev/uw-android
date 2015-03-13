@@ -6,14 +6,15 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import model.modelClasses.mainData.AMDatabaseModelAbstractObject;
+import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.VersionModel;
 
 /**
  * Created by Fechner on 2/24/15.
  */
-public class VersionDataSource extends AMDatabaseDataSourceAbstract{
+public class VersionDataSource extends AMDatabaseDataSourceAbstract {
 
     static String TABLE_VERSION = "_table_version";
 
@@ -43,13 +44,15 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract{
         super(context);
     }
 
-    public ArrayList<BookModel> getChildModels(VersionModel model) {
+    public ArrayList<BookModel> getChildModels(VersionModel parentModel) {
 
         ArrayList<BookModel> modelList = new ArrayList<BookModel>();
-        ArrayList<AMDatabaseModelAbstractObject> models = this.loadChildrenModelsFromDatabase(model);
+        ArrayList<AMDatabaseModelAbstractObject> models = this.loadChildrenModelsFromDatabase(parentModel);
 
         for(AMDatabaseModelAbstractObject mod : models){
-            modelList.add((BookModel) mod);
+            BookModel model = (BookModel) mod;
+            model.setParent(parentModel);
+            modelList.add( model);
         }
         return modelList;
     }

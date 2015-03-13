@@ -11,6 +11,7 @@ import java.util.Collections;
 
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.InitialPageModel;
+import model.database.ModelCaching;
 import model.datasource.ProjectDataSource;
 import model.database.DBManager;
 import model.modelClasses.mainData.LanguageModel;
@@ -37,7 +38,7 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
             addProjects();
         }
 
-        return DBManager.getAvailableLanguages(getApplicationContext(), mProjects);
+        return ModelCaching.getAvailableLanguages(getApplicationContext(), mProjects);
     }
 
     @Override
@@ -96,11 +97,4 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
             Collections.sort(mProjects);
         }
     }
-
-    @Override
-    protected void storedValues() {
-
-    }
-
-
 }

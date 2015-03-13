@@ -27,6 +27,15 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
     protected TextView actionbarTextview;
     protected Context context;
 
+    /**
+     *
+     * @param context
+     * @param resource
+     * @param models
+     * @param actionbarTextView
+     * @param activity
+     * @param positionHolder
+     */
     public GeneralAdapter(Context context, int resource, List<GeneralRowInterface> models, TextView actionbarTextView, ActionBarActivity activity, String positionHolder) {
         super(context, resource, models);
         SELECTED_POS = positionHolder;
@@ -36,6 +45,14 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
         this.activity = activity;
     }
 
+    /**
+     *
+     * @param context
+     * @param models
+     * @param actionbarTextView
+     * @param activity
+     * @param positionHolder
+     */
     public GeneralAdapter(Context context, List<GeneralRowInterface> models, TextView actionbarTextView, ActionBarActivity activity, String positionHolder) {
         super(context, R.layout.row_general, models);
         SELECTED_POS = positionHolder;
@@ -47,7 +64,6 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
 
     @Override
     public View getView(final int pos, View view, ViewGroup parent) {
-
 
         ViewHolderForGroup holder = null;
         if (view == null) {
@@ -61,24 +77,24 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
         } else {
             holder = (ViewHolderForGroup) view.getTag();
         }
-        int selected = PreferenceManager.getDefaultSharedPreferences(context).getInt(SELECTED_POS, -1);
-        if (selected != -1) {
-            if (pos == (selected - 1))
-                setColorChange(holder, context.getResources().getColor(R.color.cyan));
-            else
-                setColorChange(holder, context.getResources().getColor(R.color.black_light));
+        int selectionPosition = PreferenceManager.getDefaultSharedPreferences(context).getInt(SELECTED_POS, -1);
 
-        } else {
-            if (pos == 0)
-                setColorChange(holder, context.getResources().getColor(R.color.cyan));
-            else
-                setColorChange(holder, context.getResources().getColor(R.color.black_light));
-        }
-
+        setColorChange(holder, getColorForState(selectionPosition, pos));
         holder.title.setText(models.get(pos).getTitle());
 
         return view;
     }
+
+    protected int getColorForState(int selectionPosition, int itemPosition){
+
+        if(selectionPosition == -1 || itemPosition != selectionPosition){
+            return context.getResources().getColor(R.color.black_light);
+        }
+        else {
+            return context.getResources().getColor(R.color.cyan);
+        }
+    }
+
 
     public void setColorChange(ViewHolderForGroup holder, int color) {
 

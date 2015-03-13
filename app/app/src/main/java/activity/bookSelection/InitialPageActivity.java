@@ -20,9 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import activity.SettingsActivity;
+import activity.SplashScreenActivity;
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.InitialPageModel;
+import model.database.ModelCaching;
 import model.datasource.ProjectDataSource;
 import model.database.DBManager;
 import model.modelClasses.mainData.LanguageModel;
@@ -180,7 +182,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     @Override
     protected ArrayList<String> getListOfLanguages() {
-        return DBManager.getAvailableLanguages(getApplicationContext());
+        return ModelCaching.getAvailableLanguages(getApplicationContext());
     }
 
     @Override
@@ -194,8 +196,9 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
         if(mProjects.size() < 1){
 
-            // this if for an initial run.
-            reload();
+            Intent refresh = new Intent(this, SplashScreenActivity.class);
+            startActivity(refresh);
+            this.finish(); //
             return null;
         }
 
@@ -266,11 +269,6 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
             mProjects = new ArrayList<ProjectModel>();
             mProjects = new ProjectDataSource(this.getApplicationContext()).getAllProjects();
         }
-    }
-
-    @Override
-    protected void storedValues() {
-
     }
 
     @Override

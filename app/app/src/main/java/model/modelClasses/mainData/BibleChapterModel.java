@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.BibleChapterDataSource;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Acts Media Inc. on 3/12/14.

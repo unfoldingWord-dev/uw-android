@@ -26,18 +26,13 @@ import utils.CustomSlideAnimationRelativeLayout;
  */
 public class VersionAdapter extends GeneralAdapter {
 
-    public static String LAGRANGE_DEP_NAME = "LAGRANGE_DEP_NAME";
-
 
     public VersionAdapter(Context context, List<GeneralRowInterface> models, TextView actionbarTextView, ActionBarActivity activity, String storageString) {
         super(context, R.layout.row_version_selector, models, actionbarTextView, activity, storageString);
-//        super(context, models, actionbarTextView, activity);
     }
 
     @Override
     public View getView(final int pos, View view, ViewGroup parent) {
-
-
 
         ViewHolderForGroup holder = null;
         if (view == null) {
@@ -46,7 +41,7 @@ public class VersionAdapter extends GeneralAdapter {
             holder = new ViewHolderForGroup();
             holder.languageNameTextView = (TextView) view.findViewById(R.id.languageNameTextView);
             holder.languageTypeImageView = (ImageView) view.findViewById(R.id.languageTypeImageView);
-            holder.clickLanguageImageView = (ImageView) view.findViewById(R.id.goFrameClickImageView);
+            holder.clickLanguageImageView = (ImageView) view.findViewById(R.id.version_info_image);
             holder.visibleFrameLayout = (FrameLayout) view.findViewById(R.id.visibleLayout);
             holder.checkingEntityTextView = (TextView) view.findViewById(R.id.checkingEntitytextView);
             holder.checkingLevelTextView = (TextView) view.findViewById(R.id.checkingLevelTextView);
@@ -57,6 +52,7 @@ public class VersionAdapter extends GeneralAdapter {
             holder.versionConstantTextView = (TextView) view.findViewById(R.id.versionConstanttextView);
             holder.publishDateConstantTextView = (TextView) view.findViewById(R.id.publishDateConstanttextView);
             holder.clickableLayout = (LinearLayout) view.findViewById(R.id.clickableRow);
+            holder.infoFrame = (FrameLayout) view.findViewById(R.id.info_image_frame);
 
                 holder.clickableLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -69,7 +65,7 @@ public class VersionAdapter extends GeneralAdapter {
                             GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
 
                             // put selected position  to sharedprefences
-                            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(LAGRANGE_DEP_NAME, pos).commit();
+                            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(SELECTED_POS, pos).commit();
                             context.startActivity(new Intent(context, ChapterSelectionActivity.class).putExtra(
                                     GeneralSelectionActivity.CHOSEN_ID, model.getChildIdentifier()));
                             activity.overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
@@ -82,39 +78,16 @@ public class VersionAdapter extends GeneralAdapter {
                 });
 
             final ViewHolderForGroup finalHolder = holder;
-            holder.clickLanguageImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                    if (finalHolder.visibleFrameLayout.getVisibility() == View.GONE) {
-
-                        CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 500, CustomSlideAnimationRelativeLayout.EXPAND);
-                        finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
-//                context.startActivity(new Intent(context, ChapterSelectionActivity.class).putExtra(LanguageChooserActivity.LANGUAGE_CODE, list.get(pos).language));
-                    } else {
-                        CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 500, CustomSlideAnimationRelativeLayout.COLLAPSE);
-                        finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
-
-                    }
-
-                }
-            });
+            holder.clickLanguageImageView.setOnClickListener(getInfoClickListener(finalHolder));
+            holder.infoFrame.setOnClickListener(getInfoClickListener(finalHolder));
             view.setTag(holder);
         } else {
             holder = (ViewHolderForGroup) view.getTag();
         }
-        int selected = PreferenceManager.getDefaultSharedPreferences(context).getInt(SELECTED_POS, -1);
-        if (selected != -1) {
-            if (pos == selected)
-                setColorChange(holder, context.getResources().getColor(R.color.cyan));
-            else
-                setColorChange(holder, context.getResources().getColor(R.color.black_light));
 
-        } else {
-            if (pos == 0)
-                setColorChange(holder, context.getResources().getColor(R.color.cyan));
-            else
-                setColorChange(holder, context.getResources().getColor(R.color.black_light));
-        }
+        int selectionPosition = PreferenceManager.getDefaultSharedPreferences(context).getInt(SELECTED_POS, -1);
+        setColorChange(holder, getColorForState(selectionPosition, pos));
+
         if (((VersionModel) models.get(pos)).status.checkingLevel.equals("1")) {
             holder.languageTypeImageView.setImageResource(R.drawable.level_one_dark);
         } else if (((VersionModel) models.get(pos)).status.checkingLevel.equals("2")) {
@@ -131,26 +104,32 @@ public class VersionAdapter extends GeneralAdapter {
         holder.versionTextView.setText(((VersionModel) models.get(pos)).status.version);
         holder.publishDateTextView.setText(((VersionModel) models.get(pos)).status.publishDate);
 
-
         return view;
     }
 
+    private View.OnClickListener getInfoClickListener(final ViewHolderForGroup finalHolder){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (finalHolder.visibleFrameLayout.getVisibility() == View.GONE) {
+
+                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
+                    finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
+//                context.startActivity(new Intent(context, ChapterSelectionActivity.class).putExtra(LanguageChooserActivity.LANGUAGE_CODE, list.get(pos).language));
+                } else {
+                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 300, CustomSlideAnimationRelativeLayout.COLLAPSE);
+                    finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
+
+                }
+
+            }
+        };
+    }
 
     public void setColorChange(ViewHolderForGroup holder, int color) {
 
         holder.languageNameTextView.setTextColor(color);
-        holder.checkingEntityTextView.setTextColor(color);
-        holder.checkingEntityTextView.setTextColor(color);
-        holder.checkingLevelTextView.setTextColor(color);
-        holder.versionTextView.setTextColor(color);
-        holder.publishDateTextView.setTextColor(color);
-
-        holder.checkingEntiityConstantTextView.setTextColor(color);
-        holder.checkinglevelConstantTextView.setTextColor(color);
-        holder.versionConstantTextView.setTextColor(color);
-        holder.publishDateConstantTextView.setTextColor(color);
     }
-
 
     private static class ViewHolderForGroup {
 
@@ -167,6 +146,7 @@ public class VersionAdapter extends GeneralAdapter {
         TextView versionConstantTextView;
         TextView publishDateConstantTextView;
         LinearLayout clickableLayout;
+        FrameLayout infoFrame;
     }
 
 

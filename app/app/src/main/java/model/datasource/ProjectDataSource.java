@@ -6,7 +6,8 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import model.modelClasses.mainData.AMDatabaseModelAbstractObject;
+import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
+import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
 
@@ -29,13 +30,15 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
         super(context);
     }
 
-    public ArrayList<LanguageModel> getChildModels(ProjectModel model) {
+    public ArrayList<LanguageModel> getChildModels(ProjectModel parentModel) {
 
         ArrayList<LanguageModel> modelList = new ArrayList<LanguageModel>();
-        ArrayList<AMDatabaseModelAbstractObject> models = this.loadChildrenModelsFromDatabase(model);
+        ArrayList<AMDatabaseModelAbstractObject> models = this.loadChildrenModelsFromDatabase(parentModel);
 
         for(AMDatabaseModelAbstractObject mod : models){
-            modelList.add((LanguageModel) mod);
+            LanguageModel model = (LanguageModel) mod;
+            model.setParent(parentModel);
+            modelList.add( model);
         }
         return modelList;
     }

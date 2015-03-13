@@ -13,17 +13,16 @@
 
         <ImageView
             android:id="@+id/chapterScreenImageView"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/stories_row_height"
+            android:layout_height="@dimen/stories_row_image_width"
             android:layout_gravity="center|left"
-            android:padding="2dp"
             android:src="@drawable/ic_launcher" />
 
         <LinearLayout
             android:id="@+id/row"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|top"
+            android:layout_gravity="center"
             android:layout_marginLeft="5dp"
             android:orientation="vertical">
 
@@ -35,7 +34,7 @@
                 android:paddingTop="5dp"
                 android:text="New Text"
                 android:textColor="@color/black_light"
-                android:textSize="17sp"
+                android:textSize="@dimen/general_row_text_size"
                 android:textStyle="bold" />
 
             <TextView
@@ -46,7 +45,7 @@
                 android:layout_marginTop="5dp"
                 android:text="New Text"
                 android:textColor="@color/black_light"
-                android:textSize="12sp" />
+                android:textSize="@dimen/stories_row_small_text_size" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

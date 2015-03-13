@@ -18,6 +18,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
+import activity.SplashScreenActivity;
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.database.DBManager;
@@ -31,18 +32,48 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
 
     static public String CHOSEN_ID = "CHOSEN_ID";
 
+    protected static String SELECTED_POS;
+
     protected ListView mListView = null;
     protected DBManager mDbManager = null;
     protected ActionBar mActionBar = null;
     protected TextView actionbarTextView = null;
     protected Button languagesButton = null;
 
+    /**
+     * should return the main view for the activity
+     * @return
+     */
     abstract protected int getContentView();
+
+    /**
+     * should return a list of languages for the popover
+     * @return
+     */
     abstract protected ArrayList<String> getListOfLanguages();
+
+    /**
+     * should return the data desired to be in the table
+     * @return
+     */
     abstract protected ArrayList<GeneralRowInterface> getData();
-    abstract protected void storedValues();
+
+    /**
+     * should return a unique index storage key
+     * @return
+     */
     abstract protected String getIndexStorageString();
+
+    /**
+     * should return the child class for which to animate when a row is selected, or null if there is none.
+     * @return
+     */
     abstract protected Class getChildClass();
+
+    /**
+     * should return the desired title for the actionbar
+     * @return
+     */
     abstract protected String getActionBarTitle();
 
 
@@ -79,11 +110,7 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
                 addPopover(v);
             }
         });
-        if(Build.VERSION.SDK_INT > 13) {
-            languagesButton.setAllCaps(false);
-        }
         languagesButton.setText(getCurrentLanguage());
-
 
         prepareListView();
     }
@@ -104,6 +131,9 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
             }
         }
 
+        Intent refresh = new Intent(this, SplashScreenActivity.class);
+        startActivity(refresh);
+        this.finish(); //
         return "Language";
     }
 
@@ -174,8 +204,6 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
 
     protected void prepareListView() {
 
-
-
         ArrayList<GeneralRowInterface> data = this.getData();
 
         if (mListView == null) {
@@ -189,17 +217,19 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
         }
 
         mListView.setOnItemClickListener(this);
-        mListView.setAdapter(new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString()));
+        GeneralAdapter adapter = new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString());
+        mListView.setAdapter(adapter);
 
+        int currentItem = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(getIndexStorageString(), -1);
+
+        if(currentItem >= 0) {
+            mListView.setSelection(currentItem);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        storedValues();
-        //reset  Preference
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getIndexStorageString(), -1).commit();
-        finish();
-        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+        handleBack();
     }
 
     @Override
@@ -208,13 +238,13 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
         setUI();
     }
 
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Object itemAtPosition = adapterView.getItemAtPosition(i);
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
+        Object itemAtPosition = adapterView.getItemAtPosition(position);
         if (itemAtPosition instanceof GeneralRowInterface) {
             GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
 
             // put selected position  to sharedprefences
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(this.getIndexStorageString(), i).commit();
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(this.getIndexStorageString(), (int) rowIndex).commit();
             startActivity(new Intent(this, this.getChildClass(model)).putExtra(
                     CHOSEN_ID, model.getChildIdentifier()));
             overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
@@ -224,11 +254,7 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            storedValues();
-            //reset  Preference
-//            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTED_CHAPTER_POS, -1).commit();
-            finish();
-            overridePendingTransition(R.anim.left_in, R.anim.right_out);
+            handleBack();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -243,5 +269,14 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
 
     public void onlySuperOnWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
+    }
+
+    private void handleBack(){
+
+        //reset  Preference
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getIndexStorageString(), -1).commit();
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+
     }
 }

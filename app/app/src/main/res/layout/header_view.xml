@@ -20,13 +20,13 @@
 
     <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/refresh_button_size"
         android:background="@color/greenyellow">
 
         <Button
             android:id="@+id/refreshButton"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="@dimen/refresh_button_size"
+            android:layout_height="@dimen/refresh_button_size"
             android:layout_gravity="center"
             android:background="@drawable/refresh_button_click" />
     </FrameLayout>

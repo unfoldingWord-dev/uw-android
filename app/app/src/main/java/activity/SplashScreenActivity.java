@@ -21,6 +21,7 @@ import utils.URLUtils;
  */
 public class SplashScreenActivity extends Activity {
 
+    public static final String TRUE = "true";
     private static String TAG = "SplashScreenActivity";
 
     DBManager dbManager = null;
@@ -42,7 +43,7 @@ public class SplashScreenActivity extends Activity {
         dbManager = DBManager.getInstance(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-        execute = new GetLanguageListAndFrames().execute(URLUtils.LANGUAGE_INFO, URLUtils.CHAPTER_INFO);
+        execute = new DatabaseUpdater().execute();
     }
 
     @Override
@@ -63,12 +64,12 @@ public class SplashScreenActivity extends Activity {
         super.onBackPressed();
     }
 
-    private class GetLanguageListAndFrames extends AsyncTask<String, Void, String> {
+    private class DatabaseUpdater extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
             try {
-                dbManager.createDataBase(true);
+                dbManager.createDataBase(false);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -77,7 +78,7 @@ public class SplashScreenActivity extends Activity {
             }
 
             cancelValue = true;
-            return URLUtils.TRUE;
+            return TRUE;
         }
 
         @Override
@@ -88,7 +89,7 @@ public class SplashScreenActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             if (cancelValue) {
-                if (result.equals(URLUtils.TRUE)) {
+                if (result.equals(TRUE)) {
                     startActivity(new Intent(SplashScreenActivity.this, InitialPageActivity.class));
                     finish();
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

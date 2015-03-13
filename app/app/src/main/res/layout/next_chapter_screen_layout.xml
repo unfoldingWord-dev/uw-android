@@ -15,5 +15,7 @@
         android:background="@drawable/next_button_click"
         android:gravity="center"
         android:text="New Button"
+        android:textSize="@dimen/next_chapter_text_size"
+        android:textAllCaps="false"
         android:textColor="@color/white" />
 </RelativeLayout>
