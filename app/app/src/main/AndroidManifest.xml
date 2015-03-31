@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name="activity.bookSelection.ChapterSelectionActivity"
+            android:name="activity.bookSelection.StoryChapterSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
@@ -33,6 +33,10 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name="activity.bookSelection.BookSelectionActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="activity.bookSelection.BibleChapterSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat" />
         <activity
@@ -53,6 +57,7 @@
         </activity>
 
         <service android:name="services.UpdateService" />
+        <service android:name="services.VersionDownloadService" />
 
 
     </application>

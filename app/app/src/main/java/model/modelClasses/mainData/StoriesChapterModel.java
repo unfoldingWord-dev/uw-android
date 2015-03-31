@@ -1,28 +1,26 @@
 package model.modelClasses.mainData;
 
 import android.content.Context;
-import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.StoriesChapterDataSource;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Acts Media Inc. on 3/12/14.
  */
 public class StoriesChapterModel extends AMDatabaseModelAbstractObject implements GeneralRowInterface, Comparable<StoriesChapterModel> {
 
-    private static final String TAG = "LanguageModel";
+    private class StoriesChapterJsonModel {
 
-    private static final String NUMBER = "number";
-    private static final String TITLE = "title";
-    private static final String REF = "ref";
-//    private static final String PAGES = "frames";
+        String number;
+        String title;
+        String ref;
+    }
 
     public String number;
     public String description;
@@ -55,43 +53,46 @@ public class StoriesChapterModel extends AMDatabaseModelAbstractObject implement
         super();
     }
 
-    public StoriesChapterModel(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
-        super(jsonObject, parent);
+    public StoriesChapterModel(String jsonObject, boolean sideLoaded) {
+        super(jsonObject, sideLoaded);
+    }
+
+    public StoriesChapterModel(String jsonObject, long parentId, boolean sideLoaded) {
+        super(jsonObject, parentId, sideLoaded);
     }
 
     public StoriesChapterDataSource getDataSource(Context context) {
         return new StoriesChapterDataSource(context);
     }
 
-    public void AddBlankPageToEnd(){
-        PageModel pageModel = pages.get(0);
-        pages.add(pageModel);
-    }
+    @Override
+    public void initModelFromJson(String json, boolean sideLoaded) {
 
-    public void initModelFromJsonObject(JSONObject jsonObj) {
-
-        try {
-            this.number = jsonObj.has(NUMBER) ? jsonObj.getString(NUMBER) : "";
-            this.description = jsonObj.has(REF) ? jsonObj.getString(REF) : "";
-            this.title = jsonObj.has(TITLE) ? jsonObj.getString(TITLE) : "";
-
-        } catch (JSONException e) {
-            Log.e(TAG, "ChapterModel JSON Exception: " + e.toString());
+        if(sideLoaded){
+            initModelFromSideLoadedJson(json);
+            return;
         }
+        StoriesChapterJsonModel model = new Gson().fromJson(json, StoriesChapterJsonModel.class);
+
+        number = model.number;
+        description = model.ref;
+        title = model.title;
+
+        uid = -1;
     }
 
     @Override
-    public void initModelFromJsonObject(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
+    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
 
-        this.initModelFromJsonObject(jsonObject);
-        this.parentId = parent.uid;
-        this.slug = parent.slug + this.number;
-    }
+        if(sideLoaded){
+            initModelFromSideLoadedJson(json);
+        }
+        else {
+            this.initModelFromJson(json, sideLoaded);
+            this.slug = this.title + "parent" + parentId;
+        }
 
-    public ArrayList<String> getAvailableLanguages(Context context) {
-
-        ArrayList<String> languages = this.getParent(context).getParent(context).getAvailableLanguages(context);
-        return languages;
+        this.parentId = parentId;
     }
 
     @Override
@@ -116,10 +117,50 @@ public class StoriesChapterModel extends AMDatabaseModelAbstractObject implement
 
     @Override
     public String toString() {
-        return "ChapterModel{" +
+        return "StoriesChapterModel{" +
                 "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
                 "} " + super.toString();
+    }
+
+    protected class StoriesChapterSideLoadedModel {
+
+        String number;
+        String title;
+        String description;
+
+        PageModel.PageSideLoadedModel[] pages;
+
+
+        public StoriesChapterSideLoadedModel(StoriesChapterModel chapter, Context context) {
+            this.number = chapter.number;
+            this.title = chapter.title;
+            this.description = chapter.description;
+
+            ArrayList<PageModel> pageList = chapter.getChildModels(context);
+            pages = new PageModel.PageSideLoadedModel[pageList.size()];
+
+            for(int i = 0; i < pageList.size(); i++){
+                pages[i] = pageList.get(i).getAsSideLoadedModel();
+            }
+
+        }
+    }
+
+    protected StoriesChapterSideLoadedModel getAsSideLoadedModel(Context context){
+
+        return new StoriesChapterSideLoadedModel(this, context);
+    }
+
+    public void initModelFromSideLoadedJson(String json){
+
+        StoriesChapterSideLoadedModel model = new Gson().fromJson(json, StoriesChapterSideLoadedModel.class);
+
+        number = model.number;
+        description = model.description;
+        title = model.title;
+
+        uid = -1;
     }
 }

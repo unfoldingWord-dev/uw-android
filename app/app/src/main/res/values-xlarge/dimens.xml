@@ -12,5 +12,11 @@
 
     <dimen name="version_selection_row_height">70dp</dimen>
     <dimen name="version_selection_image_size">55sp</dimen>
+    <dimen name="version_selection_button_size">40sp</dimen>
 
+    <dimen name="actionbar_title_font_size">24sp</dimen>
+    <dimen name="actionbar_version_font_size">20sp</dimen>\
+    <dimen name="actionbar_title_width">300dp</dimen>
+
+    <dimen name="story_reading_text_size">24sp</dimen>
 </resources>

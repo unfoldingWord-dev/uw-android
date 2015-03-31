@@ -1,40 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="30dp"
-    android:paddingRight="20dp"
-    android:paddingEnd="20dp">
+    android:layout_height="30dp">
 
-    <view.FontFitTextView
-        android:id="@+id/actionbarTextView"
+    <LinearLayout
+        android:id="@+id/middle_button"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:gravity="center"
-        android:text="Unfolding Word"
-        android:textColor="@color/white_mix_gary"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:layout_toLeftOf="@+id/languageButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
-        android:paddingRight="2dp"
-        android:paddingLeft="50dp" />
+        android:layout_alignParentTop="true"
+        android:clickable="true"
+        android:background="@drawable/language_button_click"
+        android:layout_centerHorizontal="true"
+        android:onClick="chapterButtonClicked"
+        android:paddingLeft="10dp"
+        android:paddingRight="50dp">
 
-    <Button
+        <TextView
+            android:id="@+id/middle_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:textStyle="normal"
+            android:textAllCaps="false"
+            android:textSize="@dimen/actionbar_title_font_size"
+            android:layout_gravity="center_vertical" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="15dp"
+            android:src="@drawable/quickaction_arrow_down"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/language_button"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="Language"
-        android:id="@+id/languageButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:contentDescription="wrap_content"
+        android:paddingRight="8dp"
         android:clickable="true"
+        android:onClick="versionButtonClicked"
         android:background="@drawable/language_button_click"
-        android:textStyle="normal"
-        android:textAllCaps="false"
-        android:layout_marginRight="-10dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_height="fill_parent"
+        >
+
+        <TextView
+            android:id="@+id/language_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Language"
+            android:textSize="@dimen/actionbar_version_font_size"
+            android:clickable="false"
+            android:textStyle="normal"
+            android:textAllCaps="false"
+            android:layout_gravity="center_vertical" />
+
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="13dp"
+            android:src="@drawable/quickaction_arrow_down"
+            android:contentDescription="select"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/language_button"
+            android:layout_toStartOf="@+id/language_button"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="5dp" />
+    </LinearLayout>
 
 </RelativeLayout>

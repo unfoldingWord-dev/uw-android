@@ -2,92 +2,144 @@ package activity.reading;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
+import java.util.Locale;
 
 import activity.bookSelection.GeneralSelectionActivity;
-import adapters.selectionAdapters.GeneralRowInterface;
+import activity.bookSelection.StoryChapterSelectionActivity;
+import activity.bookSelection.VersionSelectionActivity;
 import adapters.StoryPagerAdapter;
 import model.datasource.StoriesChapterDataSource;
-import model.modelClasses.mainData.LanguageModel;
+import model.datasource.VersionDataSource;
+import model.modelClasses.mainData.ProjectModel;
 import model.modelClasses.mainData.StoriesChapterModel;
+import model.modelClasses.mainData.VersionModel;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
-public class StoryReadingActivity extends GeneralSelectionActivity {
+public class StoryReadingActivity extends ActionBarActivity {
 
-    static String STORY_INDEX_STRING = "STORY_INDEX_STRING";
+    static final public String STORY_INDEX_STRING = "STORY_INDEX_STRING";
 
-    ViewPager readingViewPager = null;
-    ImageLoader mImageLoader;
+    private ViewPager readingViewPager = null;
+    private ActionBar mActionBar = null;
+    private LinearLayout versionsButton = null;
+    private LinearLayout chaptersButton = null;
+    private TextView versionsTextView = null;
+    private TextView chapterTextView = null;
 
-    StoriesChapterModel storiesChapterModel = null;
+    ImageLoader mImageLoader = null;
+
+    private StoriesChapterModel mChapter = null;
+    private ProjectModel selectedProject = null;
 
     @Override
-    protected int getContentView() {
-        return R.layout.activity_reading;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_reading);
+
+        setData();
+        if(mChapter == null || selectedProject == null){
+            goToVersionSelection();
+        }
     }
-    @Override
-    protected ArrayList<String> getListOfLanguages() {
 
-        if(storiesChapterModel == null){
-            setChapter();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mChapter == null || selectedProject == null) {
+            setContentView(R.layout.activity_reading);
+        }
+        selectedProject = null;
+        mChapter = null;
+        setData();
+        setUI();
+
+        if(mChapter == null || selectedProject == null){
+            setContentView(R.layout.no_text_layout);
+        }
+        else {
+            setupPager();
         }
 
-        return storiesChapterModel.getAvailableLanguages(getApplicationContext());
-    }
-    @Override
-    protected ArrayList<GeneralRowInterface> getData() {
-        return null;
-    }
-    @Override
-    protected String getIndexStorageString() {
-        return STORY_INDEX_STRING;
-    }
-    @Override
-    protected Class getChildClass() {
-        return null;
     }
 
-
-    @Override
-    protected String getActionBarTitle() {
-        return this.storiesChapterModel.getTitle();
-    }
-
-    @Override
-    protected void updateListView() {
-        setChapter();
-        this.setUIWithCurrentIndex();
-    }
-
-    protected void setUIWithCurrentIndex() {
-        int index =readingViewPager.getCurrentItem();
-        setUI();
-        readingViewPager.setCurrentItem(index);
-    }
-    /**
-     * Initializing the components
-     */
-    @Override
     protected void setUI() {
 
-        super.setUI();
+        setupActionBar();
+
+        if(mChapter == null || selectedProject == null){
+            return;
+        }
+
+        setupPager();
+    }
+
+    private void setupActionBar(){
+        View view = getLayoutInflater().inflate(R.layout.actionbar_custom_view, null);
+
+        mActionBar = getSupportActionBar();
+        chaptersButton = (LinearLayout) view.findViewById(R.id.middle_button);
+        mActionBar.setCustomView(view);
+        mActionBar.setDisplayShowCustomEnabled(true);
+        mActionBar.setDisplayShowHomeEnabled(true);
+        mActionBar.setHomeButtonEnabled(true);
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+
+        setupChapterButton(view);
+        setupVersionButton(view);
+    }
+
+    private void setupChapterButton(View view){
+
+        chaptersButton = (LinearLayout) view.findViewById(R.id.middle_button);
+        chapterTextView = (TextView) view.findViewById(R.id.middle_button_text);
+        if(this.mChapter != null) {
+            chapterTextView.setText(this.mChapter.title);
+        }
+        else{
+            chaptersButton.setVisibility(View.INVISIBLE);
+            chapterTextView.setText("");
+        }
+    }
+
+    private void setupVersionButton(View view) {
+
+        versionsButton = (LinearLayout) view.findViewById(R.id.language_button);
+        versionsTextView = (TextView) view.findViewById(R.id.language_text);
+        if(this.mChapter != null) {
+            Locale currentLocale = new Locale(this.mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).getParent(getApplicationContext()).languageAbbreviation);
+            versionsTextView.setText(currentLocale.getDisplayLanguage());
+        }
+        else{
+            versionsTextView.setText("Select Version");
+        }
+    }
+
+    private void setupPager(){
 
         readingViewPager = (ViewPager) findViewById(R.id.myViewPager);
         mImageLoader = ImageLoader.getInstance();
@@ -96,92 +148,70 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
             ImageLoader.getInstance().destroy();
         }
 
+        int currentItem = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(STORY_INDEX_STRING, -1);
         mImageLoader.init(ImageLoaderConfiguration.createDefault(this));
 
-        if(storiesChapterModel == null){
-            this.setChapter();
-        }
-        actionbarTextView.setText(storiesChapterModel.getTitle());
-        StoryPagerAdapter adapter = new StoryPagerAdapter(this, storiesChapterModel,
-                mImageLoader,
-                actionbarTextView, getIndexStorageString());
+        StoryPagerAdapter adapter = new StoryPagerAdapter(this, mChapter,
+                mImageLoader, chapterTextView, STORY_INDEX_STRING);
 
         readingViewPager.setAdapter(adapter);
 
         setupTouchListener(readingViewPager);
 
-        int currentItem = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(getIndexStorageString(), -1);
-
         if(currentItem > 0){
             readingViewPager.setCurrentItem(currentItem);
         }
-
     }
 
-    private void setChapter(){
+    private void goToVersionSelection(){
 
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-
-            String chosenChapter = extras.getString(CHOSEN_ID);
-            StoriesChapterModel chapter = (new StoriesChapterDataSource(this.getApplicationContext())).getModel(chosenChapter);
-
-            this.storiesChapterModel = chapter;
-            checkForLanguageChange();
+        if (extras == null) {
+            return;
         }
+        String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
+        startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
+                GeneralSelectionActivity.CHOSEN_ID, projectId));
+        overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
     }
 
-    private void checkForLanguageChange(){
+    private void goToChapterActivity(){
 
-        String selectedLanguage = PreferenceManager.getDefaultSharedPreferences(this).getString(
-                getResources().getString(R.string.selected_language), "English");
+        startActivity(new Intent(getApplicationContext(), StoryChapterSelectionActivity.class));
+        overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+    }
 
-        Context context = getApplicationContext();
+    private void setData(){
 
-        if(!storiesChapterModel.getParent(context).getParent(context).getParent(context).languageName.equalsIgnoreCase(selectedLanguage)){
-            LanguageModel correctLanguage = null;
+        if(mChapter == null || selectedProject == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                Context context = getApplicationContext();
 
-            ArrayList<LanguageModel> languages = storiesChapterModel.getParent(context).
-                    getParent(getApplicationContext()).getParent(getApplicationContext()).
-                    getParent(context).getChildModels(getApplicationContext());
+                Long versionId = Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(context));
 
-            for(LanguageModel model : languages){
-                if(selectedLanguage.equalsIgnoreCase(model.languageName)){
-                    correctLanguage = model;
-                    break;
+                if(versionId < 0){
+                    return;
+                }
+
+                VersionModel currentVersion = new VersionDataSource(context).getModel(Long.toString(versionId));
+
+                this.selectedProject = currentVersion.getParent(context).getParent(context);
+
+                Long chapterId = Long.parseLong(UWPreferenceManager.getSelectedStoryChapter(context));
+
+                if(chapterId < 0){
+                    this.mChapter = currentVersion.getChildModels(context).get(0).getStoryChapter(context, 1);
+                    UWPreferenceManager.setSelectedStoryChapter(context, this.mChapter.uid);
+                }
+                else {
+                    this.mChapter = new StoriesChapterDataSource(getApplicationContext()).getModel(Long.toString(chapterId));
                 }
             }
-
-            if(correctLanguage != null){
-
-                ArrayList<StoriesChapterModel> chapters = correctLanguage.getChildModels(context)
-                        .get(0).getStoriesChildModels(context).get(0).getChildModels(context);
-
-                for(StoriesChapterModel model : chapters){
-
-                    if(model.number.equalsIgnoreCase(storiesChapterModel.number)){
-                        storiesChapterModel = model;
-                        break;
-                    }
-                }
-            }
+        }
+        else{
         }
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            ImageLoader.getInstance().destroy();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        ImageLoader.getInstance().destroy();
-        super.onBackPressed();
-    }
-
 
     private void handleActionBarHidden(boolean hide){
 
@@ -202,6 +232,10 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
             long lastTapTimeMs = 0;
             long touchDownMs = 0;
 
+            Resources res = getResources();
+            int tapTimeout = res.getInteger(R.integer.tap_timeout);
+            int doubleTapTimeout = res.getInteger(R.integer.double_tap_timeout);
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
@@ -212,7 +246,6 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
                     case MotionEvent.ACTION_UP:
                         handler.removeCallbacksAndMessages(null);
 
-                        int tapTimeout = ViewConfiguration.getTapTimeout();
                         if ((System.currentTimeMillis() - touchDownMs) > tapTimeout) {
                             //it was not a tap
 
@@ -221,8 +254,8 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
                             break;
                         }
 
-                        if (numberOfTaps > 0
-                                && (System.currentTimeMillis() - lastTapTimeMs) < ViewConfiguration.getDoubleTapTimeout()) {
+                        if ((numberOfTaps > 0)
+                                && ((System.currentTimeMillis() - lastTapTimeMs) < doubleTapTimeout)) {
                             numberOfTaps += 1;
                         } else {
                             numberOfTaps = 1;
@@ -266,5 +299,39 @@ public class StoryReadingActivity extends GeneralSelectionActivity {
 
         boolean shouldHide = mActionBar.isShowing();
         handleActionBarHidden(shouldHide);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if(mImageLoader != null) {
+                ImageLoader.getInstance().destroy();
+            }
+        }
+        handleBack();
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        ImageLoader.getInstance().destroy();
+        handleBack();
+    }
+
+    private void handleBack(){
+
+        //reset  Preference
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(STORY_INDEX_STRING, -1).commit();
+        finish();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    public void chapterButtonClicked(View view) {
+        goToChapterActivity();
+    }
+
+    public void versionButtonClicked(View view) {
+        goToVersionSelection();
     }
 }

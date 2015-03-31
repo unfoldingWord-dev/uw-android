@@ -33,43 +33,90 @@
                     android:scaleType="center"
                     android:src="@color/white" />
 
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/status"
+                    android:src="@drawable/status_error_btn_radio_on_holo_light"
+                    android:layout_gravity="center_vertical" />
+
                 <TextView
                     android:id="@+id/languageNameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="5dp"
                     android:focusable="true"
                     android:singleLine="true"
                     android:text="New Text"
                     android:textColor="@color/black_light"
                     android:textSize="@dimen/general_row_text_size"
                     android:textStyle="bold"
-                    android:typeface="sans" />
+                    android:typeface="sans"
+                    android:layout_marginRight="50dp" />
 
             </LinearLayout>
 
-            <FrameLayout
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/info_image_frame"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_gravity="right|center">
+                android:layout_height="fill_parent"
+                android:layout_gravity="right|center"
+                >
 
-                <ImageView
-                    android:id="@+id/version_info_image"
+                <FrameLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:background="@drawable/layout_button_click"
-                    android:layout_gravity="right|center"
+                    android:layout_height="match_parent"
+                    android:id="@+id/download_status_frame"
                     android:clickable="true"
                     android:focusable="true"
-                    android:scaleType="center"
-                    android:src="@drawable/info_icon"
-                    android:layout_marginLeft="15dp" />
-            </FrameLayout>
+                    android:background="@drawable/layout_button_click"
+                    android:layout_gravity="right|center">
+
+                    <ProgressBar
+                        android:id="@+id/download_progress_bar"
+                        style="@style/ProgressBar.Spinner.Indeterminate.Small"
+                        android:layout_width="@dimen/version_selection_button_size"
+                        android:layout_height="@dimen/version_selection_button_size"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:max="200"
+                        android:visibility="invisible"
+                        />
+                    <ImageView
+                        android:id="@+id/download_status_image"
+                        android:layout_width="@dimen/version_selection_button_size"
+                        android:layout_height="@dimen/version_selection_button_size"
+                        android:layout_marginRight="15dp"
+                        android:layout_gravity="right|center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/download_button"
+                        android:layout_marginLeft="15dp" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/info_image_frame"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/layout_button_click"
+                    android:layout_gravity="right|center">
+
+                    <ImageView
+                        android:id="@+id/version_info_image"
+                        android:layout_width="@dimen/version_selection_button_size"
+                        android:layout_height="@dimen/version_selection_button_size"
+                        android:layout_marginRight="15dp"
+                        android:layout_gravity="right|center"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/info_icon"
+                        android:layout_marginLeft="15dp" />
+                </FrameLayout>
+
+            </LinearLayout>
         </FrameLayout>
 
         <FrameLayout

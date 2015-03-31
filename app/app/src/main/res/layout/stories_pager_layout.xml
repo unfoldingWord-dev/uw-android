@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/chapterImageView"
+            android:id="@+id/chapter_image_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:adjustViewBounds="true"
@@ -17,17 +17,19 @@
             android:src="@color/white"/>
 
         <TextView
-            android:id="@+id/storyTextView"
+            android:id="@+id/story_text_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="bottom"
+            android:layout_gravity="bottom"
             android:paddingBottom="2dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="New Text"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textSize="@dimen/story_reading_text_size"
             android:textStyle="normal"
+            android:background="@color/clear_black"
             />
     </FrameLayout>
 </RelativeLayout>

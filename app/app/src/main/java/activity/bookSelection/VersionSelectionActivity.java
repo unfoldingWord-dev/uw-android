@@ -1,68 +1,102 @@
 package activity.bookSelection;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-
-import adapters.selectionAdapters.GeneralRowInterface;
-import adapters.selectionAdapters.VersionAdapter;
-import model.datasource.LanguageDataSource;
-import model.modelClasses.mainData.LanguageModel;
+import adapters.selectionAdapters.CollapsibleVersionAdapter;
+import model.datasource.ProjectDataSource;
+import model.datasource.VersionDataSource;
+import model.modelClasses.mainData.ProjectModel;
 import model.modelClasses.mainData.VersionModel;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
  */
-public class VersionSelectionActivity extends GeneralSelectionActivity {
+public class VersionSelectionActivity extends ActionBarActivity {
 
-    static String VERSIONS_INDEX_STRING = "VERSIONS_INDEX_STRING";
+    static final String VERSIONS_INDEX_STRING = "VERSIONS_INDEX_STRING";
+    static final String STORIES_SLUG = "obs";
 
-    VersionAdapter adapter;
+    CollapsibleVersionAdapter adapter;
 
     private View footerView = null;
-    private LanguageModel chosenLanguage = null;
+    private ProjectModel chosenProject = null;
+
+    private ActionBar mActionBar = null;
+
+    protected ExpandableListView mListView = null;
 
     @Override
-    protected int getContentView() {
-        return R.layout.activity_general_list;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_version_selector);
+        setUI();
+        prepareListView();
     }
 
-    @Override
-    protected ArrayList<String> getListOfLanguages() {
+    private void setUI() {
 
-        if (chosenLanguage == null) {
-            addLanguage();
+        View view = getLayoutInflater().inflate(R.layout.actionbar_base, null);
+        setupActionBar(view);
+        setupCloseButton(view);
+    }
+    private void setupActionBar(View view){
+
+        mActionBar = getSupportActionBar();
+        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        mActionBar.setCustomView(view);
+        mActionBar.setDisplayShowCustomEnabled(true);
+        mActionBar.setDisplayShowHomeEnabled(false);
+        mActionBar.setHomeButtonEnabled(false);
+        mActionBar.setDisplayHomeAsUpEnabled(false);
+        actionbarTextView.setText("Select Version");
+    }
+
+    private void setupCloseButton(View view){
+        FrameLayout closeButton = (FrameLayout) view.findViewById(R.id.close_image_view);
+        closeButton.setVisibility(View.VISIBLE);
+    }
+
+    public void closeButtonClicked(View view) {
+        handleBack();
+    }
+
+    private void addProject(){
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+
+            String chosenProjectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
+            this.chosenProject = new ProjectDataSource(this.getApplicationContext()).getModel(chosenProjectId);
+        }
+    }
+
+    protected void prepareListView(){
+
+        //getting instance of ExpandableListView
+        mListView = (ExpandableListView) findViewById(R.id.versions_list);
+//        mListView.setOnItemClickListener(this);
+
+//        ArrayList<GeneralRowInterface> data = this.getData();
+
+        if (chosenProject == null) {
+            addProject();
         }
 
-        return chosenLanguage.getAvailableLanguages(getApplicationContext());
-    }
-
-    @Override
-    protected String getIndexStorageString() {
-        return VERSIONS_INDEX_STRING;
-    }
-
-    @Override
-    protected Class getChildClass() {
-        return ChapterSelectionActivity.class;
-    }
-
-    @Override
-    protected String getActionBarTitle() {
-        return chosenLanguage.projectName;
-    }
-
-    @Override
-    protected void setUI() {
-        super.setUI();
+        adapter = new CollapsibleVersionAdapter(this, this.chosenProject);
+        mListView.setAdapter(adapter);
 
         if(footerView == null) {
             LayoutInflater inflater = getLayoutInflater();
@@ -75,71 +109,74 @@ public class VersionSelectionActivity extends GeneralSelectionActivity {
             tView.setText(versionName);
             mListView.addFooterView(footerView);
         }
-    }
 
-    protected ArrayList<GeneralRowInterface> getData(){
+        int selectedIndex = 0;
+        if(chosenProject.slug.equalsIgnoreCase(STORIES_SLUG)){
 
-        if (chosenLanguage == null) {
-            addLanguage();
-        }
+            String selectedVersion = UWPreferenceManager.getSelectedStoryVersion(getApplicationContext());
+            if(Long.parseLong(selectedVersion) < 0){
+                selectedIndex = 0;
+            }
+            else {
+                VersionModel version = new VersionDataSource(getApplicationContext()).getModel(selectedVersion);
 
-        String selectedLanguage = PreferenceManager.getDefaultSharedPreferences(this).getString(
-                getResources().getString(R.string.selected_language), "English");
-
-        if(!chosenLanguage.languageName.equalsIgnoreCase(selectedLanguage)){
-            LanguageModel correctLanguage = null;
-
-            ArrayList<LanguageModel> languages = chosenLanguage.getParent(getApplicationContext()).getChildModels(getApplicationContext());
-
-            for(LanguageModel model : languages){
-                if(selectedLanguage.equalsIgnoreCase(model.languageName)){
-                    correctLanguage = model;
-                    break;
+                for(int i = 0; i < chosenProject.getChildModels(getApplicationContext()).size(); i++){
+                    if(chosenProject.getChildModels(getApplicationContext()).get(i).slug.equalsIgnoreCase(version.getParent(getApplicationContext()).slug)){
+                        selectedIndex = i;
+                        break;
+                    }
                 }
             }
-            if(correctLanguage != null){
-                chosenLanguage = correctLanguage;
+        }
+        else{
+            String selectedVersion = UWPreferenceManager.getSelectedBibleVersion(getApplicationContext());
+            if(Long.parseLong(selectedVersion) < 0){
+                selectedIndex = 0;
+            }
+            else {
+                VersionModel version = new VersionDataSource(getApplicationContext()).getModel(selectedVersion);
+
+                for(int i = 0; i < chosenProject.getChildModels(getApplicationContext()).size(); i++){
+                    if(chosenProject.getChildModels(getApplicationContext()).get(i).slug.equalsIgnoreCase(version.getParent(getApplicationContext()).slug)){
+                        selectedIndex = i;
+                        break;
+                    }
+                }
             }
         }
 
-        ArrayList<VersionModel> versions = this.chosenLanguage.getChildModels(getApplicationContext());
 
-        ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-        for(VersionModel model : versions){
-            data.add(model);
-        }
-
-        return data;
-
-    }
-
-    private void addLanguage(){
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-
-            String chosenVersion = extras.getString(CHOSEN_ID);
-            this.chosenLanguage = new LanguageDataSource(this.getApplicationContext()).getModel(chosenVersion);
-        }
+        mListView.expandGroup(selectedIndex);
     }
 
     @Override
-    protected void prepareListView(){
-
-        //getting instance of ExpandableListView
-        mListView = (ListView) findViewById(R.id.generalList);
-        mListView.setOnItemClickListener(this);
-
-        ArrayList<GeneralRowInterface> data = this.getData();
-
-        if (data == null) {
-            return;
-        }
-
-        adapter = new VersionAdapter(this, data, actionbarTextView, this, this.getIndexStorageString());
-        mListView.setAdapter(adapter);
-
-        actionbarTextView.setText(getActionBarTitle());
+    public void onBackPressed() {
+        handleBack();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prepareListView();
+    }
+
+    private void handleBack(){
+        adapter.willDestroy();
+        finish();
+        overridePendingTransition(R.anim.enter_center, R.anim.exit_on_bottom);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            handleBack();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void finish() {
+        adapter.willDestroy();
+        super.finish();
+    }
 }

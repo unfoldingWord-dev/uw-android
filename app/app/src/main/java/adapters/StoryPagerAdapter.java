@@ -2,7 +2,6 @@ package adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -26,11 +25,11 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 
-import activity.bookSelection.ChapterSelectionActivity;
+import activity.bookSelection.StoryChapterSelectionActivity;
 import model.database.DBManager;
 import model.modelClasses.mainData.StoriesChapterModel;
 import utils.AsyncImageLoader;
-import utils.URLUtils;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -43,12 +42,10 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
     protected String SELECTED_POS = "";
 
     DisplayImageOptions options;
-    View view = null;
     DBManager dbManager = null;
-    private Intent intent;
     private Activity activity;
     private static Context context;
-    private TextView actionbarTextView;
+    private TextView chapterTextView;
     private ImageLoader mImageLoader;
     private ViewGroup container;
     private StoriesChapterModel currentChapter;
@@ -56,23 +53,21 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
     private int lastChapterNumber = -1;
 
 
-    public StoryPagerAdapter(Object context, StoriesChapterModel model, ImageLoader mImageLoader, TextView actionbarTextView, String positionHolder) {
+    public StoryPagerAdapter(Object context, StoriesChapterModel model, ImageLoader mImageLoader, TextView chapterTextView, String positionHolder) {
         this.context = (Context) context;
         currentChapter = model;
-        getCount();
-        currentChapter.AddBlankPageToEnd();
         this.mImageLoader = mImageLoader;
-        this.actionbarTextView = actionbarTextView;
+        this.chapterTextView = chapterTextView;
         setImageOptions();
         dbManager = DBManager.getInstance(this.context);
         this.activity = (Activity) context;
-        lastChapterNumber = currentChapter.getParent(this.context).getChildModels(this.context).size();
+        lastChapterNumber = currentChapter.getParent(this.context).getStoryChildModels(this.context).size();
         SELECTED_POS = positionHolder;
     }
 
     @Override
     public int getCount() {
-        return currentChapter.getChildModels(context).size();
+        return currentChapter.getChildModels(context).size() + 1;
     }
 
     @Override
@@ -80,39 +75,15 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.container = container;
-
-        // getting last row values of data base
-        int frameCount = currentChapter.getChildModels(context).size() + 1;
+        View view = null;
 
         if (position == getCount() - 1) {
-
-            view = inflater.inflate(R.layout.next_chapter_screen_layout, container, false);
-            Button nextButton = (Button) view.findViewById(R.id.nextChapterScreenbutton);
-
-            if(Integer.parseInt(currentChapter.number) == lastChapterNumber){
-                String nextButtonString = currentChapter.getParent(context).appWords.chapters;
-                nextButton.setText(nextButtonString);
-                nextButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        activity.finish();
-                        }
-                    });
-                }
-            else {
-                String nextButtonString = currentChapter.getParent(context).appWords.nextChapter;
-                nextButton.setText(nextButtonString);
-                nextButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        moveToNextChapter();
-                    }
-                    });
-            }
+            view = getNextChapterView(inflater);
         } else {
+
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
-            ImageView chapterImageView = (ImageView) view.findViewById(R.id.chapterImageView);
-            TextView storyTextView = (TextView) view.findViewById(R.id.storyTextView);
+            ImageView chapterImageView = (ImageView) view.findViewById(R.id.chapter_image_view);
+            TextView storyTextView = (TextView) view.findViewById(R.id.story_text_view);
             storyTextView.setText(currentChapter.getChildModels(context).get(position).text);
             String imgUrl = currentChapter.getChildModels(context).get(position).imageUrl;
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
@@ -127,6 +98,34 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
         return view;
     }
 
+    private View getNextChapterView(LayoutInflater inflater){
+
+        View view = inflater.inflate(R.layout.next_chapter_screen_layout, container, false);
+        Button nextButton = (Button) view.findViewById(R.id.next_chapter_screen_button);
+
+        if(Integer.parseInt(currentChapter.number) == lastChapterNumber){
+            String nextButtonString = context.getResources().getString(R.string.chapters);
+            nextButton.setText(nextButtonString);
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    activity.finish();
+                }
+            });
+        }
+        else {
+            String nextButtonString = context.getResources().getString(R.string.next_chapter);
+            nextButton.setText(nextButtonString);
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    moveToNextChapter();
+                }
+            });
+        }
+        return view;
+    }
+
     private void moveToNextChapter(){
 
         int chapterNumber = Integer.parseInt(currentChapter.number);
@@ -136,7 +135,7 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
             nextChapterNumber = "0" + nextChapterNumber;
         }
 
-        ArrayList<StoriesChapterModel> chapters = currentChapter.getParent(context).getChildModels(context);
+        ArrayList<StoriesChapterModel> chapters = currentChapter.getParent(context).getStoryChildModels(context);
 
         StoriesChapterModel nextChapter = null;
         int newChapterNumber = Integer.parseInt(this.currentChapter.number);
@@ -148,25 +147,18 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
         }
 
         this.currentChapter = nextChapter;
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(ChapterSelectionActivity.CHAPTERS_INDEX_STRING, newChapterNumber).commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(StoryChapterSelectionActivity.CHAPTERS_INDEX_STRING, newChapterNumber).commit();
         getCount();
-        currentChapter.AddBlankPageToEnd();
-//        ArrayList<PageModel> newPages = nextChapter.getChildModels(context);
 
         int current_value = Integer.parseInt(currentChapter.number);
-        actionbarTextView.setText(nextChapter.title);
-        // increment chapter selection
-//        int prv_pos = PreferenceManager.getDefaultSharedPreferences(context).getInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, -1);
-//        if (prv_pos != -1) {
-//            PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(ChapterSelectionActivity.SELECTED_CHAPTER_POS, prv_pos + 1).commit();
-//        }
-//
-//        intent.removeExtra(ChapterSelectionActivity.CHAPTERS_MODEL_INSTANCE);
-//        AppVariable.MODELS = nextChapter;
+        chapterTextView.setText(nextChapter.title);
+        UWPreferenceManager.setSelectedStoryChapter(context, nextChapter.uid);
+
         notifyDataSetChanged();
 
         ((ViewPager) this.container).setCurrentItem(0);
     }
+
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == ((RelativeLayout) object);
@@ -193,7 +185,7 @@ public class StoryPagerAdapter extends PagerAdapter implements ImageLoadingListe
 
     @Override
     public void onLoadingFailed(String url, View view, FailReason failReason) {
-        ImageView imageView = (ImageView) view.findViewById(R.id.chapterImageView);
+        ImageView imageView = (ImageView) view.findViewById(R.id.chapter_image_view);
         if (url.contains("file")) {
             String w = AsyncImageLoader.getLastBitFromUrl(url);
             mImageLoader.displayImage("assets://images/" + w, imageView, options);

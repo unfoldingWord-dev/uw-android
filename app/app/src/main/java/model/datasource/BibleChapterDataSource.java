@@ -3,11 +3,12 @@ package model.datasource;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.PageModel;
 
@@ -16,14 +17,16 @@ import model.modelClasses.mainData.PageModel;
  */
 public class BibleChapterDataSource extends AMDatabaseDataSourceAbstract {
 
-    static String TABLE_CHAPTER = "_table_bible_chapter";
+    static final String TAG = "BibleChapterDataSource";
+
+    static final String TABLE_CHAPTER = "_table_bible_chapter";
 
     // Table columns of TABLE_CHAPTER
-    static String TABLE_CHAPTER_COLUMN_UID = "_column_bible_chapter_uid";
-    static String TABLE_CHAPTER_COLUMN_PARENT_ID = "_column_parent_id";
-    static String TABLE_CHAPTER_COLUMN_SLUG = "_column_slug";
-    static String TABLE_CHAPTER_COLUMN_NUMBER = "_column_number";
-    static String TABLE_CHAPTER_COLUMN_TEXT = "_column_text";
+    static final String TABLE_CHAPTER_COLUMN_UID = "_column_bible_chapter_uid";
+    static final String TABLE_CHAPTER_COLUMN_PARENT_ID = "_column_parent_id";
+    static final String TABLE_CHAPTER_COLUMN_SLUG = "_column_slug";
+    static final String TABLE_CHAPTER_COLUMN_NUMBER = "_column_number";
+    static final String TABLE_CHAPTER_COLUMN_TEXT = "_column_text";
 
     public BibleChapterDataSource(Context context) {
         super(context);
@@ -48,6 +51,25 @@ public class BibleChapterDataSource extends AMDatabaseDataSourceAbstract {
     }
 
     @Override
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded)  {
+
+        if(!sideLoaded){
+            Log.e(TAG, "BibleChapterDataSource This shouldn't happen!");
+            return null;
+        }
+
+        BibleChapterModel newModel = new BibleChapterModel(json, parentId, sideLoaded);
+        BibleChapterModel currentModel = getModelForSlug(newModel.slug);
+
+        if(currentModel != null) {
+            newModel.uid = currentModel.uid;
+        }
+
+        saveModel(newModel);
+        return getModelForSlug(newModel.slug);
+    }
+
+    @Override
     protected String getParentIdColumnName() {
         return TABLE_CHAPTER_COLUMN_PARENT_ID;
     }
@@ -64,7 +86,7 @@ public class BibleChapterDataSource extends AMDatabaseDataSourceAbstract {
 
     @Override
     public AMDatabaseDataSourceAbstract getParentDataSource() {
-        return new VersionDataSource(this.context);
+        return new BookDataSource(this.context);
     }
 
     @Override

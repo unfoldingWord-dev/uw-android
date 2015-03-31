@@ -43,14 +43,14 @@ public class URLDownloadUtil {
      * @param url
      * @return
      */
-    public static String downloadJson(String url) throws IOException {
+    public static String downloadString(String url) throws IOException {
 
         HttpResponse response =  downloadUrl(url);
 
         return EntityUtils.toString(response.getEntity());
     }
 
-    public static byte[] downloadUsfm(String url) throws IOException {
+    public static byte[] downloadBytes(String url) throws IOException {
 
         HttpResponse response =  downloadUrl(url);
 

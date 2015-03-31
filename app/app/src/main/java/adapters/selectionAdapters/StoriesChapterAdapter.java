@@ -23,7 +23,6 @@ import java.util.List;
 
 import model.modelClasses.mainData.StoriesChapterModel;
 import utils.AsyncImageLoader;
-import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc on 4/12/14.

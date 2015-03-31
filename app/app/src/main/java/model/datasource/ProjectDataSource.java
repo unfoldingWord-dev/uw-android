@@ -7,7 +7,7 @@ import android.database.Cursor;
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
 
@@ -19,12 +19,9 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
     static String TABLE_PROJECT = "_table_project";
 
     //Table columns of TABLE_PROJECT
-    static String TABLE_PROJECT_COLUMN_UID = "_column_project_uid";
-    static String TABLE_PROJECT_COLUMN_DATE_MODIFIED_ = "_column_date_modified";
-    static String TABLE_PROJECT_COLUMN_LANGUAGE_URL = "_column_language_url";
-    static String TABLE_PROJECT_COLUMN_META = "_column_meta";
-    static String TABLE_PROJECT_COLUMN_SLUG = "_column_slug";
-    static String TABLE_PROJECT_COLUMN_SORT = "_column_sort";
+    static final String TABLE_PROJECT_COLUMN_UID = "_column_project_uid";
+    static final String TABLE_PROJECT_COLUMN_TITLE = "_column_title";
+    static final String TABLE_PROJECT_COLUMN_SLUG = "_column_slug";
 
     public ProjectDataSource(Context context) {
         super(context);
@@ -41,6 +38,24 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
             modelList.add( model);
         }
         return modelList;
+    }
+
+    @Override
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded)  {
+        ProjectModel newModel = new ProjectModel(json, sideLoaded);
+        ProjectModel currentModel = getModelForSlug(newModel.slug);
+
+        if(currentModel != null) {
+            newModel.uid = currentModel.uid;
+        }
+
+        if (currentModel == null) {
+            saveModel(newModel);
+            return getModelForSlug(newModel.slug);
+        }
+        else{
+            return null;
+        }
     }
 
     @Override
@@ -104,11 +119,8 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
         ProjectModel model = new ProjectModel();
 
         model.uid = cursor.getLong(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_UID));
-        model.dateModified = cursor.getLong(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_DATE_MODIFIED_));
-        model.languageUrl = cursor.getString(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_LANGUAGE_URL));
-        model.meta = cursor.getString(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_META));
+        model.title = cursor.getString(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_TITLE));
         model.slug =  cursor.getString(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_SLUG));
-        model.sort = cursor.getInt(cursor.getColumnIndex(TABLE_PROJECT_COLUMN_SORT));
 
         return model;
     }
@@ -122,11 +134,8 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
         if(projectModel.uid > 0) {
             values.put(TABLE_PROJECT_COLUMN_UID, projectModel.uid);
         }
-        values.put(TABLE_PROJECT_COLUMN_DATE_MODIFIED_, projectModel.dateModified);
-        values.put(TABLE_PROJECT_COLUMN_LANGUAGE_URL, projectModel.languageUrl);
-        values.put(TABLE_PROJECT_COLUMN_META, projectModel.meta);
+        values.put(TABLE_PROJECT_COLUMN_TITLE, projectModel.title);
         values.put(TABLE_PROJECT_COLUMN_SLUG, projectModel.slug);
-        values.put(TABLE_PROJECT_COLUMN_SORT, projectModel.sort);
 
         return values;
     }
@@ -136,11 +145,8 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
 
         String creationString =  "CREATE TABLE " + this.getTableName() + "(" +
                 ProjectDataSource.TABLE_PROJECT_COLUMN_UID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                ProjectDataSource.TABLE_PROJECT_COLUMN_DATE_MODIFIED_ + " INTEGER," +
-                ProjectDataSource.TABLE_PROJECT_COLUMN_LANGUAGE_URL + " VARCHAR," +
-                ProjectDataSource.TABLE_PROJECT_COLUMN_META + " VARCHAR," +
-                ProjectDataSource.TABLE_PROJECT_COLUMN_SLUG + " VARCHAR," +
-                ProjectDataSource.TABLE_PROJECT_COLUMN_SORT + " INTEGER)";
+                ProjectDataSource.TABLE_PROJECT_COLUMN_TITLE + " VARCHAR," +
+                ProjectDataSource.TABLE_PROJECT_COLUMN_SLUG + " VARCHAR)";
         return creationString;
     }
 }

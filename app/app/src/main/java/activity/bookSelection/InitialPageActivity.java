@@ -5,12 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
@@ -21,13 +24,12 @@ import java.util.Map;
 
 import activity.SettingsActivity;
 import activity.SplashScreenActivity;
+import activity.reading.ReadingActivity;
+import activity.reading.StoryReadingActivity;
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.InitialPageModel;
-import model.database.ModelCaching;
 import model.datasource.ProjectDataSource;
-import model.database.DBManager;
-import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
 import services.UpdateService;
 import utils.NetWorkUtil;
@@ -38,7 +40,9 @@ import utils.URLUtils;
  */
 public class InitialPageActivity extends GeneralSelectionActivity implements View.OnClickListener {
 
-    static String INDEX_STORAGE_STRING = "INDEX_STORAGE_STRING";
+    static final String INDEX_STORAGE_STRING = "INDEX_STORAGE_STRING";
+
+    static final String STORIES_SLUG = "obs";
 
     ArrayList<ProjectModel> mProjects = null;
 
@@ -66,13 +70,32 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     private void reload(){
 
         mProjects = null;
-        mDbManager = DBManager.getInstance(getApplicationContext());
-        this.updateListView();
+        this.prepareListView();
     }
 
     @Override
+    protected void setUI() {
+
+        setupActionBar();
+        this.prepareListView();
+    }
+
+    private void setupActionBar(){
+
+        mActionBar = getSupportActionBar();
+        View view = getLayoutInflater().inflate(R.layout.actionbar_base, null);
+        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        mActionBar.setCustomView(view);
+        mActionBar.setDisplayShowCustomEnabled(true);
+        mActionBar.setDisplayShowHomeEnabled(false);
+        mActionBar.setHomeButtonEnabled(false);
+        mActionBar.setDisplayHomeAsUpEnabled(false);
+        actionbarTextView.setText(getActionBarTitle());
+    }
+
+//    @Override
     protected String getActionBarTitle() {
-        return "Unfolding Word";
+        return getResources().getString(R.string.app_name);
     }
 
     @Override
@@ -96,10 +119,42 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         return this.getChildClass();
     }
 
+    private void moveToSettings(){
 
-    @Override
-    protected void setUI() {
-        super.setUI();
+        startActivity(new Intent(this, SettingsActivity.class));
+
+    }
+
+//    @Override
+    protected void prepareListView() {
+
+        ArrayList<GeneralRowInterface> data = this.getData();
+
+        if (mListView == null) {
+            mListView = (ListView) findViewById(R.id.generalList);
+        }
+        mListView.setOnItemClickListener(this);
+
+        if(mRefreshButton == null) {
+            LayoutInflater inflater = getLayoutInflater();
+            View mview1 = inflater.inflate(R.layout.header_view, null);
+            visibleLayout = (FrameLayout) mview1.findViewById(R.id.refreshView);
+            mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
+            mRefreshButton.setOnClickListener(this);
+            mListView.addHeaderView(mview1);
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
+            filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
+            registerReceiver(receiver, filter);
+        }
+
+        if (data == null) {
+//            return;
+            // test code for adding database.
+            data = new ArrayList<GeneralRowInterface>();
+//            data.add(new InitialPageModel("test", "-1"));
+        }
+        mListView.setAdapter(new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString()));
 
         if(settingsButton == null) {
             LayoutInflater inflater = getLayoutInflater();
@@ -115,63 +170,6 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
                 }
             });
             mListView.addFooterView(footerView);
-            this.actionbarTextView.setText("Unfolding Word");
-        }
-    }
-
-    private void moveToSettings(){
-
-        startActivity(new Intent(this, SettingsActivity.class));
-
-    }
-
-    @Override
-    protected void prepareListView() {
-
-        ArrayList<GeneralRowInterface> data = this.getData();
-
-        if (mListView == null) {
-            mListView = (ListView) findViewById(R.id.generalList);
-        }
-        if (data == null) {
-            return;
-        }
-        else if (data != null || data.size() == 0) {
-            actionbarTextView.setText(getActionBarTitle());
-        }
-
-        mListView.setOnItemClickListener(this);
-
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setHomeButtonEnabled(false);
-        mActionBar.setDisplayHomeAsUpEnabled(false);
-
-        if(mRefreshButton == null) {
-            LayoutInflater inflater = getLayoutInflater();
-            View mview1 = inflater.inflate(R.layout.header_view, null);
-            visibleLayout = (FrameLayout) mview1.findViewById(R.id.refreshView);
-            mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
-            mRefreshButton.setOnClickListener(this);
-            mListView.addHeaderView(mview1);
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
-            filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
-            registerReceiver(receiver, filter);
-        }
-
-        mListView.setAdapter(new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString()));
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-
-        super.onlySuperOnWindowFocusChanged(hasFocus);
-        int width = this.languagesButton.getMeasuredWidth();
-        if(width > 1) {
-            actionbarTextView.setPadding(width, 0, 5, 0);
-        }
-        else{
-            actionbarTextView.setPadding(200, 0, 5, 0);
         }
     }
 
@@ -180,12 +178,6 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
          return R.layout.activity_general_list;
     }
 
-    @Override
-    protected ArrayList<String> getListOfLanguages() {
-        return ModelCaching.getAvailableLanguages(getApplicationContext());
-    }
-
-    @Override
     protected ArrayList<GeneralRowInterface> getData(){
 
         Map<String, GeneralRowInterface> data = new HashMap<String, GeneralRowInterface>();
@@ -194,76 +186,47 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
             addProjects();
         }
 
-        if(mProjects.size() < 1){
-
-            Intent refresh = new Intent(this, SplashScreenActivity.class);
-            startActivity(refresh);
-            this.finish(); //
+        if(mProjects == null || mProjects.size() < 1){
+//            Intent refresh = new Intent(this, SplashScreenActivity.class);
+//            startActivity(refresh);
+//            this.finish();
             return null;
         }
 
-        String selectedLanguage = PreferenceManager.getDefaultSharedPreferences(this).getString(
-                getResources().getString(R.string.selected_language), "English");
-
-        Context context = getApplicationContext();
-
-        for(ProjectModel project : mProjects){
-            if(project.meta.contains("Stories")){
-                ArrayList<LanguageModel> languages = project.getChildModels(context);
-
-                for(LanguageModel language : languages){
-                    if(language.languageName.equalsIgnoreCase(selectedLanguage)){
-                        data.put(language.projectName, language);
-                    }
-                }
-            }
-            else if(project.containsLanguage(selectedLanguage, context)) {
-
-                String label = project.meta;
-
-                if(label.equalsIgnoreCase("bible-nt")){
-                    label = "Bible New Testament";
-                }
-                if(label.equalsIgnoreCase("bible-ot")){
-                    label = "Bible Old Testament";
-                }
-
-                data.put(project.meta, new InitialPageModel(label, project.meta));
-            }
-
-        }
-
         ArrayList<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>(3);
-        for(GeneralRowInterface row : data.values()) {
+        for(ProjectModel row : mProjects) {
             dataList.add(row);
         }
-
-        for(GeneralRowInterface row : data.values()){
-            int index = 0;
-
-            if(row.getChildIdentifier().contains("bible-nt")){
-                index = dataList.size() - 1;
-            }
-            else if(row.getChildIdentifier().contains("bible-ot")){
-                index = dataList.size() - 2;
-            }
-            else{
-                index = 0;
-            }
-            if(index < 0)
-            {
-                index = 0;
-            }
-            dataList.set(index, row);
-        }
-
-
 
         return dataList;
     }
 
-    private void addProjects() {
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
+        Object itemAtPosition = adapterView.getItemAtPosition(position);
+        if (itemAtPosition instanceof GeneralRowInterface) {
+           PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(INDEX_STORAGE_STRING, (int) rowIndex);
+
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(
+                    this.getIndexStorageString(), (int) rowIndex).commit();
+
+            ProjectModel model = (ProjectModel) itemAtPosition;
+            moveToNextActivity(model);
+        }
+    }
+
+    private void moveToNextActivity(ProjectModel project){
+
+        Class nextActivity = (project.slug.equalsIgnoreCase(STORIES_SLUG))?
+                StoryReadingActivity.class : ReadingActivity.class;
+
+        startActivity(new Intent(this, nextActivity).putExtra(CHOSEN_ID, project.getChildIdentifier()));
+        overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
+    }
+
+
+    private void addProjects() {
 
         if(mProjects == null){
             mProjects = new ArrayList<ProjectModel>();
@@ -276,7 +239,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         if (!NetWorkUtil.isConnected(this)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Alert");
-            builder.setMessage("Unable to perform update at this time");
+            builder.setMessage("Failed connecting to the internet.");
             builder.setPositiveButton("OK", null);
             builder.create().show();
         } else {
@@ -287,4 +250,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     }
 
+
+    public void closeButtonClicked(View view) {
+    }
 }

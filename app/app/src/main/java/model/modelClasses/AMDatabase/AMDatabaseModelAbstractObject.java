@@ -1,8 +1,7 @@
-package model.modelClasses.mainData.AMDatabase;
+package model.modelClasses.AMDatabase;
 
 import android.content.Context;
-
-import org.json.JSONObject;
+import android.util.Log;
 
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -14,6 +13,7 @@ import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
  */
 public abstract class AMDatabaseModelAbstractObject {
 
+    public static final String ABSTRACT_TAG = "AMDBAbstractModel";
     public long uid;
     public long parentId;
     public String slug;
@@ -22,14 +22,14 @@ public abstract class AMDatabaseModelAbstractObject {
      * Should set all the Object's attributes that are necessary to load from JSON
      * @return
      */
-    abstract public void initModelFromJsonObject(JSONObject jsonObject);
+    abstract public void initModelFromJson(String json, boolean sideLoaded);
 
     /**
      * Should set all the Object's attributes that are necessary to load from JSON
-     * @param jsonObject
-     * @param parent
+     * @param json
+     * @param parentId
      */
-    abstract public void initModelFromJsonObject(JSONObject jsonObject, AMDatabaseModelAbstractObject parent);
+    abstract public void initModelFromJson(String json, long parentId, boolean sideLoaded);
 
     /**
      *
@@ -42,13 +42,14 @@ public abstract class AMDatabaseModelAbstractObject {
 
     }
 
-    public AMDatabaseModelAbstractObject(JSONObject jsonObject){
+    public AMDatabaseModelAbstractObject(String json, boolean sideLoaded){
         this();
-        this.initModelFromJsonObject(jsonObject);
+        this.initModelFromJson(json, sideLoaded);
     }
 
-    public AMDatabaseModelAbstractObject(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
-        this.initModelFromJsonObject(jsonObject, parent);
+    public AMDatabaseModelAbstractObject(String json, long parentId, boolean sideLoaded) {
+        this.initModelFromJson(json, parentId, sideLoaded);
+//        Log.d(ABSTRACT_TAG, this.toString());
     }
 
     static public long getDateFromString(String date) {

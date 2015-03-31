@@ -1,6 +1,7 @@
 package model.modelClasses;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -13,15 +14,6 @@ import model.modelClasses.mainData.VersionModel;
  */
 public class StatusModel {
 
-    // Table columns of TABLE_RESOURCES
-    static String RESOURCES_COLUMN_AUTO_GENERATED_ID = "_column_table_resources_auto_generated_id";
-    static String RESOURCES_COLUMN_LANGUAGES_SLUG = "_column_table_resources_languages_slug";
-    static String RESOURCES_COLUMN_SLUG = "_column_table_resources_slug";
-    static String RESOURCES_COLUMN_NAME = "_column_table_resources_name";
-    static String RESOURCES_COLUMN_MODIFIED_DATE = "_column_table_resources_modified_date";
-    static String RESOURCES_COLUMN_SOURCE_URL = "_column_table_resources_source_url";
-    static String RESOURCES_COLUMN_TERMS_URL = "_column_table_resources_terms_url";
-    static String RESOURCES_COLUMN_NOTES_URL = "_column_table_resources_notes_url";
     static String RESOURCES_COLUMN_STATUS_CHECKING_ENTITY = "_column_table_resources_checking_entity";
     static String RESOURCES_COLUMN_STATUS_CHECKING_LEVEL = "_column_table_resources_checking_level";
     static String RESOURCES_COLUMN_STATUS_COMMENTS = "_column_table_resources_comments";
@@ -113,5 +105,17 @@ public class StatusModel {
                 ", sourceTextVersion='" + sourceTextVersion + '\'' +
                 ", version='" + version + '\'' +
                 '}';
+    }
+
+    public String getModelAsJson(Context context) {
+        String json = "checkingEntity: \"" + checkingEntity + "\",\n" +
+                "checkingLevel: \"" + checkingLevel + "\",\n" +
+                "comments: \"" + comments + "\",\n" +
+                "contributors: \"" + contributors + "\",\n" +
+                "publishDate: \"" + publishDate + "\",\n" +
+                "sourceText: \"" + sourceText + "\",\n" +
+                "sourceTextVersion: \"" + sourceTextVersion + "\",\n" +
+                "version: \"" + version + "\"";
+        return json;
     }
 }

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 
 import model.database.DBManager;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Fechner on 2/23/15.
@@ -24,11 +24,13 @@ public abstract class AMDatabaseDataSourceAbstract {
         this.context = context;
     }
 
-    private SQLiteDatabase getDatabase() {
+    private static synchronized DBManager getDBManager(Context context) {
 
-        SQLiteDatabase database = DBManager.getInstance(this.context).getReadableDatabase();
-        return database;
+        DBManager manager = DBManager.getInstance(context);
+        return manager;
     }
+
+    abstract public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded);
 
     /**
      * should return a sql table creation string
@@ -110,14 +112,32 @@ public abstract class AMDatabaseDataSourceAbstract {
 
         ArrayList<AMDatabaseModelAbstractObject> children = this.loadChildrenModelsFromDatabase(model);
 
-        for(AMDatabaseModelAbstractObject childModel : children){
-            childModel.getDataSource(this.context).deleteModel(childModel);
+        if(children != null) {
+            for (AMDatabaseModelAbstractObject childModel : children) {
+                childModel.getDataSource(this.context).deleteModel(childModel);
+            }
         }
 
-        SQLiteDatabase database = getDatabase();
+        SQLiteDatabase database = getDBManager(context).getDatabase();
 
         database.execSQL(this.getDeleteQuery(Long.toString(model.uid)));
-        database.close();
+        getDBManager(context).closeDatabase();
+    }
+
+    public void deleteChildrenOfParent(AMDatabaseModelAbstractObject parent){
+
+        ArrayList<AMDatabaseModelAbstractObject> children = this.loadChildrenModelsFromDatabase(parent);
+
+        if(children != null) {
+            for (AMDatabaseModelAbstractObject childModel : children) {
+                childModel.getDataSource(this.context).deleteChildrenOfParent(childModel);
+            }
+        }
+
+        SQLiteDatabase database = getDBManager(context).getDatabase();
+
+        database.execSQL(this.getDeleteChildrenQuery(Long.toString(parent.uid)));
+        getDBManager(context).closeDatabase();
     }
 
     public AMDatabaseModelAbstractObject getModelFromDatabaseForSlug(String slug){
@@ -134,7 +154,7 @@ public abstract class AMDatabaseDataSourceAbstract {
 
     protected ArrayList<AMDatabaseModelAbstractObject> getModelFromDatabase(String desiredColumn, String key){
 
-        SQLiteDatabase database = getDatabase();
+        SQLiteDatabase database = getDBManager(context).getDatabase();
 
         ArrayList<AMDatabaseModelAbstractObject> models = new ArrayList<AMDatabaseModelAbstractObject>();
         Cursor cursor = database.rawQuery(this.getQueryForColumn(desiredColumn), new String[]{key});
@@ -148,17 +168,17 @@ public abstract class AMDatabaseDataSourceAbstract {
         if (cursor != null) {
             cursor.close();
         }
-        database.close();
+        getDBManager(context).closeDatabase();
 
         return models;
     }
 
     public ArrayList<AMDatabaseModelAbstractObject> getAllModels(){
 
+        ArrayList<AMDatabaseModelAbstractObject> models = new ArrayList<AMDatabaseModelAbstractObject>();
+        SQLiteDatabase database = getDBManager(context).getDatabase();
         try {
-            SQLiteDatabase database = getDatabase();
 
-            ArrayList<AMDatabaseModelAbstractObject> models = new ArrayList<AMDatabaseModelAbstractObject>();
             Cursor cursor = database.rawQuery(this.getAllQuery(), null);
             if (cursor != null) {
                 int i = 0;
@@ -170,20 +190,23 @@ public abstract class AMDatabaseDataSourceAbstract {
             if (cursor != null) {
                 cursor.close();
             }
-            database.close();
-            return models;
         }
         catch (SQLiteException e){
+            models = null;
             e.printStackTrace();
-            return null;
         }
+
+        getDBManager(context).closeDatabase();
+
+        return models;
     }
 
     protected ArrayList<String> getUniqueValuesForColumn(String column){
 
+        ArrayList<String> values = new ArrayList<String>();
+        SQLiteDatabase database = getDBManager(context).getDatabase();
         try {
-            ArrayList<String> values = new ArrayList<String>();
-            SQLiteDatabase database = getDatabase();
+
             Cursor cursor = database.query(true, this.getTableName(), new String[]{column}, null, null, null, null, null, null);
 
             if (cursor != null) {
@@ -192,23 +215,26 @@ public abstract class AMDatabaseDataSourceAbstract {
                     String value = cursor.getString(cursor.getColumnIndex(column));
                     values.add(value);
                 }
+            }
+            if (cursor != null) {
                 cursor.close();
             }
 
-            database.close();
-            return values;
+
         }
         catch (SQLiteException e){
             e.printStackTrace();
-            return null;
+            values = null;
         }
+
+        getDBManager(context).closeDatabase();
+        return values;
     }
 
-    public AMDatabaseModelAbstractObject getModelForKey(String key){
+    public synchronized AMDatabaseModelAbstractObject getModelForKey(String key){
 
-        SQLiteDatabase database = getDatabase();
         AMDatabaseModelAbstractObject model = null;
-
+        SQLiteDatabase database = getDBManager(context).getDatabase();
         Cursor cursor = database.rawQuery(this.getSelectQuery(), new String[]{key});
 
         if (cursor != null) {
@@ -216,38 +242,40 @@ public abstract class AMDatabaseDataSourceAbstract {
             while (cursor.moveToNext()) {
                 model = getObjectFromCursor(cursor);
             }
-            cursor.close();
-        }
-        else{
+            if (cursor != null) {
+                cursor.close();
+            }
+        } else {
             model = null;
         }
-
-        database.close();
-
+        getDBManager(context).closeDatabase();
         return model;
     }
 
     public boolean createOrUpdateDatabaseModel(AMDatabaseModelAbstractObject model){
 
 //        Log.i(TAG, "Updating model: " + model.toString());
-        SQLiteDatabase database = getDatabase();
+        SQLiteDatabase database = getDBManager(context).getDatabase();
+        synchronized(database) {
+            ContentValues values = this.getModelAsContentValues(model);
+            int update = database.update(this.getTableName(), values,
+                    this.getCreateWhereClause(), new String[]{Long.toString(model.uid)});
+            if (update > 0) {
+                getDBManager(context).closeDatabase();
+                return true;
+            } else {
+                boolean didAdd = addModelToDatabase(database, values);
+                getDBManager(context).closeDatabase();
+                return didAdd;
+            }
+        }
 
-        ContentValues values = this.getModelAsContentValues(model);
-        int update = database.update(this.getTableName(), values,
-                this.getCreateWhereClause(), new String[]{Long.toString(model.uid)});
-        if (update > 0) {
-            return true;
-        }
-        else{
-            boolean didAdd = addModelToDatabase(database, values);
-            return didAdd;
-        }
+
     }
 
     protected boolean addModelToDatabase(SQLiteDatabase database, ContentValues values) {
 
         long insert = database.insert(this.getTableName(), null, values);
-        database.close();
         if (insert > 0) {
 //            Log.d("DB", "add: " + true);
             return true;
@@ -258,12 +286,15 @@ public abstract class AMDatabaseDataSourceAbstract {
 
     protected ArrayList<AMDatabaseModelAbstractObject> loadChildrenModelsFromDatabase(AMDatabaseModelAbstractObject model){
 
-        SQLiteDatabase database = getDatabase();
-
         ArrayList<AMDatabaseModelAbstractObject> models = new ArrayList<AMDatabaseModelAbstractObject>();
         AMDatabaseDataSourceAbstract childDataSource = this.getChildDataSource();
 
-        Cursor cursor = database.rawQuery(getChildrenQuery(childDataSource),new String[]{Long.toString(model.uid)});
+        if(childDataSource == null){
+            return null;
+        }
+
+        SQLiteDatabase database = getDBManager(context).getDatabase();
+        Cursor cursor = database.rawQuery(getChildrenQuery(childDataSource), new String[]{Long.toString(model.uid)});
 
         if (cursor != null) {
 
@@ -277,7 +308,7 @@ public abstract class AMDatabaseDataSourceAbstract {
         if (cursor != null) {
             cursor.close();
         }
-        database.close();
+        getDBManager(context).closeDatabase();
 
         return models;
     }
@@ -320,6 +351,12 @@ public abstract class AMDatabaseDataSourceAbstract {
     private String getDeleteQuery(String id){
 
         String query = "DELETE FROM " + this.getTableName() + " WHERE " + this.getUIDColumnName() + " = " + id;
+        return query;
+    }
+
+    private String getDeleteChildrenQuery(String parentId){
+
+        String query = "DELETE FROM " + this.getTableName() + " WHERE " + this.getParentIdColumnName() + " = " + parentId;
         return query;
     }
 

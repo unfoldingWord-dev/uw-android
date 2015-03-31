@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="RadioButtonstatus_error" parent="android:Widget.CompoundButton.RadioButton">
+      <item name="android:button">@drawable/status_error_btn_radio_holo_light</item>
+  </style>
+
+</resources>

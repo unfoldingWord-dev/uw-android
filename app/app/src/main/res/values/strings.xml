@@ -17,4 +17,19 @@
     <string name="selected_language">"SELECTED_LANGUAGE"</string>
 
     <string name="reset_base_url">Reset Url</string>
+
+    <string name="next_chapter">Next Chapter</string>
+    <string name="next_book">Go To</string>
+    <string name="chapters">Chapters</string>
+
+    <string name="status_explanation">Version Verification Status</string>
+    <string name="status_verified">Verified</string>
+    <string name="status_expired">Expired</string>
+    <string name="status_error">Unknown</string>
+    <string name="status_failed">Failed</string>
+
+    <string name="pref_default_base_url">https://api.unfoldingword.org/uw/txt/2/catalog.json</string>
+    <string name="old_pref_default_base_url">https://api.unfoldingword.org/ts/txt/2/catalog.json</string>
+    <string name="no_selected_version_text">Please download a version to begin reading</string>
+
 </resources>

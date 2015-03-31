@@ -1,21 +1,27 @@
 package activity.bookSelection;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
+import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import adapters.selectionAdapters.InitialPageModel;
-import model.database.ModelCaching;
-import model.datasource.ProjectDataSource;
-import model.database.DBManager;
-import model.modelClasses.mainData.LanguageModel;
+import model.datasource.BibleChapterDataSource;
+import model.modelClasses.mainData.BibleChapterModel;
+import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.ProjectModel;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -24,7 +30,6 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
 
     static String BOOK_INDEX_STRING = "BOOK_INDEX_STRING";
 
-    ArrayList<ProjectModel> mProjects = null;
 
     @Override
     protected int getContentView() {
@@ -32,13 +37,26 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
     }
 
     @Override
-    protected ArrayList<String> getListOfLanguages() {
+    protected void prepareListView() {
 
-        if (mProjects == null) {
-            addProjects();
+        ArrayList<GeneralRowInterface> data = this.getData();
+
+        if (mListView == null) {
+            mListView = (ListView) findViewById(R.id.generalList);
+        }
+        if (data == null) {
+            return;
+        }
+        else if (data != null || data.size() == 0) {
+            actionbarTextView.setText(getActionBarTitle());
         }
 
-        return ModelCaching.getAvailableLanguages(getApplicationContext(), mProjects);
+        mListView.setOnItemClickListener(this);
+        GeneralAdapter adapter = new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString());
+        mListView.setAdapter(adapter);
+
+        int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(BOOK_INDEX_STRING, -1);
+        mListView.setSelection((scrollPosition > 0) ? scrollPosition - 1 : 0);
     }
 
     @Override
@@ -48,53 +66,100 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
 
     @Override
     protected Class getChildClass() {
-        return VersionSelectionActivity.class;
+        return BibleChapterSelectionActivity.class;
+    }
+
+    protected String getActionBarTitle() {
+        return "Select Book";//mProjects.get(0).meta;
     }
 
     @Override
-    protected String getActionBarTitle() {
-        return mProjects.get(0).meta;
+    protected void setUI() {
+
+        View view = getLayoutInflater().inflate(R.layout.actionbar_base, null);
+        setupActionBar(view);
+        setupCloseButton(view);
+    }
+
+    private void setupActionBar(View view){
+
+        mActionBar = getSupportActionBar();
+        mActionBar.setCustomView(view);
+        mActionBar.setDisplayShowCustomEnabled(true);
+        mActionBar.setDisplayShowHomeEnabled(false);
+        mActionBar.setHomeButtonEnabled(false);
+        mActionBar.setDisplayHomeAsUpEnabled(false);
+
+        actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        actionbarTextView.setText(getActionBarTitle());
+    }
+
+    private void setupCloseButton(View view){
+        FrameLayout closeButton = (FrameLayout) view.findViewById(R.id.close_image_view);
+        closeButton.setVisibility(View.VISIBLE);
+    }
+
+    public void closeButtonClicked(View view) {
+        handleBack();
     }
 
     protected ArrayList<GeneralRowInterface> getData(){
 
-        ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-        String selectedLanguage = PreferenceManager.getDefaultSharedPreferences(this).getString(
-                getResources().getString(R.string.selected_language), "English");
-
-        if (mProjects == null) {
-            addProjects();
-        }
         Context context = getApplicationContext();
 
-        for (ProjectModel project : mProjects) {
-
-            LanguageModel language = project.getLanguageModel(context, selectedLanguage);
-
-            if (language != null) {
-                data.add(new InitialPageModel(language.projectName, Long.toString(language.uid)));
-            }
+        String chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
+        if(Long.parseLong(chapterId) < 0) {
+            return null;
         }
-        return data;
+        else {
+            BibleChapterModel model = new BibleChapterDataSource(context).getModel(chapterId);
+            ArrayList<BookModel> books = model.getParent(context).getParent(context).getChildModels(context);
+
+            long selectedId = model.getParent(context).uid;
+            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
+            int i = 0;
+            for (BookModel book : books) {
+                if(book.uid == selectedId){
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(BOOK_INDEX_STRING, i).commit();
+                }
+                data.add(book);
+                i++;
+            }
+
+
+            return data;
+        }
     }
 
-    private void addProjects(){
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
+        Object itemAtPosition = adapterView.getItemAtPosition(position);
+        if (itemAtPosition instanceof GeneralRowInterface) {
+            GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
 
-            String chosenProject = extras.getString(CHOSEN_ID);
+            // put selected position  to sharedprefences
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(this.getIndexStorageString(), (int) rowIndex).commit();
+            startActivityForResult(new Intent(this, this.getChildClass(model)).putExtra(
+                    CHOSEN_ID, model.getChildIdentifier()), 1);
+            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
+        }
+    }
 
-            this.mProjects = new ArrayList<ProjectModel>();
-            ArrayList<ProjectModel> projects = new ProjectDataSource(this.getApplicationContext()).getAllProjects();
+    @Override
+    protected void handleBack(){
 
-            for (ProjectModel project : projects) {
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getIndexStorageString(), -1).commit();
+        finish();
+        overridePendingTransition(R.anim.enter_center, R.anim.exit_on_bottom);
+    }
 
-                if (project.meta.equalsIgnoreCase(chosenProject)) {
-                    mProjects.add(project);
-                }
-            }
-            Collections.sort(mProjects);
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == 1){
+            finish();
         }
     }
 }

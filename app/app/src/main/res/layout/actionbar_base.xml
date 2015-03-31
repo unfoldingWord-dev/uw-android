@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="30dp">
+
+    <TextView
+        android:id="@+id/actionbarTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:text="Unfolding Word"
+        android:textColor="@color/white_mix_gary"
+        android:textSize="@dimen/actionbar_title_font_size"
+        android:textStyle="bold"
+        android:layout_centerInParent="true"
+        android:gravity="center|center_vertical|center_horizontal"
+        android:textAlignment="center"
+        android:paddingRight="20dp" />
+
+    <FrameLayout
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:id="@+id/close_image_view"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/language_button_click"
+        android:onClick="closeButtonClicked"
+        android:layout_marginRight="10dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:src="@drawable/x_button"
+            android:layout_gravity="center"
+            android:clickable="false"
+            />
+    </FrameLayout>
+
+
+
+</RelativeLayout>

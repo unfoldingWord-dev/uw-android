@@ -1,4 +1,4 @@
-package model.datasource.AMDatabase;
+package model.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,9 +16,9 @@ import model.datasource.VersionDataSource;
  */
 public class AMDatabaseIndex {
 
-    public static String DB_NAME = "_un_folding_word";
-    public static int DB_VERSION = 5;
-
+    public static final String DB_NAME = "_un_folding_word";
+    public static final int DB_VERSION = 6;
+    public static final int LAST_UPDATED = 20150310;
     private static AMDatabaseIndex ourInstance = new AMDatabaseIndex();
 
     public static AMDatabaseIndex getInstance() {

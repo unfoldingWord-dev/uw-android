@@ -3,22 +3,24 @@ package model.modelClasses.mainData;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import model.datasource.PageDataSource;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Fechner on 1/9/15.
  */
 public class PageModel extends AMDatabaseModelAbstractObject {
 
-    private static final String TAG = "PageModel";
+    private class PageJsonModel {
 
-    private static final String ID = "id";
-    private static final String IMAGE_URL = "img";
-    private static final String TEXT = "text";
+        String id;
+        String img;
+        String text;
+    }
+
+    private static final String TAG = "PageModel";
 
     public String pageNumber;
     public String chapterNumber;
@@ -54,8 +56,12 @@ public class PageModel extends AMDatabaseModelAbstractObject {
         super();
     }
 
-    public PageModel(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
-        super(jsonObject, parent);
+    public PageModel(String jsonObject, boolean sideLoaded) {
+        super(jsonObject, sideLoaded);
+    }
+
+    public PageModel(String jsonObject, long parentId, boolean sideLoaded) {
+        super(jsonObject, parentId, sideLoaded);
     }
 
 
@@ -63,31 +69,44 @@ public class PageModel extends AMDatabaseModelAbstractObject {
         return new PageDataSource(context);
     }
 
-    public void initModelFromJsonObject(JSONObject jsonObj) {
+    @Override
+    public void initModelFromJson(String json, boolean sideLoaded) {
 
-        try {
-            String idString = jsonObj.has(ID) ? jsonObj.getString(ID) : "";
-            if (idString.length() > 1) {
-                String[] splitString = idString.split("-");
-                this.chapterNumber = splitString[0];
-                this.pageNumber = splitString[1];
-            }
-            else{
-                Log.e(TAG, "Error splitting PageModel id: " + idString);
-            }
-            this.imageUrl = jsonObj.has(IMAGE_URL) ? jsonObj.getString(IMAGE_URL) : "";
-            this.text = jsonObj.has(TEXT) ? jsonObj.getString(TEXT) : "";
-        } catch (JSONException e) {
-            Log.e(TAG, "PageModel JSON Exception: " + e.toString());
+        if(sideLoaded){
+            initModelFromSideLoadedJson(json);
+            return;
         }
+
+        PageJsonModel model = new Gson().fromJson(json, PageJsonModel.class);
+
+        this.imageUrl = model.img;
+        this.text = model.text;
+
+        String idString = model.id;
+        if (idString.length() > 1) {
+            String[] splitString = idString.split("-");
+            this.chapterNumber = splitString[0];
+            this.pageNumber = splitString[1];
+        }
+        else{
+            Log.e(TAG, "Error splitting PageModel id: " + idString);
+        }
+
+        this.uid = -1;
     }
 
     @Override
-    public void initModelFromJsonObject(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
+    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
 
-        this.initModelFromJsonObject(jsonObject);
-        this.parentId = parent.uid;
-        this.slug = parent.slug + pageNumber;
+        if(sideLoaded){
+            initModelFromSideLoadedJson(json);
+        }
+        else {
+            this.initModelFromJson(json, sideLoaded);
+            this.slug = chapterNumber + pageNumber + "parent" + parentId;
+        }
+
+        this.parentId = parentId;
     }
 
     @Override
@@ -100,4 +119,42 @@ public class PageModel extends AMDatabaseModelAbstractObject {
                 ", parent=" + parent +
                 "} " + super.toString();
     }
+
+    protected class PageSideLoadedModel {
+
+        String page_number;
+        String chapter_number;
+        String img;
+        String text;
+
+        public PageSideLoadedModel(PageModel page) {
+            this.page_number = page.pageNumber;
+            this.chapter_number = page.chapterNumber;
+            this.img = page.imageUrl;
+            this.text = page.text;
+        }
+    }
+
+    protected PageSideLoadedModel getAsSideLoadedModel(){
+
+        return new PageSideLoadedModel(this);
+    }
+
+    public void initModelFromSideLoadedJson(String json){
+
+        PageSideLoadedModel model = new Gson().fromJson(json, PageSideLoadedModel.class);
+
+        this.pageNumber = model.page_number;
+        this.chapterNumber = model.chapter_number;
+        this.imageUrl = model.img;
+        this.text = model.text;
+    }
 }
+
+
+
+
+
+
+
+

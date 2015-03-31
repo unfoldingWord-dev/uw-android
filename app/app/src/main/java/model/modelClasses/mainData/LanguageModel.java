@@ -1,49 +1,32 @@
 package model.modelClasses.mainData;
 
 import android.content.Context;
-import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
-import model.database.ModelCaching;
 import model.datasource.LanguageDataSource;
-import model.database.DBManager;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 
 /**
  * Created by Acts Media Inc. on 3/12/14.
  */
 public class LanguageModel extends AMDatabaseModelAbstractObject implements GeneralRowInterface{
 
+
+    private class LanguageJsonModel{
+
+        long mod;
+        String slug;
+        String lc;
+    }
+
     private static final String TAG = "LanguageModel";
 
-    private static final String LANGUAGE_JSON_KEY = "language";
-    private static final String MODIFIED_DATE_JSON_KEY = "date_modified";
-    private static final String READING_DIRECTION_JSON_KEY = "direction";
-    private static final String LANGUAGE_NAME_JSON_KEY = "name";
-    private static final String SLUG_JSON_KEY = "slug";
-
-    private static final String PROJECT_JSON_KEY = "project";
-    private static final String DESCRIPTION_JSON_KEY = "desc";
-    private static final String META_JSON_KEY = "meta";
-    private static final String PROJECT_NAME_JSON_KEY = "name";
-    private static final String SORT_JSON_KEY = "sort";
-    private static final String RESOURCE_URL_JSON_KEY = "res_catalog";
-
-
     public long dateModified;
-    public String readingDirection;
-    public String languageName;
-    public String resourceUrl;
-
-    public String description;
-    public String meta;
-    public String projectName;
-    public int sortOrder;
+    public String languageAbbreviation;
 
     private ProjectModel parent;
     public ProjectModel getParent(Context context){
@@ -57,25 +40,25 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
         this.parent = parent;
     }
 
-    private ArrayList<VersionModel> resources = null;
+    private ArrayList<VersionModel> versions = null;
     public ArrayList<VersionModel> getChildModels(Context context){
 
-        if(resources == null){
-            resources = this.getDataSource(context).getChildModels(this);
+        if(versions == null){
+            versions = this.getDataSource(context).getChildModels(this);
         }
 
-        return resources;
+        return versions;
     }
 
     public LanguageModel() {
     }
 
-    public LanguageModel(JSONObject jsonObject) {
-        super(jsonObject);
+    public LanguageModel(String jsonObject, boolean sideLoaded) {
+        super(jsonObject, sideLoaded);
     }
 
-    public LanguageModel(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
-        super(jsonObject, parent);
+    public LanguageModel(String jsonObject, long parentId, boolean sideLoaded) {
+        super(jsonObject, parentId, sideLoaded);
     }
 
     @Override
@@ -83,60 +66,38 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
         return new LanguageDataSource(context);
     }
 
-    public void initModelFromJsonObject(JSONObject jsonObj){
+    @Override
+    public void initModelFromJson(String json, boolean sideLoaded){
 
-        try {
-            resourceUrl = jsonObj.has(RESOURCE_URL_JSON_KEY) ? jsonObj.getString(RESOURCE_URL_JSON_KEY) : "";
-
-            JSONObject languageObject = jsonObj.getJSONObject(LANGUAGE_JSON_KEY);
-
-            slug = languageObject.has(SLUG_JSON_KEY) ? languageObject.getString(SLUG_JSON_KEY) : "";
-            languageName = languageObject.has(LANGUAGE_NAME_JSON_KEY) ? languageObject.getString(LANGUAGE_NAME_JSON_KEY) : "";
-            readingDirection = languageObject.has(READING_DIRECTION_JSON_KEY) ? languageObject.getString(READING_DIRECTION_JSON_KEY) : "";
-
-            if (languageObject.has(MODIFIED_DATE_JSON_KEY)) {
-                dateModified = getDateFromString(languageObject.getString(MODIFIED_DATE_JSON_KEY));
-            }
-            else{
-                dateModified = -1;
-            }
-
-            JSONObject projectObject = jsonObj.getJSONObject(PROJECT_JSON_KEY);
-
-            projectName = projectObject.has(PROJECT_NAME_JSON_KEY) ? projectObject.getString(PROJECT_NAME_JSON_KEY) : "";
-            description = projectObject.has(DESCRIPTION_JSON_KEY) ? projectObject.getString(DESCRIPTION_JSON_KEY) : "";
-            meta = projectObject.has(META_JSON_KEY) ? projectObject.getString(META_JSON_KEY) : "";
-            sortOrder = projectObject.has(SORT_JSON_KEY) ? Integer.parseInt(projectObject.getString(SORT_JSON_KEY)) : 0;
+        if(sideLoaded){
+            initModelFromSideLoadedJson(json);
+            return;
         }
-        catch (JSONException e){
-            Log.e(TAG, "LanguageModel JSON Exception: " + e.toString());
-        }
-    }
 
-    public ArrayList<String> getAvailableLanguages(Context context) {
+        LanguageJsonModel model = new Gson().fromJson(json, LanguageJsonModel.class);
 
-        ArrayList<String> availLanguages = ModelCaching.getAvailableLanguages(context);
-        ArrayList<String> languages = new ArrayList<String>();
-
-        for(String language : availLanguages){
-            if(getParent(context).containsLanguage(language, context) && !languages.contains(language)){
-                languages.add(language.toLowerCase());
-            }
-        }
-        return languages;
+        dateModified = model.mod;
+        languageAbbreviation = model.lc;
+        uid = -1;
     }
 
     @Override
-    public void initModelFromJsonObject(JSONObject jsonObject, AMDatabaseModelAbstractObject parent) {
-        this.initModelFromJsonObject(jsonObject);
+    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
 
-        this.parentId = parent.uid;
-        this.slug += ((ProjectModel) parent).slug;
+        if(sideLoaded){
+            initModelFromSideLoadedJson(json);
+        }
+        else {
+            this.initModelFromJson(json, sideLoaded);
+            this.parentId = parentId;
+            this.slug = this.languageAbbreviation + parentId;
+        }
+
     }
 
     @Override
     public String getTitle() {
-        return this.projectName;
+        return this.languageAbbreviation;
     }
 
     @Override
@@ -148,16 +109,45 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
     public String toString() {
         return "LanguageModel{" +
                 "dateModified=" + dateModified +
-                ", readingDirection='" + readingDirection + '\'' +
-                ", languageName='" + languageName + '\'' +
-                ", slug='" + slug + '\'' +
-                ", resourceUrl='" + resourceUrl + '\'' +
-                ", description='" + description + '\'' +
-                ", meta='" + meta + '\'' +
-                ", projectName='" + projectName + '\'' +
-                ", sortOrder=" + sortOrder +
+                ", languageAbbreviation='" + languageAbbreviation + '\'' +
                 ", parent=" + parent +
-                ", resources=" + resources +
                 "} " + super.toString();
+    }
+
+    protected class LanguageSideLoadedModel{
+
+        long date_modified;
+        String slug;
+        String lang_abbrev;
+        VersionModel.VersionSideLoadedModel[] versions;
+
+        private LanguageSideLoadedModel(LanguageModel model, Context context) {
+
+            this.date_modified = model.dateModified;
+            this.lang_abbrev = model.languageAbbreviation;
+            this.slug = model.slug;
+
+            ArrayList<VersionModel> bookModels = model.getChildModels(context);
+            this.versions = new VersionModel.VersionSideLoadedModel[bookModels.size()];
+
+            for(int i = 0; i < bookModels.size(); i++){
+                this.versions[i] = bookModels.get(i).getAsSideLoadedModel(context);
+            }
+        }
+    }
+
+    protected LanguageSideLoadedModel getAsSideLoadedModel(Context context){
+
+        return new LanguageSideLoadedModel(this, context);
+    }
+
+    public void initModelFromSideLoadedJson(String json){
+
+        LanguageSideLoadedModel model = new Gson().fromJson(json, LanguageSideLoadedModel.class);
+
+        dateModified = model.date_modified;
+        languageAbbreviation = model.lang_abbrev;
+        slug = model.slug;
+        uid = -1;
     }
 }

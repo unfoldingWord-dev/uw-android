@@ -7,24 +7,24 @@ import android.database.Cursor;
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
-import model.modelClasses.mainData.StoriesChapterModel;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.PageModel;
+import model.modelClasses.mainData.StoriesChapterModel;
 
 /**
  * Created by Fechner on 2/24/15.
  */
 public class StoriesChapterDataSource extends AMDatabaseDataSourceAbstract {
 
-    static String TABLE_CHAPTER = "_table_stories_chapter";
+    static final String TABLE_CHAPTER = "_table_stories_chapter";
 
     // Table columns of TABLE_CHAPTER
-    static String TABLE_CHAPTER_COLUMN_UID = "_column_stories_chapter_uid";
-    static String TABLE_CHAPTER_COLUMN_PARENT_ID = "_column_parent_id";
-    static String TABLE_CHAPTER_COLUMN_SLUG = "_column_slug";
-    static String TABLE_CHAPTER_COLUMN_NUMBER = "_column_number";
-    static String TABLE_CHAPTER_COLUMN_DESCRIPTION = "_column_description";
-    static String TABLE_CHAPTER_COLUMN_TITLE = "_column_title";
+    static final String TABLE_CHAPTER_COLUMN_UID = "_column_stories_chapter_uid";
+    static final String TABLE_CHAPTER_COLUMN_PARENT_ID = "_column_parent_id";
+    static final String TABLE_CHAPTER_COLUMN_SLUG = "_column_slug";
+    static final String TABLE_CHAPTER_COLUMN_NUMBER = "_column_number";
+    static final String TABLE_CHAPTER_COLUMN_DESCRIPTION = "_column_description";
+    static final String TABLE_CHAPTER_COLUMN_TITLE = "_column_title";
 
     public StoriesChapterDataSource(Context context) {
         super(context);
@@ -54,6 +54,19 @@ public class StoriesChapterDataSource extends AMDatabaseDataSourceAbstract {
         }
 
         return chapters;
+    }
+
+    @Override
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded) {
+        StoriesChapterModel newModel = new StoriesChapterModel(json, parentId, sideLoaded);
+        StoriesChapterModel currentModel = getModelForSlug(newModel.slug);
+
+        if(currentModel != null) {
+            newModel.uid = currentModel.uid;
+        }
+
+        saveModel(newModel);
+        return getModelForSlug(newModel.slug);
     }
 
     @Override

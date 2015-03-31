@@ -90,6 +90,11 @@
     <color name="rows">#F3F3F3</color>
     <color name="black">#000000</color>
 
+    <color name="status_verified">#00DD00</color>
+    <color name="status_expired">#FFFF00</color>
+    <color name="status_error">#FF9900</color>
+    <color name="status_failed">#DD0000</color>
 
+    <color name="clear_black">#80000000</color>
 
 </resources>

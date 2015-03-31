@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import model.datasource.AMDatabase.AMDatabaseIndex;
-import model.datasource.LanguageDataSource;
+import model.database.AMDatabaseIndex;
 import model.datasource.ProjectDataSource;
+import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
 
 /**
@@ -26,7 +26,7 @@ public class DBManager extends SQLiteOpenHelper {
     /**
      * This needs to match up with the most recently updated Language model
      */
-    private static final int LAST_UPDATED = 20150310;
+
 
     private static String TAG = "DBManager";
 
@@ -43,7 +43,7 @@ public class DBManager extends SQLiteOpenHelper {
      * @param context
      * @return instance of DBManager
      */
-    public static DBManager getInstance(Context context) {
+    public synchronized static DBManager getInstance(Context context) {
         if (dbManager == null) {
             dbManager = new DBManager(context);
         }
@@ -54,6 +54,30 @@ public class DBManager extends SQLiteOpenHelper {
         super(context, AMDatabaseIndex.DB_NAME, null, AMDatabaseIndex.DB_VERSION);
         this.context = context;
         DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
+    }
+
+    private static int openingsCounter = 0;
+    private SQLiteDatabase database = null;
+    public synchronized SQLiteDatabase getDatabase(){
+
+        if(database == null){
+            openingsCounter = 0;
+        }
+
+        if(openingsCounter == 0){
+            database = this.getWritableDatabase();
+        }
+        openingsCounter++;
+
+        return database;
+    }
+
+    public synchronized void closeDatabase(){
+
+        openingsCounter--;
+        if(openingsCounter < 1){
+            this.close();
+        }
     }
 
     //region Overrides
@@ -80,9 +104,12 @@ public class DBManager extends SQLiteOpenHelper {
     public void createDataBase(boolean forceCreate) throws IOException {
 
         if(forceCreate || shouldLoadSavedDb()){
-            copyDataBase();
+//            copyDataBase();
             getReadableDatabase();
 
+        }
+        else {
+            getReadableDatabase();
         }
 //        backupDatabase();
     }
@@ -173,9 +200,12 @@ public class DBManager extends SQLiteOpenHelper {
         ArrayList<ProjectModel> models =  new ProjectDataSource(this.context).getAllProjects();
 
         for(ProjectModel model : models ){
-            if(model.dateModified >= LAST_UPDATED){
-                Log.i(TAG, "DB is up to date");
-                return true;
+            ArrayList<LanguageModel> languageModels = model.getChildModels(context);
+            for(LanguageModel langMod : languageModels) {
+                if (langMod.dateModified >= AMDatabaseIndex.LAST_UPDATED) {
+                    Log.i(TAG, "DB is up to date");
+                    return true;
+                }
             }
         }
         Log.i(TAG, "DB is not up to date");

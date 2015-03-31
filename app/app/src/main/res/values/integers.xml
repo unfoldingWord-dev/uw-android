@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="fast_animation">150</integer>
+
+    <integer name="tap_timeout">75</integer>
+    <integer name="double_tap_timeout">210</integer>
+
+</resources>

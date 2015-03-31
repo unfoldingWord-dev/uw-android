@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
-import model.modelClasses.mainData.AMDatabase.AMDatabaseModelAbstractObject;
+import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 import model.modelClasses.mainData.PageModel;
 
 /**
@@ -13,16 +13,16 @@ import model.modelClasses.mainData.PageModel;
  */
 public class PageDataSource extends AMDatabaseDataSourceAbstract {
 
-    static String TABLE_PAGE = "_page_info";
+    static final String TABLE_PAGE = "_table_page";
 
     // Table columns of TABLE_PAGE
-    static String TABLE_PAGE_COLUMN_UID = "_column_page_uid";
-    static String TABLE_PAGE_COLUMN_PARENT_ID = "_column_parent_id";
-    static String TABLE_PAGE_COLUMN_PAGE_NUMBER = "_column_page_number";
-    static String TABLE_PAGE_COLUMN_CHAPTER_NUMBER = "_column_chapter_number";
-    static String TABLE_PAGE_COLUMN_IMAGE_URL = "_column_img_url";
-    static String TABLE_PAGE_COLUMN_TEXT = "_column_text";
-    static String TABLE_PAGE_COLUMN_SLUG = "_column_slug";
+    static final String TABLE_PAGE_COLUMN_UID = "_column_page_uid";
+    static final String TABLE_PAGE_COLUMN_PARENT_ID = "_column_parent_id";
+    static final String TABLE_PAGE_COLUMN_PAGE_NUMBER = "_column_page_number";
+    static final String TABLE_PAGE_COLUMN_CHAPTER_NUMBER = "_column_chapter_number";
+    static final String TABLE_PAGE_COLUMN_IMAGE_URL = "_column_img_url";
+    static final String TABLE_PAGE_COLUMN_TEXT = "_column_text";
+    static final String TABLE_PAGE_COLUMN_SLUG = "_column_slug";
 
     public PageDataSource(Context context) {
         super(context);
@@ -68,6 +68,18 @@ public class PageDataSource extends AMDatabaseDataSourceAbstract {
         return (PageModel) this.getModelFromDatabaseForSlug(slug);
     }
 
+    @Override
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentID, boolean sideLoaded) {
+        PageModel newModel = new PageModel(json, parentID, sideLoaded);
+        PageModel currentModel = getModelForSlug(newModel.slug);
+
+        if(currentModel != null) {
+            newModel.uid = currentModel.uid;
+        }
+
+        saveModel(newModel);
+        return getModelForSlug(newModel.slug);
+    }
 
     @Override
     public ContentValues getModelAsContentValues(AMDatabaseModelAbstractObject model) {

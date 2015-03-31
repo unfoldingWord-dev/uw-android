@@ -2,46 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:clickable="false">
-
-
+    android:background="@color/white">
 
     <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
 
         <WebView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/chapterWebView" />
-
-        <!--<ScrollView-->
-            <!--android:id="@+id/chapterScrollView"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:scrollbars="vertical"-->
-            <!--android:gravity="top"-->
-            <!--android:fillViewport="true">-->
-
-            <!--<TextView-->
-                <!--android:id="@+id/chapterTextView"-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="fill_parent"-->
-                <!--android:layout_weight="1.0"-->
-                <!--android:gravity="top"-->
-                <!--android:paddingBottom="30dp"-->
-                <!--android:paddingLeft="30dp"-->
-                <!--android:paddingRight="30dp"-->
-                <!--android:paddingTop="30dp"-->
-                <!--android:text="New Text"-->
-                <!--android:textColor="@color/black"-->
-                <!--android:textSize="18sp"-->
-                <!--android:lineSpacingExtra="8dp"-->
-                <!--android:textStyle="normal"/>-->
-        <!--</ScrollView>-->
-
 
     </FrameLayout>
 </RelativeLayout>

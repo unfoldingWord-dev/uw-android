@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import activity.bookSelection.InitialPageActivity;
 import model.database.DBManager;
-import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
