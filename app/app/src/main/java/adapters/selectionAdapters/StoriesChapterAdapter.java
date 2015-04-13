@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,12 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
 
     public StoriesChapterAdapter(Context context, List<GeneralRowInterface> list, TextView actionbarTextView, ActionBarActivity activity, ImageLoader imageLoader, String storageString) {
         super(context, R.layout.row_for_frames, list, actionbarTextView, activity, storageString);
+        this.imageLoader = imageLoader;
+        setImageOptions();
+    }
+
+    public StoriesChapterAdapter(Context context, List<GeneralRowInterface> list, Fragment fragment, ImageLoader imageLoader, String storageString) {
+        super(context, R.layout.row_for_frames, list, fragment, storageString);
         this.imageLoader = imageLoader;
         setImageOptions();
     }

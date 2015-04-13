@@ -30,4 +30,8 @@
         android:key="selected_story_chapter_id"
         android:defaultValue="-1"/>
 
+    <Preference
+        android:key="last_updated_date"
+        android:defaultValue="-1"/>
+
 </PreferenceScreen>

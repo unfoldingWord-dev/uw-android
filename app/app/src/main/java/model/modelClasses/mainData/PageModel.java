@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import model.datasource.PageDataSource;
 import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 
@@ -56,11 +58,11 @@ public class PageModel extends AMDatabaseModelAbstractObject {
         super();
     }
 
-    public PageModel(String jsonObject, boolean sideLoaded) {
+    public PageModel(JSONObject jsonObject, boolean sideLoaded) {
         super(jsonObject, sideLoaded);
     }
 
-    public PageModel(String jsonObject, long parentId, boolean sideLoaded) {
+    public PageModel(JSONObject jsonObject, long parentId, boolean sideLoaded) {
         super(jsonObject, parentId, sideLoaded);
     }
 
@@ -70,14 +72,14 @@ public class PageModel extends AMDatabaseModelAbstractObject {
     }
 
     @Override
-    public void initModelFromJson(String json, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
             return;
         }
 
-        PageJsonModel model = new Gson().fromJson(json, PageJsonModel.class);
+        PageJsonModel model = new Gson().fromJson(json.toString(), PageJsonModel.class);
 
         this.imageUrl = model.img;
         this.text = model.text;
@@ -96,7 +98,7 @@ public class PageModel extends AMDatabaseModelAbstractObject {
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
@@ -140,9 +142,9 @@ public class PageModel extends AMDatabaseModelAbstractObject {
         return new PageSideLoadedModel(this);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        PageSideLoadedModel model = new Gson().fromJson(json, PageSideLoadedModel.class);
+        PageSideLoadedModel model = new Gson().fromJson(json.toString(), PageSideLoadedModel.class);
 
         this.pageNumber = model.page_number;
         this.chapterNumber = model.chapter_number;

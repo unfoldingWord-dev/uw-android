@@ -4,11 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
 import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
-import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.StoriesChapterModel;
 
@@ -29,10 +30,6 @@ public class BookDataSource extends AMDatabaseDataSourceAbstract {
     static final String TABLE_BOOK_COLUMN_SOURCE_URL = "_column_source_url";
     static final String TABLE_BOOK_COLUMN_SIGNATURE_URL = "_column_signature_url";
 
-    static final String TABLE_BOOK_COLUMN_SIG_ENTITY = "_column_signature_entity";
-    static final String TABLE_BOOK_COLUMN_SIG = "_column_signature";
-    static final String TABLE_BOOK_COLUMN_VERIFY_STATUS = "_column_verification_status";
-
 
     public BookDataSource(Context context) {
         super(context);
@@ -52,7 +49,7 @@ public class BookDataSource extends AMDatabaseDataSourceAbstract {
     }
 
     @Override
-    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded)  {
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded)  {
         BookModel newModel = new BookModel(json, parentId, sideLoaded);
         BookModel currentModel = getModelForSlug(newModel.slug);
 
@@ -131,10 +128,6 @@ public class BookDataSource extends AMDatabaseDataSourceAbstract {
 
         values.put(TABLE_BOOK_COLUMN_SOURCE_URL, versionModel.sourceUrl);
         values.put(TABLE_BOOK_COLUMN_SIGNATURE_URL, versionModel.signatureUrl);
-
-        values.put(TABLE_BOOK_COLUMN_SIG_ENTITY, versionModel.signingEntity);
-        values.put(TABLE_BOOK_COLUMN_SIG, versionModel.signature);
-        values.put(TABLE_BOOK_COLUMN_VERIFY_STATUS, versionModel.verificationStatus);
         return values;
     }
 
@@ -153,10 +146,6 @@ public class BookDataSource extends AMDatabaseDataSourceAbstract {
         model.sourceUrl = cursor.getString(cursor.getColumnIndex(TABLE_BOOK_COLUMN_SOURCE_URL));
         model.signatureUrl = cursor.getString(cursor.getColumnIndex(TABLE_BOOK_COLUMN_SIGNATURE_URL));
 
-        model.signingEntity = cursor.getString(cursor.getColumnIndex(TABLE_BOOK_COLUMN_SIG_ENTITY));
-        model.signature = cursor.getString(cursor.getColumnIndex(TABLE_BOOK_COLUMN_SIG));
-        model.verificationStatus = cursor.getInt(cursor.getColumnIndex(TABLE_BOOK_COLUMN_VERIFY_STATUS));
-
         return model;
     }
 
@@ -171,10 +160,6 @@ public class BookDataSource extends AMDatabaseDataSourceAbstract {
                 BookDataSource.TABLE_BOOK_COLUMN_TITLE + " VARCHAR," +
                 BookDataSource.TABLE_BOOK_COLUMN_DESCRIPTION + " VARCHAR," +
                 BookDataSource.TABLE_BOOK_COLUMN_SLUG + " VARCHAR," +
-
-                BookDataSource.TABLE_BOOK_COLUMN_SIG_ENTITY + " VARCHAR," +
-                BookDataSource.TABLE_BOOK_COLUMN_SIG + " VARCHAR," +
-                BookDataSource.TABLE_BOOK_COLUMN_VERIFY_STATUS + " INTEGER," +
 
                 BookDataSource.TABLE_BOOK_COLUMN_SOURCE_URL + " VARCHAR," +
                 BookDataSource.TABLE_BOOK_COLUMN_SIGNATURE_URL + " VARCHAR)";

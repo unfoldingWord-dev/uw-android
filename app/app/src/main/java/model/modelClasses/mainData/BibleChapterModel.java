@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.BibleChapterDataSource;
 import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
@@ -36,7 +38,7 @@ public class BibleChapterModel extends AMDatabaseModelAbstractObject implements 
         super();
     }
 
-    public BibleChapterModel(String json, long parentId, boolean sideLoaded) {
+    public BibleChapterModel(JSONObject json, long parentId, boolean sideLoaded) {
         super(json, parentId, sideLoaded);
     }
 
@@ -44,13 +46,13 @@ public class BibleChapterModel extends AMDatabaseModelAbstractObject implements 
         return new BibleChapterDataSource(context);
     }
 
-    public void initModelFromJson(String json, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, boolean sideLoaded) {
 
         return;
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
@@ -112,9 +114,9 @@ public class BibleChapterModel extends AMDatabaseModelAbstractObject implements 
         return new BibleChapterSideLoadedModel(this);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        BibleChapterSideLoadedModel model = new Gson().fromJson(json, BibleChapterSideLoadedModel.class);
+        BibleChapterSideLoadedModel model = new Gson().fromJson(json.toString(), BibleChapterSideLoadedModel.class);
 
         this.number = model.number;
         this.text = model.text;

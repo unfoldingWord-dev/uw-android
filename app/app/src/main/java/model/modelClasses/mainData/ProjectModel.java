@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
@@ -36,7 +38,7 @@ public class ProjectModel extends AMDatabaseModelAbstractObject implements Gener
     public ProjectModel() {
     }
 
-    public ProjectModel(String jsonObject, boolean sideLoaded) {
+    public ProjectModel(JSONObject jsonObject, boolean sideLoaded) {
         super(jsonObject, sideLoaded);
     }
 
@@ -58,13 +60,13 @@ public class ProjectModel extends AMDatabaseModelAbstractObject implements Gener
     }
 
     @Override
-    public void initModelFromJson(String json, boolean sideLoaded){
+    public void initModelFromJson(JSONObject json, boolean sideLoaded){
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
             return;
         }
 
-        ProjectJsonModel model = new Gson().fromJson(json, ProjectJsonModel.class);
+        ProjectJsonModel model = new Gson().fromJson(json.toString(), ProjectJsonModel.class);
 
         title = model.title;
         slug = model.slug;
@@ -72,7 +74,7 @@ public class ProjectModel extends AMDatabaseModelAbstractObject implements Gener
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
         return;
     }
 
@@ -126,9 +128,9 @@ public class ProjectModel extends AMDatabaseModelAbstractObject implements Gener
         return new ProjectSideLoadedModel(this, context);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        ProjectSideLoadedModel model = new Gson().fromJson(json, ProjectSideLoadedModel.class);
+        ProjectSideLoadedModel model = new Gson().fromJson(json.toString(), ProjectSideLoadedModel.class);
 
         title = model.title;
         slug = model.slug;

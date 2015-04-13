@@ -6,9 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.BookDataSource;
 import model.datasource.LanguageDataSource;
+import model.datasource.LanguageLocaleDataSource;
 import model.datasource.PageDataSource;
 import model.datasource.ProjectDataSource;
+import model.datasource.SigningOrganizationDataSource;
 import model.datasource.StoriesChapterDataSource;
+import model.datasource.VerificationDataSource;
 import model.datasource.VersionDataSource;
 
 /**
@@ -25,10 +28,7 @@ public class AMDatabaseIndex {
         return ourInstance;
     }
 
-
-
     private AMDatabaseIndex() {
-
     }
 
     static public void createTables(SQLiteDatabase database, Context context){
@@ -40,5 +40,8 @@ public class AMDatabaseIndex {
         database.execSQL(new BibleChapterDataSource(context).getTableCreationString());
         database.execSQL(new StoriesChapterDataSource(context).getTableCreationString());
         database.execSQL(new PageDataSource(context).getTableCreationString());
+        database.execSQL(new LanguageLocaleDataSource(context).getTableCreationString());
+        database.execSQL(new VerificationDataSource(context).getTableCreationString());
+        database.execSQL(new SigningOrganizationDataSource(context).getTableCreationString());
     }
 }

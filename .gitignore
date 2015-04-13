@@ -1,1 +1,5 @@
 .DS_Store
+/app/app/src/main/UWPreloader/nbproject/private/
+/app/app/src/main/UWPreloader/build/
+/app/app/src/main/UWPreloader/dist/
+/app/app/src/main/10TalesGreenDAOGenerator/nbproject/private/

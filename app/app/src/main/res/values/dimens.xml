@@ -23,4 +23,9 @@
 
     <dimen name="story_reading_text_size">16sp</dimen>
 
+    <dimen name="verification_button_text_size">15sp</dimen>
+
+    <dimen name="version_popover_margin">80dp</dimen>
+    <dimen name="chapter_selection_top_padding">0dp</dimen>
+
 </resources>

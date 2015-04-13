@@ -33,13 +33,17 @@
                     android:scaleType="center"
                     android:src="@color/white" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
+                <Button
                     android:id="@+id/status"
-                    android:src="@drawable/status_error_btn_radio_on_holo_light"
-                    android:layout_gravity="center_vertical" />
+                    android:text="@string/unknown_button_char"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/verification_button_text_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/green_checkmark"
+                    android:layout_gravity="center_vertical"
+                    />
 
                 <TextView
                     android:id="@+id/languageNameTextView"
@@ -138,7 +142,33 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/checkingEntityConstanttextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@string/verification_title"
+                        android:textColor="@color/black_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/verification_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="15dp"
+                        android:singleLine="false"
+                        android:text="New Text"
+                        android:textColor="@color/black_light" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/checking_entity_constant_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:singleLine="true"

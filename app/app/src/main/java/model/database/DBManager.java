@@ -6,17 +6,25 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.unfoldingword.mobile.R;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import model.database.AMDatabaseIndex;
+import model.datasource.LanguageLocaleDataSource;
 import model.datasource.ProjectDataSource;
 import model.modelClasses.mainData.LanguageModel;
 import model.modelClasses.mainData.ProjectModel;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
@@ -104,9 +112,9 @@ public class DBManager extends SQLiteOpenHelper {
     public void createDataBase(boolean forceCreate) throws IOException {
 
         if(forceCreate || shouldLoadSavedDb()){
-//            copyDataBase();
+            copyDataBase();
+            copyLanguages();
             getReadableDatabase();
-
         }
         else {
             getReadableDatabase();
@@ -129,6 +137,10 @@ public class DBManager extends SQLiteOpenHelper {
 
             int version = checkDB.getVersion();
             if(version < AMDatabaseIndex.DB_VERSION){
+                Log.i(TAG, "Database is old");
+                checkDB.close();
+                context.deleteDatabase(myPath);
+
                 return true;
             }
 
@@ -141,8 +153,10 @@ public class DBManager extends SQLiteOpenHelper {
             return (checkDB == null)? true : false;
         }
 
+
         boolean exists = (checkDB != null);
 
+        checkDB.close();
         if(exists){
             exists = this.dbIsUpdated();
         }
@@ -160,34 +174,51 @@ public class DBManager extends SQLiteOpenHelper {
      * @throws IOException
      */
     private void copyDataBase() throws IOException {
+
+        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_catalog_file_name));
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            long modified = jsonObject.getLong(UWDataParser.LAST_MODIFIED_JSON_KEY);
+            UWPreferenceManager.setLastUpdatedDate(context, modified);
+
+            UWDataParser.getInstance(context).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void copyLanguages() throws IOException {
+
+        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_locales_file_name));
+
+        try {
+            new LanguageLocaleDataSource(context).fastLoadJson(jsonString);
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private String loadDbFile(String fileName) throws IOException{
+
         // Open your local model.db as the input stream
-        InputStream inputStream = context.getAssets().open(AMDatabaseIndex.DB_NAME);
+        InputStream inputStream = context.getAssets().open(fileName);
 
-        // Path to the just created empty model.db
-        String outFileName = DB_PATH + AMDatabaseIndex.DB_NAME;
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        StringBuilder builder = new StringBuilder();
+        BufferedReader bufferReader = new BufferedReader(reader);
+        String read = bufferReader.readLine();
 
-        File currentFile = new File(outFileName);
-
-        //make sure the file doesn't already exist.
-        if(currentFile.exists()){
-            Log.i(TAG, "had to delete already existing DB");
-            currentFile.delete();
+        while(read != null) {
+            //System.out.println(read);
+            builder.append(read);
+            read =bufferReader.readLine();
         }
 
-        // Open the empty model.db as the output stream
-        FileOutputStream outputStream = new FileOutputStream(outFileName);
-
-        // transfer bytes from the inputfile to the outputfile
-        byte[] buffer = new byte[1024];
-        int length;
-
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-        // Close the streams
-        outputStream.flush();
-        outputStream.close();
-        inputStream.close();
+        return builder.toString();
     }
 
     //endregion

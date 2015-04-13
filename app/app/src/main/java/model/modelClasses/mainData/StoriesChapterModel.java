@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
@@ -53,11 +55,11 @@ public class StoriesChapterModel extends AMDatabaseModelAbstractObject implement
         super();
     }
 
-    public StoriesChapterModel(String jsonObject, boolean sideLoaded) {
+    public StoriesChapterModel(JSONObject jsonObject, boolean sideLoaded) {
         super(jsonObject, sideLoaded);
     }
 
-    public StoriesChapterModel(String jsonObject, long parentId, boolean sideLoaded) {
+    public StoriesChapterModel(JSONObject jsonObject, long parentId, boolean sideLoaded) {
         super(jsonObject, parentId, sideLoaded);
     }
 
@@ -66,13 +68,13 @@ public class StoriesChapterModel extends AMDatabaseModelAbstractObject implement
     }
 
     @Override
-    public void initModelFromJson(String json, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
             return;
         }
-        StoriesChapterJsonModel model = new Gson().fromJson(json, StoriesChapterJsonModel.class);
+        StoriesChapterJsonModel model = new Gson().fromJson(json.toString(), StoriesChapterJsonModel.class);
 
         number = model.number;
         description = model.ref;
@@ -82,7 +84,7 @@ public class StoriesChapterModel extends AMDatabaseModelAbstractObject implement
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
@@ -153,9 +155,9 @@ public class StoriesChapterModel extends AMDatabaseModelAbstractObject implement
         return new StoriesChapterSideLoadedModel(this, context);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        StoriesChapterSideLoadedModel model = new Gson().fromJson(json, StoriesChapterSideLoadedModel.class);
+        StoriesChapterSideLoadedModel model = new Gson().fromJson(json.toString(), StoriesChapterSideLoadedModel.class);
 
         number = model.number;
         description = model.description;

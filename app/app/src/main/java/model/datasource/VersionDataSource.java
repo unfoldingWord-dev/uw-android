@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
@@ -35,6 +37,8 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
     static final String TABLE_VERSION_COLUMN_SOURCE_TEXT_VERSION = "_column_source_text_version";
     static final String TABLE_VERSION_COLUMN_VERSION = "_column_version";
 
+    static final String TABLE_VERSION_COLUMN_VERIFICATION_STATUS = "_column_verification_status";
+
     public VersionDataSource(Context context) {
         super(context);
     }
@@ -53,7 +57,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
     }
 
     @Override
-    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded) {
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded) {
         VersionModel newModel = new VersionModel(json, parentId, sideLoaded);
         VersionModel currentModel = getModelForSlug(newModel.slug);
 
@@ -149,6 +153,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
         values.put(TABLE_VERSION_COLUMN_SOURCE_TEXT, versionModel.status.sourceText);
         values.put(TABLE_VERSION_COLUMN_SOURCE_TEXT_VERSION, versionModel.status.sourceTextVersion);
         values.put(TABLE_VERSION_COLUMN_VERSION, versionModel.status.version);
+        values.put(TABLE_VERSION_COLUMN_VERIFICATION_STATUS, versionModel.verificationStatus);
 
         return values;
     }
@@ -175,6 +180,8 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
         model.status.sourceTextVersion = cursor.getString(cursor.getColumnIndex(TABLE_VERSION_COLUMN_SOURCE_TEXT_VERSION));
         model.status.version = cursor.getString(cursor.getColumnIndex(TABLE_VERSION_COLUMN_VERSION));
 
+        model.verificationStatus = cursor.getInt(cursor.getColumnIndex(TABLE_VERSION_COLUMN_VERIFICATION_STATUS));
+
         return model;
     }
 
@@ -185,6 +192,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
                 VersionDataSource.TABLE_VERSION_COLUMN_UID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 VersionDataSource.TABLE_VERSION_COLUMN_PARENT_ID + " INTEGER," +
                 VersionDataSource.TABLE_VERSION_COLUMN_DATE_MODIFIED + " INTEGER," +
+                VersionDataSource.TABLE_VERSION_COLUMN_VERIFICATION_STATUS + " INTEGER," +
                 VersionDataSource.TABLE_VERSION_COLUMN_NAME + " VARCHAR," +
                 VersionDataSource.TABLE_VERSION_COLUMN_SLUG + " VARCHAR," +
                 VersionDataSource.TABLE_VERSION_COLUMN_SOURCE_IS_DOWNLOADED + " VARCHAR," +

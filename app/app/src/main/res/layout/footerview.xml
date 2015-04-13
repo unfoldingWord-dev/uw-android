@@ -29,39 +29,53 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_marginRight="10dp">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/status_verified_btn_radio_on_holo_light"
-                    android:id="@+id/verified_imageView"
-                    android:layout_gravity="center_vertical" />
+                <Button
+                    android:text="@string/verified_button_char"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/verification_button_text_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/green_checkmark"
+
+                    android:layout_gravity="center_vertical"
+                    />
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_verified"
                     android:id="@+id/verified_textView"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    />
 
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_marginRight="10dp">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/status_expired_btn_radio_on_holo_light"
-                    android:id="@+id/expired_imageView"
-                    android:layout_gravity="center_vertical" />
+                <Button
+                    android:text="@string/expired_button_char"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/verification_button_text_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/yellow_exclamation_point"
+
+                    android:layout_gravity="center_vertical"
+                    />
 
                 <TextView
+                    android:paddingLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_expired"
@@ -73,50 +87,55 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_marginRight="10dp">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/status_error_btn_radio_on_holo_light"
-                    android:id="@+id/error_imageView"
-                    android:layout_gravity="center_vertical" />
+                <Button
+                    android:text="@string/unknown_button_char"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/verification_button_text_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/orange_question_mark"
+
+                    android:layout_gravity="center_vertical"
+                    />
 
                 <TextView
+                    android:paddingLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_error"
                     android:id="@+id/error_textView"
                     android:layout_gravity="center_vertical" />
-
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="fill_parent">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/status_failed_btn_radio_on_holo_light"
-                    android:id="@+id/failed_imageView"
-                    android:layout_gravity="center_vertical" />
+                <Button
+                    android:text="@string/failed_button_char"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/verification_button_text_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/red_x_button"
+
+                    android:layout_gravity="center_vertical"
+                    />
 
                 <TextView
+                    android:paddingLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_failed"
                     android:id="@+id/failed_textView"
                     android:layout_gravity="center_vertical" />
-
             </LinearLayout>
 
-
-
         </LinearLayout>
-
     </LinearLayout>
 
     <FrameLayout
@@ -124,11 +143,6 @@
         android:layout_height="wrap_content"
         android:background="@color/light_brown"
         android:padding="10dp">
-
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="1.5dp"
-            android:background="@color/light_brown"></FrameLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -180,7 +194,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
 
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -207,7 +221,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
 
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <ImageView

@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
@@ -50,7 +52,7 @@ public class LanguageDataSource extends AMDatabaseDataSourceAbstract {
 
 
     @Override
-    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded) {
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded) {
         LanguageModel newModel = new LanguageModel(json, parentId, sideLoaded);
         LanguageModel currentModel = getModelForSlug(newModel.slug);
 

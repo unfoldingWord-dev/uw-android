@@ -2,7 +2,9 @@ package adapters.selectionAdapters;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +21,24 @@ import java.util.List;
  */
 public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
 
-    protected static String SELECTED_POS;
+    protected String SELECTED_POS;
 
 
     protected final List<GeneralRowInterface> models;
-    protected final ActionBarActivity activity;
-    protected TextView actionbarTextview;
+    protected  ActionBarActivity activity = null;
+    protected TextView actionbarTextView = null;
     protected Context context;
+    protected Fragment fragment = null;
+
+
+
+    public GeneralAdapter(Context context, int resource, List<GeneralRowInterface> models, Fragment fragment, String positionHolder) {
+        super(context, resource, models);
+        SELECTED_POS = positionHolder;
+        this.context = context;
+        this.models = models;
+        this.fragment = fragment;
+    }
 
     /**
      *
@@ -41,8 +54,18 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
         SELECTED_POS = positionHolder;
         this.context = context;
         this.models = models;
-        this.actionbarTextview = actionbarTextView;
+        this.actionbarTextView = actionbarTextView;
         this.activity = activity;
+    }
+
+    public GeneralAdapter(Context context, List<GeneralRowInterface> models, Fragment fragment, String positionHolder) {
+        super(context, R.layout.row_general, models);
+        SELECTED_POS = positionHolder;
+        this.context = context;
+        this.models = models;
+        this.fragment = fragment;
+//        this.actionbarTextView = actionbarTextView;
+//        this.activity = activity;
     }
 
     /**
@@ -58,7 +81,7 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
         SELECTED_POS = positionHolder;
         this.context = context;
         this.models = models;
-        this.actionbarTextview = actionbarTextView;
+        this.actionbarTextView = actionbarTextView;
         this.activity = activity;
     }
 

@@ -3,10 +3,13 @@ package activity.reading;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -26,12 +29,18 @@ import org.unfoldingword.mobile.R;
 
 import java.util.Locale;
 
+import activity.bookSelection.BookSelectionActivity;
 import activity.bookSelection.GeneralSelectionActivity;
 import activity.bookSelection.StoryChapterSelectionActivity;
 import activity.bookSelection.VersionSelectionActivity;
 import adapters.StoryPagerAdapter;
+import fragments.ChapterSelectionFragment;
+import fragments.StoryChaptersFragment;
+import fragments.VersionSelectionFragment;
+import model.datasource.LanguageLocaleDataSource;
 import model.datasource.StoriesChapterDataSource;
 import model.datasource.VersionDataSource;
+import model.modelClasses.mainData.LanguageLocaleModel;
 import model.modelClasses.mainData.ProjectModel;
 import model.modelClasses.mainData.StoriesChapterModel;
 import model.modelClasses.mainData.VersionModel;
@@ -40,9 +49,13 @@ import utils.UWPreferenceManager;
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
-public class StoryReadingActivity extends ActionBarActivity {
+public class StoryReadingActivity extends ActionBarActivity implements
+        VersionSelectionFragment.VersionSelectionFragmentListener, StoryChaptersFragment.StoryChaptersFragmentListener {
 
     static final public String STORY_INDEX_STRING = "STORY_INDEX_STRING";
+
+    static private final String STORIES_VERSION_FRAGMENT_ID = "STORIES_VERSION_FRAGMENT_ID";
+    static private final String STORIES_CHAPTER_SELECTION_FRAGMENT_ID = "STORIES_CHAPTER_SELECTION_FRAGMENT_ID";
 
     private ViewPager readingViewPager = null;
     private ActionBar mActionBar = null;
@@ -97,6 +110,11 @@ public class StoryReadingActivity extends ActionBarActivity {
 
         setupPager();
     }
+    private void reload(){
+        mChapter = null;
+        selectedProject = null;
+        onStart();
+    }
 
     private void setupActionBar(){
         View view = getLayoutInflater().inflate(R.layout.actionbar_custom_view, null);
@@ -131,8 +149,10 @@ public class StoryReadingActivity extends ActionBarActivity {
         versionsButton = (LinearLayout) view.findViewById(R.id.language_button);
         versionsTextView = (TextView) view.findViewById(R.id.language_text);
         if(this.mChapter != null) {
-            Locale currentLocale = new Locale(this.mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).getParent(getApplicationContext()).languageAbbreviation);
-            versionsTextView.setText(currentLocale.getDisplayLanguage());
+            String languageAbbrev = this.mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).getParent(getApplicationContext()).languageAbbreviation;
+
+            LanguageLocaleModel languageLocale = new LanguageLocaleDataSource(getApplicationContext()).getModelForSlug(languageAbbrev);
+            versionsTextView.setText(languageLocale.languageName);
         }
         else{
             versionsTextView.setText("Select Version");
@@ -163,6 +183,17 @@ public class StoryReadingActivity extends ActionBarActivity {
         }
     }
 
+    private boolean isTablet(){
+
+        int screen_density = (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
+        if (screen_density == Configuration.SCREENLAYOUT_SIZE_LARGE || screen_density == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     private void goToVersionSelection(){
 
         Bundle extras = getIntent().getExtras();
@@ -170,15 +201,41 @@ public class StoryReadingActivity extends ActionBarActivity {
             return;
         }
         String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
-        startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
-                GeneralSelectionActivity.CHOSEN_ID, projectId));
-        overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+
+        if(isTablet()){
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            VersionSelectionFragment fragment = VersionSelectionFragment.newInstance(projectId, true);
+            fragment.show(ft, STORIES_VERSION_FRAGMENT_ID);
+        }
+        else {
+            startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
+                    GeneralSelectionActivity.CHOSEN_ID, projectId));
+            overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        }
     }
 
     private void goToChapterActivity(){
 
-        startActivity(new Intent(getApplicationContext(), StoryChapterSelectionActivity.class));
-        overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            return;
+        }
+
+//        String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
+
+        if(isTablet()){
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            StoryChaptersFragment fragment = StoryChaptersFragment.newInstance(true);
+            fragment.show(ft, STORIES_CHAPTER_SELECTION_FRAGMENT_ID);
+        }
+        else {
+            startActivity(new Intent(getApplicationContext(), StoryChapterSelectionActivity.class));
+            overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        }
     }
 
     private void setData(){
@@ -327,11 +384,36 @@ public class StoryReadingActivity extends ActionBarActivity {
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
+
     public void chapterButtonClicked(View view) {
         goToChapterActivity();
     }
 
     public void versionButtonClicked(View view) {
         goToVersionSelection();
+    }
+
+    @Override
+    public void rowWasSelected() {
+        removeFragment(STORIES_VERSION_FRAGMENT_ID);
+    }
+
+    @Override
+    public void chapterWasSelected() {
+        removeFragment(STORIES_CHAPTER_SELECTION_FRAGMENT_ID);
+    }
+
+    private void removeFragment(String fragmentId){
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        Fragment previous = getSupportFragmentManager().findFragmentByTag(fragmentId);
+
+        if (previous != null) {
+            ft.remove(previous);
+        }
+        ft.addToBackStack(null);
+        ft.commit();
+        reload();
     }
 }

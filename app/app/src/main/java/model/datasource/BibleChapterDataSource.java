@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
@@ -39,7 +41,7 @@ public class BibleChapterDataSource extends AMDatabaseDataSourceAbstract {
 
     public ArrayList<BibleChapterModel> getChaptersForParentId(String parentId){
 
-        ArrayList<AMDatabaseModelAbstractObject> models = this.getModelFromDatabase(TABLE_CHAPTER_COLUMN_PARENT_ID, parentId);
+        ArrayList<AMDatabaseModelAbstractObject> models = this.getModelsFromDatabase(TABLE_CHAPTER_COLUMN_PARENT_ID, parentId);
 
         ArrayList<BibleChapterModel> chapters = new ArrayList<BibleChapterModel>();
         for(AMDatabaseModelAbstractObject model : models){
@@ -51,7 +53,7 @@ public class BibleChapterDataSource extends AMDatabaseDataSourceAbstract {
     }
 
     @Override
-    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded)  {
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded)  {
 
         if(!sideLoaded){
             Log.e(TAG, "BibleChapterDataSource This shouldn't happen!");

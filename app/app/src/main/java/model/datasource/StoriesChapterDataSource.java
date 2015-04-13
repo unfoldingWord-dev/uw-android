@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
@@ -17,6 +20,8 @@ import model.modelClasses.mainData.StoriesChapterModel;
 public class StoriesChapterDataSource extends AMDatabaseDataSourceAbstract {
 
     static final String TABLE_CHAPTER = "_table_stories_chapter";
+
+    static final String FRAMES_JSON_KEY = "frames";
 
     // Table columns of TABLE_CHAPTER
     static final String TABLE_CHAPTER_COLUMN_UID = "_column_stories_chapter_uid";
@@ -45,7 +50,7 @@ public class StoriesChapterDataSource extends AMDatabaseDataSourceAbstract {
 
     public ArrayList<StoriesChapterModel> getChaptersForParentId(String parentId){
 
-        ArrayList<AMDatabaseModelAbstractObject> models = this.getModelFromDatabase(TABLE_CHAPTER_COLUMN_PARENT_ID, parentId);
+        ArrayList<AMDatabaseModelAbstractObject> models = this.getModelsFromDatabase(TABLE_CHAPTER_COLUMN_PARENT_ID, parentId);
 
         ArrayList<StoriesChapterModel> chapters = new ArrayList<StoriesChapterModel>();
         for(AMDatabaseModelAbstractObject model : models){
@@ -57,7 +62,7 @@ public class StoriesChapterDataSource extends AMDatabaseDataSourceAbstract {
     }
 
     @Override
-    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded) {
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded) {
         StoriesChapterModel newModel = new StoriesChapterModel(json, parentId, sideLoaded);
         StoriesChapterModel currentModel = getModelForSlug(newModel.slug);
 
@@ -66,7 +71,20 @@ public class StoriesChapterDataSource extends AMDatabaseDataSourceAbstract {
         }
 
         saveModel(newModel);
-        return getModelForSlug(newModel.slug);
+        StoriesChapterModel finalModel = getModelForSlug(newModel.slug);
+
+        if(currentModel == null){
+
+            try {
+                new PageDataSource(context).fastAddPages(json.getJSONArray(FRAMES_JSON_KEY), finalModel.uid);
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        return finalModel;
     }
 
     @Override

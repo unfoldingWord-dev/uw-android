@@ -21,6 +21,7 @@ import activity.reading.ReadingActivity;
 import model.database.DBManager;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
+import utils.USFMParser;
 import utils.UWPreferenceManager;
 
 /**
@@ -99,7 +100,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
             WebView textWebView = (WebView) view.findViewById(R.id.chapterWebView);
             textWebView.getSettings().setJavaScriptEnabled(true);
 
-            String pageText = getTextCss() + chapters.get(position).text;
+            String pageText = getTextCss() + USFMParser.getInstance().parseUsfmChapter(chapters.get(position).text);
             textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
             textWebView.setOnTouchListener(this.pagerOnTouchListener);
 
@@ -126,9 +127,11 @@ public class ReadingPagerAdapter extends PagerAdapter {
                 ".q, .q1, .q2 { margin:0; display: block; padding:0;}\n" +
                 ".q, .q1 { margin-left: 1em; }\n" +
                 ".q2 { margin-left: 2em; }\n" +
-                "p { width:96%; font-size: 15pt; line-height: 1.3; padding:10px; unicode-bidi:bidi-override; direction:" +
+                "p { width:96%; font-size: 15pt; text-align: justify; line-height: 1.5; padding:10px; unicode-bidi:bidi-override; direction:" +
                 getTextDirection() + " ;}\n" +
                 "-->\n" +
+                ".footnote {font-size: 12pt;}" +
+                "sup {font-size: 9pt;}" +
                 "</style>";
         return css;
     }

@@ -3,8 +3,11 @@ package model.datasource.AMDatabase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,7 +33,7 @@ public abstract class AMDatabaseDataSourceAbstract {
         return manager;
     }
 
-    abstract public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded);
+    abstract public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded);
 
     /**
      * should return a sql table creation string
@@ -104,6 +107,7 @@ public abstract class AMDatabaseDataSourceAbstract {
 
     public boolean saveModel(AMDatabaseModelAbstractObject model) {
 
+//        Log.i(TAG, "Saving Model: " + model.toString());
         createOrUpdateDatabaseModel(model);
         return false;
     }
@@ -142,7 +146,7 @@ public abstract class AMDatabaseDataSourceAbstract {
 
     public AMDatabaseModelAbstractObject getModelFromDatabaseForSlug(String slug){
 
-        ArrayList<AMDatabaseModelAbstractObject> models =  this.getModelFromDatabase(this.getSlugColumnName(), slug);
+        ArrayList<AMDatabaseModelAbstractObject> models =  this.getModelsFromDatabase(this.getSlugColumnName(), slug);
 
         if(models.size() != 1){
             return null;
@@ -152,7 +156,7 @@ public abstract class AMDatabaseDataSourceAbstract {
         }
     }
 
-    protected ArrayList<AMDatabaseModelAbstractObject> getModelFromDatabase(String desiredColumn, String key){
+    protected ArrayList<AMDatabaseModelAbstractObject> getModelsFromDatabase(String desiredColumn, String key){
 
         SQLiteDatabase database = getDBManager(context).getDatabase();
 
@@ -256,21 +260,17 @@ public abstract class AMDatabaseDataSourceAbstract {
 
 //        Log.i(TAG, "Updating model: " + model.toString());
         SQLiteDatabase database = getDBManager(context).getDatabase();
-        synchronized(database) {
-            ContentValues values = this.getModelAsContentValues(model);
-            int update = database.update(this.getTableName(), values,
-                    this.getCreateWhereClause(), new String[]{Long.toString(model.uid)});
-            if (update > 0) {
-                getDBManager(context).closeDatabase();
-                return true;
-            } else {
-                boolean didAdd = addModelToDatabase(database, values);
-                getDBManager(context).closeDatabase();
-                return didAdd;
-            }
+        ContentValues values = this.getModelAsContentValues(model);
+        int update = database.update(this.getTableName(), values,
+                this.getCreateWhereClause(), new String[]{Long.toString(model.uid)});
+        if (update > 0) {
+            getDBManager(context).closeDatabase();
+            return true;
+        } else {
+            boolean didAdd = addModelToDatabase(database, values);
+            getDBManager(context).closeDatabase();
+            return didAdd;
         }
-
-
     }
 
     protected boolean addModelToDatabase(SQLiteDatabase database, ContentValues values) {
@@ -282,6 +282,24 @@ public abstract class AMDatabaseDataSourceAbstract {
         }
 //        Log.d("DB", "add: " + false);
         return false;
+    }
+
+    protected boolean fastAddModelsToDatabase(ArrayList<ContentValues> valuesList){
+
+        SQLiteDatabase database = getDBManager(context).getDatabase();
+
+        try{
+            database.beginTransaction();
+            for(ContentValues values : valuesList){
+                database.insert(this.getTableName(), null, values);
+            }
+            database.setTransactionSuccessful();
+        } catch (SQLException e) {
+        } finally {
+            database.endTransaction();
+            getDBManager(context).closeDatabase();
+        }
+        return true;
     }
 
     protected ArrayList<AMDatabaseModelAbstractObject> loadChildrenModelsFromDatabase(AMDatabaseModelAbstractObject model){

@@ -28,8 +28,29 @@
     <string name="status_error">Unknown</string>
     <string name="status_failed">Failed</string>
 
+    <string name="preloaded_catalog_file_name">preloaded_data.json</string>
+    <string name="preloaded_locales_file_name">locales_data.json</string>
+
     <string name="pref_default_base_url">https://api.unfoldingword.org/uw/txt/2/catalog.json</string>
     <string name="old_pref_default_base_url">https://api.unfoldingword.org/ts/txt/2/catalog.json</string>
+    <string name="languages_json_url">http://td.unfoldingword.org/exports/langnames.json</string>
+
     <string name="no_selected_version_text">Please download a version to begin reading</string>
+
+    <string name="verified_button_char">✓</string>
+    <string name="expired_button_char">!</string>
+    <string name="unknown_button_char">\?</string>
+    <string name="failed_button_char">X</string>
+    <string name="verification_title">Verification Information :</string>
+
+    <string name="verified_title_start">The validity of this content is verified by: </string>
+    <string name="expired_title_start">The verification of some or all of this content has expired.</string>
+    <string name="error_title_start">We experienced an error while attempting to verify some or all of this content. This is likely because no verification could be found.</string>
+    <string name="failed_title_start">*Warning* the validity of some or all of this content has failed. Use with your own risk</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="chapter_selection_title">Chapter Selection</string>
+    <string name="version_select_title_string">Select Version</string>
 
 </resources>

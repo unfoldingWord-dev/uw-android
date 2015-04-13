@@ -43,4 +43,13 @@ public class UWPreferenceManager {
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_CHAPTER_ID, newValue).commit();
     }
 
+    private static final String LAST_UPDATED_ID = "last_updated_date";
+    public static Long getLastUpdatedDate(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(LAST_UPDATED_ID, -1);
+    }
+    public static void setLastUpdatedDate(Context context, long newValue){
+
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(LAST_UPDATED_ID, newValue).commit();
+    }
+
 }

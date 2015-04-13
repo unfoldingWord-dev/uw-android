@@ -4,13 +4,16 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.VersionDataSource;
 import model.modelClasses.StatusModel;
 import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
-import signing.Status;
 
 /**
  * Created by Fechner on 1/22/15.
@@ -43,10 +46,8 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
                 default:{
                     return DOWNLOAD_STATE_ERROR;
                 }
-
             }
         }
-
     }
 
     private class VersionJsonModel {
@@ -74,10 +75,37 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
     private static final String SLUG_JSON_KEY = "slug";
     private static final String STATUS_JSON_KEY = "status";
 
+
     public String name;
     public long dateModified;
     public StatusModel status;
     public DOWNLOAD_STATE downloadState;
+
+    public int verificationStatus;
+
+    private ArrayList<String> signingOrganizations = null;
+
+    public ArrayList<String> getSigningOrganizations(Context context){
+
+        if(signingOrganizations == null) {
+            Map<String, String> allOrgs = new HashMap<String, String>();
+            for (BookModel model : this.getChildModels(context)) {
+
+                Map<String, String> bookOrgs = model.getVerificationOrganizations(context);
+                allOrgs.putAll(bookOrgs);
+            }
+
+            if (allOrgs.size() < 1) {
+                return null;
+            }
+            ArrayList<String> finalOrgs = new ArrayList<String>();
+            for (String value : allOrgs.values()) {
+                finalOrgs.add(value);
+            }
+            signingOrganizations = finalOrgs;
+        }
+        return signingOrganizations;
+    }
 
     private LanguageModel parent;
     public LanguageModel getParent(Context context){
@@ -109,11 +137,11 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
         this.status = new StatusModel();
     }
 
-    public VersionModel(String jsonObject, boolean sideLoaded) {
+    public VersionModel(JSONObject jsonObject, boolean sideLoaded) {
         super(jsonObject, sideLoaded);
     }
 
-    public VersionModel(String jsonObject, long parentId, boolean sideLoaded) {
+    public VersionModel(JSONObject jsonObject, long parentId, boolean sideLoaded) {
         super(jsonObject, parentId, sideLoaded);
     }
 
@@ -135,9 +163,9 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
     }
 
     @Override
-    public void initModelFromJson(String json, boolean preLoaded){
+    public void initModelFromJson(JSONObject json, boolean preLoaded){
 
-        VersionJsonModel model = new Gson().fromJson(json, VersionJsonModel.class);
+        VersionJsonModel model = new Gson().fromJson(json.toString(), VersionJsonModel.class);
 
         name = model.name;
         dateModified = model.mod;
@@ -153,10 +181,11 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
         status.sourceTextVersion = model.status.source_text_version;
         status.version = model.status.version;
         uid = -1;
+        verificationStatus = -1;
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
         if(sideLoaded){
             this.initModelFromSideLoadedJson(json);
         }
@@ -186,6 +215,9 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
 
     public int getVerificationStatus(Context context){
 
+        if(this.verificationStatus > -1){
+            return this.verificationStatus;
+        }
         int verifyStatus = 0;
 
         if(this.getChildModels(context) == null){
@@ -193,7 +225,7 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
         }
 
         for(BookModel book : this.getChildModels(context)){
-            switch (book.verificationStatus){
+            switch (book.getVerificationStatus(context)){
                 case 0:{
                     break;
                 }
@@ -215,7 +247,8 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
                 }
             }
         }
-        return  verifyStatus;
+        this.verificationStatus = verifyStatus;
+        return  verificationStatus;
     }
 
     public String toString() {
@@ -225,7 +258,6 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
                 ", dateModified=" + dateModified +
                 ", status=" + status.toString() +
                 ", parent=" + parent +
-                ", books=" + books +
                 status.toString() +
                 "} " + super.toString();
     }
@@ -276,9 +308,9 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
         return new VersionSideLoadedModel(this, context);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        VersionSideLoadedModel model = new Gson().fromJson(json, VersionSideLoadedModel.class);
+        VersionSideLoadedModel model = new Gson().fromJson(json.toString(), VersionSideLoadedModel.class);
 
         name = model.name;
         dateModified = model.date_modified;

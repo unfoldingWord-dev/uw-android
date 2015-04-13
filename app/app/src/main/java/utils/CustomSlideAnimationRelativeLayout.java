@@ -46,7 +46,7 @@ public class CustomSlideAnimationRelativeLayout extends Animation {
         super.applyTransformation(interpolatedTime, t);
         if (interpolatedTime < 1.0f) {
             if (mType == EXPAND) {
-                mEndHeight = 524;
+                mEndHeight = 655;
                 mLayoutParams.height = (int) (mEndHeight * interpolatedTime);
             } else {
                 mLayoutParams.height = (int) (mEndHeight * (1 - interpolatedTime));

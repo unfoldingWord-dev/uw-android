@@ -8,13 +8,13 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
         android:clickable="true"
         android:background="@drawable/language_button_click"
-        android:layout_centerHorizontal="true"
         android:onClick="chapterButtonClicked"
         android:paddingLeft="10dp"
-        android:paddingRight="50dp">
+        android:paddingRight="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
 
         <TextView
             android:id="@+id/middle_button_text"
@@ -38,16 +38,14 @@
         android:id="@+id/language_button"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:paddingRight="8dp"
         android:clickable="true"
         android:onClick="versionButtonClicked"
         android:background="@drawable/language_button_click"
-        android:layout_alignParentBottom="true"
         android:layout_height="fill_parent"
-        >
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
 
         <TextView
             android:id="@+id/language_text"

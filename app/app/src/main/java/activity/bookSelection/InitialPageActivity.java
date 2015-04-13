@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import activity.SettingsActivity;
-import activity.SplashScreenActivity;
 import activity.reading.ReadingActivity;
 import activity.reading.StoryReadingActivity;
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import adapters.selectionAdapters.InitialPageModel;
 import model.datasource.ProjectDataSource;
 import model.modelClasses.mainData.ProjectModel;
 import services.UpdateService;
@@ -66,6 +64,14 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
             reload();
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(getContentView());
+        setUI();
+        prepareListView();
+    }
 
     private void reload(){
 
@@ -175,7 +181,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     @Override
     protected int getContentView() {
-         return R.layout.activity_general_list;
+         return R.layout.general_list;
     }
 
     protected ArrayList<GeneralRowInterface> getData(){

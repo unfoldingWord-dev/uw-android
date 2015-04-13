@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralRowInterface;
@@ -53,11 +55,11 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
     public LanguageModel() {
     }
 
-    public LanguageModel(String jsonObject, boolean sideLoaded) {
+    public LanguageModel(JSONObject jsonObject, boolean sideLoaded) {
         super(jsonObject, sideLoaded);
     }
 
-    public LanguageModel(String jsonObject, long parentId, boolean sideLoaded) {
+    public LanguageModel(JSONObject jsonObject, long parentId, boolean sideLoaded) {
         super(jsonObject, parentId, sideLoaded);
     }
 
@@ -67,22 +69,23 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
     }
 
     @Override
-    public void initModelFromJson(String json, boolean sideLoaded){
+    public void initModelFromJson(JSONObject json, boolean sideLoaded){
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
             return;
         }
 
-        LanguageJsonModel model = new Gson().fromJson(json, LanguageJsonModel.class);
+        LanguageJsonModel model = new Gson().fromJson(json.toString(), LanguageJsonModel.class);
 
         dateModified = model.mod;
         languageAbbreviation = model.lc;
+        this.slug = model.slug;
         uid = -1;
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
@@ -90,9 +93,8 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
         else {
             this.initModelFromJson(json, sideLoaded);
             this.parentId = parentId;
-            this.slug = this.languageAbbreviation + parentId;
+            this.slug += this.languageAbbreviation + parentId;
         }
-
     }
 
     @Override
@@ -141,9 +143,9 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
         return new LanguageSideLoadedModel(this, context);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        LanguageSideLoadedModel model = new Gson().fromJson(json, LanguageSideLoadedModel.class);
+        LanguageSideLoadedModel model = new Gson().fromJson(json.toString(), LanguageSideLoadedModel.class);
 
         dateModified = model.date_modified;
         languageAbbreviation = model.lang_abbrev;

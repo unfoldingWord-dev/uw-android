@@ -1,7 +1,8 @@
 package model.modelClasses.AMDatabase;
 
 import android.content.Context;
-import android.util.Log;
+
+import org.json.JSONObject;
 
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -22,14 +23,14 @@ public abstract class AMDatabaseModelAbstractObject {
      * Should set all the Object's attributes that are necessary to load from JSON
      * @return
      */
-    abstract public void initModelFromJson(String json, boolean sideLoaded);
+    abstract public void initModelFromJson(JSONObject json, boolean sideLoaded);
 
     /**
      * Should set all the Object's attributes that are necessary to load from JSON
      * @param json
      * @param parentId
      */
-    abstract public void initModelFromJson(String json, long parentId, boolean sideLoaded);
+    abstract public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded);
 
     /**
      *
@@ -42,12 +43,12 @@ public abstract class AMDatabaseModelAbstractObject {
 
     }
 
-    public AMDatabaseModelAbstractObject(String json, boolean sideLoaded){
+    public AMDatabaseModelAbstractObject(JSONObject json, boolean sideLoaded){
         this();
         this.initModelFromJson(json, sideLoaded);
     }
 
-    public AMDatabaseModelAbstractObject(String json, long parentId, boolean sideLoaded) {
+    public AMDatabaseModelAbstractObject(JSONObject json, long parentId, boolean sideLoaded) {
         this.initModelFromJson(json, parentId, sideLoaded);
 //        Log.d(ABSTRACT_TAG, this.toString());
     }

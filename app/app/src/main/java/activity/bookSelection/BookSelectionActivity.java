@@ -2,12 +2,11 @@ package activity.bookSelection;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,46 +16,41 @@ import java.util.ArrayList;
 
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
+import fragments.BooksFragment;
+import fragments.ChapterSelectionFragment;
 import model.datasource.BibleChapterDataSource;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
-import model.modelClasses.mainData.ProjectModel;
 import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
  */
-public class BookSelectionActivity extends GeneralSelectionActivity{
+public class BookSelectionActivity extends GeneralSelectionActivity implements ChapterSelectionFragment.ChapterSelectionListener{
 
     static String BOOK_INDEX_STRING = "BOOK_INDEX_STRING";
 
-
     @Override
-    protected int getContentView() {
-        return R.layout.activity_general_list;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.selection_activity);
+        if (savedInstanceState == null) {
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.versions_frame, ChapterSelectionFragment.newInstance(false))
+                    .commit();
+        }
+        setUI();
     }
 
     @Override
     protected void prepareListView() {
 
-        ArrayList<GeneralRowInterface> data = this.getData();
+    }
 
-        if (mListView == null) {
-            mListView = (ListView) findViewById(R.id.generalList);
-        }
-        if (data == null) {
-            return;
-        }
-        else if (data != null || data.size() == 0) {
-            actionbarTextView.setText(getActionBarTitle());
-        }
-
-        mListView.setOnItemClickListener(this);
-        GeneralAdapter adapter = new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString());
-        mListView.setAdapter(adapter);
-
-        int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt(BOOK_INDEX_STRING, -1);
-        mListView.setSelection((scrollPosition > 0) ? scrollPosition - 1 : 0);
+    @Override
+    protected int getContentView() {
+        return -1;
     }
 
     @Override
@@ -66,7 +60,7 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
 
     @Override
     protected Class getChildClass() {
-        return BibleChapterSelectionActivity.class;
+        return null;
     }
 
     protected String getActionBarTitle() {
@@ -103,48 +97,6 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
         handleBack();
     }
 
-    protected ArrayList<GeneralRowInterface> getData(){
-
-        Context context = getApplicationContext();
-
-        String chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
-        if(Long.parseLong(chapterId) < 0) {
-            return null;
-        }
-        else {
-            BibleChapterModel model = new BibleChapterDataSource(context).getModel(chapterId);
-            ArrayList<BookModel> books = model.getParent(context).getParent(context).getChildModels(context);
-
-            long selectedId = model.getParent(context).uid;
-            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-            int i = 0;
-            for (BookModel book : books) {
-                if(book.uid == selectedId){
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(BOOK_INDEX_STRING, i).commit();
-                }
-                data.add(book);
-                i++;
-            }
-
-
-            return data;
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
-
-        Object itemAtPosition = adapterView.getItemAtPosition(position);
-        if (itemAtPosition instanceof GeneralRowInterface) {
-            GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
-
-            // put selected position  to sharedprefences
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(this.getIndexStorageString(), (int) rowIndex).commit();
-            startActivityForResult(new Intent(this, this.getChildClass(model)).putExtra(
-                    CHOSEN_ID, model.getChildIdentifier()), 1);
-            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
-        }
-    }
 
     @Override
     protected void handleBack(){
@@ -161,5 +113,10 @@ public class BookSelectionActivity extends GeneralSelectionActivity{
         if(resultCode == 1){
             finish();
         }
+    }
+
+    @Override
+    public void selectionFragmentChoseChapter() {
+        handleBack();
     }
 }

@@ -96,12 +96,13 @@ public class VersionDownloadService extends Service{
                 for(BookModel book : books){
 
                     if(book.sourceUrl.contains("usfm")){
-                        UWDataParser.getInstance(getApplicationContext()).parseUSFMForBook(book);
+                        UWDataParser.getInstance(getApplicationContext()).updateUSFMForBook(book);
                     }
                     else{
                         UWDataParser.getInstance(getApplicationContext()).updateStoryChapters(book, false);
                     }
                 }
+                desiredVersion = UWDataParser.getInstance(getApplicationContext()).updateVersionVerificationStatus(desiredVersion);
                 desiredVersion.downloadState = VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADED;
                 desiredVersion.getDataSource(getApplicationContext()).createOrUpdateDatabaseModel(desiredVersion);
             }

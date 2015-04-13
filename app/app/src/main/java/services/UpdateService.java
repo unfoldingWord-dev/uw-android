@@ -103,6 +103,10 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
                 String url = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("base_url",  getResources().getString(R.string.pref_default_base_url));
                 UWDataParser.getInstance(getApplicationContext()).updateProjects(url, false);
 
+//                String languagesUrl = getResources().getString(R.string.languages_json_url);
+//                UWDataParser.getInstance(getApplicationContext()).downloadAndUpdateLanguageLocales(languagesUrl);
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

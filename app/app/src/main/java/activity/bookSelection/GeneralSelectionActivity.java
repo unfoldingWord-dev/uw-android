@@ -61,14 +61,6 @@ public abstract class GeneralSelectionActivity extends ActionBarActivity impleme
         return this.getChildClass();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(getContentView());
-        setUI();
-        prepareListView();
-    }
-
     /**
      * Setup UI components and initial statements
      */

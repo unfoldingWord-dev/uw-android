@@ -14,6 +14,7 @@ import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.BookDataSource;
 import model.datasource.LanguageDataSource;
+import model.datasource.LanguageLocaleDataSource;
 import model.datasource.PageDataSource;
 import model.datasource.ProjectDataSource;
 import model.datasource.StoriesChapterDataSource;
@@ -30,14 +31,16 @@ import signing.Status;
 import signing.UWSigning;
 import utils.URLDownloadUtil;
 import utils.USFMParser;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 3/15/15.
  */
 public class UWDataParser {
 
-    private static final String PROJECTS_JSON_KEY = "cat";
-    private static final String LANGUAGES_JSON_KEY = "langs";
+    public static final String LAST_MODIFIED_JSON_KEY = "mod";
+    public static final String PROJECTS_JSON_KEY = "cat";
+    public static final String LANGUAGES_JSON_KEY = "langs";
     private static final String VERSIONS_JSON_KEY = "vers";
     private static final String BOOKS_JSON_KEY = "toc";
     private static final String CHAPTERS_JSON_KEY = "chapters";
@@ -92,13 +95,19 @@ public class UWDataParser {
 
     public AMDatabaseModelAbstractObject updateModelFromJson(AMDatabaseDataSourceAbstract dataSource, JSONObject json, long parentId, boolean sideLoaded){
 
-        AMDatabaseModelAbstractObject model = dataSource.saveOrUpdateModel(json.toString(), parentId, sideLoaded);
+        AMDatabaseModelAbstractObject model = dataSource.saveOrUpdateModel(json, parentId, sideLoaded);
         return model;
     }
 
     public void updateProjects(String url, boolean sideLoaded) throws IOException, JSONException {
 
-        updateProjects(downloadJsonObject(url).getJSONArray(PROJECTS_JSON_KEY), sideLoaded);
+        JSONObject jsonObject = downloadJsonObject(url);
+        long jsonUpdated = jsonObject.getLong(LAST_MODIFIED_JSON_KEY);
+        long currentUpdated = UWPreferenceManager.getLastUpdatedDate(context);
+        if(jsonUpdated > currentUpdated) {
+            updateProjects(jsonObject.getJSONArray(PROJECTS_JSON_KEY), sideLoaded);
+            UWPreferenceManager.setLastUpdatedDate(context, jsonUpdated);
+        }
     }
 
     public void updateProjects(JSONArray jsonArray, boolean sideLoaded) throws IOException, JSONException{
@@ -145,7 +154,16 @@ public class UWDataParser {
                 continue;
             }
             updateBooks(jsonObj.getJSONArray(BOOKS_JSON_KEY), updatedModel.uid, sideLoaded);
+            updatedModel = updateVersionVerificationStatus(updatedModel);
+            updatedModel.getDataSource(context).saveModel(updatedModel);
         }
+    }
+
+    public VersionModel updateVersionVerificationStatus(VersionModel model){
+
+        model.verificationStatus = -1;
+        model.getVerificationStatus(context);
+        return model;
     }
 
     public void updateBooks(JSONArray jsonArray, long parentId, boolean sideLoaded) throws IOException, JSONException{
@@ -153,18 +171,28 @@ public class UWDataParser {
         for(int i = 0; i < jsonArray.length(); i++){
 
             JSONObject jsonObj = jsonArray.getJSONObject(i);
-            updateModelFromJson(new BookDataSource(context), jsonObj, parentId, sideLoaded);
+            BookModel updatedModel = (BookModel) updateModelFromJson(new BookDataSource(context), jsonObj, parentId, sideLoaded);
+
+            if(updatedModel.getBibleChildModels(context).size() > 0){
+                updateUSFMForBook(updatedModel);
+            }
+            else if(updatedModel.getStoryChildModels(context).size() > 0){
+                updateStoryChapters(updatedModel, sideLoaded);
+            }
         }
     }
 
-    public void parseUSFMForBook(BookModel book) throws IOException, JSONException{
+    public void updateUSFMForBook(BookModel book) throws IOException, JSONException{
 
         byte[] usfmText = URLDownloadUtil.downloadBytes(book.sourceUrl);
+        try {
+            UWSigning.addAndVerifySignatureForBook(context, book, usfmText);
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
 
-        book = addSignatureToBook(book, usfmText);
-
-        Map<String, String> usfmMap = USFMParser.parseUsfm(usfmText);
-
+        Map<String, String> usfmMap = USFMParser.getInstance().getChaptersFromUsfm(usfmText);
         ArrayList<BibleChapterModel> chapters = book.getBibleChildModels(context);
 
         for (Map.Entry<String, String> entry : usfmMap.entrySet()){
@@ -187,45 +215,14 @@ public class UWDataParser {
 
         byte[] jsonBytes = URLDownloadUtil.downloadBytes(bookModel.sourceUrl);
 
-        bookModel = addSignatureToBook(bookModel, jsonBytes);
+        UWSigning.addAndVerifySignatureForBook(context, bookModel, jsonBytes);
 
         String json = new String(jsonBytes);
         JSONObject book = new JSONObject(json);
         updateStoryChapters(book.getJSONArray(CHAPTERS_JSON_KEY), bookModel.uid, sideLoaded);
     }
 
-    private BookModel addSignatureToBook(BookModel book, byte[] text) throws IOException{
 
-        Status signatureStatus = Status.ERROR;
-        try {
-            signatureStatus = UWSigning.getStatusForSigUrl(context, book.signatureUrl, text);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-
-        if(signatureStatus == Status.ERROR){
-            BookModel updatedBook = book.getDataSource(context).getModel(Long.toString(book.uid));
-            return updatedBook;
-        }
-
-        String sigJson = URLDownloadUtil.downloadString(book.signatureUrl);
-
-        try {
-            JSONArray sigArray = new JSONArray(sigJson);
-            JSONObject sigObj = sigArray.getJSONObject(0);
-            book.setEntityFromJson(sigObj.toString());
-            book.verificationStatus = signatureStatus.ordinal();
-
-            book.getDataSource(context).saveModel(book);
-
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-        BookModel updatedBook = book.getDataSource(context).getModel(Long.toString(book.uid));
-        return updatedBook;
-    }
 
     public void updateStoryChapters(JSONArray jsonArray, long parentId, boolean sideLoaded) throws IOException, JSONException{
 
@@ -250,5 +247,20 @@ public class UWDataParser {
             JSONObject jsonObj = jsonArray.getJSONObject(i);
             PageModel updatedModel = (PageModel) updateModelFromJson(new PageDataSource(context), jsonObj, parentId, sideLoaded);
         }
+    }
+
+    public void downloadAndUpdateLanguageLocales(String url) throws JSONException, IOException {
+
+        updateLanguageLocales(downloadJsonArray(url));
+    }
+
+    public void updateLanguageLocales(JSONArray jsonArray) throws JSONException, IOException {
+
+        for(int i = 0; i < jsonArray.length(); i++) {
+
+            JSONObject jsonObj = jsonArray.getJSONObject(i);
+            updateModelFromJson(new LanguageLocaleDataSource(context), jsonObj, -1, false);
+        }
+
     }
 }

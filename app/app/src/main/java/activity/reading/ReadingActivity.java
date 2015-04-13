@@ -1,20 +1,25 @@
 package activity.reading;
 
 
+import android.content.res.Configuration;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +31,10 @@ import activity.bookSelection.BookSelectionActivity;
 import activity.bookSelection.GeneralSelectionActivity;
 import activity.bookSelection.VersionSelectionActivity;
 import adapters.ReadingPagerAdapter;
+import fragments.BooksFragment;
+import fragments.ChapterSelectionFragment;
+import fragments.ChaptersFragment;
+import fragments.VersionSelectionFragment;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.VersionDataSource;
 import model.modelClasses.mainData.BibleChapterModel;
@@ -36,9 +45,19 @@ import utils.UWPreferenceManager;
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
-public class ReadingActivity extends ActionBarActivity {
+public class ReadingActivity extends ActionBarActivity implements
+        VersionSelectionFragment.VersionSelectionFragmentListener,
+        ChapterSelectionFragment.ChapterSelectionListener,
+        BooksFragment.BooksFragmentListener,
+        ChaptersFragment.ChaptersFragmentListener
+{
+
+    static private final String TAG = "ReadingActivity";
 
     static final public String BOOK_INDEX_STRING = "READING_INDEX_STRING";
+
+    static private final String VERSION_FRAGMENT_ID = "VERSION_FRAGMENT_ID";
+    static private final String CHAPTER_SELECTION_FRAGMENT_ID = "CHAPTER_SELECTION_FRAGMENT_ID";
 
     private ViewPager readingViewPager = null;
     private ActionBar mActionBar = null;
@@ -80,16 +99,22 @@ public class ReadingActivity extends ActionBarActivity {
 
     }
 
-    protected void updateListView() {
-        setData();
-        this.setUIWithCurrentIndex();
-    }
+//    protected void updateListView() {
+//        setData();
+//        this.setUIWithCurrentIndex();
+//    }
+//
+//    protected void setUIWithCurrentIndex() {
+//        int index = readingViewPager.getCurrentItem();
+//
+//        setUI();
+//        readingViewPager.setCurrentItem(index);
+//    }
 
-    protected void setUIWithCurrentIndex() {
-        int index = readingViewPager.getCurrentItem();
-
-        setUI();
-        readingViewPager.setCurrentItem(index);
+    private void reload(){
+        mChapter = null;
+        selectedProject = null;
+        onStart();
     }
     /**
      * Initializing the components
@@ -158,22 +183,61 @@ public class ReadingActivity extends ActionBarActivity {
         readingViewPager.setCurrentItem(currentItem);
     }
 
+
+    private boolean isTablet(){
+
+        int screen_density = (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
+        if (screen_density == Configuration.SCREENLAYOUT_SIZE_LARGE || screen_density == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     private void goToVersionSelection(){
 
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             return;
         }
+
         String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
-        startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
-                GeneralSelectionActivity.CHOSEN_ID, projectId));
-        overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+
+        if(isTablet()){
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            VersionSelectionFragment fragment = VersionSelectionFragment.newInstance(projectId, true);
+            fragment.show(ft, VERSION_FRAGMENT_ID);
+        }
+        else {
+            startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
+                    GeneralSelectionActivity.CHOSEN_ID, projectId));
+            overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        }
     }
 
     private void goToChapterActivity(){
 
-        startActivity(new Intent(getApplicationContext(), BookSelectionActivity.class));
-        overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            return;
+        }
+
+//        String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
+
+        if(isTablet()){
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            ChapterSelectionFragment fragment = ChapterSelectionFragment.newInstance(true);
+            fragment.show(ft, CHAPTER_SELECTION_FRAGMENT_ID);
+        }
+        else {
+            startActivity(new Intent(getApplicationContext(), BookSelectionActivity.class));
+            overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        }
     }
 
 
@@ -303,13 +367,18 @@ public class ReadingActivity extends ActionBarActivity {
         handleActionBarHidden(shouldHide);
     }
 
+    @Override
+    public void onBackPressed() {
+        handleBack();
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             handleBack();
         }
-        return super.onOptionsItemSelected(item);
+
+        return true;
     }
 
     private void handleBack(){
@@ -318,7 +387,6 @@ public class ReadingActivity extends ActionBarActivity {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(BOOK_INDEX_STRING, -1).commit();
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
-
     }
 
     public void chapterButtonClicked(View view) {
@@ -327,5 +395,38 @@ public class ReadingActivity extends ActionBarActivity {
 
     public void versionButtonClicked(View view) {
         goToVersionSelection();
+    }
+
+    @Override
+    public void rowWasSelected() {
+        removeFragment(VERSION_FRAGMENT_ID);
+    }
+
+    @Override
+    public void selectionFragmentChoseChapter() {
+        removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
+    }
+
+    private void removeFragment(String fragmentId){
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment previous = getSupportFragmentManager().findFragmentByTag(fragmentId);
+
+        if (previous != null) {
+            ft.remove(previous);
+        }
+        ft.addToBackStack(null);
+        ft.commit();
+        reload();
+    }
+
+    @Override
+    public void bookWasSelected(String chapterUid) {
+
+    }
+
+    @Override
+    public void chapterWasSelected() {
+
     }
 }

@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
@@ -41,7 +43,7 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
     }
 
     @Override
-    public AMDatabaseModelAbstractObject saveOrUpdateModel(String json, long parentId, boolean sideLoaded)  {
+    public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded)  {
         ProjectModel newModel = new ProjectModel(json, sideLoaded);
         ProjectModel currentModel = getModelForSlug(newModel.slug);
 

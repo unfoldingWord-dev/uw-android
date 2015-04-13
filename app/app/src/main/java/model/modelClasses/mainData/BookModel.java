@@ -4,12 +4,18 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.BookDataSource;
+import model.datasource.SigningOrganizationDataSource;
+import model.datasource.VerificationDataSource;
 import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
 import signing.Status;
 
@@ -28,12 +34,6 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
         String desc;
     }
 
-    private class SignatureJsonModel {
-
-        String si;
-        String sig;
-    }
-
     @Override
     public String getTitle() {
         return this.title;
@@ -50,10 +50,6 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
     public String sourceUrl;
     public String signatureUrl;
 
-    public String signingEntity;
-    public String signature;
-
-    public int verificationStatus;
 
     private VersionModel parent = null;
     public VersionModel getParent(Context context){
@@ -123,11 +119,11 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
         super();
     }
 
-    public BookModel(String jsonObject, boolean sideLoaded) {
+    public BookModel(JSONObject jsonObject, boolean sideLoaded) {
         super(jsonObject, sideLoaded);
     }
 
-    public BookModel(String jsonObject, long parentId, boolean sideLoaded) {
+    public BookModel(JSONObject jsonObject, long parentId, boolean sideLoaded) {
         super(jsonObject, parentId, sideLoaded);
     }
 
@@ -137,14 +133,14 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
     }
 
     @Override
-    public void initModelFromJson(String json, boolean sideLoaded){
+    public void initModelFromJson(JSONObject json, boolean sideLoaded){
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
             return;
         }
 
-        BookJsonModel model = new Gson().fromJson(json, BookJsonModel.class);
+        BookJsonModel model = new Gson().fromJson(json.toString(), BookJsonModel.class);
 
         this.dateModified = model.mod;
         this.title = model.title;
@@ -156,7 +152,7 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
     }
 
     @Override
-    public void initModelFromJson(String json, long parentId, boolean sideLoaded) {
+    public void initModelFromJson(JSONObject json, long parentId, boolean sideLoaded) {
 
         if(sideLoaded){
             initModelFromSideLoadedJson(json);
@@ -171,15 +167,61 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
             }
         }
         this.parentId = parentId;
-        this.verificationStatus = Status.ERROR.ordinal();
     }
 
-    public void setEntityFromJson(String json){
+    public Map<String, String> getVerificationOrganizations(Context context){
 
-        SignatureJsonModel model = new Gson().fromJson(json, SignatureJsonModel.class);
+        VerificationDataSource veriSource = new VerificationDataSource(context);
+        SigningOrganizationDataSource orgSource = new SigningOrganizationDataSource(context);
+        ArrayList<VerificationModel> verifications = veriSource.getVerificationsForParentId(Long.toString(this.uid));
 
-        signingEntity = model.si;
-        signature = model.sig;
+        Map<String, String> organizations = new HashMap<String, String>();
+        for(VerificationModel model : verifications){
+            SigningOrganizationModel org = orgSource.getModelForSlug(model.signingInstitution);
+            if(org != null){
+                organizations.put(org.name, org.name);
+            }
+        }
+        return organizations;
+    }
+
+    public int getVerificationStatus(Context context){
+
+        VerificationDataSource veriSource = new VerificationDataSource(context);
+        ArrayList<VerificationModel> verifications = veriSource.getVerificationsForParentId(Long.toString(this.uid));
+
+        if(verifications == null){
+            return -1;
+        }
+        if(verifications.size() == 0){
+            return 2;
+        }
+
+        int verifyStatus = 0;
+        for(VerificationModel verification : verifications){
+            switch (verification.verificationStatus){
+                case 0:{
+                    break;
+                }
+                case 1:{
+                    if(verifyStatus < 1){
+                        verifyStatus = 1;
+                    }
+                    break;
+                }
+                case 3:{
+                    if(verifyStatus < 3){
+                        verifyStatus = 3;
+                    }
+                    break;
+                }
+                default:{
+                    verifyStatus = 2;
+                    break;
+                }
+            }
+        }
+        return  verifyStatus;
     }
 
 
@@ -206,7 +248,6 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
 
         String signing_entity;
         String signature;
-        int verificationStatus;
 
         StoriesChapterModel.StoriesChapterSideLoadedModel[] storiesChapters;
         BibleChapterModel.BibleChapterSideLoadedModel[] bibleChapters;
@@ -218,9 +259,6 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
             this.description = book.description;
             this.source_url = book.sourceUrl;
             this.signature_url = book.signatureUrl;
-            this.signing_entity = book.signingEntity;
-            this.signature = book.signature;
-            this.verificationStatus = book.verificationStatus;
 
             if(book.sourceUrl.contains("usfm")){
 
@@ -249,18 +287,15 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
         return new BookSideLoadedModel(this, context);
     }
 
-    public void initModelFromSideLoadedJson(String json){
+    public void initModelFromSideLoadedJson(JSONObject json){
 
-        BookSideLoadedModel model = new Gson().fromJson(json, BookSideLoadedModel.class);
+        BookSideLoadedModel model = new Gson().fromJson(json.toString(), BookSideLoadedModel.class);
 
         this.dateModified = model.date_modified;
         this.title = model.title;
         this.slug = model.slug;
         this.sourceUrl = model.source_url;
         this.signatureUrl = model.signature_url;
-        this.signingEntity = model.signing_entity;
-        this.signature = model.signature;
-        this.verificationStatus = model.verificationStatus;
         this.description = model.description;
 
         this.uid = -1;
