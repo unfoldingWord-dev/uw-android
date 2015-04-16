@@ -40,7 +40,6 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:background="@drawable/green_checkmark"
-
                     android:layout_gravity="center_vertical"
                     />
 
@@ -70,7 +69,6 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:background="@drawable/yellow_exclamation_point"
-
                     android:layout_gravity="center_vertical"
                     />
 
@@ -97,7 +95,6 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:background="@drawable/orange_question_mark"
-
                     android:layout_gravity="center_vertical"
                     />
 
@@ -116,13 +113,12 @@
                 android:layout_height="fill_parent">
 
                 <Button
-                    android:text="@string/failed_button_char"
+                    android:text="@string/x_button_char"
                     android:textColor="#FFFFFF"
                     android:textSize="@dimen/verification_button_text_size"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:background="@drawable/red_x_button"
-
                     android:layout_gravity="center_vertical"
                     />
 
@@ -228,7 +224,7 @@
                     android:id="@+id/imageView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/level_tree" />
+                    android:src="@drawable/level_three" />
 
                 <TextView
                     android:id="@+id/textView8"

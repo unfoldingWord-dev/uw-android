@@ -97,7 +97,9 @@
     <color name="status_failed">#DD0000</color>
 
     <color name="clear_black">#80000000</color>
-    <color name="very_dark_gray">#666</color>
+    <color name="very_dark_gray">#777</color>
+
+    <color name="light_gray">#BBB</color>
 
     <color name="clear">#0000</color>
 

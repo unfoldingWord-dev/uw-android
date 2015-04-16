@@ -3,7 +3,6 @@ package fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -121,7 +120,7 @@ public class VersionSelectionFragment extends DialogFragment {
 
         adapter = new CollapsibleVersionAdapter(this, this.chosenProject);
         if(footerView == null) {
-            footerView = inflater.inflate(R.layout.footerview, null);
+            footerView = inflater.inflate(R.layout.version_footer, null);
 
             // change version number
             TextView tView = (TextView) footerView.findViewById(R.id.textView);

@@ -36,6 +36,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/scroller"
         android:layout_marginTop="-4dip"
-        android:src="@drawable/arrow_down" />
+        android:src="@drawable/indicator_arrow_down" />
 
 </RelativeLayout>

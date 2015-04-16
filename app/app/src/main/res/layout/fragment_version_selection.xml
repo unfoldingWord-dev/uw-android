@@ -3,11 +3,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/very_dark_gray"
+    android:background="@color/light_gray"
     >
 
     <TextView
-        android:background="@color/very_dark_gray"
+        android:background="@color/light_brown"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -20,7 +20,12 @@
     <ExpandableListView
         android:id="@+id/versions_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:childDivider="@color/light_gray"
+        android:dividerHeight="2dp"
+        android:divider="@color/light_gray"
+        android:groupIndicator="@drawable/group_indicator"
+        >
     </ExpandableListView>
 
 </LinearLayout>

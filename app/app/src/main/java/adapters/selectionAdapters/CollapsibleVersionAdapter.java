@@ -1,14 +1,16 @@
 package adapters.selectionAdapters;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,12 +79,15 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                 String itemId = extra.getString(VersionDownloadService.VERSION_ID);
                 Log.d(TAG, itemId);
             }
-
             if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
-                Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
                 reload();
-            } else {
-                Toast.makeText(context, "Download error", Toast.LENGTH_SHORT).show();
+            }
+            else if(intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_STOPPED)){
+                Toast.makeText(context, "Download Stopped", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(context, "Download Error", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -129,9 +134,11 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             holder.infoFrame = (FrameLayout) convertView.findViewById(R.id.info_image_frame);
             holder.status = (Button) convertView.findViewById(R.id.status);
 
-            holder.downloadImageView = (ImageView) convertView.findViewById(R.id.download_status_image);
+            holder.downloadButton = (Button) convertView.findViewById(R.id.download_status_image);
             holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
             holder.downloadProgressBar = (ProgressBar) convertView.findViewById(R.id.download_progress_bar);
+            holder.deleteTextFrame = (FrameLayout) convertView.findViewById(R.id.delete_row_frame);
+            holder.deleteTextView = (TextView) convertView.findViewById(R.id.delete_row_text);
 
             final ViewHolderForGroup finalHolder = holder;
             holder.infoFrame.setOnClickListener(getInfoClickListener(finalHolder, version));
@@ -147,7 +154,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
 
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
-        holder.downloadImageView.setVisibility(View.VISIBLE);
+        holder.downloadButton.setVisibility(View.VISIBLE);
 
         state = setRowState(holder, version, state);
 
@@ -223,18 +230,22 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
 
             case DOWNLOAD_STATE_DOWNLOADED:{
                 holder.status.setVisibility(View.VISIBLE);
-                holder.downloadImageView.setVisibility(View.VISIBLE);
+                holder.downloadButton.setVisibility(View.INVISIBLE);
                 holder.downloadProgressBar.setVisibility(View.INVISIBLE);
+                holder.deleteTextView.setVisibility(View.VISIBLE);
+                holder.deleteTextFrame.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(true);
                 holder.downloadFrame.setClickable(true);
-                holder.downloadImageView.setImageResource(R.drawable.x_button);
                 holder.clickableLayout.setOnClickListener(getSelectionOnClickListener(version));
+
                 return selectionState;
             }
             case DOWNLOAD_STATE_DOWNLOADING:{
                 holder.status.setVisibility(View.INVISIBLE);
-                holder.downloadImageView.setVisibility(View.INVISIBLE);
+                holder.downloadButton.setVisibility(View.INVISIBLE);
                 holder.downloadProgressBar.setVisibility(View.VISIBLE);
+                holder.deleteTextFrame.setVisibility(View.INVISIBLE);
+                holder.deleteTextView.setVisibility(View.INVISIBLE);
                 holder.clickableLayout.setClickable(false);
                 holder.downloadFrame.setClickable(true);
                 return 3;
@@ -242,11 +253,12 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
 
             default:{
                 holder.status.setVisibility(View.INVISIBLE);
-                holder.downloadImageView.setVisibility(View.VISIBLE);
+                holder.downloadButton.setVisibility(View.VISIBLE);
                 holder.downloadProgressBar.setVisibility(View.INVISIBLE);
+                holder.deleteTextFrame.setVisibility(View.INVISIBLE);
+                holder.deleteTextView.setVisibility(View.INVISIBLE);
                 holder.clickableLayout.setClickable(false);
                 holder.downloadFrame.setClickable(true);
-                holder.downloadImageView.setImageResource(R.drawable.download_button);
                 return 3;
             }
 
@@ -262,44 +274,113 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                 if (version instanceof VersionModel) {
                     finalHolder.clickableLayout.setClickable(false);
                     finalHolder.downloadProgressBar.setVisibility(View.VISIBLE);
-                    finalHolder.downloadImageView.setVisibility(View.INVISIBLE);
+                    finalHolder.downloadButton.setVisibility(View.INVISIBLE);
+                    finalHolder.deleteTextFrame.setVisibility(View.INVISIBLE);
+                    finalHolder.deleteTextView.setVisibility(View.INVISIBLE);
 
                     if((version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_NONE)
                     || (version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR)) {
-
-                        if (!NetWorkUtil.isConnected(getContext())) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            builder.setTitle("Alert");
-                            builder.setMessage("Failed connecting to the internet.");
-                            builder.setPositiveButton("OK", null);
-                            builder.create().show();
-                        } else {
-                            // to handle new data from network
-                            version.downloadState = VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING;
-                            version.save(getContext());
-                            Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
-                            downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
-                            getContext().startService(downloadIntent);
-                        }
+                        downloadRow(version, finalHolder);
                     }
                     else if(version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING){
-                        getContext().stopService(new Intent(getContext(), VersionDownloadService.class));
-                        new DeleteVersionTask().execute(version);
+                        stopDownload(version, finalHolder);
                     }
                     else{
-                        if(Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())) == version.uid){
-                            UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
-                            UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
-                        }
-                        if(Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext())) == version.uid){
-                            UWPreferenceManager.setSelectedStoryVersion(getContext(), -1);
-                            UWPreferenceManager.setSelectedStoryChapter(getContext(), -1);
-                        }
-                        new DeleteVersionTask().execute(version);
+                        deleteRowPressed(version, finalHolder);
                     }
                 }
             }
         };
+    }
+
+    private void downloadRow(final VersionModel version, final ViewHolderForGroup finalHolder){
+
+        if (!NetWorkUtil.isConnected(getContext())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Alert");
+            builder.setMessage("Failed connecting to the internet.");
+            builder.setPositiveButton("OK", null);
+            builder.create().show();
+        } else {
+            version.downloadState = VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING;
+            version.save(getContext());
+            Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
+            downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
+            getContext().startService(downloadIntent);
+        }
+    }
+
+    private void deleteRowPressed(final VersionModel version, final ViewHolderForGroup finalHolder){
+
+        (new DialogFragment() {
+
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                // Use the Builder class for convenient dialog construction
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("this will be deleted")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                if(Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())) == version.uid){
+                                    UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
+                                    UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
+                                }
+                                if(Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext())) == version.uid){
+                                    UWPreferenceManager.setSelectedStoryVersion(getContext(), -1);
+                                    UWPreferenceManager.setSelectedStoryChapter(getContext(), -1);
+                                }
+                                new DeleteVersionTask().execute(version);
+                            }
+                        })
+                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                reload();
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                return builder.create();
+            }
+        }).show(parentFragment.getFragmentManager(), "confirmAlert");
+    }
+
+    private void stopDownload(final VersionModel version, final ViewHolderForGroup finalHolder){
+
+        (new DialogFragment() {
+
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                // Use the Builder class for convenient dialog construction
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Stop download?")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                int state = new VersionDataSource(getContext()).getModel(Long.toString(version.uid)).verificationStatus;
+                                if(state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING.ordinal() ||
+                                        state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR.ordinal()) {
+                                    stopDownloadService(version);
+                                    new DeleteVersionTask().execute(version);
+                                }
+                            }
+                        })
+                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                return builder.create();
+            }
+        }).show(parentFragment.getFragmentManager(), "confirmAlert");
+    }
+
+    private void stopDownloadService(VersionModel version){
+
+        Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
+        downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
+        getContext().stopService(downloadIntent);
     }
 
     private class DeleteVersionTask extends AsyncTask {
@@ -477,7 +558,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             case 1:
                 return getContext().getResources().getString(R.string.expired_button_char);
             case 3:
-                return getContext().getResources().getString(R.string.failed_button_char);
+                return getContext().getResources().getString(R.string.x_button_char);
             default:
                 return getContext().getResources().getString(R.string.unknown_button_char);
         }
@@ -528,9 +609,11 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         FrameLayout infoFrame;
         Button status;
 
-        ImageView downloadImageView;
+        Button downloadButton;
         FrameLayout downloadFrame;
         ProgressBar downloadProgressBar;
+        FrameLayout deleteTextFrame;
+        TextView deleteTextView;
     }
 }
 

@@ -1,28 +1,35 @@
 package activity.reading;
 
 
+import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
@@ -62,7 +69,7 @@ public class ReadingActivity extends ActionBarActivity implements
     private ViewPager readingViewPager = null;
     private ActionBar mActionBar = null;
     private LinearLayout versionsButton = null;
-    private LinearLayout chaptersButton = null;
+    private RelativeLayout chaptersButton = null;
     private TextView versionsTextView = null;
     private TextView chapterTextView = null;
 
@@ -128,7 +135,7 @@ public class ReadingActivity extends ActionBarActivity implements
         View view = getLayoutInflater().inflate(R.layout.actionbar_custom_view, null);
 
         mActionBar = getSupportActionBar();
-        chaptersButton = (LinearLayout) view.findViewById(R.id.middle_button);
+        chaptersButton = (RelativeLayout) view.findViewById(R.id.middle_button);
         mActionBar.setCustomView(view);
         mActionBar.setDisplayShowCustomEnabled(true);
         mActionBar.setDisplayShowHomeEnabled(true);
@@ -137,11 +144,39 @@ public class ReadingActivity extends ActionBarActivity implements
 
         setupChapterButton(view);
         setupVersionButton(view);
+        setupCheckingLevelView(view);
+    }
+
+    void setupCheckingLevelView(View view){
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.checking_level_image_view);
+        if(this.mChapter != null){
+            int checkingLevel = Integer.parseInt(mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).status.checkingLevel);
+            imageView.setImageResource(getCheckingLevelImage(checkingLevel));
+            imageView.setVisibility(View.VISIBLE);
+        }
+        else{
+            imageView.setVisibility(View.GONE);
+        }
+    }
+
+    private int getCheckingLevelImage(int level){
+        switch (level){
+            case 2:{
+                return R.drawable.level_two;
+            }
+            case 3:{
+                return R.drawable.level_three;
+            }
+            default:{
+                return R.drawable.level_one;
+            }
+        }
     }
 
     private void setupChapterButton(View view){
 
-        chaptersButton = (LinearLayout) view.findViewById(R.id.middle_button);
+        chaptersButton = (RelativeLayout) view.findViewById(R.id.middle_button);
         chapterTextView = (TextView) view.findViewById(R.id.middle_button_text);
         if(this.mChapter != null) {
             chapterTextView.setText(this.mChapter.getTitle(getApplicationContext()));
@@ -428,5 +463,41 @@ public class ReadingActivity extends ActionBarActivity implements
     @Override
     public void chapterWasSelected() {
 
+    }
+
+    public void checkingLevelClicked(View view) {
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        CheckingLevelFragment fragment = new CheckingLevelFragment();
+        fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
+    }
+
+    static private final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
+
+    static public class CheckingLevelFragment extends DialogFragment {
+
+        public CheckingLevelFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.version_footer, container, false);
+
+            TextView tView = (TextView) view.findViewById(R.id.textView);
+            String versionName = BuildConfig.VERSION_NAME;
+
+            tView.setText(versionName);
+            return view;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Dialog dialog = super.onCreateDialog(savedInstanceState);
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            return dialog;
+        }
     }
 }

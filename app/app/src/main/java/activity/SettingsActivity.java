@@ -55,7 +55,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.pref_general);
 
-        Preference button = (Preference)findPreference("reset_url");
+        Preference button = (Preference) findPreference("reset_url");
         button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference arg0) {
@@ -68,6 +68,7 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
 
         // Add 'notifications' preferences, and a corresponding header.
 //        PreferenceCategory fakeHeader = new PreferenceCategory(this);

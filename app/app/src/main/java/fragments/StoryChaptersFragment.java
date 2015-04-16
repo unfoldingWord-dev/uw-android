@@ -141,7 +141,6 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     protected ArrayList<GeneralRowInterface> getData(){
 
         String versionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
-
         VersionModel version = new VersionDataSource(getContext()).getModel(versionId);
 
         ArrayList<StoriesChapterModel> chapters = version.getChildModels(

@@ -10,13 +10,13 @@
     <string name="publish_date">Publish Date :</string>
     <string name="about_text">We use a three-level, Church-centric approach for identifying the fidelity of translated Biblical content :</string>
     <string name="finish">Finish</string>
-    <string name="level_one">Level 1 : internal - Translator (or team) affirms that translation is in line with Statement of faith and Translation Guidelines.</string>
-    <string name="level_two">Level 2 : external - Translation is independently checked and confirmed by at least two others not on the translation team.</string>
-    <string name="level_three">Level 3 : authenticated - Translation is checked and confirmed by leadership of at least one Church network with native speakers of the language.</string>
+    <string name="level_one">Level 1: internal — Translator (or team) affirms that translation is in line with Statement of Faith and Translation Guidelines.</string>
+    <string name="level_two">Level 2: external — Translation is independently checked and confirmed by three church leaders not on the translation team.</string>
+    <string name="level_three">Level 3: authenticated — Translation is checked and confirmed by leadership of at least three Church networks with native speakers of the language, or a translation consultant in coordination with a Church network.</string>
 
     <string name="selected_language">"SELECTED_LANGUAGE"</string>
 
-    <string name="reset_base_url">Reset Url</string>
+    <string name="reset_base_url">Reset URL</string>
 
     <string name="next_chapter">Next Chapter</string>
     <string name="next_book">Go To</string>
@@ -40,10 +40,10 @@
     <string name="verified_button_char">✓</string>
     <string name="expired_button_char">!</string>
     <string name="unknown_button_char">\?</string>
-    <string name="failed_button_char">X</string>
+    <string name="x_button_char">×</string>
     <string name="verification_title">Verification Information :</string>
 
-    <string name="verified_title_start">The validity of this content is verified by: </string>
+    <string name="verified_title_start">This content is verified by: </string>
     <string name="expired_title_start">The verification of some or all of this content has expired.</string>
     <string name="error_title_start">We experienced an error while attempting to verify some or all of this content. This is likely because no verification could be found.</string>
     <string name="failed_title_start">*Warning* the validity of some or all of this content has failed. Use with your own risk</string>

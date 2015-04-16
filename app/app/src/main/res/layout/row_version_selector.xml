@@ -3,7 +3,7 @@
     android:id="@+id/mainLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/rows"
+    android:background="@color/white"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -11,94 +11,81 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
+            android:layout_marginLeft="30dp"
             android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/clickableRow"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="@dimen/version_selection_row_height"
-                android:background="@drawable/layout_button_click"
+                android:background="@drawable/version_row_click"
                 android:focusable="false"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/languageTypeImageView"
-                    android:layout_width="@dimen/version_selection_image_size"
-                    android:layout_height="@dimen/version_selection_image_size"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:cropToPadding="true"
-                    android:scaleType="center"
-                    android:src="@color/white" />
-
-                <Button
-                    android:id="@+id/status"
-                    android:text="@string/unknown_button_char"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:textSize="@dimen/verification_button_text_size"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@drawable/green_checkmark"
-                    android:layout_gravity="center_vertical"
-                    />
-
-                <TextView
-                    android:id="@+id/languageNameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:focusable="true"
-                    android:singleLine="true"
-                    android:text="New Text"
-                    android:textColor="@color/black_light"
-                    android:textSize="@dimen/general_row_text_size"
-                    android:textStyle="bold"
-                    android:typeface="sans"
-                    android:layout_marginRight="50dp" />
+                android:orientation="horizontal"
+                android:layout_toLeftOf="@+id/linearLayout"
+                android:layout_toStartOf="@+id/linearLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true">
 
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/languageTypeImageView"
+                android:layout_width="@dimen/version_selection_image_size"
+                android:layout_height="@dimen/version_selection_image_size"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:cropToPadding="true"
+                android:scaleType="center"
+                android:src="@drawable/level_one"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true" />
+
+            <Button
+                android:id="@+id/status"
+                android:text="@string/unknown_button_char"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/verification_button_text_size"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/green_checkmark"
+                android:layout_gravity="center_vertical"
+                android:layout_toRightOf="@+id/languageTypeImageView"
+                android:layout_toEndOf="@+id/languageTypeImageView"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:id="@+id/languageNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:singleLine="true"
+                android:text="New Text"
+                android:textColor="@color/black_light"
+                android:textSize="@dimen/general_row_text_size"
+                android:textStyle="bold"
+                android:typeface="sans"
+                android:layout_toStartOf="@+id/linearLayout"
+                android:layout_toLeftOf="@+id/linearLayout"
+                android:layout_toEndOf="@+id/status"
+                android:layout_toRightOf="@+id/status"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp" />
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="@dimen/version_selection_row_height"
                 android:layout_gravity="right|center"
-                >
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/download_status_frame"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/layout_button_click"
-                    android:layout_gravity="right|center">
-
-                    <ProgressBar
-                        android:id="@+id/download_progress_bar"
-                        style="@style/ProgressBar.Spinner.Indeterminate.Small"
-                        android:layout_width="@dimen/version_selection_button_size"
-                        android:layout_height="@dimen/version_selection_button_size"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:max="200"
-                        android:visibility="invisible"
-                        />
-                    <ImageView
-                        android:id="@+id/download_status_image"
-                        android:layout_width="@dimen/version_selection_button_size"
-                        android:layout_height="@dimen/version_selection_button_size"
-                        android:layout_marginRight="15dp"
-                        android:layout_gravity="right|center"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/download_button"
-                        android:layout_marginLeft="15dp" />
-
-                </FrameLayout>
+                android:id="@+id/linearLayout"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true">
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -106,22 +93,78 @@
                     android:id="@+id/info_image_frame"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="@drawable/layout_button_click"
+                    android:background="@drawable/version_row_click"
                     android:layout_gravity="right|center">
 
                     <ImageView
                         android:id="@+id/version_info_image"
                         android:layout_width="@dimen/version_selection_button_size"
                         android:layout_height="@dimen/version_selection_button_size"
-                        android:layout_marginRight="15dp"
+                        android:layout_marginRight="5dp"
                         android:layout_gravity="right|center"
                         android:scaleType="fitCenter"
                         android:src="@drawable/info_icon"
                         android:layout_marginLeft="15dp" />
                 </FrameLayout>
 
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/download_status_frame"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/version_row_click"
+                    android:layout_gravity="right|center"
+                    android:foregroundGravity="center">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/version_selection_button_size"
+                        android:layout_height="@dimen/version_selection_button_size"
+                        android:layout_gravity="center"
+                        android:id="@+id/delete_row_frame"
+                        android:background="@drawable/delete_button"
+                        >
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/x_button_char"
+                        android:textColor="#ffdd1111"
+                        android:textSize="40sp"
+                        android:id="@+id/delete_row_text"
+                        android:layout_gravity="center"
+                        android:clickable="false"
+                        android:gravity="center"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <ProgressBar
+                        android:id="@+id/download_progress_bar"
+                        style="@style/ProgressBar.Spinner.Indeterminate.Small"
+                        android:layout_width="@dimen/version_selection_button_size"
+                        android:layout_height="@dimen/version_selection_button_size"
+                        android:layout_gravity="center"
+                        android:max="200"
+                        android:visibility="invisible"
+                        />
+
+                    <Button
+                        android:id="@+id/download_status_image"
+                        android:clickable="false"
+                        android:layout_width="@dimen/version_selection_button_size"
+                        android:layout_height="@dimen/version_selection_button_size"
+                        android:layout_marginRight="5dp"
+                        android:layout_gravity="left|center_vertical"
+                        android:scaleType="fitCenter"
+                        android:background="@drawable/download_button"
+                        android:layout_marginLeft="15dp"
+                        android:visibility="invisible" />
+
+                </FrameLayout>
+
             </LinearLayout>
-        </FrameLayout>
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/visibleLayout"

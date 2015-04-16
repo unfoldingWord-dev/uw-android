@@ -6,7 +6,7 @@
     <dimen name="next_chapter_text_size">18sp</dimen>
     <dimen name="refresh_button_size">45dp</dimen>
 
-    <dimen name="general_row_text_size">18dp</dimen>
+    <dimen name="general_row_text_size">16sp</dimen>
     <dimen name="general_row_height">30dp</dimen>
 
     <dimen name="stories_row_small_text_size">12dp</dimen>

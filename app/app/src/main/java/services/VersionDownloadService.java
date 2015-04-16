@@ -8,6 +8,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -76,6 +77,7 @@ public class VersionDownloadService extends Service{
     @Override
     public void onDestroy() {
 
+        mServiceHandler.shouldStop = true;
         super.onDestroy();
     }
 
@@ -84,6 +86,7 @@ public class VersionDownloadService extends Service{
             super(looper);
         }
 
+        public boolean shouldStop = false;
         @Override
         public void handleMessage(Message msg) {
 
@@ -95,12 +98,21 @@ public class VersionDownloadService extends Service{
 
                 for(BookModel book : books){
 
+                    if(shouldStop){
+                        Log.i(TAG, "download Stopped");
+                        getApplicationContext().sendBroadcast(new Intent(URLUtils.VERSION_BROADCAST_DOWN_STOPPED).putExtra(VERSION_ID, versionId));
+                        return;
+                    }
+
                     if(book.sourceUrl.contains("usfm")){
                         UWDataParser.getInstance(getApplicationContext()).updateUSFMForBook(book);
                     }
                     else{
                         UWDataParser.getInstance(getApplicationContext()).updateStoryChapters(book, false);
                     }
+                }
+                if(shouldStop){
+                    return;
                 }
                 desiredVersion = UWDataParser.getInstance(getApplicationContext()).updateVersionVerificationStatus(desiredVersion);
                 desiredVersion.downloadState = VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADED;
@@ -116,5 +128,13 @@ public class VersionDownloadService extends Service{
                 getApplicationContext().sendBroadcast(new Intent(URLUtils.VERSION_BROADCAST_DOWN_COMP).putExtra(VERSION_ID, versionId));
 
         }
+
+
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Log.i(TAG, "removed");
     }
 }
