@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,6 +42,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     static final String INDEX_STORAGE_STRING = "INDEX_STORAGE_STRING";
 
     static final String STORIES_SLUG = "obs";
+    public static final String IS_FIRST_LAUNCH = "IS_FIRST_LAUNCH";
 
     ArrayList<ProjectModel> mProjects = null;
 
@@ -73,6 +75,19 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         prepareListView();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        boolean firstLaunch = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(IS_FIRST_LAUNCH, true);
+        if(firstLaunch){
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            ReadingActivity.CheckingLevelFragment fragment = new ReadingActivity.CheckingLevelFragment();
+            fragment.show(ft, StoryReadingActivity.CHECKING_LEVEL_FRAGMENT_ID);
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_LAUNCH, false).commit();
+        }
+    }
+
     private void reload(){
 
         mProjects = null;
@@ -90,13 +105,16 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
         mActionBar = getSupportActionBar();
         View view = getLayoutInflater().inflate(R.layout.actionbar_base, null);
-        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
+        actionbarTextView.setText(getActionBarTitle());
+        view.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
+
         mActionBar.setCustomView(view);
+        mActionBar.setDisplayShowTitleEnabled(false);
         mActionBar.setDisplayShowCustomEnabled(true);
         mActionBar.setDisplayShowHomeEnabled(false);
         mActionBar.setHomeButtonEnabled(false);
         mActionBar.setDisplayHomeAsUpEnabled(false);
-        actionbarTextView.setText(getActionBarTitle());
     }
 
 //    @Override

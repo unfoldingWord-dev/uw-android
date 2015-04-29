@@ -132,6 +132,10 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
         return books;
     }
 
+    public void resetBooks(){
+        books = null;
+    }
+
     public VersionModel() {
         super();
         this.status = new StatusModel();
@@ -220,8 +224,9 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
         }
         int verifyStatus = 0;
 
-        if(this.getChildModels(context) == null){
-            return -1;
+        if(this.getChildModels(context) == null || downloadState != DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADED){
+            verificationStatus = -1;
+            return verificationStatus;
         }
 
         for(BookModel book : this.getChildModels(context)){

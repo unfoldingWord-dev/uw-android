@@ -50,7 +50,6 @@ public class LanguageDataSource extends AMDatabaseDataSourceAbstract {
         return modelList;
     }
 
-
     @Override
     public AMDatabaseModelAbstractObject saveOrUpdateModel(JSONObject json, long parentId, boolean sideLoaded) {
         LanguageModel newModel = new LanguageModel(json, parentId, sideLoaded);

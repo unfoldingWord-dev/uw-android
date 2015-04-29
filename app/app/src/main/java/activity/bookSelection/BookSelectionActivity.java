@@ -1,27 +1,15 @@
 package activity.bookSelection;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-
-import adapters.selectionAdapters.GeneralAdapter;
-import adapters.selectionAdapters.GeneralRowInterface;
-import fragments.BooksFragment;
 import fragments.ChapterSelectionFragment;
-import model.datasource.BibleChapterDataSource;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.BookModel;
-import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -84,7 +72,7 @@ public class BookSelectionActivity extends GeneralSelectionActivity implements C
         mActionBar.setHomeButtonEnabled(false);
         mActionBar.setDisplayHomeAsUpEnabled(false);
 
-        actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
         actionbarTextView.setText(getActionBarTitle());
     }
 

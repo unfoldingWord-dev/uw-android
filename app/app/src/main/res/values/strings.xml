@@ -45,12 +45,13 @@
 
     <string name="verified_title_start">This content is verified by: </string>
     <string name="expired_title_start">The verification of some or all of this content has expired.</string>
-    <string name="error_title_start">We experienced an error while attempting to verify some or all of this content. This is likely because no verification could be found.</string>
-    <string name="failed_title_start">*Warning* the validity of some or all of this content has failed. Use with your own risk</string>
+    <string name="error_title_start">We experienced an error while verifying content.</string>
+    <string name="failed_title_start">*Warning* the validity of some or all of this content has failed. Use at your own risk</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="chapter_selection_title">Chapter Selection</string>
     <string name="version_select_title_string">Select Version</string>
+    <string name="delete_version">Delete Version</string>
 
 </resources>

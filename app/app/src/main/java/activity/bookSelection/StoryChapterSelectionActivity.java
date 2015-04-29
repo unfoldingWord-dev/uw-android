@@ -1,29 +1,13 @@
 package activity.bookSelection;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import activity.reading.StoryReadingActivity;
-import adapters.selectionAdapters.GeneralRowInterface;
-import adapters.selectionAdapters.StoriesChapterAdapter;
 import fragments.StoryChaptersFragment;
-import model.datasource.VersionDataSource;
-import model.modelClasses.mainData.StoriesChapterModel;
-import model.modelClasses.mainData.VersionModel;
-import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -78,7 +62,7 @@ public class StoryChapterSelectionActivity extends GeneralSelectionActivity impl
         mActionBar.setHomeButtonEnabled(false);
         mActionBar.setDisplayHomeAsUpEnabled(false);
 
-        actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
         actionbarTextView.setText("Select Chapter");
     }
 

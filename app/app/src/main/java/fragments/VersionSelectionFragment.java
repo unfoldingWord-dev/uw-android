@@ -157,13 +157,14 @@ public class VersionSelectionFragment extends DialogFragment {
             for(int i = 0; i < chosenProject.getChildModels(context).size(); i++){
                 if(chosenProject.getChildModels(context).get(i).slug.equalsIgnoreCase(version.getParent(context).slug)){
                     selectedIndex = i;
+                    mListView.expandGroup(i);
                 }
-                mListView.expandGroup(i);
+
             }
         }
-        for(int i = 0; i < adapter.getGroupCount(); i++){
-            mListView.expandGroup(i);
-        }
+//        for(int i = 0; i < adapter.getGroupCount(); i++){
+//            mListView.expandGroup(i);
+//        }
         return selectedIndex;
     }
 

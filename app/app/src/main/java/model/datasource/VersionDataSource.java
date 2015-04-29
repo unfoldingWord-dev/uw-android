@@ -126,6 +126,9 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
             bookSource.deleteDownloadedBookContent(book);
         }
         version.downloadState = VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_NONE;
+        version.resetBooks();
+        version.verificationStatus = -1;
+        version.getVerificationStatus(context);
         createOrUpdateDatabaseModel(version);
         return version;
     }

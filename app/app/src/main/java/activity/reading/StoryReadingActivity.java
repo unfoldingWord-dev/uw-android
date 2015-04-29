@@ -462,7 +462,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
         fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
     }
 
-    static private final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
+    static public final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
 
     static public class CheckingLevelFragment extends DialogFragment {
 

@@ -5,15 +5,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import fragments.VersionSelectionFragment;
-import model.modelClasses.mainData.ProjectModel;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -51,7 +48,7 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
     private void setupActionBar(View view){
 
         mActionBar = getSupportActionBar();
-        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbarTextView);
+        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
         mActionBar.setCustomView(view);
         mActionBar.setDisplayShowCustomEnabled(true);
         mActionBar.setDisplayShowHomeEnabled(false);

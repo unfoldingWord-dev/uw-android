@@ -51,13 +51,8 @@ public class ProjectDataSource extends AMDatabaseDataSourceAbstract {
             newModel.uid = currentModel.uid;
         }
 
-        if (currentModel == null) {
-            saveModel(newModel);
-            return getModelForSlug(newModel.slug);
-        }
-        else{
-            return null;
-        }
+        saveModel(newModel);
+        return getModelForSlug(newModel.slug);
     }
 
     @Override

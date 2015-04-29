@@ -32,10 +32,7 @@ import utils.UWPreferenceManager;
  * create an instance of this fragment.
  */
 public class BooksFragment extends Fragment implements AdapterView.OnItemClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-    // TODO: Rename and change types of parameters
 
     static String BOOK_FRAGMENT_INDEX_ID = "BOOK_FRAGMENT_INDEX_ID";
 

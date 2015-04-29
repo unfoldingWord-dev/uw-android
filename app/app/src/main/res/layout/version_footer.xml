@@ -85,31 +85,6 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_marginRight="10dp">
-
-                <Button
-                    android:text="@string/unknown_button_char"
-                    android:textColor="#FFFFFF"
-                    android:textSize="@dimen/verification_button_text_size"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@drawable/orange_question_mark"
-                    android:layout_gravity="center_vertical"
-                    />
-
-                <TextView
-                    android:paddingLeft="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/status_error"
-                    android:id="@+id/error_textView"
-                    android:layout_gravity="center_vertical" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
                 android:layout_height="fill_parent">
 
                 <Button
@@ -175,7 +150,6 @@
                 <TextView
                     android:id="@+id/textView5"
                     android:layout_width="wrap_content"
-
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="20dp"

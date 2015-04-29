@@ -153,7 +153,9 @@ public class UWDataParser {
             if(updatedModel == null){
                 continue;
             }
+            // update the books
             updateBooks(jsonObj.getJSONArray(BOOKS_JSON_KEY), updatedModel.uid, sideLoaded);
+            //update the verification
             updatedModel = updateVersionVerificationStatus(updatedModel);
             updatedModel.getDataSource(context).saveModel(updatedModel);
         }

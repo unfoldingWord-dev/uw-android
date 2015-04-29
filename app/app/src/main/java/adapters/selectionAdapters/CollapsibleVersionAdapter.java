@@ -113,7 +113,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         final VersionModel version = getChild(groupPosition, childPosition);
-        ViewHolderForGroup holder;
+        final ViewHolderForGroup holder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.row_version_selector, parent, false);
@@ -122,7 +122,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             holder.languageTypeImageView = (ImageView) convertView.findViewById(R.id.languageTypeImageView);
             holder.visibleFrameLayout = (FrameLayout) convertView.findViewById(R.id.visibleLayout);
             holder.checkingEntityTextView = (TextView) convertView.findViewById(R.id.checkingEntitytextView);
-            holder.checkingLevelTextView = (TextView) convertView.findViewById(R.id.checkingLevelTextView);
+            holder.checkingLevelImage = (ImageView) convertView.findViewById(R.id.checking_level_image);
             holder.versionTextView = (TextView) convertView.findViewById(R.id.versionTextView);
             holder.publishDateTextView = (TextView) convertView.findViewById(R.id.publishDateTextView);
             holder.checkingEntityConstantTextView = (TextView) convertView.findViewById(R.id.checking_entity_constant_text_view);
@@ -130,15 +130,16 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             holder.versionConstantTextView = (TextView) convertView.findViewById(R.id.versionConstanttextView);
             holder.publishDateConstantTextView = (TextView) convertView.findViewById(R.id.publishDateConstanttextView);
             holder.verificationTextView = (TextView) convertView.findViewById(R.id.verification_text_view);
+            holder.verificationTitle = (TextView) convertView.findViewById(R.id.verification_title);
             holder.clickableLayout = (LinearLayout) convertView.findViewById(R.id.clickableRow);
             holder.infoFrame = (FrameLayout) convertView.findViewById(R.id.info_image_frame);
             holder.status = (Button) convertView.findViewById(R.id.status);
+            holder.checkingLevelExplanationTextView = (TextView) convertView.findViewById(R.id.checking_level_explanation_text);
 
             holder.downloadButton = (Button) convertView.findViewById(R.id.download_status_image);
             holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
             holder.downloadProgressBar = (ProgressBar) convertView.findViewById(R.id.download_progress_bar);
-            holder.deleteTextFrame = (FrameLayout) convertView.findViewById(R.id.delete_row_frame);
-            holder.deleteTextView = (TextView) convertView.findViewById(R.id.delete_row_text);
+            holder.deleteButton = (Button) convertView.findViewById(R.id.delete_button);
 
             final ViewHolderForGroup finalHolder = holder;
             holder.infoFrame.setOnClickListener(getInfoClickListener(finalHolder, version));
@@ -159,21 +160,38 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         state = setRowState(holder, version, state);
 
         holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
+        holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
         setColorChange(holder, getColorForState(state));
         holder.languageTypeImageView.setImageResource(getCheckingLevelImage(Integer.parseInt(version.status.checkingLevel)));
 
         holder.languageNameTextView.setText(version.getTitle());
         holder.checkingEntityTextView.setText(version.status.checkingEntity);
-        holder.checkingEntityTextView.setText(version.status.checkingEntity);
-        holder.checkingLevelTextView.setText(version.status.checkingLevel);
+        holder.checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.status.checkingLevel)));
         holder.versionTextView.setText(version.status.version);
         holder.publishDateTextView.setText(version.status.publishDate);
+        holder.verificationTextView.setText(getVerificationText(version));
+        holder.checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.status.checkingLevel)));
 
         int verificationStatus = version.getVerificationStatus(getContext());
         holder.status.setBackgroundResource(getColorForStatus(verificationStatus));
         holder.status.setText(getButtonTextForStatus(verificationStatus));
 
         return convertView;
+    }
+
+    private int getCheckingLevelText(int level){
+
+        switch (level){
+            case 2:{
+                return R.string.level_two;
+            }
+            case 3:{
+                return R.string.level_three;
+            }
+            default:{
+                return R.string.level_one;
+            }
+        }
     }
 
     private int getCheckingLevelImage(int level){
@@ -229,40 +247,57 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         switch (version.downloadState){
 
             case DOWNLOAD_STATE_DOWNLOADED:{
+                holder.verificationTextView.setVisibility(View.VISIBLE);
+                holder.verificationTitle.setVisibility(View.VISIBLE);
                 holder.status.setVisibility(View.VISIBLE);
                 holder.downloadButton.setVisibility(View.INVISIBLE);
                 holder.downloadProgressBar.setVisibility(View.INVISIBLE);
-                holder.deleteTextView.setVisibility(View.VISIBLE);
-                holder.deleteTextFrame.setVisibility(View.VISIBLE);
+                holder.deleteButton.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(true);
-                holder.downloadFrame.setClickable(true);
+                holder.downloadFrame.setClickable(false);
+                holder.downloadFrame.setVisibility(View.INVISIBLE);
                 holder.clickableLayout.setOnClickListener(getSelectionOnClickListener(version));
 
                 return selectionState;
             }
             case DOWNLOAD_STATE_DOWNLOADING:{
+                holder.verificationTextView.setVisibility(View.GONE);
+                holder.verificationTitle.setVisibility(View.GONE);
                 holder.status.setVisibility(View.INVISIBLE);
                 holder.downloadButton.setVisibility(View.INVISIBLE);
                 holder.downloadProgressBar.setVisibility(View.VISIBLE);
-                holder.deleteTextFrame.setVisibility(View.INVISIBLE);
-                holder.deleteTextView.setVisibility(View.INVISIBLE);
+                holder.deleteButton.setVisibility(View.INVISIBLE);
+                holder.downloadFrame.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(false);
                 holder.downloadFrame.setClickable(true);
                 return 3;
             }
 
             default:{
+                holder.verificationTextView.setVisibility(View.GONE);
+                holder.verificationTitle.setVisibility(View.GONE);
                 holder.status.setVisibility(View.INVISIBLE);
                 holder.downloadButton.setVisibility(View.VISIBLE);
                 holder.downloadProgressBar.setVisibility(View.INVISIBLE);
-                holder.deleteTextFrame.setVisibility(View.INVISIBLE);
-                holder.deleteTextView.setVisibility(View.INVISIBLE);
+                holder.deleteButton.setVisibility(View.INVISIBLE);
+                holder.downloadFrame.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(false);
                 holder.downloadFrame.setClickable(true);
                 return 3;
             }
 
         }
+    }
+
+    private View.OnClickListener getDeleteOnClickListener(final VersionModel version, final ViewHolderForGroup finalHolder) {
+
+        return new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                deleteRowPressed(version, finalHolder);
+            }
+        };
     }
 
     private View.OnClickListener getDownloadOnClickListener(final VersionModel version, final ViewHolderForGroup finalHolder) {
@@ -275,8 +310,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                     finalHolder.clickableLayout.setClickable(false);
                     finalHolder.downloadProgressBar.setVisibility(View.VISIBLE);
                     finalHolder.downloadButton.setVisibility(View.INVISIBLE);
-                    finalHolder.deleteTextFrame.setVisibility(View.INVISIBLE);
-                    finalHolder.deleteTextView.setVisibility(View.INVISIBLE);
+                    finalHolder.deleteButton.setVisibility(View.INVISIBLE);
 
                     if((version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_NONE)
                     || (version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR)) {
@@ -284,9 +318,6 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                     }
                     else if(version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING){
                         stopDownload(version, finalHolder);
-                    }
-                    else{
-                        deleteRowPressed(version, finalHolder);
                     }
                 }
             }
@@ -512,6 +543,11 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    @Override
+    public void onGroupCollapsed(int groupPosition) {
+        super.onGroupCollapsed(groupPosition);
+    }
+
     public boolean hasStableIds() {
         return true;
     }
@@ -530,7 +566,6 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View view) {
                 if (finalHolder.visibleFrameLayout.getVisibility() == View.GONE) {
-                    finalHolder.verificationTextView.setText(getVerificationText(version));
 
                     CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
                     finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
@@ -541,7 +576,6 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             }
         };
     }
-
 
     public void willDestroy(){
         if(receiver != null) {
@@ -557,10 +591,8 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                 return getContext().getResources().getString(R.string.verified_button_char);
             case 1:
                 return getContext().getResources().getString(R.string.expired_button_char);
-            case 3:
-                return getContext().getResources().getString(R.string.x_button_char);
             default:
-                return getContext().getResources().getString(R.string.unknown_button_char);
+                return getContext().getResources().getString(R.string.x_button_char);
         }
     }
 
@@ -571,10 +603,8 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                 return R.drawable.green_checkmark;
             case 1:
                 return R.drawable.yellow_exclamation_point;
-            case 3:
-                return R.drawable.red_x_button;
             default:
-                return R.drawable.orange_question_mark;
+                return R.drawable.red_x_button;
         }
     }
 
@@ -597,7 +627,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         ImageView languageTypeImageView;
         FrameLayout visibleFrameLayout;
         TextView checkingEntityTextView;
-        TextView checkingLevelTextView;
+        ImageView checkingLevelImage;
         TextView versionTextView;
         TextView publishDateTextView;
         TextView checkingEntityConstantTextView;
@@ -605,6 +635,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         TextView versionConstantTextView;
         TextView publishDateConstantTextView;
         TextView verificationTextView;
+        TextView verificationTitle;
         LinearLayout clickableLayout;
         FrameLayout infoFrame;
         Button status;
@@ -612,8 +643,8 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         Button downloadButton;
         FrameLayout downloadFrame;
         ProgressBar downloadProgressBar;
-        FrameLayout deleteTextFrame;
-        TextView deleteTextView;
+        Button deleteButton;
+        TextView checkingLevelExplanationTextView;
     }
 }
 

@@ -21,7 +21,7 @@
     <dimen name="actionbar_version_font_size">13sp</dimen>
     <dimen name="actionbar_title_width">200dp</dimen>
 
-    <dimen name="story_reading_text_size">16sp</dimen>
+    <dimen name="story_reading_text_size">18sp</dimen>
 
     <dimen name="verification_button_text_size">15sp</dimen>
 
