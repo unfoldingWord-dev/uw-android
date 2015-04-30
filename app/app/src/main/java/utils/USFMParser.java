@@ -28,7 +28,7 @@ public class USFMParser {
     private static final Pattern FOOTNOTE_TEXT_REGEX = Pattern.compile("(\\\\f.)(\\s)*(\\+)(\\s)(\\\\ft)*\\s*(.)*\\n(\\\\fqa)");
     private static final Pattern FOOTNOTE_VERSE_REGEX = Pattern.compile("\\\\fqa.*\\\\f[*]");
 
-    private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
     private static USFMParser instance = null;
 

@@ -103,6 +103,10 @@ public class VersionSelectionFragment extends DialogFragment {
             titleTextView.setVisibility(View.GONE);
         }
         else{
+            if (chosenProject == null) {
+                addProject();
+            }
+            titleTextView.setText(chosenProject.getTitle());
             titleTextView.setVisibility(View.VISIBLE);
         }
         prepareListView(view, inflater);

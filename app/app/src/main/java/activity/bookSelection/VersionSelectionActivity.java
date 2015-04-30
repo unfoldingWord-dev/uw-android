@@ -11,6 +11,8 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import fragments.VersionSelectionFragment;
+import model.datasource.ProjectDataSource;
+import model.modelClasses.mainData.ProjectModel;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -18,6 +20,9 @@ import fragments.VersionSelectionFragment;
 public class VersionSelectionActivity extends ActionBarActivity implements VersionSelectionFragment.VersionSelectionFragmentListener {
 
     private ActionBar mActionBar = null;
+
+    private TextView actionbarTextView;
+    private ProjectModel chosenProject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +36,15 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
             if (extras != null) {
 
                 String chosenProjectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
+                chosenProject = new ProjectDataSource(getApplicationContext()).getModel(chosenProjectId);
+                actionbarTextView.setText(chosenProject.getTitle());
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProjectId, false))
                         .commit();
             }
         }
     }
+
 
     private void setUI() {
 
@@ -48,13 +56,12 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
     private void setupActionBar(View view){
 
         mActionBar = getSupportActionBar();
-        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
+        actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
         mActionBar.setCustomView(view);
         mActionBar.setDisplayShowCustomEnabled(true);
         mActionBar.setDisplayShowHomeEnabled(false);
         mActionBar.setHomeButtonEnabled(false);
         mActionBar.setDisplayHomeAsUpEnabled(false);
-        actionbarTextView.setText("Select Version");
     }
 
     private void setupCloseButton(View view){
