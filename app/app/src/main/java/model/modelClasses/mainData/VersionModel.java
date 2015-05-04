@@ -81,6 +81,7 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
     public StatusModel status;
     public DOWNLOAD_STATE downloadState;
 
+    public String verificationText;
     public int verificationStatus;
 
     private ArrayList<String> signingOrganizations = null;
@@ -200,6 +201,7 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
 
         this.parentId = parentId;
         downloadState = DOWNLOAD_STATE.DOWNLOAD_STATE_NONE;
+        this.verificationText = "";
     }
 
     @Override
@@ -237,17 +239,20 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
                 case 1:{
                     if(verifyStatus < 1){
                         verifyStatus = 1;
+                        this.verificationText += book.getTitle() + " Has Expired \n";
                     }
                     break;
                 }
                 case 3:{
                     if(verifyStatus < 3){
                         verifyStatus = 3;
+                        this.verificationText += book.getTitle() + " Failed \n";
                     }
                     break;
                 }
                 default:{
                     verifyStatus = 2;
+                    this.verificationText += book.getTitle() + " Encountered an Error \n";
                     break;
                 }
             }

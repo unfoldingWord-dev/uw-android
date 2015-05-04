@@ -309,13 +309,15 @@
                 </LinearLayout>
 
                 <Button
-                    android:paddingTop="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
                     android:id="@+id/delete_button"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="40dp"
                     android:background="#e11"
                     android:text="@string/delete_version"
                     android:gravity="center"
+                    android:layout_gravity="center"
                     />
             </LinearLayout>
         </FrameLayout>

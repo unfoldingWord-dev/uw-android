@@ -37,6 +37,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
     static final String TABLE_VERSION_COLUMN_SOURCE_TEXT_VERSION = "_column_source_text_version";
     static final String TABLE_VERSION_COLUMN_VERSION = "_column_version";
 
+    static final String TABLE_VERSION_COLUMN_VERIFICATION_TEXT = "_column_verification_text";
     static final String TABLE_VERSION_COLUMN_VERIFICATION_STATUS = "_column_verification_status";
 
     public VersionDataSource(Context context) {
@@ -157,6 +158,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
         values.put(TABLE_VERSION_COLUMN_SOURCE_TEXT_VERSION, versionModel.status.sourceTextVersion);
         values.put(TABLE_VERSION_COLUMN_VERSION, versionModel.status.version);
         values.put(TABLE_VERSION_COLUMN_VERIFICATION_STATUS, versionModel.verificationStatus);
+        values.put(TABLE_VERSION_COLUMN_VERIFICATION_TEXT, versionModel.verificationText);
 
         return values;
     }
@@ -184,6 +186,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
         model.status.version = cursor.getString(cursor.getColumnIndex(TABLE_VERSION_COLUMN_VERSION));
 
         model.verificationStatus = cursor.getInt(cursor.getColumnIndex(TABLE_VERSION_COLUMN_VERIFICATION_STATUS));
+        model.verificationText = cursor.getString(cursor.getColumnIndex(TABLE_VERSION_COLUMN_VERIFICATION_TEXT));
 
         return model;
     }
@@ -207,6 +210,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
                 VersionDataSource.TABLE_VERSION_COLUMN_PUBLISH_DATE + " VARCHAR," +
                 VersionDataSource.TABLE_VERSION_COLUMN_SOURCE_TEXT + " VARCHAR," +
                 VersionDataSource.TABLE_VERSION_COLUMN_SOURCE_TEXT_VERSION + " VARCHAR," +
+                VersionDataSource.TABLE_VERSION_COLUMN_VERIFICATION_TEXT + " VARCHAR," +
                 VersionDataSource.TABLE_VERSION_COLUMN_VERSION + " VARCHAR)";
 
         return creationString;

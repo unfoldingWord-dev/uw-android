@@ -218,15 +218,15 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                 break;
             }
             case 1:{
-                text = getContext().getResources().getString(R.string.expired_title_start);
+                text = getContext().getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
                 break;
             }
             case 3:{
-                text = getContext().getResources().getString(R.string.failed_title_start);
+                text = getContext().getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
                 break;
             }
             default:{
-                text = getContext().getResources().getString(R.string.error_title_start);
+                text = getContext().getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
             }
         }
 
@@ -338,6 +338,7 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
             downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
             getContext().startService(downloadIntent);
+            reload();
         }
     }
 
@@ -388,9 +389,9 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                int state = new VersionDataSource(getContext()).getModel(Long.toString(version.uid)).verificationStatus;
-                                if(state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING.ordinal() ||
-                                        state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR.ordinal()) {
+                                VersionModel.DOWNLOAD_STATE state = new VersionDataSource(getContext()).getModel(Long.toString(version.uid)).downloadState;
+                                if(state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING ||
+                                        state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR) {
                                     stopDownloadService(version);
                                     new DeleteVersionTask().execute(version);
                                 }
