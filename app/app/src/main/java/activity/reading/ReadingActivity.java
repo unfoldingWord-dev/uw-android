@@ -2,11 +2,11 @@ package activity.reading;
 
 
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -24,10 +24,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import junit.runner.Version;
 
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
@@ -467,28 +471,59 @@ public class ReadingActivity extends ActionBarActivity implements
 
     public void checkingLevelClicked(View view) {
 
+        Bundle args = new Bundle();
+        args.putLong(VERSION_ID_PARAM, mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).uid);
+        CheckingLevelFragment fragment = new CheckingLevelFragment();
+        fragment.setArguments(args);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-        CheckingLevelFragment fragment = new CheckingLevelFragment();
         fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
     }
 
-    static private final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
+    static protected final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
+    static protected String VERSION_ID_PARAM = "VERSION_ID_PARAM";
 
     static public class CheckingLevelFragment extends DialogFragment {
+
+
+        private VersionModel version;
 
         public CheckingLevelFragment() {
         }
 
         @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                long versionId = getArguments().getLong(VERSION_ID_PARAM);
+                version = new VersionDataSource(getActivity().getApplicationContext()).getModel(Long.toString(versionId));
+            }
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.version_footer, container, false);
+            View view = inflater.inflate(R.layout.version_information_fragment, container, false);
+            TextView checkingEntityTextView = (TextView) view.findViewById(R.id.checkingEntitytextView);
+            ImageView checkingLevelImage = (ImageView) view.findViewById(R.id.checking_level_image);
+            TextView versionTextView = (TextView) view.findViewById(R.id.versionTextView);
+            TextView publishDateTextView = (TextView) view.findViewById(R.id.publishDateTextView);
+            TextView verificationTextView = (TextView) view.findViewById(R.id.verification_text_view);
+            Button status = (Button) view.findViewById(R.id.status);
+            TextView checkingLevelExplanationTextView = (TextView) view.findViewById(R.id.checking_level_explanation_text);
 
-            TextView tView = (TextView) view.findViewById(R.id.textView);
-            String versionName = BuildConfig.VERSION_NAME;
 
-            tView.setText(versionName);
+            checkingEntityTextView.setText(version.status.checkingEntity);
+            checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.status.checkingLevel)));
+            versionTextView.setText(version.status.version);
+            publishDateTextView.setText(version.status.publishDate);
+            verificationTextView.setText(getVerificationText(version, getActivity().getApplicationContext()));
+            checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.status.checkingLevel)));
+
+            int verificationStatus = version.getVerificationStatus(getActivity().getApplicationContext());
+            status.setBackgroundResource(getColorForStatus(verificationStatus));
+            status.setText(getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
+
             return view;
         }
 
@@ -498,6 +533,93 @@ public class ReadingActivity extends ActionBarActivity implements
             Dialog dialog = super.onCreateDialog(savedInstanceState);
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             return dialog;
+        }
+
+        private int getCheckingLevelImage(int level){
+            switch (level){
+                case 2:{
+                    return R.drawable.level_two_dark;
+                }
+                case 3:{
+                    return R.drawable.level_three_dark;
+                }
+                default:{
+                    return R.drawable.level_one_dark;
+                }
+            }
+        }
+
+        private String getVerificationText(VersionModel version, Context context){
+
+            String text;
+            int status = version.getVerificationStatus(context);
+            switch (status){
+                case 0:{
+                    text = context.getResources().getString(R.string.verified_title_start);
+                    break;
+                }
+                case 1:{
+                    text = context.getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
+                    break;
+                }
+                case 3:{
+                    text = context.getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
+                    break;
+                }
+                default:{
+                    text = context.getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
+                }
+            }
+
+            ArrayList<String> organizations = version.getSigningOrganizations(context);
+
+            if(status == 0){
+                for(String org : organizations){
+                    text += " " + org + ",";
+                }
+                text = text.substring(0, text.length() - 1);
+            }
+
+            return text;
+        }
+
+        private int getCheckingLevelText(int level){
+
+            switch (level){
+                case 2:{
+                    return R.string.level_two;
+                }
+                case 3:{
+                    return R.string.level_three;
+                }
+                default:{
+                    return R.string.level_one;
+                }
+            }
+        }
+
+        private int getColorForStatus(int currentStatus){
+
+            switch (currentStatus){
+                case 0:
+                    return R.drawable.green_checkmark;
+                case 1:
+                    return R.drawable.yellow_exclamation_point;
+                default:
+                    return R.drawable.red_x_button;
+            }
+        }
+
+        private String getButtonTextForStatus(int currentStatus, Context context){
+
+            switch (currentStatus){
+                case 0:
+                    return context.getResources().getString(R.string.verified_button_char);
+                case 1:
+                    return context.getResources().getString(R.string.expired_button_char);
+                default:
+                    return context.getResources().getString(R.string.x_button_char);
+            }
         }
     }
 }

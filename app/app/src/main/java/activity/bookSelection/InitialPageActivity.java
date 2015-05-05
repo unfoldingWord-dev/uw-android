@@ -1,22 +1,30 @@
 package activity.bookSelection;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
@@ -41,6 +49,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     static final String INDEX_STORAGE_STRING = "INDEX_STORAGE_STRING";
 
+    static public final String GENERAL_CHECKING_LEVEL_FRAGMENT_ID = "GENERAL_CHECKING_LEVEL_FRAGMENT_ID";
     static final String STORIES_SLUG = "obs";
     public static final String IS_FIRST_LAUNCH = "IS_FIRST_LAUNCH";
 
@@ -49,6 +58,8 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     FrameLayout visibleLayout = null;
     Button mRefreshButton = null;
     Button settingsButton = null;
+
+    private Toolbar mToolbar;
     /**
      * This broadcast for When the update is completed
      */
@@ -82,8 +93,8 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         if(firstLaunch){
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-            ReadingActivity.CheckingLevelFragment fragment = new ReadingActivity.CheckingLevelFragment();
-            fragment.show(ft, StoryReadingActivity.CHECKING_LEVEL_FRAGMENT_ID);
+            CheckingLevelFragment fragment = new CheckingLevelFragment();
+            fragment.show(ft, GENERAL_CHECKING_LEVEL_FRAGMENT_ID);
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_LAUNCH, false).commit();
         }
     }
@@ -103,18 +114,18 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     private void setupActionBar(){
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mActionBar = getSupportActionBar();
-        View view = getLayoutInflater().inflate(R.layout.actionbar_base, null);
-        TextView actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
+        TextView actionbarTextView = (TextView) mToolbar.findViewById(R.id.actionbar_text_view);
         actionbarTextView.setText(getActionBarTitle());
-        view.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
+        mToolbar.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
 
-        mActionBar.setCustomView(view);
-        mActionBar.setDisplayShowTitleEnabled(false);
-        mActionBar.setDisplayShowCustomEnabled(true);
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setHomeButtonEnabled(false);
-        mActionBar.setDisplayHomeAsUpEnabled(false);
+//        mActionBar.setCustomView(view);
+//        mActionBar.setDisplayShowTitleEnabled(false);
+//        mActionBar.setDisplayShowCustomEnabled(true);
+//        mActionBar.setDisplayShowHomeEnabled(false);
+//        mActionBar.setHomeButtonEnabled(false);
+//        mActionBar.setDisplayHomeAsUpEnabled(false);
     }
 
 //    @Override
@@ -199,7 +210,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     @Override
     protected int getContentView() {
-         return R.layout.general_list;
+         return R.layout.initial_list_activity;
     }
 
     protected ArrayList<GeneralRowInterface> getData(){
@@ -276,5 +287,38 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
 
     public void closeButtonClicked(View view) {
+    }
+
+    static public class CheckingLevelFragment extends DialogFragment {
+
+        public CheckingLevelFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.verification_fragment, container, false);
+
+            TextView tView = (TextView) view.findViewById(R.id.textView);
+            String versionName = BuildConfig.VERSION_NAME;
+
+            tView.setText(versionName);
+            LinearLayout layout = (LinearLayout) view.findViewById(R.id.verification_fragment_layout);
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getDialog().dismiss();
+                }
+            });
+            return view;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Dialog dialog = super.onCreateDialog(savedInstanceState);
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            return dialog;
+        }
     }
 }

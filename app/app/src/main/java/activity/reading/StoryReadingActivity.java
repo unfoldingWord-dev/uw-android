@@ -21,10 +21,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -36,14 +34,10 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
-import java.util.Locale;
-
-import activity.bookSelection.BookSelectionActivity;
 import activity.bookSelection.GeneralSelectionActivity;
 import activity.bookSelection.StoryChapterSelectionActivity;
 import activity.bookSelection.VersionSelectionActivity;
 import adapters.StoryPagerAdapter;
-import fragments.ChapterSelectionFragment;
 import fragments.StoryChaptersFragment;
 import fragments.VersionSelectionFragment;
 import model.datasource.LanguageLocaleDataSource;
@@ -456,37 +450,15 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
     public void checkingLevelClicked(View view) {
 
+        Bundle args = new Bundle();
+        args.putLong(ReadingActivity.VERSION_ID_PARAM, mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).uid);
+        ReadingActivity.CheckingLevelFragment fragment = new ReadingActivity.CheckingLevelFragment();
+        fragment.setArguments(args);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-        CheckingLevelFragment fragment = new CheckingLevelFragment();
         fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
     }
 
     static public final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
 
-    static public class CheckingLevelFragment extends DialogFragment {
-
-        public CheckingLevelFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.version_footer, container, false);
-
-            TextView tView = (TextView) view.findViewById(R.id.textView);
-            String versionName = BuildConfig.VERSION_NAME;
-
-            tView.setText(versionName);
-            return view;
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Dialog dialog = super.onCreateDialog(savedInstanceState);
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            return dialog;
-        }
-    }
 }

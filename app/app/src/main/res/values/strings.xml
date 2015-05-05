@@ -54,4 +54,9 @@
     <string name="version_select_title_string">Select Version</string>
     <string name="delete_version">Delete Version</string>
 
+    <string name="application_version">Version</string>
+    <string name="intro_screen_title">App Information</string>
+    <string name="version_information_title">Version Information</string>
+
+
 </resources>

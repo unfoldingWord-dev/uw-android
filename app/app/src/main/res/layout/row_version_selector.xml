@@ -44,20 +44,6 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true" />
 
-            <Button
-                android:id="@+id/status"
-                android:text="@string/unknown_button_char"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/verification_button_text_size"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/green_checkmark"
-                android:layout_gravity="center_vertical"
-                android:layout_toRightOf="@+id/languageTypeImageView"
-                android:layout_toEndOf="@+id/languageTypeImageView"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp" />
 
             <TextView
                 android:id="@+id/languageNameTextView"
@@ -72,8 +58,8 @@
                 android:typeface="sans"
                 android:layout_toStartOf="@+id/linearLayout"
                 android:layout_toLeftOf="@+id/linearLayout"
-                android:layout_toEndOf="@+id/status"
-                android:layout_toRightOf="@+id/status"
+                android:layout_toEndOf="@+id/languageTypeImageView"
+                android:layout_toRightOf="@+id/languageTypeImageView"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp" />
 
@@ -140,6 +126,19 @@
                         android:visibility="visible" />
 
                 </FrameLayout>
+
+                <Button
+                    android:id="@+id/status"
+                    android:text="@string/unknown_button_char"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/verification_button_text_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/green_checkmark"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_gravity="left|center_vertical"/>
 
             </LinearLayout>
         </RelativeLayout>
@@ -246,7 +245,6 @@
                             android:layout_gravity="center"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-                            android:maxLines="4"
                             android:textColor="@color/black_light" />
 
                     </LinearLayout>
@@ -313,9 +311,10 @@
                     android:layout_marginBottom="5dp"
                     android:id="@+id/delete_button"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:background="#e11"
+                    android:layout_height="35dp"
+                    android:background="@drawable/delete_button_click"
                     android:text="@string/delete_version"
+                    android:textColor="#e11"
                     android:gravity="center"
                     android:layout_gravity="center"
                     />

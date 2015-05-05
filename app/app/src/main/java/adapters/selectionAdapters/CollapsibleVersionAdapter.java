@@ -47,9 +47,10 @@ import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
 import utils.URLUtils;
 import utils.UWPreferenceManager;
+import view.AnimatedExpandableListView;
 
 
-public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
+public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
 
     private final static String TAG = "CollapseVersionAdapter";
     static final String STORIES_SLUG = "obs";
@@ -108,8 +109,15 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
         return childPosition;
     }
 
+
     @Override
-    public View getChildView(final int groupPosition, final int childPosition,
+    public int getRealChildrenCount(int groupPosition) {
+        int count = getGroup(groupPosition).getChildModels(getContext()).size();
+        return count;
+    }
+
+    @Override
+    public View getRealChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         final VersionModel version = getChild(groupPosition, childPosition);
@@ -250,12 +258,12 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
                 holder.verificationTextView.setVisibility(View.VISIBLE);
                 holder.verificationTitle.setVisibility(View.VISIBLE);
                 holder.status.setVisibility(View.VISIBLE);
-                holder.downloadButton.setVisibility(View.INVISIBLE);
-                holder.downloadProgressBar.setVisibility(View.INVISIBLE);
+                holder.downloadButton.setVisibility(View.GONE);
+                holder.downloadProgressBar.setVisibility(View.GONE);
                 holder.deleteButton.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(true);
                 holder.downloadFrame.setClickable(false);
-                holder.downloadFrame.setVisibility(View.INVISIBLE);
+                holder.downloadFrame.setVisibility(View.GONE);
                 holder.clickableLayout.setOnClickListener(getSelectionOnClickListener(version));
 
                 return selectionState;
@@ -263,10 +271,10 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             case DOWNLOAD_STATE_DOWNLOADING:{
                 holder.verificationTextView.setVisibility(View.GONE);
                 holder.verificationTitle.setVisibility(View.GONE);
-                holder.status.setVisibility(View.INVISIBLE);
+                holder.status.setVisibility(View.GONE);
                 holder.downloadButton.setVisibility(View.INVISIBLE);
                 holder.downloadProgressBar.setVisibility(View.VISIBLE);
-                holder.deleteButton.setVisibility(View.INVISIBLE);
+                holder.deleteButton.setVisibility(View.GONE);
                 holder.downloadFrame.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(false);
                 holder.downloadFrame.setClickable(true);
@@ -276,10 +284,10 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             default:{
                 holder.verificationTextView.setVisibility(View.GONE);
                 holder.verificationTitle.setVisibility(View.GONE);
-                holder.status.setVisibility(View.INVISIBLE);
+                holder.status.setVisibility(View.GONE);
                 holder.downloadButton.setVisibility(View.VISIBLE);
-                holder.downloadProgressBar.setVisibility(View.INVISIBLE);
-                holder.deleteButton.setVisibility(View.INVISIBLE);
+                holder.downloadProgressBar.setVisibility(View.GONE);
+                holder.deleteButton.setVisibility(View.GONE);
                 holder.downloadFrame.setVisibility(View.VISIBLE);
                 holder.clickableLayout.setClickable(false);
                 holder.downloadFrame.setClickable(true);
@@ -498,12 +506,6 @@ public class CollapsibleVersionAdapter extends BaseExpandableListAdapter {
             }
         }
 
-    }
-
-    @Override
-    public int getChildrenCount(int groupPosition) {
-        int count = getGroup(groupPosition).getChildModels(getContext()).size();
-        return count;
     }
 
     @Override

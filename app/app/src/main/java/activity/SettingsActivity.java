@@ -11,6 +11,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.List;
@@ -68,6 +69,11 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        Preference customPref = (Preference) findPreference("app_version");
+        customPref.setSummary(BuildConfig.VERSION_NAME);
+
+
 
 
         // Add 'notifications' preferences, and a corresponding header.

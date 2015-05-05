@@ -30,7 +30,6 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
 
         setContentView(R.layout.selection_activity);
         setUI();
-        if (savedInstanceState == null) {
 
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
@@ -42,9 +41,13 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
                         .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProjectId, false))
                         .commit();
             }
-        }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        actionbarTextView.setText(chosenProject.getTitle());
+    }
 
     private void setUI() {
 

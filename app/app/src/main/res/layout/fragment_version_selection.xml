@@ -17,7 +17,7 @@
         android:textSize="@dimen/actionbar_title_font_size"
         android:gravity="center" />
 
-    <ExpandableListView
+    <view.AnimatedExpandableListView
         android:id="@+id/versions_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,6 +26,6 @@
         android:divider="@color/light_gray"
         android:groupIndicator="@drawable/group_indicator"
         >
-    </ExpandableListView>
+    </view.AnimatedExpandableListView>
 
 </LinearLayout>
