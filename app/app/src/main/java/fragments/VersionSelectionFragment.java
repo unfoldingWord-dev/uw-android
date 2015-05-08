@@ -183,7 +183,9 @@ public class VersionSelectionFragment extends DialogFragment {
         }
         else{
             selectedIndex = setupForBible();
-            mListView.expandGroup(selectedIndex);
+            if(selectedIndex >= 0) {
+                mListView.expandGroup(selectedIndex);
+            }
         }
     }
 
@@ -217,10 +219,7 @@ public class VersionSelectionFragment extends DialogFragment {
         Context context = getContext();
         int selectedIndex = -1;
         String selectedVersion = UWPreferenceManager.getSelectedBibleVersion(context);
-        if(Long.parseLong(selectedVersion) < 0){
-            selectedIndex = 0;
-        }
-        else {
+        if(Long.parseLong(selectedVersion) >= 0){
             VersionModel version = new VersionDataSource(context).getModel(selectedVersion);
 
             for(int i = 0; i < chosenProject.getChildModels(context).size(); i++){

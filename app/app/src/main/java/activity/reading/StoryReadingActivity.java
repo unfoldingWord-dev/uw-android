@@ -233,18 +233,18 @@ public class StoryReadingActivity extends ActionBarActivity implements
         }
         String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
 
-        if(isTablet()){
-
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-            VersionSelectionFragment fragment = VersionSelectionFragment.newInstance(projectId, true);
-            fragment.show(ft, STORIES_VERSION_FRAGMENT_ID);
-        }
-        else {
+//        if(isTablet()){
+//
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//
+//            VersionSelectionFragment fragment = VersionSelectionFragment.newInstance(projectId, true);
+//            fragment.show(ft, STORIES_VERSION_FRAGMENT_ID);
+//        }
+//        else {
             startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
                     GeneralSelectionActivity.CHOSEN_ID, projectId));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
-        }
+//        }
     }
 
     private void goToChapterActivity(){

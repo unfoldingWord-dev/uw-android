@@ -1,7 +1,10 @@
 package services;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -9,24 +12,26 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import model.database.UWDataParser;
 import model.datasource.VersionDataSource;
 import model.modelClasses.mainData.BookModel;
 import model.modelClasses.mainData.VersionModel;
-import signing.Status;
-import signing.UWSigning;
 import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc on 11/12/14.
  */
 public class VersionDownloadService extends Service{
+
+    public static final String STOP_DOWNLOAD_VERSION_MESSAGE = "STOP_DOWNLOAD_VERSION_MESSAGE";
 
     private static final String TAG = "UpdateService";
 
@@ -38,8 +43,20 @@ public class VersionDownloadService extends Service{
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
 
-    String versionId;
+    private HashMap<String, Boolean> versionDownloadMap = null;
 
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Bundle extra = intent.getExtras();
+            if (extra != null) {
+                String itemId = extra.getString(VERSION_ID);
+                versionDownloadMap.put(itemId, false);
+            }
+        }
+    };
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -47,8 +64,15 @@ public class VersionDownloadService extends Service{
 
     @Override
     public void onCreate() {
+        if(versionDownloadMap == null){
+            versionDownloadMap = new HashMap<String, Boolean>();
+        }
         HandlerThread thread = new HandlerThread("VersionDownloadThread", 1);
         thread.start();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(STOP_DOWNLOAD_VERSION_MESSAGE);
+        getApplicationContext().registerReceiver(receiver, filter);
 
         // Get the HandlerThread's Looper and use it for our Handler
         mServiceLooper = thread.getLooper();
@@ -59,14 +83,18 @@ public class VersionDownloadService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         try {
-            Bundle extra = intent.getExtras();
-            if (extra != null) {
-                String itemId = extra.getString(VERSION_ID);
-                this.versionId = itemId;
-            }
+            Bundle currentExtra = intent.getExtras();
+            String versionId ;
+            versionId = currentExtra.getString(VERSION_ID);
+
+            versionDownloadMap.put(versionId, true);
+
             Message msg = mServiceHandler.obtainMessage();
-            msg.arg1 = startId;
+            Bundle extras = new Bundle();
+            extras.putString(VERSION_ID, versionId);
+            msg.setData(extras);
             mServiceHandler.sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,22 +102,16 @@ public class VersionDownloadService extends Service{
         return START_STICKY;
     }
 
-    @Override
-    public void onDestroy() {
-
-        mServiceHandler.shouldStop = true;
-        super.onDestroy();
-    }
-
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
         }
 
-        public boolean shouldStop = false;
+
         @Override
         public void handleMessage(Message msg) {
 
+            String versionId = msg.getData().getString(VERSION_ID);
             // Get current list of languages
             try {
                 VersionModel desiredVersion = new VersionDataSource(getApplicationContext()).getModel(versionId);
@@ -98,7 +120,7 @@ public class VersionDownloadService extends Service{
 
                 for(BookModel book : books){
 
-                    if(shouldStop){
+                    if(!versionDownloadMap.get(versionId)){
                         Log.i(TAG, "download Stopped");
                         getApplicationContext().sendBroadcast(new Intent(URLUtils.VERSION_BROADCAST_DOWN_STOPPED).putExtra(VERSION_ID, versionId));
                         return;
@@ -111,7 +133,7 @@ public class VersionDownloadService extends Service{
                         UWDataParser.getInstance(getApplicationContext()).updateStoryChapters(book, false);
                     }
                 }
-                if(shouldStop){
+                if(!versionDownloadMap.get(versionId)){
                     return;
                 }
                 desiredVersion = UWDataParser.getInstance(getApplicationContext()).updateVersionVerificationStatus(desiredVersion);

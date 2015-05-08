@@ -48,11 +48,12 @@
     <ImageView
         android:id="@+id/checking_level_image_view"
         android:layout_width="@dimen/version_selection_image_size"
-        android:layout_height="@dimen/version_selection_image_size"
+        android:layout_height="fill_parent"
         android:layout_gravity="center"
         android:cropToPadding="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
+        android:padding="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
         android:scaleType="center"
         android:src="@drawable/level_one"
         android:layout_toLeftOf="@+id/language_button"
@@ -63,6 +64,7 @@
         android:layout_centerVertical="true" />
 
     <LinearLayout
+        android:padding="5dp"
         android:id="@+id/language_button"
         android:orientation="horizontal"
         android:layout_width="wrap_content"

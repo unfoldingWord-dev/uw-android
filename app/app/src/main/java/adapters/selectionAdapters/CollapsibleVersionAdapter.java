@@ -143,6 +143,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             holder.infoFrame = (FrameLayout) convertView.findViewById(R.id.info_image_frame);
             holder.status = (Button) convertView.findViewById(R.id.status);
             holder.checkingLevelExplanationTextView = (TextView) convertView.findViewById(R.id.checking_level_explanation_text);
+            holder.versionNameTextView = (TextView) convertView.findViewById(R.id.version_name_text);
 
             holder.downloadButton = (Button) convertView.findViewById(R.id.download_status_image);
             holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
@@ -179,6 +180,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         holder.publishDateTextView.setText(version.status.publishDate);
         holder.verificationTextView.setText(getVerificationText(version));
         holder.checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.status.checkingLevel)));
+        holder.versionNameTextView.setText(version.getTitle());
 
         int verificationStatus = version.getVerificationStatus(getContext());
         holder.status.setBackgroundResource(getColorForStatus(verificationStatus));
@@ -418,9 +420,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     private void stopDownloadService(VersionModel version){
 
-        Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
-        downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
-        getContext().stopService(downloadIntent);
+        getContext().sendBroadcast(new Intent(VersionDownloadService.STOP_DOWNLOAD_VERSION_MESSAGE).putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid)));
     }
 
     private class DeleteVersionTask extends AsyncTask {
@@ -642,6 +642,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         LinearLayout clickableLayout;
         FrameLayout infoFrame;
         Button status;
+        TextView versionNameTextView;
 
         Button downloadButton;
         FrameLayout downloadFrame;

@@ -1,6 +1,7 @@
 package signing;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,31 +24,38 @@ import utils.URLDownloadUtil;
  * Created by Fechner on 3/13/15.
  */
 public class UWSigning {
+    private static final String TAG = "UWSigning";
 
     private static final String signatureJsonKey = "sig";
     private static final String signingEntityUrl = "https://pki.unfoldingword.org/uW-vk.pem";
     private static final String stockCert = "certs/uW_vk_2.pem";
     private static final String stockCertPub = "certs/ca.pub";
 
-    public static void addAndVerifySignatureForBook(Context context, BookModel book, byte[] text) throws JSONException, IOException{
+    public static void addAndVerifySignatureForBook(Context context, BookModel book, byte[] text) throws IOException{
+        try {
+            String sigData = URLDownloadUtil.downloadString(book.signatureUrl);
+            JSONArray sigArray = new JSONArray(sigData);
+            ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
+            for (int i = 0; i < sigArray.length(); i++) {
+                JSONObject obj = sigArray.getJSONObject(i);
+                VerificationModel model = new VerificationModel(obj, book.uid, false);
 
-        String sigData =  URLDownloadUtil.downloadString(book.signatureUrl);
-        JSONArray sigArray = new JSONArray(sigData);
-        ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
-        for(int i = 0; i < sigArray.length(); i++){
-            JSONObject obj = sigArray.getJSONObject(i);
-            VerificationModel model = new VerificationModel(obj, book.uid, false);
+                SigningEntity signingEntity = getSigningEntity(context);
 
-            SigningEntity signingEntity = getSigningEntity(context);
+                Status sigStatus = signingEntity.verifyContent(model.signature, text);
+                if (sigStatus != Status.VERIFIED) {
+                    Log.e(TAG, "Signature not verified: " + sigStatus.toString());
+                }
+                model.verificationStatus = sigStatus.ordinal();
 
-            Status sigStatus = signingEntity.verifyContent(model.signature, text);
-            model.verificationStatus = sigStatus.ordinal();
+                verifications.add(model);
+            }
 
-            verifications.add(model);
+            updateVerifications(context, verifications, book.uid);
         }
-
-        updateVerifications(context, verifications, book.uid);
-
+        catch (JSONException e){
+            e.printStackTrace();
+        }
 
     }
 

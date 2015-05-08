@@ -190,7 +190,7 @@ public class UWDataParser {
         try {
             UWSigning.addAndVerifySignatureForBook(context, book, usfmText);
         }
-        catch (JSONException e){
+        catch (IOException e){
             e.printStackTrace();
         }
 
