@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="checking_level">Checking Level :</string>
-    <string name="version">Version :</string>
-    <string name="publish_date">Publish Date :</string>
-    <string name="about_text">We use a three-level, Church-centric approach for identifying the fidelity of translated Biblical content :</string>
-    <string name="level_two">Level 2 : external - Translation is independently checked and confirmed by at least two others not on the translation team.</string>
-    <string name="level_three">Level 3 : authenticated - Translation is checked and confirmed by leadership of at least one Church network with native speakers of the language.</string>
-</resources>
