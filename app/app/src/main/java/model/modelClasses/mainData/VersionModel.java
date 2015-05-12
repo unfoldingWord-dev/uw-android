@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -170,21 +171,45 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
     @Override
     public void initModelFromJson(JSONObject json, boolean preLoaded){
 
-        VersionJsonModel model = new Gson().fromJson(json.toString(), VersionJsonModel.class);
 
-        name = model.name;
-        dateModified = model.mod;
-        slug = model.slug;
+        try {
+            name = json.getString("name");
+            dateModified = json.getLong("mod");
+            slug = json.getString("slug");
 
-        status = new StatusModel();
-        status.checkingEntity = model.status.checking_entity;
-        status.checkingLevel = model.status.checking_level;
-        status.comments = model.status.comments;
-        status.contributors = model.status.contributors;
-        status.publishDate = model.status.publish_date;
-        status.sourceText = model.status.source_text;
-        status.sourceTextVersion = model.status.source_text_version;
-        status.version = model.status.version;
+            JSONObject statusJson = json.getJSONObject("status");
+            status = new StatusModel();
+
+
+            status.checkingEntity = statusJson.getString("checking_entity");
+            status.checkingLevel = statusJson.getString("checking_level");
+            status.comments = statusJson.getString("comments");
+            status.contributors = statusJson.getString("contributors");
+            status.publishDate = statusJson.getString("publish_date");
+            status.sourceText = statusJson.getString("source_text");
+            status.sourceTextVersion = statusJson.getString("source_text_version");
+            status.version = statusJson.getString("version");
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+
+//
+//        VersionJsonModel model = new Gson().fromJson(json.toString(), VersionJsonModel.class);
+//
+//        name = model.name;
+//        dateModified = model.mod;
+//        slug = model.slug;
+//
+//        status = new StatusModel();
+//        status.checkingEntity = model.status.checking_entity;
+//        status.checkingLevel = model.status.checking_level;
+//        status.comments = model.status.comments;
+//        status.contributors = model.status.contributors;
+//        status.publishDate = model.status.publish_date;
+//        status.sourceText = model.status.source_text;
+//        status.sourceTextVersion = model.status.source_text_version;
+//        status.version = model.status.version;
         uid = -1;
         verificationStatus = -1;
     }

@@ -57,6 +57,7 @@
     <string name="application_version">Version</string>
     <string name="intro_screen_title">App Information</string>
     <string name="version_information_title">Version Information</string>
+    <string name="splash_loading_text">Loading Content...</string>
 
 
 </resources>

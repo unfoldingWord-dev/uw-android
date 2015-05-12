@@ -74,6 +74,9 @@ public class ReadingPagerAdapter extends PagerAdapter {
         }
 
         BookModel newBook = versionBooks.get(currentIndex);
+        if(newBook.getBibleChildModels(context) == null || newBook.getBibleChildModels(context).size() == 0){
+            newBook = versionBooks.get(currentIndex + 1);
+        }
         this.nextBook = newBook;
     }
 

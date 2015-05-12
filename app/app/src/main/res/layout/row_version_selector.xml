@@ -80,17 +80,21 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@drawable/version_row_click"
-                    android:layout_gravity="right|center">
+                    android:layout_gravity="right|center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp">
 
                     <ImageView
                         android:id="@+id/version_info_image"
+                        android:src="@drawable/info_icon"
                         android:layout_width="@dimen/version_selection_button_size"
-                        android:layout_height="@dimen/version_selection_button_size"
-                        android:layout_marginRight="5dp"
+                        android:layout_height="match_parent"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+
                         android:layout_gravity="right|center"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/info_icon"
-                        android:layout_marginLeft="15dp" />
+                        />
                 </FrameLayout>
 
                 <FrameLayout
@@ -101,7 +105,8 @@
                     android:focusable="true"
                     android:background="@drawable/version_row_click"
                     android:layout_gravity="right|center"
-                    android:foregroundGravity="center">
+                    android:foregroundGravity="center"
+                    android:layout_marginLeft="10dp">
 
                     <ProgressBar
                         android:id="@+id/download_progress_bar"
@@ -111,19 +116,22 @@
                         android:layout_gravity="center"
                         android:max="200"
                         android:visibility="invisible"
+                        android:paddingRight="5dp"
                         />
 
-                    <Button
+                    <ImageView
                         android:id="@+id/download_status_image"
-                        android:clickable="false"
+                        android:src="@drawable/download_button"
                         android:layout_width="@dimen/version_selection_button_size"
-                        android:layout_height="@dimen/version_selection_button_size"
-                        android:layout_marginRight="5dp"
-                        android:layout_gravity="left|center_vertical"
+                        android:layout_height="match_parent"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:layout_gravity="right|center"
                         android:scaleType="fitCenter"
-                        android:background="@drawable/download_button"
-                        android:layout_marginLeft="15dp"
-                        android:visibility="visible" />
+                        android:paddingRight="5dp"
+                        android:paddingLeft="5dp"
+                        />
+
 
                 </FrameLayout>
 

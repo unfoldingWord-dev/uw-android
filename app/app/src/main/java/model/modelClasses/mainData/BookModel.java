@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -140,14 +141,26 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
             return;
         }
 
-        BookJsonModel model = new Gson().fromJson(json.toString(), BookJsonModel.class);
+        try{
+            this.dateModified = json.getLong("mod");
+            this.title = json.getString("title");
+            this.slug = json.getString("slug") + title;
+            this.sourceUrl = json.getString("src");
+            this.signatureUrl = json.getString("src_sig");
+            this.description = json.getString("desc");
 
-        this.dateModified = model.mod;
-        this.title = model.title;
-        this.slug = model.slug + model.title;
-        this.sourceUrl = model.src;
-        this.signatureUrl = model.src_sig;
-        this.description = model.desc;
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+//        BookJsonModel model = new Gson().fromJson(json.toString(), BookJsonModel.class);
+//
+//        this.dateModified = model.mod;
+//        this.title = model.title;
+//        this.slug = model.slug + model.title;
+//        this.sourceUrl = model.src;
+//        this.signatureUrl = model.src_sig;
+//        this.description = model.desc;
         this.uid = -1;
     }
 
@@ -194,12 +207,13 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
             return -1;
         }
         if(verifications.size() == 0){
-            return 2;
+            return 0;
         }
 
         int verifyStatus = 0;
         for(VerificationModel verification : verifications){
             switch (verification.verificationStatus){
+                case 2:
                 case 0:{
                     break;
                 }

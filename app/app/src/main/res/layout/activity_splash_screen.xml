@@ -5,10 +5,51 @@
     android:background="@color/white">
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center|center"
-        android:src="@drawable/ic_launcher" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center|center"
+            android:src="@drawable/ic_launcher" />
+
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/imageView">
+
+            <TextView
+                android:textColor="#000"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/splash_loading_text"
+                android:id="@+id/textView7" />
+
+            <ProgressBar
+                android:layout_marginLeft="5dp"
+                android:id="@+id/download_progress_bar"
+                style="@style/ProgressBar.Spinner.Indeterminate.Small"
+                android:layout_width="@dimen/version_selection_button_size"
+                android:layout_height="@dimen/version_selection_button_size"
+                android:layout_gravity="center"
+                android:max="200"
+                android:visibility="visible"
+                />
+
+            </LinearLayout>
+
+
+    </RelativeLayout>
+
+
 </FrameLayout>

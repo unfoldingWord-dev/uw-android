@@ -34,8 +34,18 @@ public class UWSigning {
     public static void addAndVerifySignatureForBook(Context context, BookModel book, byte[] text) throws IOException{
         try {
             String sigData = URLDownloadUtil.downloadString(book.signatureUrl);
-            JSONArray sigArray = new JSONArray(sigData);
+
             ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
+
+            if(sigData.contains("404")){
+                VerificationModel errorModel = new VerificationModel();
+                errorModel.verificationStatus = 2;
+                verifications.add(errorModel);
+                updateVerifications(context, verifications, book.uid);
+                return;
+            }
+
+            JSONArray sigArray = new JSONArray(sigData);
             for (int i = 0; i < sigArray.length(); i++) {
                 JSONObject obj = sigArray.getJSONObject(i);
                 VerificationModel model = new VerificationModel(obj, book.uid, false);

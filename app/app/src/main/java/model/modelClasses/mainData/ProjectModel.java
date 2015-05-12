@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -65,12 +66,18 @@ public class ProjectModel extends AMDatabaseModelAbstractObject implements Gener
             initModelFromSideLoadedJson(json);
             return;
         }
-
-        ProjectJsonModel model = new Gson().fromJson(json.toString(), ProjectJsonModel.class);
-
-        title = model.title;
-        slug = model.slug;
-        uid = -1;
+        try {
+            title = json.getString("title");
+            slug = json.getString("slug");
+//            ProjectJsonModel model = new Gson().fromJson(json.toString(), ProjectJsonModel.class);
+//
+//            title = model.title;
+//            slug = model.slug;
+            uid = -1;
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

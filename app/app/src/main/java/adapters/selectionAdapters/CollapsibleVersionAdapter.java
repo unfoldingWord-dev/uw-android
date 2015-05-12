@@ -145,7 +145,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             holder.checkingLevelExplanationTextView = (TextView) convertView.findViewById(R.id.checking_level_explanation_text);
             holder.versionNameTextView = (TextView) convertView.findViewById(R.id.version_name_text);
 
-            holder.downloadButton = (Button) convertView.findViewById(R.id.download_status_image);
+            holder.downloadButton = (ImageView) convertView.findViewById(R.id.download_status_image);
             holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
             holder.downloadProgressBar = (ProgressBar) convertView.findViewById(R.id.download_progress_bar);
             holder.deleteButton = (Button) convertView.findViewById(R.id.delete_button);
@@ -644,7 +644,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         Button status;
         TextView versionNameTextView;
 
-        Button downloadButton;
+        ImageView downloadButton;
         FrameLayout downloadFrame;
         ProgressBar downloadProgressBar;
         Button deleteButton;

@@ -6,10 +6,12 @@ import android.database.Cursor;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import model.datasource.AMDatabase.AMDatabaseDataSourceAbstract;
 import model.modelClasses.AMDatabase.AMDatabaseModelAbstractObject;
@@ -127,44 +129,67 @@ public class LanguageLocaleDataSource extends AMDatabaseDataSourceAbstract {
         return model;
     }
 
-    private class LanguageLocaleJsonModel {
-
-        boolean gw;
-        String ld;
-        String lc;
-        String ln;
-        String[] cc;
-        String lr;
-    }
+//    private class LanguageLocaleJsonModel {
+//
+//        boolean gw;
+//        String ld;
+//        String lc;
+//        String ln;
+//        String[] cc;
+//        String lr;
+//    }
 
     public void fastLoadJson(String json) throws JSONException{
 
-        LanguageLocaleJsonModel[] models = new Gson().fromJson(json, LanguageLocaleJsonModel[].class);
+//        LanguageLocaleJsonModel[] models = new Gson().fromJson(json, LanguageLocaleJsonModel[].class);
+//        ArrayList<ContentValues> values = new ArrayList<ContentValues>();
+//
+//        for(LanguageLocaleJsonModel model : models){
+//            values.add(getFastContentValues(model));
+//        }
+        ArrayList<ContentValues> fastValues = getContentValuesFromJson(json);
+        this.fastAddModelsToDatabase(fastValues);
+    }
 
-        ArrayList<ContentValues> values = new ArrayList<ContentValues>();
-        for(LanguageLocaleJsonModel model : models){
+    public ArrayList<ContentValues> getContentValuesFromJson(String json) throws JSONException{
 
-            values.add(getFastContentValues(model));
+        ArrayList<ContentValues> valuesList = new ArrayList<ContentValues>();
+        JSONArray array = new JSONArray(json);
+
+        for(int i = 0; i < array.length(); i++){
+            JSONObject obj = array.getJSONObject(i);
+
+            ContentValues values = new ContentValues();
+
+            values.put(TABLE_LOCALE_COLUMN_GW, obj.getBoolean("gw"));
+            values.put(TABLE_LOCALE_COLUMN_SLUG, obj.getString("lc"));
+
+            values.put(TABLE_LOCALE_COLUMN_LANGUAGE_DIRECTION, obj.getString("ld"));
+            values.put(TABLE_LOCALE_COLUMN_LANGUAGE_KEY, obj.getString("lc"));
+            values.put(TABLE_LOCALE_COLUMN_LANGUAGE_NAME, obj.getString("ln"));
+            values.put(TABLE_LOCALE_COLUMN_CC, obj.getJSONArray("cc").getString(0));
+            values.put(TABLE_LOCALE_COLUMN_LANGUAGE_REGION, obj.getString("lr"));
+
+            valuesList.add(values);
         }
-
-        this.fastAddModelsToDatabase(values);
+        return valuesList;
     }
 
-    public ContentValues getFastContentValues(LanguageLocaleJsonModel model) {
-
-        ContentValues values = new ContentValues();
-
-        values.put(TABLE_LOCALE_COLUMN_GW, model.gw);
-        values.put(TABLE_LOCALE_COLUMN_SLUG, model.lc);
-
-        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_DIRECTION, model.ld);
-        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_KEY, model.lc);
-        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_NAME, model.ln);
-        values.put(TABLE_LOCALE_COLUMN_CC, model.cc[0]);
-        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_REGION, model.lr);
-
-        return values;
-    }
+//    public ContentValues getFastContentValues(LanguageLocaleJsonModel model) {
+//
+//        ContentValues values = new ContentValues();
+//
+//        values.put(TABLE_LOCALE_COLUMN_GW, model.gw);
+//        values.put(TABLE_LOCALE_COLUMN_SLUG, model.lc);
+//
+//        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_DIRECTION, model.ld);
+//        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_KEY, model.lc);
+//        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_NAME, model.ln);
+//        values.put(TABLE_LOCALE_COLUMN_CC, model.cc[0]);
+//        values.put(TABLE_LOCALE_COLUMN_LANGUAGE_REGION, model.lr);
+//
+//        return values;
+//    }
 
     @Override
     public String getTableCreationString() {

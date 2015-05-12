@@ -14,8 +14,8 @@
     <dimen name="stories_row_image_width">50dp</dimen>
 
     <dimen name="version_selection_row_height">50dp</dimen>
-    <dimen name="version_selection_image_size">40sp</dimen>
-    <dimen name="version_selection_button_size">25sp</dimen>
+    <dimen name="version_selection_image_size">40dp</dimen>
+    <dimen name="version_selection_button_size">40dp</dimen>
 
     <dimen name="actionbar_title_font_size">15sp</dimen>
     <dimen name="actionbar_version_font_size">13sp</dimen>

@@ -126,6 +126,9 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
             int i = 0;
             for (BookModel book : books) {
 
+                if(book.getBibleChildModels(context) == null || book.getBibleChildModels(context).size() == 0){
+                    continue;
+                }
                 long uid = book.uid;
                 if(selectedId == uid){
                     PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(getIndexStorageString(), i).commit();
@@ -133,7 +136,6 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
                 data.add(book);
                 i++;
             }
-
             return data;
         }
     }

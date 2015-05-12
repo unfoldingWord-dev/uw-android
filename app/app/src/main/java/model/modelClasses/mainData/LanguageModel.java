@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -76,11 +77,18 @@ public class LanguageModel extends AMDatabaseModelAbstractObject implements Gene
             return;
         }
 
+        try{
+            dateModified = json.getLong("mod");
+            languageAbbreviation = json.getString("lc");
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
         LanguageJsonModel model = new Gson().fromJson(json.toString(), LanguageJsonModel.class);
-
-        dateModified = model.mod;
-        languageAbbreviation = model.lc;
-        this.slug = model.slug;
+//
+//        dateModified = model.mod;
+//        languageAbbreviation = model.lc;
+//        this.slug = model.slug;
         uid = -1;
     }
 
