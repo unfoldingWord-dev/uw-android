@@ -103,7 +103,7 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
         this.getBibleChildModels(context);
         Collections.sort(this.bibleChapterModels);
 
-        if(chapterNumber >= this.bibleChapterModels.size()){
+        if(chapterNumber > this.bibleChapterModels.size()){
             return null;
         }
         else{

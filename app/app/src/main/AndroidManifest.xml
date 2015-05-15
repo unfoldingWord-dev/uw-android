@@ -43,7 +43,7 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name="activity.reading.ReadingActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name="activity.reading.StoryReadingActivity"

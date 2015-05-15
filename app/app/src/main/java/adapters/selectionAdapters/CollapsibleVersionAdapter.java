@@ -360,7 +360,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 // Use the Builder class for convenient dialog construction
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("this will be deleted")
+                builder.setMessage(getResources().getString(R.string.delete_warning_text))
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
@@ -502,6 +502,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                 BibleChapterModel newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1) :
                         newBook.getBibleChapter(getContext(), Integer.parseInt(chapter.number.trim()));
 
+                if(newChapter == null){
+                    newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
+                }
                 UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.uid);
             }
         }
