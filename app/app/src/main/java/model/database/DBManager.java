@@ -113,7 +113,7 @@ public class DBManager extends SQLiteOpenHelper {
 
         if(forceCreate || shouldLoadSavedDb()){
             copyDataBase();
-            copyLanguages();
+//            copyLanguages();
             getReadableDatabase();
         }
         else {
@@ -173,53 +173,53 @@ public class DBManager extends SQLiteOpenHelper {
      *
      * @throws IOException
      */
-    private void copyDataBase() throws IOException {
+//    private void copyDataBase() throws IOException {
+//
+//        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_catalog_file_name));
+//
+//        try {
+//            JSONObject jsonObject = new JSONObject(jsonString);
+//            long modified = jsonObject.getLong(UWDataParser.LAST_MODIFIED_JSON_KEY);
+//            UWPreferenceManager.setLastUpdatedDate(context, modified);
+//
+//            UWDataParser.getInstance(context).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
+//        }
+//        catch (JSONException e){
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void copyLanguages() throws IOException {
+//
+//        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_locales_file_name));
+//
+//        try {
+//            new LanguageLocaleDataSource(context).fastLoadJson(jsonString);
+//        }
+//        catch (JSONException e){
+//            e.printStackTrace();
+//        }
+//
+//    }
 
-        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_catalog_file_name));
-
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            long modified = jsonObject.getLong(UWDataParser.LAST_MODIFIED_JSON_KEY);
-            UWPreferenceManager.setLastUpdatedDate(context, modified);
-
-            UWDataParser.getInstance(context).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-
-    private void copyLanguages() throws IOException {
-
-        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_locales_file_name));
-
-        try {
-            new LanguageLocaleDataSource(context).fastLoadJson(jsonString);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-
-    }
-
-    private String loadDbFile(String fileName) throws IOException{
-
-        // Open your local model.db as the input stream
-        InputStream inputStream = context.getAssets().open(fileName);
-
-        InputStreamReader reader = new InputStreamReader(inputStream);
-        StringBuilder builder = new StringBuilder();
-        BufferedReader bufferReader = new BufferedReader(reader);
-        String read = bufferReader.readLine();
-
-        while(read != null) {
-            //System.out.println(read);
-            builder.append(read);
-            read =bufferReader.readLine();
-        }
-
-        return builder.toString();
-    }
+//    private String loadDbFile(String fileName) throws IOException{
+//
+//        // Open your local model.db as the input stream
+//        InputStream inputStream = context.getAssets().open("preloaded_content/" + fileName);
+//
+//        InputStreamReader reader = new InputStreamReader(inputStream);
+//        StringBuilder builder = new StringBuilder();
+//        BufferedReader bufferReader = new BufferedReader(reader);
+//        String read = bufferReader.readLine();
+//
+//        while(read != null) {
+//            //System.out.println(read);
+//            builder.append(read);
+//            read =bufferReader.readLine();
+//        }
+//
+//        return builder.toString();
+//    }
 
     //endregion
 
@@ -242,8 +242,55 @@ public class DBManager extends SQLiteOpenHelper {
         Log.i(TAG, "DB is not up to date");
         return false;
     }
+
     /**
-     * Copies database to the external SD card
+     * Copies your database from your local assets-folder to the just created
+     * empty database (or overrides/deletes it if it exists) in the system folder, from where it can be accessed and
+     * handled. This is done by transferring ByteStream.
+     *
+     * @throws IOException
+     */
+    private void copyDataBase() throws IOException {
+
+        // Open your local model.db as the input stream
+        InputStream inputStream = context.getAssets().open("backup_db.sqlite");
+
+        // Path to the just created empty model.db
+        String outFileName = DB_PATH + AMDatabaseIndex.DB_NAME;
+
+        File currentFile = new File(outFileName);
+
+        //make sure the file doesn't already exist.
+        if(currentFile.exists()){
+            Log.i(TAG, "had to delete already existing DB");
+            currentFile.delete();
+            currentFile.createNewFile();
+        }
+        else{
+            if (!currentFile.getParentFile().exists()){
+                currentFile.getParentFile().mkdirs();
+            }
+            currentFile.createNewFile();
+        }
+
+        // Open the empty model.db as the output stream
+        FileOutputStream outputStream = new FileOutputStream(outFileName);
+
+        // transfer bytes from the inputfile to the outputfile
+        byte[] buffer = new byte[1024];
+        int length;
+
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
+        }
+        // Close the streams
+        outputStream.flush();
+        outputStream.close();
+        inputStream.close();
+    }
+
+    /**
+     * Copies database to the external storage card
      * @throws IOException
      */
     private void backupDatabase() {
@@ -257,11 +304,11 @@ public class DBManager extends SQLiteOpenHelper {
             File dbFile = new File(this.getReadableDatabase().getPath());
             InputStream inputStream = new FileInputStream(dbFile);
 
-            File sdCard = Environment.getExternalStorageDirectory();
+            File storageDirectory = Environment.getRootDirectory();
 //
-            String backupDBPath = "unfoldingword/backupWords.sqlite";
+            String backupDBPath = "backupWords.sqlite";
 
-            File backupDB = new File(sdCard, backupDBPath);
+            File backupDB = new File(storageDirectory, backupDBPath);
 
             if(!backupDB.exists()){
                 backupDB.mkdir();

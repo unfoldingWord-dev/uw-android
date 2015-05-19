@@ -2,6 +2,7 @@ package uwpreloader;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 /**
  * Created by Fechner on 11/28/14.
@@ -11,7 +12,7 @@ public class Downloader {
     static final String kCatalogUrl = "https://api.unfoldingword.org/uw/txt/2/catalog.json";
     static final String kLocalesUrl = "http://td.unfoldingword.org/exports/langnames.json";
     
-    static final String kDirName = "assets";
+    static final String kDirName = "assets/preloaded_content";
     
     static final String kFileName = "preloaded_data.json";
     static final String kLocalesFileName = "locales_data.json";
@@ -25,21 +26,40 @@ public class Downloader {
         
         String localesJson = getStringFromUrl(kLocalesUrl);
         saveFile(localesJson, kLocalesFileName);
+        saveUrlsForJson(json);
     }
     
     private static void purgeDirectory(String directory){
         
         System.out.println("Will try to purge dir: " + directory);
         File dir = new File(directory);
+        if(!dir.exists()){
+            return;
+        }
         
          for (File file: dir.listFiles()){ 
              System.out.println("Name: " + file.getName());
-             if (!file.isDirectory() && (file.getName().equals(kFileName) || file.getName().equals(kLocalesFileName))){
+             if (!file.isDirectory() && (file.getName().equals(kFileName) 
+                     || file.getName().equals(kLocalesFileName) 
+                     || file.getName().contains("json")
+                     || file.getName().contains("usfm")
+                     || file.getName().contains("sig"))){
                  file.delete();
              }
          }
     }
    
+    private static void saveUrlsForJson(String json){
+        
+        ArrayList<String> allUrls = UWJsonUrlFinder.getAllUrlsForJson(json);
+        
+        for(String url : allUrls){
+            String text = getStringFromUrl(url);
+            if(text != null){
+                saveFile(text, prepareUrlForSaving(url));
+            }
+        }
+    }
     
     private static String getStringFromUrl(String url){
     URL u;
@@ -58,7 +78,6 @@ public class Downloader {
          dis = new DataInputStream(new BufferedInputStream(is));
 
          while ((s = dis.readLine()) != null) {
-            System.out.println(s);
             finalString += s;
          }
  
@@ -66,14 +85,12 @@ public class Downloader {
  
          System.out.println("Ouch - a MalformedURLException happened.");
          mue.printStackTrace();
-         System.exit(1);
          return null;
  
       } catch (IOException ioe) {
  
          System.out.println("Oops- an IOException happened.");
          ioe.printStackTrace();
-         System.exit(1);
          return null;
  
       } finally {
@@ -82,6 +99,9 @@ public class Downloader {
             is.close();
          } catch (IOException ioe) {
             return null;
+         } catch(NullPointerException e){
+             e.printStackTrace();
+             return null;
          }
  
       }
@@ -92,11 +112,16 @@ public class Downloader {
     private static void saveFile(String fileString, String fileName) {
 
         fileName = kDirName + File.separator + fileName;
-        System.out.println("fileName: " + fileName);
+        System.out.println("Saving: fileName: " + fileName);
         try {
             File file = new File(fileName);
 
             // if file doesnt exists, then create it 
+            
+            if (!file.getParentFile().exists()){
+                    file.getParentFile().mkdirs();
+            }
+            
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -111,5 +136,10 @@ public class Downloader {
             System.out.println("Error: " + e);
             e.printStackTrace();
         }
+    }
+    
+    private static String prepareUrlForSaving(String url){
+        
+        return url.replace(":", "#").replace("/", "*");
     }
 }
