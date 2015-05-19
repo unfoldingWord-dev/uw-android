@@ -17,5 +17,8 @@
     <Preference android:title="@string/application_version"
         android:key="app_version"/>;
 
+    <Preference android:title="@string/application_build_number"
+        android:key="app_build"/>;
+
 
 </PreferenceScreen>

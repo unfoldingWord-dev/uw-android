@@ -55,6 +55,7 @@
     <string name="delete_version">Delete Version</string>
 
     <string name="application_version">Version</string>
+    <string name="application_build_number">Build Number</string>
     <string name="intro_screen_title">App Information</string>
     <string name="version_information_title">Version Information</string>
     <string name="splash_loading_text">Loading Content...</string>

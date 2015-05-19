@@ -295,23 +295,26 @@ public class DBManager extends SQLiteOpenHelper {
      */
     private void backupDatabase() {
 
-//        if(shouldLoadSavedDb()){
-//            return;
-//        }
         try {
             Log.i(TAG, "is backing up database");
             // Open your local model.db as the input stream
             File dbFile = new File(this.getReadableDatabase().getPath());
             InputStream inputStream = new FileInputStream(dbFile);
 
-            File storageDirectory = Environment.getRootDirectory();
-//
+            File storageDirectory = Environment.getExternalStoragePublicDirectory("Download");
             String backupDBPath = "backupWords.sqlite";
 
             File backupDB = new File(storageDirectory, backupDBPath);
 
-            if(!backupDB.exists()){
-                backupDB.mkdir();
+            if(backupDB.exists()){
+                backupDB.delete();
+                backupDB.createNewFile();
+            }
+            else{
+                if (!backupDB.getParentFile().exists()){
+                    backupDB.getParentFile().mkdirs();
+                }
+                backupDB.createNewFile();
             }
             // Path to the just created empty model.db
             String outFileName =  backupDB.getPath();

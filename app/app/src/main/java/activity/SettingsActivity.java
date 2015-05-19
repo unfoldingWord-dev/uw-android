@@ -70,8 +70,11 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        Preference customPref = (Preference) findPreference("app_version");
-        customPref.setSummary(BuildConfig.VERSION_NAME);
+        Preference versionPref = (Preference) findPreference("app_version");
+        versionPref.setSummary(BuildConfig.VERSION_NAME);
+
+        Preference buildPref = (Preference) findPreference("app_build");
+        buildPref.setSummary(Integer.toString(BuildConfig.VERSION_CODE));
 
 
 
