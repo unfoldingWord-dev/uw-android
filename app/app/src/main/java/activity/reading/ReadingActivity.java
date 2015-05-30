@@ -476,9 +476,8 @@ public class ReadingActivity extends ActionBarActivity implements
         args.putLong(VERSION_ID_PARAM, mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).uid);
         CheckingLevelFragment fragment = new CheckingLevelFragment();
         fragment.setArguments(args);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-        fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
+        fragment.show(getSupportFragmentManager(), CHECKING_LEVEL_FRAGMENT_ID);
     }
 
     static protected final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";

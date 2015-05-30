@@ -21,4 +21,6 @@
     <dimen name="story_reading_text_size">22sp</dimen>
     <dimen name="chapter_selection_top_padding">5dp</dimen>
 
+    <dimen name="min_version_info_width">350dp</dimen>
+
 </resources>
