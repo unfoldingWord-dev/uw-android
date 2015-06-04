@@ -37,9 +37,9 @@ public class UWSigning {
 
             ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
 
-            if(sigData.contains("404")){
+            if(sigData.contains("404 Not Found")){
                 VerificationModel errorModel = new VerificationModel();
-                errorModel.verificationStatus = 2;
+                errorModel.verificationStatus = Status.ERROR.ordinal();
                 verifications.add(errorModel);
                 updateVerifications(context, verifications, book.uid);
                 return;

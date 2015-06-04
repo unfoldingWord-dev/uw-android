@@ -98,7 +98,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
             setContentView(R.layout.no_text_layout);
         }
         else {
-            setupPager();
+            setupPager(false);
         }
 
     }
@@ -111,12 +111,21 @@ public class StoryReadingActivity extends ActionBarActivity implements
             return;
         }
 
-        setupPager();
+        setupPager(false);
     }
     private void reload(){
         mChapter = null;
         selectedProject = null;
-        onStart();
+
+        setData();
+        setUI();
+
+        if(mChapter == null || selectedProject == null){
+            setContentView(R.layout.no_text_layout);
+        }
+        else {
+            setupPager(true);
+        }
     }
 
     private void setupActionBar(){
@@ -190,7 +199,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
         }
     }
 
-    private void setupPager(){
+    private void setupPager(boolean loadFormerIndex){
 
         readingViewPager = (ViewPager) findViewById(R.id.myViewPager);
         mImageLoader = ImageLoader.getInstance();
@@ -209,7 +218,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
         setupTouchListener(readingViewPager);
 
-        if(currentItem > 0){
+        if(currentItem > 0 && loadFormerIndex){
             readingViewPager.setCurrentItem(currentItem);
         }
     }
@@ -410,7 +419,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
     private void handleBack(){
 
         //reset  Preference
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(STORY_INDEX_STRING, -1).commit();
+//        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(STORY_INDEX_STRING, -1).commit();
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
@@ -431,6 +440,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
     @Override
     public void chapterWasSelected() {
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(STORY_INDEX_STRING, 0);
         removeFragment(STORIES_CHAPTER_SELECTION_FRAGMENT_ID);
     }
 

@@ -258,6 +258,7 @@ public class VersionModel extends AMDatabaseModelAbstractObject implements Gener
 
         for(BookModel book : this.getChildModels(context)){
             switch (book.getVerificationStatus(context)){
+                case -1:
                 case 0:{
                     break;
                 }

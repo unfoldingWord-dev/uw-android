@@ -64,6 +64,7 @@ public class VersionDataSource extends AMDatabaseDataSourceAbstract {
 
         if(currentModel != null) {
             newModel.uid = currentModel.uid;
+            newModel.downloadState = currentModel.downloadState;
         }
 
         if (currentModel == null || (currentModel.dateModified < newModel.dateModified)) {

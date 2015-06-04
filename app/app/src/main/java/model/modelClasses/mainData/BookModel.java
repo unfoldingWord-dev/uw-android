@@ -207,7 +207,7 @@ public class BookModel extends AMDatabaseModelAbstractObject implements GeneralR
             return -1;
         }
         if(verifications.size() == 0){
-            return 0;
+            return -1;
         }
 
         int verifyStatus = 0;

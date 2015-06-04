@@ -187,6 +187,7 @@ public class DBManager extends SQLiteOpenHelper {
 //        catch (JSONException e){
 //            e.printStackTrace();
 //        }
+//        copyLanguages();
 //    }
 //
 //    private void copyLanguages() throws IOException {
@@ -201,7 +202,7 @@ public class DBManager extends SQLiteOpenHelper {
 //        }
 //
 //    }
-
+//
 //    private String loadDbFile(String fileName) throws IOException{
 //
 //        // Open your local model.db as the input stream

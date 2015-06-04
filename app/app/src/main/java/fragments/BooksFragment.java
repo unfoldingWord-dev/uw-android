@@ -21,6 +21,7 @@ import model.datasource.BibleChapterDataSource;
 import model.datasource.BookDataSource;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
+import signing.Status;
 import utils.UWPreferenceManager;
 
 /**
@@ -101,7 +102,6 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
         GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
         mListView.setAdapter(adapter);
 
-
         mListView.setSelection((scrollPosition > 1) ? scrollPosition -1 : 0);
     }
 
@@ -125,8 +125,9 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
             ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
             int i = 0;
             for (BookModel book : books) {
-
-                if(book.getBibleChildModels(context) == null || book.getBibleChildModels(context).size() == 0){
+                int status = book.getVerificationStatus(context);
+                if(book.getBibleChildModels(context) == null || book.getBibleChildModels(context).size() == 0
+                        ||status == Status.ERROR.ordinal() || status < 0){
                     continue;
                 }
                 long uid = book.uid;
