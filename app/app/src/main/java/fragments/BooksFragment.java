@@ -14,11 +14,13 @@ import android.widget.ListView;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.BookDataSource;
+import model.datasource.VersionDataSource;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
 import signing.Status;
@@ -102,7 +104,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
         GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
         mListView.setAdapter(adapter);
 
-        mListView.setSelection((scrollPosition > 1) ? scrollPosition -1 : 0);
+        mListView.setSelection((scrollPosition > 1) ? scrollPosition - 1 : 0);
     }
 
     private Context getContext(){
@@ -114,29 +116,34 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
         Context context = getContext();
 
         String chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
+        String versionId = UWPreferenceManager.getSelectedBibleVersion(context);
         if(Long.parseLong(chapterId) < 0) {
             return null;
         }
         else {
             BibleChapterModel model = new BibleChapterDataSource(context).getModel(chapterId);
-            ArrayList<BookModel> books = model.getParent(context).getParent(context).getChildModels(context);
+            ArrayList<BookModel> books = new VersionDataSource(context).getModel(versionId).getChildModels(context);
 
             long selectedId = model.getParent(context).uid;
-            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
+            int errorOrdinal = Status.ERROR.ordinal();
+            List<BookModel> invalidBooks = new ArrayList<>();
             int i = 0;
             for (BookModel book : books) {
                 int status = book.getVerificationStatus(context);
-                if(book.getBibleChildModels(context) == null || book.getBibleChildModels(context).size() == 0
-                        ||status == Status.ERROR.ordinal() || status < 0){
+                if(status == errorOrdinal || status < 0){
+                    invalidBooks.add(book);
                     continue;
                 }
                 long uid = book.uid;
                 if(selectedId == uid){
                     PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(getIndexStorageString(), i).commit();
                 }
-                data.add(book);
                 i++;
             }
+            books.removeAll(invalidBooks);
+
+            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
+            data.addAll(books);
             return data;
         }
     }
