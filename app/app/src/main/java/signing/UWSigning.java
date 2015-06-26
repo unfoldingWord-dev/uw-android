@@ -73,40 +73,40 @@ public class UWSigning {
 
     public static void updateVerification(Context context, Book book, byte[] text, String sigData) throws IOException{
 
-        try {
-//            String sigData = URLDownloadUtil.downloadString(book.getSignatureUrl());
-
-            ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
-
-            if(sigData.contains("404")){
-                VerificationModel errorModel = new VerificationModel();
-                errorModel.verificationStatus = 2;
-                verifications.add(errorModel);
-                updateVerifications(context, verifications, book.uid);
-                return;
-            }
-
-            JSONArray sigArray = new JSONArray(sigData);
-            for (int i = 0; i < sigArray.length(); i++) {
-                JSONObject obj = sigArray.getJSONObject(i);
-                VerificationModel model = new VerificationModel(obj, book.uid, false);
-
-                SigningEntity signingEntity = getSigningEntity(context);
-
-                Status sigStatus = signingEntity.verifyContent(model.signature, text);
-                if (sigStatus != Status.VERIFIED) {
-                    Log.e(TAG, "Signature not verified: " + sigStatus.toString());
-                }
-                model.verificationStatus = sigStatus.ordinal();
-
-                verifications.add(model);
-            }
-
-            updateVerifications(context, verifications, book.uid);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
+//        try {
+////            String sigData = URLDownloadUtil.downloadString(book.getSignatureUrl());
+//
+//            ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
+//
+//            if(sigData.contains("404")){
+//                VerificationModel errorModel = new VerificationModel();
+//                errorModel.verificationStatus = 2;
+//                verifications.add(errorModel);
+//                updateVerifications(context, verifications, book.uid);
+//                return;
+//            }
+//
+//            JSONArray sigArray = new JSONArray(sigData);
+//            for (int i = 0; i < sigArray.length(); i++) {
+//                JSONObject obj = sigArray.getJSONObject(i);
+//                VerificationModel model = new VerificationModel(obj, book.uid, false);
+//
+//                SigningEntity signingEntity = getSigningEntity(context);
+//
+//                Status sigStatus = signingEntity.verifyContent(model.signature, text);
+//                if (sigStatus != Status.VERIFIED) {
+//                    Log.e(TAG, "Signature not verified: " + sigStatus.toString());
+//                }
+//                model.verificationStatus = sigStatus.ordinal();
+//
+//                verifications.add(model);
+//            }
+//
+//            updateVerifications(context, verifications, book.uid);
+//        }
+//        catch (JSONException e){
+//            e.printStackTrace();
+//        }
     }
 
     private static void updateVerifications(Context context, ArrayList<VerificationModel> newModels, long bookId){
