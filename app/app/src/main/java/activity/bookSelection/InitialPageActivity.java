@@ -38,6 +38,7 @@ import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.datasource.ProjectDataSource;
 import model.modelClasses.mainData.ProjectModel;
+import services.UWUpdater;
 import services.UpdateService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
@@ -280,7 +281,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         } else {
             visibleLayout.setVisibility(View.VISIBLE);
             // to handle new data from network
-            startService(new Intent(this, UpdateService.class));
+            startService(new Intent(getApplicationContext(), UWUpdater.class));
         }
 
     }

@@ -17,12 +17,10 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import activity.reading.ReadingActivity;
 import model.database.DBManager;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
-import signing.Status;
-import utils.USFMParser;
+import model.parsers.USFMParser;
 import utils.UWPreferenceManager;
 
 /**
@@ -75,9 +73,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
         }
 
         BookModel newBook = versionBooks.get(currentIndex);
-        int status = newBook.getVerificationStatus(context);
-        if(newBook.getBibleChildModels(context) == null || newBook.getBibleChildModels(context).size() == 0
-                || status == Status.ERROR.ordinal() || status < 0){
+        if(newBook.getBibleChildModels(context) == null || newBook.getBibleChildModels(context).size() == 0){
             newBook = versionBooks.get(currentIndex + 1);
         }
         this.nextBook = newBook;

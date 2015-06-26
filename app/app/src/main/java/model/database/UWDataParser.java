@@ -27,10 +27,9 @@ import model.modelClasses.mainData.PageModel;
 import model.modelClasses.mainData.ProjectModel;
 import model.modelClasses.mainData.StoriesChapterModel;
 import model.modelClasses.mainData.VersionModel;
-import signing.Status;
 import signing.UWSigning;
 import utils.URLDownloadUtil;
-import utils.USFMParser;
+import model.parsers.USFMParser;
 import utils.UWPreferenceManager;
 
 /**

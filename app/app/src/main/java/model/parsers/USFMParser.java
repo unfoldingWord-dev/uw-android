@@ -1,7 +1,6 @@
-package utils;
+package model.parsers;
 
 
-import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;

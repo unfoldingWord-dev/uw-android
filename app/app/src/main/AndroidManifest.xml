@@ -55,6 +55,7 @@
         </activity>
 
         <service android:name="services.UpdateService" />
+        <service android:name="services.UWUpdater" />
         <service android:name="services.VersionDownloadService" />
 
     </application>

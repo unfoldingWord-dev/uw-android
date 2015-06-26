@@ -1,6 +1,9 @@
 package utils;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
+
+import org.unfoldingword.mobile.R;
 
 /**
  * Created by Fechner on 3/25/15.
@@ -48,8 +51,14 @@ public class UWPreferenceManager {
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(LAST_UPDATED_ID, -1);
     }
     public static void setLastUpdatedDate(Context context, long newValue){
-
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(LAST_UPDATED_ID, newValue).commit();
     }
 
+    private static final String DATA_DOWNLOAD_URL_KEY = "base_url";
+    public static String getDataDownloadUrl(Context context){
+       return PreferenceManager.getDefaultSharedPreferences(context).getString(DATA_DOWNLOAD_URL_KEY,  context.getResources().getString(R.string.pref_default_base_url));
+    }
+    public static void setDataDownloadUrl(Context context, String newValue){
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putString(DATA_DOWNLOAD_URL_KEY, newValue).commit();
+    }
 }

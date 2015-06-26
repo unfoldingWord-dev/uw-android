@@ -98,7 +98,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
             setContentView(R.layout.no_text_layout);
         }
         else {
-            setupPager(false);
+            setupPager();
         }
 
     }
@@ -111,21 +111,12 @@ public class StoryReadingActivity extends ActionBarActivity implements
             return;
         }
 
-        setupPager(false);
+        setupPager();
     }
     private void reload(){
         mChapter = null;
         selectedProject = null;
-
-        setData();
-        setUI();
-
-        if(mChapter == null || selectedProject == null){
-            setContentView(R.layout.no_text_layout);
-        }
-        else {
-            setupPager(true);
-        }
+        onStart();
     }
 
     private void setupActionBar(){
@@ -199,7 +190,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
         }
     }
 
-    private void setupPager(boolean loadFormerIndex){
+    private void setupPager(){
 
         readingViewPager = (ViewPager) findViewById(R.id.myViewPager);
         mImageLoader = ImageLoader.getInstance();
@@ -218,7 +209,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
         setupTouchListener(readingViewPager);
 
-        if(currentItem > 0 && loadFormerIndex){
+        if(currentItem > 0){
             readingViewPager.setCurrentItem(currentItem);
         }
     }
@@ -419,7 +410,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
     private void handleBack(){
 
         //reset  Preference
-//        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(STORY_INDEX_STRING, -1).commit();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(STORY_INDEX_STRING, -1).commit();
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
@@ -440,7 +431,6 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
     @Override
     public void chapterWasSelected() {
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(STORY_INDEX_STRING, 0);
         removeFragment(STORIES_CHAPTER_SELECTION_FRAGMENT_ID);
     }
 
@@ -464,8 +454,9 @@ public class StoryReadingActivity extends ActionBarActivity implements
         args.putLong(ReadingActivity.VERSION_ID_PARAM, mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).uid);
         ReadingActivity.CheckingLevelFragment fragment = new ReadingActivity.CheckingLevelFragment();
         fragment.setArguments(args);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-        fragment.show(getSupportFragmentManager(), CHECKING_LEVEL_FRAGMENT_ID);
+        fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
     }
 
     static public final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";

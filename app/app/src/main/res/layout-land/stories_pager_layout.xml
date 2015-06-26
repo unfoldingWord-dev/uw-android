@@ -26,7 +26,7 @@
             android:paddingRight="10dp"
             android:text="Testing Text"
             android:textColor="@color/white"
-            android:textSize="@dimen/story_reading_text_size"
+            android:textSize="16sp"
             android:textStyle="normal"
             android:background="@color/clear_black"
             />
