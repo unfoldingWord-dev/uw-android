@@ -20,10 +20,9 @@ import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
-import model.datasource.ProjectDataSource;
-import model.datasource.VersionDataSource;
-import model.modelClasses.mainData.ProjectModel;
-import model.modelClasses.mainData.VersionModel;
+import model.DaoDBHelper;
+import model.daoModels.Project;
+import model.daoModels.Version;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 
@@ -45,7 +44,7 @@ public class VersionSelectionFragment extends DialogFragment {
     private String chosenProjectId;
     protected AnimatedExpandableListView mListView = null;
     private View footerView = null;
-    private ProjectModel chosenProject = null;
+    private Project chosenProject = null;
     CollapsibleVersionAdapter adapter;
 
     private boolean showTitle = false;
@@ -178,7 +177,7 @@ public class VersionSelectionFragment extends DialogFragment {
         mListView.setAdapter(adapter);
 
         int selectedIndex;
-        if(chosenProject.slug.equalsIgnoreCase(STORIES_SLUG)){
+        if(chosenProject.getSlug().equalsIgnoreCase(STORIES_SLUG)){
             setupForStories();
         }
         else{
@@ -198,10 +197,10 @@ public class VersionSelectionFragment extends DialogFragment {
             selectedIndex = 0;
         }
         else {
-            VersionModel version = new VersionDataSource(context).getModel(selectedVersion);
+            Version version = Version.getVersionForId(DaoDBHelper.getDaoSession(context), Long.parseLong(selectedVersion));
 
-            for(int i = 0; i < chosenProject.getChildModels(context).size(); i++){
-                if(chosenProject.getChildModels(context).get(i).slug.equalsIgnoreCase(version.getParent(context).slug)){
+            for(int i = 0; i < chosenProject.getLanguages().size(); i++){
+                if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){
                     selectedIndex = i;
                     mListView.expandGroup(i);
                 }
@@ -220,10 +219,10 @@ public class VersionSelectionFragment extends DialogFragment {
         int selectedIndex = -1;
         String selectedVersion = UWPreferenceManager.getSelectedBibleVersion(context);
         if(Long.parseLong(selectedVersion) >= 0){
-            VersionModel version = new VersionDataSource(context).getModel(selectedVersion);
+            Version version = Version.getVersionForId(DaoDBHelper.getDaoSession(context), Long.parseLong(selectedVersion));
 
-            for(int i = 0; i < chosenProject.getChildModels(context).size(); i++){
-                if(chosenProject.getChildModels(context).get(i).slug.equalsIgnoreCase(version.getParent(context).slug)){
+            for(int i = 0; i < chosenProject.getLanguages().size(); i++){
+                if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){
                     selectedIndex = i;
                     break;
                 }
@@ -234,7 +233,7 @@ public class VersionSelectionFragment extends DialogFragment {
 
     private void addProject(){
 
-            this.chosenProject = new ProjectDataSource(getContext()).getModel(chosenProjectId);
+            this.chosenProject = Project.getProjectForId(Long.parseLong(chosenProjectId), DaoDBHelper.getDaoSession(getContext()));
     }
 
     private Context getContext(){

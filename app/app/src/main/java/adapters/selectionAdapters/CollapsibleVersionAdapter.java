@@ -30,18 +30,14 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 
 import fragments.VersionSelectionFragment;
-import model.datasource.BibleChapterDataSource;
-import model.datasource.LanguageLocaleDataSource;
-import model.datasource.ProjectDataSource;
-import model.datasource.StoriesChapterDataSource;
-import model.datasource.VersionDataSource;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.BookModel;
-import model.modelClasses.mainData.LanguageLocaleModel;
-import model.modelClasses.mainData.LanguageModel;
-import model.modelClasses.mainData.ProjectModel;
-import model.modelClasses.mainData.StoriesChapterModel;
-import model.modelClasses.mainData.VersionModel;
+import model.DaoDBHelper;
+import model.daoModels.BibleChapter;
+import model.daoModels.Book;
+import model.daoModels.Language;
+import model.daoModels.LanguageLocale;
+import model.daoModels.Project;
+import model.daoModels.StoriesChapter;
+import model.daoModels.Version;
 import services.VersionDownloadService;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
@@ -55,9 +51,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     private final static String TAG = "CollapseVersionAdapter";
     static final String STORIES_SLUG = "obs";
     private Fragment parentFragment;
-    ProjectModel currentProject = null;
+    Project currentProject = null;
 
-    public CollapsibleVersionAdapter(Fragment fragment, ProjectModel currentProject) {
+    public CollapsibleVersionAdapter(Fragment fragment, Project currentProject) {
         this.parentFragment = fragment;
         this.currentProject = currentProject;
 
@@ -95,13 +91,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     private void reload(){
 
-        currentProject = new ProjectDataSource(getContext()).getModel(Long.toString(currentProject.uid));
+        currentProject = Project.getProjectForId(currentProject.getId(), DaoDBHelper.getDaoSession(getContext()));
         notifyDataSetChanged();
     }
 
     @Override
-    public VersionModel getChild(int groupPosition, int childPosition) {
-        return currentProject.getChildModels(getContext()).get(groupPosition).getChildModels(getContext()).get(childPosition);
+    public Version getChild(int groupPosition, int childPosition) {
+        return currentProject.getLanguages().get(groupPosition).getVersions().get(childPosition);
     }
 
     @Override
@@ -120,7 +116,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     public View getRealChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final VersionModel version = getChild(groupPosition, childPosition);
+        final Version version = getChild(groupPosition, childPosition);
         final ViewHolderForGroup holder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -334,7 +330,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         };
     }
 
-    private void downloadRow(final VersionModel version, final ViewHolderForGroup finalHolder){
+    private void downloadRow(final Version version, final ViewHolderForGroup finalHolder){
 
         if (!NetWorkUtil.isConnected(getContext())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -343,7 +339,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             builder.setPositiveButton("OK", null);
             builder.create().show();
         } else {
-            version.downloadState = VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING;
+            version.downloadState = Version.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING;
             version.save(getContext());
             Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
             downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
@@ -352,7 +348,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
     }
 
-    private void deleteRowPressed(final VersionModel version, final ViewHolderForGroup finalHolder){
+    private void deleteRowPressed(final Version version, final ViewHolderForGroup finalHolder){
 
         (new DialogFragment() {
 
@@ -459,26 +455,26 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     }
 
 
-    private void refreshChapterSelection(VersionModel version, boolean isStoryChapter){
+    private void refreshChapterSelection(Version version, boolean isStoryChapter){
 
         if(isStoryChapter){
 
             String chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
             if(Long.parseLong(chapterId) < 0){
 
-                StoriesChapterModel newChapter = version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1);
+                StoriesChapter newChapter = version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1);
                 UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.uid);
             }
             else {
-                StoriesChapterModel chapter = new StoriesChapterDataSource(getContext()).getModel(chapterId);
+                StoriesChapter chapter = new StoriesChapterDataSource(getContext()).getModel(chapterId);
                 if(chapter == null){
-                    StoriesChapterModel newChapter = version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1);
+                    StoriesChapter newChapter = version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1);
                     UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.uid);
                     return;
                 }
-                BookModel newBook = version.findBookForJsonSlug(getContext(), chapter.getParent(getContext()).slug.substring(0, 3));
+                Book newBook = version.findBookForJsonSlug(getContext(), chapter.getParent(getContext()).slug.substring(0, 3));
 
-                StoriesChapterModel newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1) :
+                StoriesChapter newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1) :
                         newBook.getStoryChapter(getContext(), Integer.parseInt(chapter.number));
 
                 UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.uid);
@@ -487,19 +483,19 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         else{
             String chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
             if(Long.parseLong(chapterId) < 0){
-                BibleChapterModel newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
+                BibleChapter newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
                 UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.uid);
             }
             else {
-                BibleChapterModel chapter = new BibleChapterDataSource(getContext()).getModel(chapterId);
+                BibleChapter chapter = new BibleChapterDataSource(getContext()).getModel(chapterId);
                 if(chapter == null){
-                    BibleChapterModel newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
+                    BibleChapter newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
                     UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.uid);
                     return;
                 }
-                BookModel newBook = version.findBookForJsonSlug(getContext(), chapter.getParent(getContext()).slug.substring(0, 3));
+                Book newBook = version.findBookForJsonSlug(getContext(), chapter.getParent(getContext()).slug.substring(0, 3));
 
-                BibleChapterModel newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1) :
+                Book newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1) :
                         newBook.getBibleChapter(getContext(), Integer.parseInt(chapter.number.trim()));
 
                 if(newChapter == null){
@@ -512,8 +508,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     }
 
     @Override
-    public LanguageModel getGroup(int groupPosition) {
-        LanguageModel model = currentProject.getChildModels(getContext()).get(groupPosition);
+    public Language getGroup(int groupPosition) {
+        Language model = currentProject.getChildModels(getContext()).get(groupPosition);
         return model;
     }
 
@@ -531,7 +527,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
-        LanguageModel language = getGroup(groupPosition);
+        Language language = getGroup(groupPosition);
         language.getChildModels(getContext());
         if (convertView == null) {
 
@@ -543,7 +539,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         TextView item = (TextView) convertView.findViewById(R.id.group_title);
         item.setTypeface(null, Typeface.BOLD);
-        LanguageLocaleModel languageLocale = new LanguageLocaleDataSource(getContext()).getModelForSlug(language.languageAbbreviation);
+        LanguageLocale languageLocale = new LanguageLocaleDataSource(getContext()).getModelForSlug(language.languageAbbreviation);
         item.setText(languageLocale.languageName);
 
         return convertView;

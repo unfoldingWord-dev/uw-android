@@ -327,6 +327,13 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
             return true;
         }
     }
+
+    static public Version getVersionForId(DaoSession session, long id){
+
+        return session.getVersionDao().queryBuilder()
+                .where(VersionDao.Properties.Id.eq(id))
+                .unique();
+    }
     // KEEP METHODS END
 
 }

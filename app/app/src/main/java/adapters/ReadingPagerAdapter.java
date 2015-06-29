@@ -16,7 +16,10 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import model.database.DBManager;
 import model.modelClasses.mainData.BibleChapterModel;
 import model.modelClasses.mainData.BookModel;
@@ -35,14 +38,14 @@ public class ReadingPagerAdapter extends PagerAdapter {
     private Activity context;
     private TextView chaptersText;
     private ViewGroup container;
-    private ArrayList<BibleChapterModel> chapters;
+    private List<BibleChapter> chapters;
     private View.OnTouchListener pagerOnTouchListener;
 
-    private BookModel nextBook;
+    private Book nextBook;
 
-    public ReadingPagerAdapter(Object context, ArrayList<BibleChapterModel> models, TextView chaptersText, String positionHolder, View.OnTouchListener pagerOnTouchListener) {
+    public ReadingPagerAdapter(Object context, List<BibleChapter> models, TextView chaptersText, String positionHolder, View.OnTouchListener pagerOnTouchListener) {
         this.context = (Activity) context;
-        Collections.sort(models);
+//        Collections.sort(models);
         chapters = models;
         getCount();
         this.chaptersText = chaptersText;
@@ -54,15 +57,15 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     public void setNextBook(){
 
-        ArrayList<BookModel> versionBooks = chapters.get(0).getParent(context).getParent(context).getChildModels(context);
+        List<Book> versionBooks = chapters.get(0).getBook().getVersion().getBooks();
 
-        long currentBookId = chapters.get(0).getParent(context).uid;
+        long currentBookId = chapters.get(0).getBookId();
         int currentIndex = -1;
 
         for(int i = 0; i < versionBooks.size(); i++){
 
-            BookModel book = versionBooks.get(i);
-            if(book.uid == currentBookId){
+            Book book = versionBooks.get(i);
+            if(book.getId() == currentBookId){
                 currentIndex = i + 1;
                 break;
             }
@@ -72,8 +75,8 @@ public class ReadingPagerAdapter extends PagerAdapter {
             currentIndex = 0;
         }
 
-        BookModel newBook = versionBooks.get(currentIndex);
-        if(newBook.getBibleChildModels(context) == null || newBook.getBibleChildModels(context).size() == 0){
+        Book newBook = versionBooks.get(currentIndex);
+        if(newBook.getBibleChapters() == null || newBook.getBibleChapters().size() == 0){
             newBook = versionBooks.get(currentIndex + 1);
         }
         this.nextBook = newBook;
@@ -102,7 +105,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
             WebView textWebView = (WebView) view.findViewById(R.id.chapterWebView);
             textWebView.getSettings().setJavaScriptEnabled(true);
 
-            String pageText = getTextCss() + USFMParser.getInstance().parseUsfmChapter(chapters.get(position).text);
+            String pageText = getTextCss() + new USFMParser().parseUsfmChapter(chapters.get(position).getText());
             textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
             textWebView.setOnTouchListener(this.pagerOnTouchListener);
 
@@ -116,7 +119,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
     private void manageActionbarText(){
         int index = ((ViewPager) container).getCurrentItem();
         if(index < chapters.size()) {
-            String title = chapters.get(index).getTitle(context);
+            String title = chapters.get(index).getTitle();
             chaptersText.setText(title);
         }
     }
@@ -140,7 +143,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     private String getTextDirection(){
 
-        String language = chapters.get(0).getParent(context).getParent(context).getParent(context).languageAbbreviation;
+        String language = chapters.get(0).getBook().getVersion().getLanguage().getLanguageAbbreviation();
 
         if(isRTL()){
             return "rtl";
@@ -153,9 +156,9 @@ public class ReadingPagerAdapter extends PagerAdapter {
     private boolean isRTL() {
         char desiredChar = ' ';
 
-        int spanIndex = chapters.get(0).text.indexOf("span>");
-        for(int i = spanIndex + 5; i < chapters.get(0).text.length(); i++){
-            desiredChar = chapters.get(0).text.charAt(i);
+        int spanIndex = chapters.get(0).getText().indexOf("span>");
+        for(int i = spanIndex + 5; i < chapters.get(0).getText().length(); i++){
+            desiredChar = chapters.get(0).getText().charAt(i);
 
             if(!Character.isDigit(desiredChar) && !Character.isWhitespace(desiredChar) && Character.isLetter(desiredChar)){
                 break;
@@ -186,8 +189,8 @@ public class ReadingPagerAdapter extends PagerAdapter {
             return;
         }
 
-        BibleChapterModel model = chapters.get(position);
-        UWPreferenceManager.setSelectedBibleChapter(context, model.uid);
+        BibleChapter model = chapters.get(position);
+        UWPreferenceManager.setSelectedBibleChapter(context, model.getId());
         manageActionbarText();
     }
 
@@ -210,12 +213,12 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     private void moveToNextBook(){
 
-        this.chapters = nextBook.getBibleChildModels(context);
+        this.chapters = nextBook.getBibleChapters();
         setNextBook();
 
-        UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).uid);
+        UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).getId());
 
-        String title = chapters.get(0).getTitle(context);
+        String title = chapters.get(0).getTitle();
         chaptersText.setText(title);
 
         notifyDataSetChanged();

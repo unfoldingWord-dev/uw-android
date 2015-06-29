@@ -33,7 +33,7 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
     private Project project;
     private Long project__resolvedKey;
 
-    private List<Version> languages;
+    private List<Version> versions;
 
     // KEEP FIELDS - put your custom fields here
     static private final String TAG = "Language";
@@ -129,25 +129,25 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<Version> getLanguages() {
-        if (languages == null) {
+    public List<Version> getVersions() {
+        if (versions == null) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             VersionDao targetDao = daoSession.getVersionDao();
-            List<Version> languagesNew = targetDao._queryLanguage_Languages(id);
+            List<Version> versionsNew = targetDao._queryLanguage_Versions(id);
             synchronized (this) {
-                if(languages == null) {
-                    languages = languagesNew;
+                if(versions == null) {
+                    versions = versionsNew;
                 }
             }
         }
-        return languages;
+        return versions;
     }
 
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    public synchronized void resetLanguages() {
-        languages = null;
+    public synchronized void resetVersions() {
+        versions = null;
     }
 
     /** Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context. */

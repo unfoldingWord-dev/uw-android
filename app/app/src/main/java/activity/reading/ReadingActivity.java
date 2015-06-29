@@ -32,21 +32,26 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import junit.runner.Version;
-
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import activity.bookSelection.BookSelectionActivity;
 import activity.bookSelection.GeneralSelectionActivity;
+import activity.bookSelection.InitialPageActivity;
 import activity.bookSelection.VersionSelectionActivity;
 import adapters.ReadingPagerAdapter;
 import fragments.BooksFragment;
 import fragments.ChapterSelectionFragment;
 import fragments.ChaptersFragment;
 import fragments.VersionSelectionFragment;
+import model.DaoDBHelper;
+import model.daoModels.BibleChapter;
+import model.daoModels.Book;
+import model.daoModels.Project;
+import model.daoModels.Version;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.VersionDataSource;
 import model.modelClasses.mainData.BibleChapterModel;
@@ -63,13 +68,15 @@ public class ReadingActivity extends ActionBarActivity implements
         BooksFragment.BooksFragmentListener,
         ChaptersFragment.ChaptersFragmentListener
 {
-
     static private final String TAG = "ReadingActivity";
 
     static final public String BOOK_INDEX_STRING = "READING_INDEX_STRING";
 
     static private final String VERSION_FRAGMENT_ID = "VERSION_FRAGMENT_ID";
     static private final String CHAPTER_SELECTION_FRAGMENT_ID = "CHAPTER_SELECTION_FRAGMENT_ID";
+
+    private Project currentProject;
+    private BibleChapter currentChapter;
 
     private ViewPager readingViewPager = null;
     private ActionBar mActionBar = null;
@@ -78,15 +85,15 @@ public class ReadingActivity extends ActionBarActivity implements
     private TextView versionsTextView = null;
     private TextView chapterTextView = null;
 
-    private BibleChapterModel mChapter = null;
-    private ProjectModel selectedProject = null;
+//    private BibleChapterModel currentChapter = null;
+//    private ProjectModel selectedProject = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reading);
         setData();
-        if(mChapter == null || selectedProject == null){
+        if(currentProject == null || currentChapter == null){
             goToVersionSelection();
         }
     }
@@ -94,15 +101,15 @@ public class ReadingActivity extends ActionBarActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        if(mChapter == null || selectedProject == null) {
+        if(currentProject == null || currentChapter == null) {
             setContentView(R.layout.activity_reading);
         }
-        selectedProject = null;
-        mChapter = null;
+        currentProject = null;
+        currentChapter = null;
         setData();
         setUI();
 
-        if(mChapter == null || selectedProject == null){
+        if(currentProject == null || currentChapter == null){
             setContentView(R.layout.no_text_layout);
         }
         else {
@@ -124,8 +131,8 @@ public class ReadingActivity extends ActionBarActivity implements
 //    }
 
     private void reload(){
-        mChapter = null;
-        selectedProject = null;
+        currentChapter = null;
+        currentProject = null;
         onStart();
     }
     /**
@@ -155,8 +162,8 @@ public class ReadingActivity extends ActionBarActivity implements
     void setupCheckingLevelView(View view){
 
         ImageView imageView = (ImageView) view.findViewById(R.id.checking_level_image_view);
-        if(this.mChapter != null){
-            int checkingLevel = Integer.parseInt(mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).status.checkingLevel);
+        if(this.currentChapter != null){
+            int checkingLevel = Integer.parseInt(currentChapter.getBook().getVersion().getStatusCheckingLevel());
             imageView.setImageResource(getCheckingLevelImage(checkingLevel));
             imageView.setVisibility(View.VISIBLE);
         }
@@ -183,8 +190,8 @@ public class ReadingActivity extends ActionBarActivity implements
 
         chaptersButton = (RelativeLayout) view.findViewById(R.id.middle_button);
         chapterTextView = (TextView) view.findViewById(R.id.middle_button_text);
-        if(this.mChapter != null) {
-            chapterTextView.setText(this.mChapter.getTitle(getApplicationContext()));
+        if(this.currentChapter != null) {
+            chapterTextView.setText(this.currentChapter.getTitle());
         }
         else{
             chaptersButton.setVisibility(View.INVISIBLE);
@@ -201,8 +208,8 @@ public class ReadingActivity extends ActionBarActivity implements
 
         versionsButton = (LinearLayout) view.findViewById(R.id.language_button);
         versionsTextView = (TextView) view.findViewById(R.id.language_text);
-        if(this.mChapter != null) {
-            versionsTextView.setText(this.mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).slug);
+        if(this.currentChapter != null) {
+            versionsTextView.setText(this.currentChapter.getBook().getVersion().getSlug());
         }
         else{
             versionsTextView.setText("Select Version");
@@ -213,13 +220,13 @@ public class ReadingActivity extends ActionBarActivity implements
 
         readingViewPager = (ViewPager) findViewById(R.id.myViewPager);
 
-        ArrayList<BibleChapterModel> chapters = mChapter.getParent(getApplicationContext()).getBibleChildModels(getApplicationContext());
+        List<BibleChapter> chapters = currentChapter.getBook().getBibleChapters();
         ReadingPagerAdapter adapter = new ReadingPagerAdapter(this, chapters, chapterTextView, BOOK_INDEX_STRING, getDoubleTapTouchListener());
 
         readingViewPager.setAdapter(adapter);
         readingViewPager.setOnTouchListener(getDoubleTapTouchListener());
 
-        int currentItem = Integer.parseInt(mChapter.number.replaceAll("[^0-9]", "")) - 1;
+        int currentItem = Integer.parseInt(currentChapter.getNumber().replaceAll("[^0-9]", "")) - 1;
         readingViewPager.setCurrentItem(currentItem);
     }
 
@@ -283,29 +290,30 @@ public class ReadingActivity extends ActionBarActivity implements
 
     private void setData(){
 
-        if(mChapter == null || selectedProject == null) {
+        if(getIntent().hasExtra(InitialPageActivity.PROJECT_PARAM)){
+            currentProject = (Project) getIntent().getSerializableExtra(InitialPageActivity.PROJECT_PARAM);
+        }
+
+        if(currentChapter == null || currentProject == null) {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                Context context = getApplicationContext();
 
+                Context context = getApplicationContext();
                 Long versionId = Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(context));
 
                 if(versionId < 0){
                     return;
                 }
 
-                VersionModel currentVersion = new VersionDataSource(context).getModel(Long.toString(versionId));
-
-                this.selectedProject = currentVersion.getParent(context).getParent(context);
-
+                Version currentVersion = Version.getVersionForId(DaoDBHelper.getDaoSession(context), versionId);
                 Long chapterId = Long.parseLong(UWPreferenceManager.getSelectedBibleChapter(context));
 
                 if(chapterId < 0){
-                    this.mChapter = currentVersion.getChildModels(context).get(0).getBibleChapter(context, 1);
-                    UWPreferenceManager.setSelectedBibleChapter(context, this.mChapter.uid);
+                    this.currentChapter = currentVersion.getBooks().get(0).getBibleChapters().get(0);
+                    UWPreferenceManager.setSelectedBibleChapter(context, this.currentChapter.getId());
                 }
                 else {
-                    this.mChapter = new BibleChapterDataSource(getApplicationContext()).getModel(Long.toString(chapterId));
+                    this.currentChapter = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
                 }
             }
         }
@@ -473,7 +481,7 @@ public class ReadingActivity extends ActionBarActivity implements
     public void checkingLevelClicked(View view) {
 
         Bundle args = new Bundle();
-        args.putLong(VERSION_ID_PARAM, mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).uid);
+        args.putLong(VERSION_ID_PARAM, currentChapter.getBook().getVersionId());
         CheckingLevelFragment fragment = new CheckingLevelFragment();
         fragment.setArguments(args);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

@@ -193,7 +193,7 @@ public class UWDataParser {
             e.printStackTrace();
         }
 
-        Map<String, String> usfmMap = USFMParser.getInstance().getChaptersFromUsfm(usfmText);
+        Map<String, String> usfmMap = new USFMParser().getChaptersFromUsfm(usfmText);
         ArrayList<BibleChapterModel> chapters = book.getBibleChildModels(context);
 
         for (Map.Entry<String, String> entry : usfmMap.entrySet()){

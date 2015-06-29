@@ -14,7 +14,7 @@ public class ModelNames {
     static public final String[] LANGUAGE_STRING_ATTRIBUTES = { "slug", "languageAbbreviation" };
     static public final String[] LANGUAGE_DATE_ATTRIBUTES = { "modified" };
     static public final String LANGUAGE_PROJECT_ATTRIBUTE = "projectId";
-    static public final String LANGUAGE_VERSIONS_ATTRIBUTE = "languages";
+    static public final String LANGUAGE_VERSIONS_ATTRIBUTE = "versions";
 
     static public final String VERSION = "Version";
     static public final String[] VERSION_STRING_ATTRIBUTES = { "slug", "name", "statusCheckingEntity", "statusCheckingLevel",

@@ -180,6 +180,18 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
 
         return (model == null)? null : model;
     }
+
+    public String getTitle(){
+
+        return getBook().getTitle() + " " + this.number;
+    }
+
+    static public BibleChapter getModelForId(long id, DaoSession session){
+
+        return session.getBibleChapterDao().queryBuilder()
+                .where(BibleChapterDao.Properties.Id.eq(id))
+                .unique();
+    }
     // KEEP METHODS END
 
 }

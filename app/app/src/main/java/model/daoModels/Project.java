@@ -174,6 +174,16 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
         update();
         return true;
     }
+
+    public static Project getProjectForId(long id, DaoSession session){
+
+        ProjectDao dao = session.getProjectDao();
+        Project model = dao.queryBuilder()
+                .where(ProjectDao.Properties.Id.eq(id))
+                .unique();
+
+        return (model == null)? null : model;
+    }
     // KEEP METHODS END
 
 }

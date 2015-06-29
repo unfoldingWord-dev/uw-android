@@ -46,7 +46,7 @@ public class VersionDao extends AbstractDao<Version, Long> {
 
     private DaoSession daoSession;
 
-    private Query<Version> language_LanguagesQuery;
+    private Query<Version> language_VersionsQuery;
 
     public VersionDao(DaoConfig config) {
         super(config);
@@ -231,16 +231,16 @@ public class VersionDao extends AbstractDao<Version, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "languages" to-many relationship of Language. */
-    public List<Version> _queryLanguage_Languages(long languageId) {
+    /** Internal query to resolve the "versions" to-many relationship of Language. */
+    public List<Version> _queryLanguage_Versions(long languageId) {
         synchronized (this) {
-            if (language_LanguagesQuery == null) {
+            if (language_VersionsQuery == null) {
                 QueryBuilder<Version> queryBuilder = queryBuilder();
                 queryBuilder.where(Properties.LanguageId.eq(null));
-                language_LanguagesQuery = queryBuilder.build();
+                language_VersionsQuery = queryBuilder.build();
             }
         }
-        Query<Version> query = language_LanguagesQuery.forCurrentThread();
+        Query<Version> query = language_VersionsQuery.forCurrentThread();
         query.setParameter(0, languageId);
         return query.list();
     }

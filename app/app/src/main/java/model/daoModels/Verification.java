@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Entity mapped to table VERIFICATION.
  */
-public class Verification extends model.UWDatabaseModel  implements java.io.Serializable {
+public class Verification implements java.io.Serializable {
 
     private Long id;
     private String signingInstitution;

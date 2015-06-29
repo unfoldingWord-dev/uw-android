@@ -29,6 +29,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import activity.SettingsActivity;
@@ -36,10 +37,11 @@ import activity.reading.ReadingActivity;
 import activity.reading.StoryReadingActivity;
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import model.datasource.ProjectDataSource;
+import model.DaoDBHelper;
+import model.daoModels.Language;
+import model.daoModels.Project;
 import model.modelClasses.mainData.ProjectModel;
 import services.UWUpdater;
-import services.UpdateService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
 
@@ -48,13 +50,15 @@ import utils.URLUtils;
  */
 public class InitialPageActivity extends GeneralSelectionActivity implements View.OnClickListener {
 
+    static final public String PROJECT_PARAM = "PROJECT_PARAM";
+
     static final String INDEX_STORAGE_STRING = "INDEX_STORAGE_STRING";
 
     static public final String GENERAL_CHECKING_LEVEL_FRAGMENT_ID = "GENERAL_CHECKING_LEVEL_FRAGMENT_ID";
     static final String STORIES_SLUG = "obs";
     public static final String IS_FIRST_LAUNCH = "IS_FIRST_LAUNCH";
 
-    ArrayList<ProjectModel> mProjects = null;
+    List<Project> mProjects = null;
 
     FrameLayout visibleLayout = null;
     Button mRefreshButton = null;
@@ -216,7 +220,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     protected ArrayList<GeneralRowInterface> getData(){
 
-        Map<String, GeneralRowInterface> data = new HashMap<String, GeneralRowInterface>();
+//        Map<String, GeneralRowInterface> data = new HashMap<String, GeneralRowInterface>();
 
         if(mProjects == null){
             addProjects();
@@ -230,8 +234,9 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         }
 
         ArrayList<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>(3);
-        for(ProjectModel row : mProjects) {
-            dataList.add(row);
+        for(Project row : mProjects) {
+            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getSlug(), row.getTitle()));
+            List<Language> langs = row.getLanguages();
         }
 
         return dataList;
@@ -240,24 +245,24 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        Object itemAtPosition = adapterView.getItemAtPosition(position);
-        if (itemAtPosition instanceof GeneralRowInterface) {
-           PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(INDEX_STORAGE_STRING, (int) rowIndex);
-
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(
-                    this.getIndexStorageString(), (int) rowIndex).commit();
-
-            ProjectModel model = (ProjectModel) itemAtPosition;
-            moveToNextActivity(model);
-        }
+//        Object itemAtPosition = adapterView.getItemAtPosition(position);
+//        if (itemAtPosition instanceof GeneralRowInterface) {
+//           PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(INDEX_STORAGE_STRING, (int) rowIndex);
+//
+//            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(
+//                    this.getIndexStorageString(), (int) rowIndex).commit();
+//
+//            ProjectModel model = (ProjectModel) itemAtPosition;
+            moveToNextActivity(mProjects.get(position));
+//        }
     }
 
-    private void moveToNextActivity(ProjectModel project){
+    private void moveToNextActivity(Project project){
 
-        Class nextActivity = (project.slug.equalsIgnoreCase(STORIES_SLUG))?
+        Class nextActivity = (project.getSlug().equalsIgnoreCase(STORIES_SLUG))?
                 StoryReadingActivity.class : ReadingActivity.class;
 
-        startActivity(new Intent(this, nextActivity).putExtra(CHOSEN_ID, project.getChildIdentifier()));
+                startActivity(new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project));
         overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
     }
 
@@ -265,8 +270,8 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     private void addProjects() {
 
         if(mProjects == null){
-            mProjects = new ArrayList<ProjectModel>();
-            mProjects = new ProjectDataSource(this.getApplicationContext()).getAllProjects();
+            mProjects = new ArrayList<Project>();
+            mProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
         }
     }
 

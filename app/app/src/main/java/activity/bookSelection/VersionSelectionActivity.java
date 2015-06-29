@@ -11,6 +11,8 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import fragments.VersionSelectionFragment;
+import model.DaoDBHelper;
+import model.daoModels.Project;
 import model.datasource.ProjectDataSource;
 import model.modelClasses.mainData.ProjectModel;
 
@@ -22,7 +24,7 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
     private ActionBar mActionBar = null;
 
     private TextView actionbarTextView;
-    private ProjectModel chosenProject;
+    private Project chosenProject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,12 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
             if (extras != null) {
 
                 String chosenProjectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
-                chosenProject = new ProjectDataSource(getApplicationContext()).getModel(chosenProjectId);
+                if(chosenProjectId != null) {
+                    chosenProject = Project.getProjectForId(Long.parseLong(chosenProjectId), DaoDBHelper.getDaoSession(getApplicationContext()));
+                }
+                else{
+                    chosenProject = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext())).get(0);
+                }
                 actionbarTextView.setText(chosenProject.getTitle());
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProjectId, false))
