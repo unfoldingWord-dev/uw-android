@@ -1,6 +1,5 @@
 package tasks;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 
 import java.io.IOException;
@@ -10,20 +9,20 @@ import utils.URLDownloadUtil;
 /**
  * Created by Fechner on 6/17/15.
  */
-public class DownloadTask extends AsyncTask<String,Void, String> {
+public class BytesDownloadTask extends AsyncTask<String,Void, byte[]> {
 
     private DownloadTaskListener listener;
 
-    public DownloadTask(DownloadTaskListener listener) {
+    public BytesDownloadTask(DownloadTaskListener listener) {
         this.listener = listener;
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected byte[] doInBackground(String... params) {
 
         String url = params[0];
         try {
-            String json = URLDownloadUtil.downloadString(url);
+            byte[] json = URLDownloadUtil.downloadBytes(url);
             return json;
         }
         catch (IOException e){
@@ -33,13 +32,13 @@ public class DownloadTask extends AsyncTask<String,Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String s) {
+    protected void onPostExecute(byte[] s) {
         super.onPostExecute(s);
         listener.downloadFinishedWithJson(s);
     }
 
     public interface DownloadTaskListener{
 
-        void downloadFinishedWithJson(String jsonString);
+        void downloadFinishedWithJson(byte[] data);
     }
 }

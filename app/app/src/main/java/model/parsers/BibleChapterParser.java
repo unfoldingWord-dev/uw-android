@@ -4,6 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import model.UWDatabaseModel;
+import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 
@@ -16,21 +18,13 @@ public class BibleChapterParser extends UWDataParser{
     private static final String IMAGE_JSON_KEY = "img";
     private static final String TEXT_JSON_KEY = "text";
 
+    public static BibleChapter parseBibleChapter(Book parent, String number, String text) throws JSONException{
 
-    public static StoryPage parseBiblePage(JSONObject jsonObject, UWDatabaseModel parent) throws JSONException{
+        BibleChapter chapter = new BibleChapter();
+        chapter.setNumber(number);
+        chapter.setText(text);
+        chapter.setSlug(parent.getSlug() + number);
 
-        StoryPage newModel = new StoryPage();
-
-        String idString = jsonObject.getString(ID_JSON_KEY);
-
-        String[] splitString = idString.split("-");
-        newModel.setNumber(splitString[1]);
-
-        newModel.setImageUrl(jsonObject.getString(IMAGE_JSON_KEY));
-        newModel.setText(jsonObject.getString(TEXT_JSON_KEY));
-        newModel.setSlug(parent.getSlug() + newModel.getNumber());
-        newModel.setStoryChapterId(((StoriesChapter) parent).getId());
-
-        return newModel;
+        return chapter;
     }
 }

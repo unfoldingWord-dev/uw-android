@@ -126,6 +126,11 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP METHODS - put your custom methods here
 
+    static public List<Project> getAllModels(DaoSession session){
+
+        return session.getProjectDao().queryBuilder().list();
+    }
+
     static public Project getModelForSlug(String slug, DaoSession session){
         ProjectDao dao = session.getProjectDao();
         Project model = dao.queryBuilder()
@@ -169,7 +174,6 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
         update();
         return true;
     }
-
     // KEEP METHODS END
 
 }

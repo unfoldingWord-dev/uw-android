@@ -1,7 +1,6 @@
 package tasks;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,10 +9,9 @@ import org.json.JSONObject;
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
-import model.daoModels.Language;
-import model.daoModels.Project;
 import model.daoModels.Version;
 import services.UWUpdater;
+import signing.UWSigning;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -75,9 +73,11 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateChapters(JSONObject book, Book parent){
 
+
         boolean isSideLoaded = (book.has("saved_content"));
         boolean isUsfm = parent.getSourceUrl().contains("usfm");
 
+        // TODO: sideloaded info
         if(isSideLoaded){
 
         }
@@ -89,16 +89,19 @@ public class UpdateBooksRunnable implements Runnable{
         }
     }
 
-    private void updateUsfm(Book parent){
+    private void updateUsfm(final Book parent){
 
         if(parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0){
 
-            new DownloadTask(new DownloadTask.DownloadTaskListener() {
+            new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
                 @Override
-                public void downloadFinishedWithJson(String jsonString) {
-
+                public void verificationFinishedWithResult(byte[] text) {
+                    if (text != null){
+                        UpdateBibleChaptersRunnable runnable = new UpdateBibleChaptersRunnable(text, updater, parent);
+                        updater.mServiceHandler.post(runnable);
+                    }
                 }
-            }).execute(parent.getSourceUrl());
+            }).execute(parent);
         }
     }
 
@@ -106,19 +109,23 @@ public class UpdateBooksRunnable implements Runnable{
 
         if(parent.getStoryChapters() != null && parent.getStoryChapters().size() > 0){
 
-            new DownloadTask(new DownloadTask.DownloadTaskListener() {
+            new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
                 @Override
-                public void downloadFinishedWithJson(String jsonString) {
+                public void verificationFinishedWithResult(byte[] text) {
 
-                    try {
-                        UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(new JSONObject(jsonString).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
-                        updater.mServiceHandler.post(runnable);
-                    }
-                    catch (JSONException e){
-                        e.printStackTrace();
+                    if (text != null) {
+
+                        try {
+                            UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
+                                    new JSONObject(new String(text)).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
+                            updater.mServiceHandler.post(runnable);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }).execute(parent.getSourceUrl());
+            }).execute(parent);
         }
     }
 

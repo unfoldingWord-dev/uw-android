@@ -208,7 +208,6 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
 
         return (model == null)? null : model;
     }
-
     // KEEP METHODS END
 
 }

@@ -235,4 +235,5 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
         return (model == null)? null : model;
     }
     // KEEP METHODS END
+
 }

@@ -271,19 +271,11 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     static public Book getModelForSlug(String slug, DaoSession session){
 
         BookDao dao = session.getBookDao();
-        List<Book> models = dao.queryBuilder()
+        Book model = dao.queryBuilder()
                 .where(BookDao.Properties.Slug.eq(slug))
-                .list();
-        if(models == null || models.size() < 1){
-            return null;
-        }
-        else if(models.size() > 1){
-            Log.e(TAG, "More than one Project model was found for a slug");
-            return null;
-        }
-        else{
-            return models.get(0);
-        }
+                .unique();
+
+        return (model == null)? null : model;
     }
 
     @Override
@@ -313,4 +305,5 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         }
     }
     // KEEP METHODS END
+
 }

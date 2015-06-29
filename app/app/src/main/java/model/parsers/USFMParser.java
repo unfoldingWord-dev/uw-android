@@ -33,13 +33,12 @@ public class USFMParser {
 
     private int footnoteNumber = 1;
 
-    public static USFMParser getInstance() {
-        if(instance == null){
-            instance = new USFMParser();
-        }
-        return instance;
-    }
-
+    /**
+     * Processes usfm and returns a map with key of the chapter number and object of the parsed usfm text for that chapter
+     * @param usfmBytes
+     * @return
+     * @throws CharacterCodingException
+     */
     public Map<String, String> getChaptersFromUsfm(byte[] usfmBytes) throws CharacterCodingException {
 
 
@@ -65,6 +64,8 @@ public class USFMParser {
 
         return chapters;
     }
+
+
 
     public String getStringFromBytes(byte[] bytes) throws CharacterCodingException{
 

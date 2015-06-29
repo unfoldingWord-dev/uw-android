@@ -10,7 +10,7 @@ import android.os.Looper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import tasks.DownloadTask;
+import tasks.JsonDownloadTask;
 import tasks.UpdateProjectsRunnable;
 import utils.UWPreferenceManager;
 
@@ -63,7 +63,7 @@ public class UWUpdater extends Service {
         @Override
         public void run() {
 
-            new DownloadTask(new DownloadTask.DownloadTaskListener() {
+            new JsonDownloadTask(new JsonDownloadTask.DownloadTaskListener() {
                 @Override
                 public void downloadFinishedWithJson(String jsonString) {
 

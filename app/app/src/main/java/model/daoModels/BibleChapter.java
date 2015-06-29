@@ -168,15 +168,18 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
 
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json, UWDatabaseModel parent) {
-        try {
-            return BibleChapterParser.parseBiblePage(json, parent);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 
+    static public BibleChapter getModelForSlug(String slug, DaoSession session){
+
+        BibleChapterDao dao = session.getBibleChapterDao();
+        BibleChapter model = dao.queryBuilder()
+                .where(BibleChapterDao.Properties.Slug.eq(slug))
+                .unique();
+
+        return (model == null)? null : model;
+    }
     // KEEP METHODS END
 
 }

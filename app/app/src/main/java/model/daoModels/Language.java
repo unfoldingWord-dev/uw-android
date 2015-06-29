@@ -1,7 +1,5 @@
 package model.daoModels;
 
-
-
 import java.util.List;
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
@@ -227,7 +225,6 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
             return false;
         }
     }
-
     // KEEP METHODS END
 
 }
