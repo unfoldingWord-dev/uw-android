@@ -76,61 +76,20 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateChapters(JSONObject book, Book parent){
 
-
         boolean isSideLoaded = (book.has("saved_content"));
-        boolean isUsfm = parent.getSourceUrl().contains("usfm");
 
         // TODO: sideloaded info
         if(isSideLoaded){
 
         }
-        else if (isUsfm){
-            updateUsfm(parent);
-        }
-        else{
-            updateStories(parent);
-        }
-    }
+        else if( (parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0)
+                && (parent.getStoryChapters() != null && parent.getStoryChapters().size() > 0) ) {
 
-    private void updateUsfm(final Book parent){
-
-        if(parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0){
-
-            new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
-                @Override
-                public void verificationFinishedWithResult(byte[] text) {
-                    if (text != null){
-                        UpdateBibleChaptersRunnable runnable = new UpdateBibleChaptersRunnable(text, updater, parent);
-                        updater.addRunnable(runnable);
-                    }
-                }
-            }).execute(parent);
+            updater.addRunnable(new UpdateBookContentRunnable(parent, updater));
         }
     }
 
-    private void updateStories(final Book parent){
 
-        if(parent.getStoryChapters() != null && parent.getStoryChapters().size() > 0){
-
-            new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
-                @Override
-                public void verificationFinishedWithResult(byte[] text) {
-
-                    if (text != null) {
-
-                        try {
-                            UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
-                                    new JSONObject(new String(text)).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
-                            updater.addRunnable(runnable);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).execute(parent);
-        }
-    }
 
     private class BookSaveOrUpdateTask extends ModelSaveOrUpdateTask{
 

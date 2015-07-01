@@ -14,9 +14,13 @@ import android.widget.ListView;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
+import model.DaoDBHelper;
+import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import model.datasource.BibleChapterDataSource;
 import model.datasource.BookDataSource;
 import model.modelClasses.mainData.BibleChapterModel;
@@ -113,27 +117,27 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
         Context context = getContext();
 
-        String chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
-        if(Long.parseLong(chapterId) < 0) {
+        long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
+        if(chapterId < 0) {
             return null;
         }
         else {
-            BibleChapterModel model = new BibleChapterDataSource(context).getModel(chapterId);
-            ArrayList<BookModel> books = model.getParent(context).getParent(context).getChildModels(context);
+            BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
+            List<Book> books = model.getBook().getVersion().getBooks();
 
-            long selectedId = model.getParent(context).uid;
+            long selectedId = model.getBookId();
             ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
             int i = 0;
-            for (BookModel book : books) {
+            for (Book book : books) {
 
-                if(book.getBibleChildModels(context) == null || book.getBibleChildModels(context).size() == 0){
+                if(book.getBibleChapters() == null || book.getBibleChapters().size() == 0){
                     continue;
                 }
-                long uid = book.uid;
+                long uid = book.getId();
                 if(selectedId == uid){
                     PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(getIndexStorageString(), i).commit();
                 }
-                data.add(book);
+                data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(book.getId()), book.getTitle()));
                 i++;
             }
             return data;

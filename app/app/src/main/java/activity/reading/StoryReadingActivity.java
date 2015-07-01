@@ -40,13 +40,11 @@ import activity.bookSelection.VersionSelectionActivity;
 import adapters.StoryPagerAdapter;
 import fragments.StoryChaptersFragment;
 import fragments.VersionSelectionFragment;
-import model.datasource.LanguageLocaleDataSource;
-import model.datasource.StoriesChapterDataSource;
-import model.datasource.VersionDataSource;
-import model.modelClasses.mainData.LanguageLocaleModel;
-import model.modelClasses.mainData.ProjectModel;
-import model.modelClasses.mainData.StoriesChapterModel;
-import model.modelClasses.mainData.VersionModel;
+import model.DaoDBHelper;
+import model.daoModels.LanguageLocale;
+import model.daoModels.Project;
+import model.daoModels.StoriesChapter;
+import model.daoModels.Version;
 import utils.UWPreferenceManager;
 
 /**
@@ -69,8 +67,8 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
     ImageLoader mImageLoader = null;
 
-    private StoriesChapterModel mChapter = null;
-    private ProjectModel selectedProject = null;
+    private StoriesChapter mChapter = null;
+    private Project selectedProject = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +137,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
 
         ImageView imageView = (ImageView) view.findViewById(R.id.checking_level_image_view);
         if(this.mChapter != null){
-            int checkingLevel = Integer.parseInt(mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).status.checkingLevel);
+            int checkingLevel = Integer.parseInt(mChapter.getBook().getVersion().getStatusCheckingLevel());
             imageView.setImageResource(getCheckingLevelImage(checkingLevel));
             imageView.setVisibility(View.VISIBLE);
         }
@@ -167,7 +165,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
         chaptersButton = (RelativeLayout) view.findViewById(R.id.middle_button);
         chapterTextView = (TextView) view.findViewById(R.id.middle_button_text);
         if(this.mChapter != null) {
-            chapterTextView.setText(this.mChapter.title);
+            chapterTextView.setText(this.mChapter.getTitle());
         }
         else{
             chaptersButton.setVisibility(View.INVISIBLE);
@@ -180,10 +178,10 @@ public class StoryReadingActivity extends ActionBarActivity implements
         versionsButton = (LinearLayout) view.findViewById(R.id.language_button);
         versionsTextView = (TextView) view.findViewById(R.id.language_text);
         if(this.mChapter != null) {
-            String languageAbbrev = this.mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).getParent(getApplicationContext()).languageAbbreviation;
+            String languageAbbrev = this.mChapter.getBook().getVersion().getLanguage().getLanguageAbbreviation();
 
-            LanguageLocaleModel languageLocale = new LanguageLocaleDataSource(getApplicationContext()).getModelForSlug(languageAbbrev);
-            versionsTextView.setText(languageLocale.languageName);
+            LanguageLocale languageLocale = LanguageLocale.getLocalForKey(languageAbbrev, DaoDBHelper.getDaoSession(getApplicationContext()));
+            versionsTextView.setText(languageLocale.getLanguageName());
         }
         else{
             versionsTextView.setText("Select Version");
@@ -276,24 +274,24 @@ public class StoryReadingActivity extends ActionBarActivity implements
             if (extras != null) {
                 Context context = getApplicationContext();
 
-                Long versionId = Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(context));
+                Long versionId = UWPreferenceManager.getSelectedStoryVersion(context);
 
                 if(versionId < 0){
                     return;
                 }
 
-                VersionModel currentVersion = new VersionDataSource(context).getModel(Long.toString(versionId));
+                Version currentVersion = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(context));
 
-                this.selectedProject = currentVersion.getParent(context).getParent(context);
+                this.selectedProject = currentVersion.getLanguage().getProject();
 
-                Long chapterId = Long.parseLong(UWPreferenceManager.getSelectedStoryChapter(context));
+                Long chapterId = UWPreferenceManager.getSelectedStoryChapter(context);
 
                 if(chapterId < 0){
-                    this.mChapter = currentVersion.getChildModels(context).get(0).getStoryChapter(context, 1);
-                    UWPreferenceManager.setSelectedStoryChapter(context, this.mChapter.uid);
+                    this.mChapter = currentVersion.getBooks().get(0).getStoryChapters().get(1);
+                    UWPreferenceManager.setSelectedStoryChapter(context, this.mChapter.getId());
                 }
                 else {
-                    this.mChapter = new StoriesChapterDataSource(getApplicationContext()).getModel(Long.toString(chapterId));
+                    this.mChapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
                 }
             }
         }
@@ -451,7 +449,7 @@ public class StoryReadingActivity extends ActionBarActivity implements
     public void checkingLevelClicked(View view) {
 
         Bundle args = new Bundle();
-        args.putLong(ReadingActivity.VERSION_ID_PARAM, mChapter.getParent(getApplicationContext()).getParent(getApplicationContext()).uid);
+        args.putLong(ReadingActivity.VERSION_ID_PARAM, mChapter.getBook().getVersionId());
         ReadingActivity.CheckingLevelFragment fragment = new ReadingActivity.CheckingLevelFragment();
         fragment.setArguments(args);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

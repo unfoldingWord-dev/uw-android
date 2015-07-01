@@ -22,7 +22,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import model.modelClasses.mainData.StoriesChapterModel;
+import model.daoModels.StoriesChapter;
 import utils.AsyncImageLoader;
 
 /**
@@ -75,8 +75,8 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
         setColorChange(holder, getColorForState(selectionPosition, position));
 
 
-        StoriesChapterModel positionModel = (StoriesChapterModel) models.get(position);
-        String imgUrl = positionModel.getChildModels(context).get(0).imageUrl;
+        StoriesChapter positionModel = (StoriesChapter) models.get(position);
+        String imgUrl = positionModel.getStoryPages().get(0).getImageUrl();
         String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
         String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
@@ -85,8 +85,8 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
 
         imageLoader.displayImage(imagePath, holder.chapterScreenImageView, options, this);
 
-        holder.chapterNameTextView.setText(positionModel.title);
-        holder.referenceTextView.setText(positionModel.description);
+        holder.chapterNameTextView.setText(positionModel.getTitle());
+        holder.referenceTextView.setText(positionModel.getRef());
         return convertView;
     }
 

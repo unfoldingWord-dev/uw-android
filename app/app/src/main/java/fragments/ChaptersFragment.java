@@ -15,13 +15,12 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import model.datasource.BibleChapterDataSource;
-import model.datasource.BookDataSource;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.BookModel;
+import model.DaoDBHelper;
+import model.daoModels.BibleChapter;
 import utils.UWPreferenceManager;
 
 /**
@@ -126,26 +125,26 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
 
         Context context = this.getActivity().getApplicationContext();
 
-        String chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
+        long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
         if(this.manualId != null){
-            chapterId = manualId;
+            chapterId = Long.parseLong(manualId);
         }
-        if(Long.parseLong(chapterId) < 0) {
+        if(chapterId < 0) {
             return null;
         }
         else {
-            BibleChapterModel model = new BibleChapterDataSource(context).getModel(chapterId);
-            ArrayList<BibleChapterModel> chapters = model.getParent(context).getBibleChildModels(context);
+            BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
+            List<BibleChapter> chapters = model.getBook().getBibleChapters();
 
-            long selectedId = model.uid;
+            long selectedId = model.getId();
             ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
             int i = 0;
-            for (BibleChapterModel chapter : chapters) {
-                if(chapter.uid == selectedId){
+            for (BibleChapter chapter : chapters) {
+                if(chapter.getId() == selectedId){
                     int chosenIndex = (this.manualId == null)? i : Integer.parseInt(this.manualId);
                     PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(getIndexStorageString(), chosenIndex).commit();
                 }
-                data.add(chapter);
+                data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(chapter.getId()), chapter.getTitle()));
                 i++;
             }
 

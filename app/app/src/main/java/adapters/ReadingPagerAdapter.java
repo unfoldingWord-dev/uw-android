@@ -21,8 +21,6 @@ import java.util.List;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.database.DBManager;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.BookModel;
 import model.parsers.USFMParser;
 import utils.UWPreferenceManager;
 

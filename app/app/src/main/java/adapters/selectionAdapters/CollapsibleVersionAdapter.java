@@ -39,7 +39,7 @@ import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
-import model.modelClasses.mainData.VersionModel;
+import services.UWVersionDownloader;
 import services.VersionDownloadService;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
@@ -157,8 +157,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         // version-dependent settings
 
-        boolean isSelected = ((version.getId() == Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())))
-                || (version.getId() == Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext()))));
+        boolean isSelected = ((version.getId() == UWPreferenceManager.getSelectedBibleVersion(getContext()))
+                || (version.getId() == UWPreferenceManager.getSelectedStoryVersion(getContext())));
 
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
@@ -320,11 +320,11 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                     finalHolder.downloadButton.setVisibility(View.INVISIBLE);
                     finalHolder.deleteButton.setVisibility(View.INVISIBLE);
 
-                    if((version.getSaveState() == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_NONE.ordinal())
-                    || (version.getSaveState() == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR.ordinal())) {
+                    if((version.getSaveState() == DownloadState.DOWNLOAD_STATE_NONE.ordinal())
+                    || (version.getSaveState() == DownloadState.DOWNLOAD_STATE_ERROR.ordinal())) {
                         downloadRow(version, finalHolder);
                     }
-                    else if(version.getSaveState() == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING.ordinal()){
+                    else if(version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()){
                         stopDownload(version, finalHolder);
                     }
                 }
@@ -343,8 +343,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         } else {
             version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
             version.update();
-            Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
-            downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.getId()));
+            Intent downloadIntent = new Intent(getContext(), UWVersionDownloader.class);
+            downloadIntent.putExtra(UWVersionDownloader.VERSION_PARAM, version);
             getContext().startService(downloadIntent);
             reload();
         }
@@ -362,11 +362,11 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                if(Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())) == version.getId()){
+                                if(UWPreferenceManager.getSelectedBibleVersion(getContext()) == version.getId()){
                                     UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
                                     UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
                                 }
-                                if(Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext())) == version.getId()){
+                                if(UWPreferenceManager.getSelectedStoryVersion(getContext()) == version.getId()){
                                     UWPreferenceManager.setSelectedStoryVersion(getContext(), -1);
                                     UWPreferenceManager.setSelectedStoryChapter(getContext(), -1);
                                 }
@@ -398,7 +398,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                             public void onClick(DialogInterface dialog, int id) {
 
                                 DownloadState state = DownloadState.createState(Version.getVersionForId(
-                                        DaoDBHelper.getDaoSession(getContext()), version.getId()).getSaveState());
+                                        version.getId(), DaoDBHelper.getDaoSession(getContext())).getSaveState());
                                 stopDownloadService(version);
 
                                 if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING ||
@@ -464,14 +464,14 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         if(isStoryChapter){
 
-            String chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
-            if(Long.parseLong(chapterId) < 0){
+            long chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
+            if(chapterId < 0){
 
                 StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters().get(1);
                 UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
             }
             else {
-                StoriesChapter chapter = StoriesChapter.getModelForId(Long.parseLong(chapterId), DaoDBHelper.getDaoSession(getContext()));
+                StoriesChapter chapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
                     StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters().get(1);
                     UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
@@ -486,13 +486,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             }
         }
         else{
-            String chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
-            if(Long.parseLong(chapterId) < 0){
+            long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
+            if(chapterId < 0){
                 BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(1);
                 UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
             }
             else {
-                BibleChapter chapter = BibleChapter.getModelForId(Long.parseLong(chapterId), DaoDBHelper.getDaoSession(getContext()));
+                BibleChapter chapter = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
                     BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(1);
                     UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());

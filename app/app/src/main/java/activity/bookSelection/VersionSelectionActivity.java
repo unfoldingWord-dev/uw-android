@@ -13,8 +13,6 @@ import org.unfoldingword.mobile.R;
 import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
 import model.daoModels.Project;
-import model.datasource.ProjectDataSource;
-import model.modelClasses.mainData.ProjectModel;
 
 /**
  * Created by Fechner on 2/27/15.

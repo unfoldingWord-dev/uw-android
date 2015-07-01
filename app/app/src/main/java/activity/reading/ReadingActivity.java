@@ -52,11 +52,6 @@ import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
-import model.datasource.BibleChapterDataSource;
-import model.datasource.VersionDataSource;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.ProjectModel;
-import model.modelClasses.mainData.VersionModel;
 import utils.UWPreferenceManager;
 
 /**
@@ -299,14 +294,14 @@ public class ReadingActivity extends ActionBarActivity implements
             if (extras != null) {
 
                 Context context = getApplicationContext();
-                Long versionId = Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(context));
+                Long versionId = UWPreferenceManager.getSelectedBibleVersion(context);
 
                 if(versionId < 0){
                     return;
                 }
 
-                Version currentVersion = Version.getVersionForId(DaoDBHelper.getDaoSession(context), versionId);
-                Long chapterId = Long.parseLong(UWPreferenceManager.getSelectedBibleChapter(context));
+                Version currentVersion = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(context));
+                Long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
 
                 if(chapterId < 0){
                     this.currentChapter = currentVersion.getBooks().get(0).getBibleChapters().get(0);
@@ -502,10 +497,10 @@ public class ReadingActivity extends ActionBarActivity implements
         }
     }
 
-    static public class CheckingLevelFragment extends DialogFragment {
+    public static class CheckingLevelFragment extends DialogFragment {
 
 
-        private VersionModel version;
+        private Version version;
 
         public CheckingLevelFragment() {
         }
@@ -515,7 +510,7 @@ public class ReadingActivity extends ActionBarActivity implements
             super.onCreate(savedInstanceState);
             if (getArguments() != null) {
                 long versionId = getArguments().getLong(VERSION_ID_PARAM);
-                version = new VersionDataSource(getActivity().getApplicationContext()).getModel(Long.toString(versionId));
+                version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getActivity().getApplicationContext()));
             }
         }
 
@@ -532,14 +527,14 @@ public class ReadingActivity extends ActionBarActivity implements
             TextView checkingLevelExplanationTextView = (TextView) view.findViewById(R.id.checking_level_explanation_text);
 
 
-            checkingEntityTextView.setText(version.status.checkingEntity);
-            checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.status.checkingLevel)));
-            versionTextView.setText(version.status.version);
-            publishDateTextView.setText(version.status.publishDate);
+            checkingEntityTextView.setText(version.getStatusCheckingEntity());
+            checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+            versionTextView.setText(version.getStatusVersion());
+            publishDateTextView.setText(version.getStatusPublishDate());
             verificationTextView.setText(getVerificationText(version, getActivity().getApplicationContext()));
-            checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.status.checkingLevel)));
+            checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
-            int verificationStatus = version.getVerificationStatus(getActivity().getApplicationContext());
+            int verificationStatus = 1;//version.getVerificationStatus(getActivity().getApplicationContext());
             status.setBackgroundResource(getColorForStatus(verificationStatus));
             status.setText(getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
 
@@ -568,36 +563,36 @@ public class ReadingActivity extends ActionBarActivity implements
             }
         }
 
-        private String getVerificationText(VersionModel version, Context context){
+        private String getVerificationText(Version version, Context context){
 
             String text;
-            int status = version.getVerificationStatus(context);
+            int status = 1;// version.getstatus(context);
             switch (status){
                 case 0:{
                     text = context.getResources().getString(R.string.verified_title_start);
                     break;
                 }
                 case 1:{
-                    text = context.getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
+                    text = context.getResources().getString(R.string.expired_title_start) + "\n";// + version.verificationText;
                     break;
                 }
                 case 3:{
-                    text = context.getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
+                    text = context.getResources().getString(R.string.failed_title_start) + "\n";// + version.verificationText;
                     break;
                 }
                 default:{
-                    text = context.getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
+                    text = context.getResources().getString(R.string.error_title_start) + "\n";// + version.verificationText;
                 }
             }
 
-            ArrayList<String> organizations = version.getSigningOrganizations(context);
+//            ArrayList<String> organizations = version.getSigningOrganizations(context);
 
-            if(status == 0){
-                for(String org : organizations){
-                    text += " " + org + ",";
-                }
-                text = text.substring(0, text.length() - 1);
-            }
+//            if(status == 0){
+//                for(String org : organizations){
+//                    text += " " + org + ",";
+//                }
+//                text = text.substring(0, text.length() - 1);
+//            }
 
             return text;
         }

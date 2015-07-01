@@ -22,13 +22,14 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.StoriesChapterAdapter;
-import model.datasource.VersionDataSource;
-import model.modelClasses.mainData.StoriesChapterModel;
-import model.modelClasses.mainData.VersionModel;
+import model.DaoDBHelper;
+import model.daoModels.StoriesChapter;
+import model.daoModels.Version;
 import utils.UWPreferenceManager;
 
 /**
@@ -105,7 +106,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected void prepareListView(View view) {
 
-        ArrayList<GeneralRowInterface> chapterModels = this.getData();
+        List<GeneralRowInterface> chapterModels = this.getData();
 //        BookModel book = this.chosenVersion.getChildModels(getApplicationContext()).get(0);
 
         if (chapterModels != null) {
@@ -129,7 +130,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected void reload(){
 
-        ArrayList<GeneralRowInterface> data = this.getData();
+        List<GeneralRowInterface> data = this.getData();
         GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
         mListView.setAdapter(adapter);
     }
@@ -138,24 +139,23 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         return this.getActivity().getApplicationContext();
     }
 
-    protected ArrayList<GeneralRowInterface> getData(){
+    protected List<GeneralRowInterface> getData(){
 
-        String versionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
-        VersionModel version = new VersionDataSource(getContext()).getModel(versionId);
+        long versionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
+        Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getContext()));
 
-        ArrayList<StoriesChapterModel> chapters = version.getChildModels(
-                getContext()).get(0).getStoryChildModels(getContext());
-        Collections.sort(chapters);
+        List<StoriesChapter> chapters = version.getBooks().get(0)
+                .getStoryChapters();
 
-        long chapterId = Long.parseLong(UWPreferenceManager.getSelectedStoryChapter(getContext()));
+        long chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
 
-        ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
+        List<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
         int i = 0;
-        for(StoriesChapterModel model : chapters){
-            if(chapterId == model.uid){
+        for(StoriesChapter model : chapters){
+            if(chapterId == model.getId()){
                 PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(STORY_CHAPTERS_INDEX_STRING, i).commit();
             }
-            data.add(model);
+            data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(model.getId()), model.getTitle()));
             i++;
         }
 

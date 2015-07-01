@@ -193,12 +193,12 @@ public class VersionSelectionFragment extends DialogFragment {
 
         Context context = getContext();
         int selectedIndex = 0;
-        String selectedVersion = UWPreferenceManager.getSelectedStoryVersion(context);
-        if(Long.parseLong(selectedVersion) < 0){
+        long selectedVersion = UWPreferenceManager.getSelectedStoryVersion(context);
+        if(selectedVersion < 0){
             selectedIndex = 0;
         }
         else {
-            Version version = Version.getVersionForId(DaoDBHelper.getDaoSession(context), Long.parseLong(selectedVersion));
+            Version version = Version.getVersionForId(selectedVersion, DaoDBHelper.getDaoSession(context));
 
             for(int i = 0; i < chosenProject.getLanguages().size(); i++){
                 if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){
@@ -218,9 +218,9 @@ public class VersionSelectionFragment extends DialogFragment {
 
         Context context = getContext();
         int selectedIndex = -1;
-        String selectedVersion = UWPreferenceManager.getSelectedBibleVersion(context);
-        if(Long.parseLong(selectedVersion) >= 0){
-            Version version = Version.getVersionForId(DaoDBHelper.getDaoSession(context), Long.parseLong(selectedVersion));
+        long selectedVersion = UWPreferenceManager.getSelectedBibleVersion(context);
+        if(selectedVersion >= 0){
+            Version version = Version.getVersionForId(selectedVersion, DaoDBHelper.getDaoSession(context));
 
             for(int i = 0; i < chosenProject.getLanguages().size(); i++){
                 if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){
