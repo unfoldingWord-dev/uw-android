@@ -54,11 +54,25 @@ public class UWPreferenceManager {
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(LAST_UPDATED_ID, newValue).commit();
     }
 
+    private static final String HAS_DOWNLOADED_LOCALES_ID = "LAST_LOCALE_UPDATED_ID";
+    public static boolean getHasDownloadedLocales(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getBoolean(HAS_DOWNLOADED_LOCALES_ID, false);
+    }
+    public static void setHasDownloadedLocales(Context context, boolean newValue){
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(HAS_DOWNLOADED_LOCALES_ID, newValue).commit();
+    }
+
     private static final String DATA_DOWNLOAD_URL_KEY = "base_url";
     public static String getDataDownloadUrl(Context context){
-       return PreferenceManager.getDefaultSharedPreferences(context).getString(DATA_DOWNLOAD_URL_KEY,  context.getResources().getString(R.string.pref_default_base_url));
+       return PreferenceManager.getDefaultSharedPreferences(context).getString(DATA_DOWNLOAD_URL_KEY, context.getResources().getString(R.string.pref_default_base_url));
     }
     public static void setDataDownloadUrl(Context context, String newValue){
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putString(DATA_DOWNLOAD_URL_KEY, newValue).commit();
     }
+
+    private static final String LANGUAGES_DOWNLOAD_URL_KEY = "languages_json_url";
+    public static String getLanguagesDownloadUrl(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(LANGUAGES_DOWNLOAD_URL_KEY,  context.getResources().getString(R.string.languages_json_url));
+    }
+
 }

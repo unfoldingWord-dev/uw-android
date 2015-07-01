@@ -316,6 +316,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         this.statusVersion = newVersion.statusVersion;
         this.saveState = newVersion.saveState;
         this.languageId = newVersion.languageId;
+        this.saveState = newVersion.saveState;
 
         boolean wasUpdated = (newVersion.modified.compareTo(this.modified) > 0);
         if(wasUpdated){

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Entity mapped to table VERIFICATION.
  */
-public class Verification implements java.io.Serializable {
+public class Verification extends model.UWDatabaseModel  implements java.io.Serializable {
 
     private Long id;
     private String signingInstitution;
@@ -152,6 +152,7 @@ public class Verification implements java.io.Serializable {
 
     // KEEP METHODS - put your custom methods here
 
+
     @Override
     public String getSlug() {
         return null;
@@ -159,12 +160,15 @@ public class Verification implements java.io.Serializable {
 
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
-
         return null;
     }
 
     @Override
-    public UWDatabaseModel setupModelFromJson(JSONObject json, UWDatabaseModel parent) {
+    public boolean updateWithModel(UWDatabaseModel newModel) {
+        return false;
+    }
+
+    public Verification setupModelFromJson(JSONObject json, UWDatabaseModel parent) {
 
         try{
             this.signingInstitution = json.getString("si");
@@ -178,19 +182,16 @@ public class Verification implements java.io.Serializable {
         return this;
     }
 
-    @Override
-    public boolean updateWithModel(UWDatabaseModel newModel) {
+    public boolean updateWithModel(Verification newModel) {
 
-        Verification newVerification = (Verification) newModel;
 
-        this.signingInstitution = newVerification.signingInstitution;
-        this.signature = newVerification.signature;
-        this.bookId = newVerification.getBookId();
+        this.signingInstitution = newModel.signingInstitution;
+        this.signature = newModel.signature;
+        this.bookId = newModel.getBookId();
 
         return false;
     }
 
-    @Override
     public void insertModel(DaoSession session) {
 
         session.getVerificationDao().insert(this);

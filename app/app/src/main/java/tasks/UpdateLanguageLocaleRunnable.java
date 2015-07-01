@@ -1,6 +1,7 @@
 package tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,26 +9,22 @@ import org.json.JSONObject;
 
 import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
-import model.daoModels.StoriesChapter;
-import model.daoModels.StoryPage;
-import model.daoModels.Version;
+import model.daoModels.LanguageLocale;
 import services.UWUpdater;
 
 /**
  * Created by Fechner on 6/17/15.
  */
-public class UpdateStoryPagesRunnable implements Runnable{
+public class UpdateLanguageLocaleRunnable implements Runnable{
 
-    private static final String TAG = "UpdateVersionsRunnable";
+    private static final String TAG = "UpdateLangLocaleRunnable";
 
     private JSONArray jsonModels;
     private UWUpdater updater;
-    private StoriesChapter parent;
 
-    public UpdateStoryPagesRunnable(JSONArray jsonModels, UWUpdater updater, StoriesChapter parent) {
+    public UpdateLanguageLocaleRunnable(JSONArray jsonModels, UWUpdater updater) {
         this.jsonModels = jsonModels;
         this.updater = updater;
-        this.parent = parent;
     }
 
     @Override
@@ -38,6 +35,7 @@ public class UpdateStoryPagesRunnable implements Runnable{
     }
     private void parseModels(JSONArray models){
 
+        Log.i(TAG, "Started Locales");
         for(int i = 0; i < models.length(); i++){
 
             try {
@@ -51,36 +49,38 @@ public class UpdateStoryPagesRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
-        new ModelCreationTask(new StoryPage(), parent, new ModelCreationTask.ModelCreationTaskListener() {
+        new ModelCreationTask(new LanguageLocale(), null, new ModelCreationTask.ModelCreationTaskListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
-                    if(model instanceof StoryPage) {
+                if(model instanceof LanguageLocale) {
 
-                    new StoriesPageSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
+                new LanguageLocaleSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
+                    @Override
+                    public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
-                            if(isLast){
-                                updater.runnableFinished();
-                            }
+
+                        if(isLast){
+                            Log.i(TAG, "Finished Locales");
+                            updater.runnableFinished();
                         }
                     }
-                    ).execute(model);
                 }
+                ).execute(model);
+            }
             }
         }).execute(jsonObject);
     }
 
-    private class StoriesPageSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class LanguageLocaleSaveOrUpdateTask extends ModelSaveOrUpdateTask{
 
-        public StoriesPageSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
+        public LanguageLocaleSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
             super(context, listener);
         }
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return StoryPage.getModelForSlug(slug, session);
+            return LanguageLocale.getLocalForKey(slug, session);
         }
     }
 }

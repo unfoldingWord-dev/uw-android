@@ -29,6 +29,7 @@ public class MyDaoGenerator {
         createBibleChapter(schema, book);
         Entity storyChapter = createStoryChapter(schema, book);
         createStoryPage(schema, storyChapter);
+        createSigningOrganization(schema);
     }
 
     private static Entity createProject(Schema schema) {
@@ -88,6 +89,7 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.VERIFICATION, ModelNames.VERIFICATION_STRING_ATTRIBUTES);
         verificationInfo.intAttributes = ModelNames.VERIFICATION_INT_ATTRIBUTES;
         Entity verification = DaoHelperMethods.createEntity(schema, verificationInfo);
+        verification.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
 
         DaoHelperMethods.createParentChildRelationship(
                 book, ModelNames.BOOK_VERIFICATIONS_ATTRIBUTE,
@@ -140,5 +142,14 @@ public class MyDaoGenerator {
         languageLocaleInfo.intAttributes = ModelNames.LANGUAGE_LOCALE_INT_ATTRIBUTES;
         Entity languageLocal = DaoHelperMethods.createEntity(schema, languageLocaleInfo);
         languageLocal.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
+    }
+
+    private static void createSigningOrganization(Schema schema) {
+
+        DaoHelperMethods.EntityInformation verification =
+                new DaoHelperMethods.EntityInformation(ModelNames.SIGNING_ORGANIZATION, ModelNames.SIGNING_ORGANIZATION_STRING_ATTRIBUTES,
+                        ModelNames.SIGNING_ORGANIZATION_DATE_ATTRIBUTES);
+
+        Entity verificationEntity = DaoHelperMethods.createEntity(schema, verification);
     }
 }

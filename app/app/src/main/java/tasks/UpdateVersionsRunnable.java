@@ -42,7 +42,7 @@ public class UpdateVersionsRunnable implements Runnable{
         for(int i = 0; i < models.length(); i++){
 
             try {
-                updateModel(models.getJSONObject(i));
+                updateModel(models.getJSONObject(i), i == (models.length() - 1));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -50,7 +50,7 @@ public class UpdateVersionsRunnable implements Runnable{
         }
     }
 
-    private void updateModel(final JSONObject jsonObject){
+    private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
         new ModelCreationTask(new Version(), parent, new ModelCreationTask.ModelCreationTaskListener() {
             @Override
@@ -64,6 +64,9 @@ public class UpdateVersionsRunnable implements Runnable{
 
                             if(shouldContinueUpdate != null){
                                 updateBooks(jsonObject, (Version) shouldContinueUpdate);
+                            }
+                            if(isLast){
+                                updater.runnableFinished();
                             }
                         }
                     }
@@ -79,7 +82,7 @@ public class UpdateVersionsRunnable implements Runnable{
         try{
             JSONArray languages = project.getJSONArray(BOOKS_JSON_KEY);
             UpdateBooksRunnable runnable = new UpdateBooksRunnable(languages, updater, parent);
-            updater.mServiceHandler.post(runnable);
+            updater.addRunnable(runnable);
         }
         catch (JSONException e){
             e.printStackTrace();

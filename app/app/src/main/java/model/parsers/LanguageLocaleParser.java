@@ -1,7 +1,12 @@
 package model.parsers;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import model.daoModels.LanguageLocale;
 
@@ -37,10 +42,13 @@ public class LanguageLocaleParser extends UWDataParser{
     private static String getCCString(JSONObject jsonObject) throws JSONException{
 
         String finalText = "";
-        String[] ccStrings = (String[]) jsonObject.get(CC_JSON_KEY);
+        JSONArray ccObj = jsonObject.getJSONArray(CC_JSON_KEY);
 
-        for(String ccString : ccStrings){
-            finalText += ccString + ",";
+        for(int i = 0; i < ccObj.length(); i++){
+
+            String ccText = ccObj.getString(i);
+
+            finalText += ((String) ccText) + ",";
         }
 
         if(finalText.length() > 0){

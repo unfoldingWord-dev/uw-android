@@ -3,6 +3,7 @@ package model.parsers;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.Language;
 import model.daoModels.Version;
@@ -30,6 +31,7 @@ public class VersionParser extends UWDataParser{
 
         Version newModel = new Version();
 
+        newModel.setSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
         newModel.setModified(getDateFromSecondString(jsonObject.getString(MODIFIED_JSON_KEY)));
         newModel.setName(jsonObject.getString(NAME_JSON_KEY));
         newModel.setSlug(parent.getSlug() + jsonObject.getString(SLUG_JSON_KEY));

@@ -42,7 +42,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         for(int i = 0; i < models.length(); i++){
 
             try {
-                updateModel(models.getJSONObject(i));
+                updateModel(models.getJSONObject(i), i == (models.length() - 1));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -50,7 +50,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         }
     }
 
-    private void updateModel(final JSONObject jsonObject){
+    private void updateModel(final JSONObject jsonObject, final boolean lastModel){
 
         new ModelCreationTask(new StoriesChapter(), parent, new ModelCreationTask.ModelCreationTaskListener() {
             @Override
@@ -64,6 +64,9 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
 
                             if(shouldContinueUpdate != null){
                                 updatePages(jsonObject, (StoriesChapter) shouldContinueUpdate);
+                            }
+                            if(lastModel){
+                                updater.runnableFinished();
                             }
                         }
                     }
@@ -79,7 +82,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         try{
             JSONArray pages = project.getJSONArray(FRAMES_JSON_KEY);
             UpdateStoryPagesRunnable runnable = new UpdateStoryPagesRunnable(pages, updater, pageParent);
-            updater.mServiceHandler.post(runnable);
+            updater.addRunnable(runnable);
         }
         catch (JSONException e){
             e.printStackTrace();

@@ -60,6 +60,7 @@ public class VersionSelectionFragment extends DialogFragment {
      * @return A new instance of fragment VersionSelectionFragment.
      */
     public static VersionSelectionFragment newInstance(String projId, boolean showTitle) {
+
         VersionSelectionFragment fragment = new VersionSelectionFragment();
         Bundle args = new Bundle();
         args.putString(CHOSEN_PROJECT_ID, projId);
@@ -233,7 +234,7 @@ public class VersionSelectionFragment extends DialogFragment {
 
     private void addProject(){
 
-            this.chosenProject = Project.getProjectForId(Long.parseLong(chosenProjectId), DaoDBHelper.getDaoSession(getContext()));
+        this.chosenProject = Project.getProjectForId(Long.parseLong(chosenProjectId), DaoDBHelper.getDaoSession(getContext()));
     }
 
     private Context getContext(){

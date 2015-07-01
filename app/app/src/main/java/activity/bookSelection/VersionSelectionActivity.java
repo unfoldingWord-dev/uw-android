@@ -45,7 +45,7 @@ public class VersionSelectionActivity extends ActionBarActivity implements Versi
                 }
                 actionbarTextView.setText(chosenProject.getTitle());
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProjectId, false))
+                        .add(R.id.versions_frame, VersionSelectionFragment.newInstance(Long.toString(chosenProject.getId()), false))
                         .commit();
             }
     }

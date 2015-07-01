@@ -41,7 +41,7 @@ public class UpdateBooksRunnable implements Runnable{
         for(int i = 0; i < models.length(); i++){
 
             try {
-                updateModel(models.getJSONObject(i));
+                updateModel(models.getJSONObject(i), i == (models.length() - 1));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -49,7 +49,7 @@ public class UpdateBooksRunnable implements Runnable{
         }
     }
 
-    private void updateModel(final JSONObject jsonObject){
+    private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
         new ModelCreationTask(new Book(), parent, new ModelCreationTask.ModelCreationTaskListener() {
             @Override
@@ -63,6 +63,9 @@ public class UpdateBooksRunnable implements Runnable{
 
                             if(shouldContinueUpdate != null){
                                 updateChapters (jsonObject, (Book) shouldContinueUpdate);
+                            }
+                            if(isLast){
+                                updater.runnableFinished();
                             }
                         }
                     }).execute( model);
@@ -98,7 +101,7 @@ public class UpdateBooksRunnable implements Runnable{
                 public void verificationFinishedWithResult(byte[] text) {
                     if (text != null){
                         UpdateBibleChaptersRunnable runnable = new UpdateBibleChaptersRunnable(text, updater, parent);
-                        updater.mServiceHandler.post(runnable);
+                        updater.addRunnable(runnable);
                     }
                 }
             }).execute(parent);
@@ -118,7 +121,7 @@ public class UpdateBooksRunnable implements Runnable{
                         try {
                             UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
                                     new JSONObject(new String(text)).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
-                            updater.mServiceHandler.post(runnable);
+                            updater.addRunnable(runnable);
 
                         } catch (JSONException e) {
                             e.printStackTrace();

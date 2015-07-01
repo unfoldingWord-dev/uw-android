@@ -55,4 +55,8 @@ public class ModelNames {
     static public final String[] LANGUAGE_LOCALE_INT_ATTRIBUTES = { "pk"};
     static public final String[] LANGUAGE_LOCALE_BOOLEAN_ATTRIBUTES = { "gw"};
 
+    static public final String SIGNING_ORGANIZATION = "SigningOrganization";
+    static public final String[] SIGNING_ORGANIZATION_DATE_ATTRIBUTES = { "createdAt", "expiresAt", "modifiedAt" };
+    static public final String[] SIGNING_ORGANIZATION_STRING_ATTRIBUTES = { "email","name", "url", "slug" };
+
 }

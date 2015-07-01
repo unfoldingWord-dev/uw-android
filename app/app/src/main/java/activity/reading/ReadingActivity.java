@@ -249,7 +249,7 @@ public class ReadingActivity extends ActionBarActivity implements
             return;
         }
 
-        String projectId = extras.getString(GeneralSelectionActivity.CHOSEN_ID);
+        String projectId = Long.toString(currentProject.getId());
 
 //        if(isTablet()){
 //

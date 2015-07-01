@@ -52,25 +52,30 @@ public class UpdateBibleChaptersRunnable implements Runnable{
 
     private void createModels(Map<String, String> models){
 
+        int i = 0;
         for(Map.Entry<String, String> entry : models.entrySet()){
 
             try {
                 BibleChapter chapter = BibleChapterParser.parseBibleChapter(parent, entry.getKey(), entry.getValue());
-
+                updateModel(chapter, (i == (models.size() - 1)));
 
             }
             catch (JSONException e){
                 e.printStackTrace();
             }
+            i++;
         }
     }
 
-    private void updateModel(BibleChapter chapter){
+    private void updateModel(BibleChapter chapter, final boolean isLast){
 
         new BibleChapterSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
             @Override
             public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                if(isLast){
+                    updater.runnableFinished();
+                }
             }
         }
         ).execute(chapter);

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
+import model.DownloadState;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Language;
@@ -38,6 +39,7 @@ import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
+import model.modelClasses.mainData.VersionModel;
 import services.VersionDownloadService;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
@@ -108,7 +110,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     @Override
     public int getRealChildrenCount(int groupPosition) {
-        int count = getGroup(groupPosition).getChildModels(getContext()).size();
+        int count = getGroup(groupPosition).getVersions().size();
         return count;
     }
 
@@ -155,8 +157,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         // version-dependent settings
 
-        boolean isSelected = ((version.uid == Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())))
-                || (version.uid == Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext()))));
+        boolean isSelected = ((version.getId() == Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())))
+                || (version.getId() == Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext()))));
 
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
@@ -167,18 +169,18 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
         holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
         setColorChange(holder, getColorForState(state));
-        holder.languageTypeImageView.setImageResource(getCheckingLevelImage(Integer.parseInt(version.status.checkingLevel)));
+        holder.languageTypeImageView.setImageResource(getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
 
-        holder.languageNameTextView.setText(version.getTitle());
-        holder.checkingEntityTextView.setText(version.status.checkingEntity);
-        holder.checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.status.checkingLevel)));
-        holder.versionTextView.setText(version.status.version);
-        holder.publishDateTextView.setText(version.status.publishDate);
+        holder.languageNameTextView.setText(version.getName());
+        holder.checkingEntityTextView.setText(version.getStatusCheckingEntity());
+        holder.checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        holder.versionTextView.setText(version.getStatusVersion());
+        holder.publishDateTextView.setText(version.getStatusPublishDate());
         holder.verificationTextView.setText(getVerificationText(version));
-        holder.checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.status.checkingLevel)));
-        holder.versionNameTextView.setText(version.getTitle());
+        holder.checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+        holder.versionNameTextView.setText(version.getName());
 
-        int verificationStatus = version.getVerificationStatus(getContext());
+        int verificationStatus = 1;//version.getVerificationStatus(getContext());
         holder.status.setBackgroundResource(getColorForStatus(verificationStatus));
         holder.status.setText(getButtonTextForStatus(verificationStatus));
 
@@ -214,43 +216,43 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
     }
 
-    private String getVerificationText(VersionModel version){
+    private String getVerificationText(Version version){
 
-        String text;
-        int status = version.getVerificationStatus(getContext());
-        switch (status){
-            case 0:{
-                text = getContext().getResources().getString(R.string.verified_title_start);
-                break;
-            }
-            case 1:{
-                text = getContext().getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
-                break;
-            }
-            case 3:{
-                text = getContext().getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
-                break;
-            }
-            default:{
-                text = getContext().getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
-            }
-        }
+        String text = "testing stuff";
+//        int status = version.getVerificationStatus(getContext());
+//        switch (status){
+//            case 0:{
+//                text = getContext().getResources().getString(R.string.verified_title_start);
+//                break;
+//            }
+//            case 1:{
+//                text = getContext().getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
+//                break;
+//            }
+//            case 3:{
+//                text = getContext().getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
+//                break;
+//            }
+//            default:{
+//                text = getContext().getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
+//            }
+//        }
+//
+//        ArrayList<String> organizations = version.getSigningOrganizations(getContext());
 
-        ArrayList<String> organizations = version.getSigningOrganizations(getContext());
-
-        if(status == 0){
-            for(String org : organizations){
-                text += " " + org + ",";
-            }
-            text = text.substring(0, text.length() - 1);
-        }
+//        if(status == 0){
+//            for(String org : organizations){
+//                text += " " + org + ",";
+//            }
+//            text = text.substring(0, text.length() - 1);
+//        }
 
         return text;
     }
 
-    private int setRowState(ViewHolderForGroup holder, VersionModel version, int selectionState){
+    private int setRowState(ViewHolderForGroup holder, Version version, int selectionState){
 
-        switch (version.downloadState){
+        switch (DownloadState.createState(version.getSaveState())){
 
             case DOWNLOAD_STATE_DOWNLOADED:{
                 holder.verificationTextView.setVisibility(View.VISIBLE);
@@ -295,7 +297,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
     }
 
-    private View.OnClickListener getDeleteOnClickListener(final VersionModel version, final ViewHolderForGroup finalHolder) {
+    private View.OnClickListener getDeleteOnClickListener(final Version version, final ViewHolderForGroup finalHolder) {
 
         return new View.OnClickListener() {
 
@@ -306,23 +308,23 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         };
     }
 
-    private View.OnClickListener getDownloadOnClickListener(final VersionModel version, final ViewHolderForGroup finalHolder) {
+    private View.OnClickListener getDownloadOnClickListener(final Version version, final ViewHolderForGroup finalHolder) {
 
         return new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                if (version instanceof VersionModel) {
+                if (version instanceof Version) {
                     finalHolder.clickableLayout.setClickable(false);
                     finalHolder.downloadProgressBar.setVisibility(View.VISIBLE);
                     finalHolder.downloadButton.setVisibility(View.INVISIBLE);
                     finalHolder.deleteButton.setVisibility(View.INVISIBLE);
 
-                    if((version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_NONE)
-                    || (version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR)) {
+                    if((version.getSaveState() == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_NONE.ordinal())
+                    || (version.getSaveState() == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR.ordinal())) {
                         downloadRow(version, finalHolder);
                     }
-                    else if(version.downloadState == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING){
+                    else if(version.getSaveState() == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING.ordinal()){
                         stopDownload(version, finalHolder);
                     }
                 }
@@ -339,10 +341,10 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             builder.setPositiveButton("OK", null);
             builder.create().show();
         } else {
-            version.downloadState = Version.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING;
-            version.save(getContext());
+            version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
+            version.update();
             Intent downloadIntent = new Intent(getContext(), VersionDownloadService.class);
-            downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid));
+            downloadIntent.putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.getId()));
             getContext().startService(downloadIntent);
             reload();
         }
@@ -360,11 +362,11 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                if(Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())) == version.uid){
+                                if(Long.parseLong(UWPreferenceManager.getSelectedBibleVersion(getContext())) == version.getId()){
                                     UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
                                     UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
                                 }
-                                if(Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext())) == version.uid){
+                                if(Long.parseLong(UWPreferenceManager.getSelectedStoryVersion(getContext())) == version.getId()){
                                     UWPreferenceManager.setSelectedStoryVersion(getContext(), -1);
                                     UWPreferenceManager.setSelectedStoryChapter(getContext(), -1);
                                 }
@@ -383,7 +385,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }).show(parentFragment.getFragmentManager(), "confirmAlert");
     }
 
-    private void stopDownload(final VersionModel version, final ViewHolderForGroup finalHolder){
+    private void stopDownload(final Version version, final ViewHolderForGroup finalHolder){
 
         (new DialogFragment() {
 
@@ -395,11 +397,12 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                VersionModel.DOWNLOAD_STATE state = new VersionDataSource(getContext()).getModel(Long.toString(version.uid)).downloadState;
-                                if(state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_DOWNLOADING ||
-                                        state == VersionModel.DOWNLOAD_STATE.DOWNLOAD_STATE_ERROR) {
-                                    stopDownloadService(version);
-                                    new DeleteVersionTask().execute(version);
+                                DownloadState state = DownloadState.createState(Version.getVersionForId(
+                                        DaoDBHelper.getDaoSession(getContext()), version.getId()).getSaveState());
+                                stopDownloadService(version);
+
+                                if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING ||
+                                        state == DownloadState.DOWNLOAD_STATE_ERROR) {new DeleteVersionTask().execute(version);
                                 }
                             }
                         })
@@ -414,16 +417,18 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }).show(parentFragment.getFragmentManager(), "confirmAlert");
     }
 
-    private void stopDownloadService(VersionModel version){
+    private void stopDownloadService(Version version){
 
-        getContext().sendBroadcast(new Intent(VersionDownloadService.STOP_DOWNLOAD_VERSION_MESSAGE).putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.uid)));
+        getContext().sendBroadcast(new Intent(VersionDownloadService.STOP_DOWNLOAD_VERSION_MESSAGE).
+                putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.getId())));
     }
 
     private class DeleteVersionTask extends AsyncTask {
 
         @Override
         protected Object doInBackground(Object[] params) {
-            return new VersionDataSource(getContext()).deleteDownloadedBookContent((VersionModel) params[0]);
+//            return new VersionDataSource(getContext()).deleteDownloadedBookContent((VersionModel) params[0]);
+            return null;
         }
 
         @Override
@@ -433,20 +438,20 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
     }
 
-    private View.OnClickListener getSelectionOnClickListener(final VersionModel version) {
+    private View.OnClickListener getSelectionOnClickListener(final Version version) {
 
         return new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                if (version instanceof VersionModel) {
-                    boolean isStoryChapter = version.getParent(getContext()).getParent(getContext()).slug.equalsIgnoreCase(STORIES_SLUG);
+                if (version instanceof Version) {
+                    boolean isStoryChapter = version.getLanguage().getProject().getSlug().equalsIgnoreCase(STORIES_SLUG);
                     refreshChapterSelection(version, isStoryChapter);
                     if(isStoryChapter){
-                        UWPreferenceManager.setSelectedStoryVersion(getContext(), version.uid);
+                        UWPreferenceManager.setSelectedStoryVersion(getContext(), version.getId());
                     }
                     else {
-                        UWPreferenceManager.setSelectedBibleVersion(getContext(), version.uid);
+                        UWPreferenceManager.setSelectedBibleVersion(getContext(), version.getId());
                     }
                 }
             ((VersionSelectionFragment) parentFragment).rowSelected();
@@ -462,46 +467,46 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             String chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
             if(Long.parseLong(chapterId) < 0){
 
-                StoriesChapter newChapter = version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1);
-                UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.uid);
+                StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters().get(1);
+                UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
             }
             else {
-                StoriesChapter chapter = new StoriesChapterDataSource(getContext()).getModel(chapterId);
+                StoriesChapter chapter = StoriesChapter.getModelForId(Long.parseLong(chapterId), DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
-                    StoriesChapter newChapter = version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1);
-                    UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.uid);
+                    StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters().get(1);
+                    UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
                     return;
                 }
-                Book newBook = version.findBookForJsonSlug(getContext(), chapter.getParent(getContext()).slug.substring(0, 3));
+                Book newBook = chapter.getBook();
 
-                StoriesChapter newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getStoryChapter(getContext(), 1) :
-                        newBook.getStoryChapter(getContext(), Integer.parseInt(chapter.number));
+                StoriesChapter newChapter = (newBook == null)? version.getBooks().get(0).getStoryChapters().get(1) :
+                        newBook.getStoryChapters().get(Integer.parseInt(chapter.getNumber()));
 
-                UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.uid);
+                UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
             }
         }
         else{
             String chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
             if(Long.parseLong(chapterId) < 0){
-                BibleChapter newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
-                UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.uid);
+                BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(1);
+                UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
             }
             else {
-                BibleChapter chapter = new BibleChapterDataSource(getContext()).getModel(chapterId);
+                BibleChapter chapter = BibleChapter.getModelForId(Long.parseLong(chapterId), DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
-                    BibleChapter newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
-                    UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.uid);
+                    BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(1);
+                    UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
                     return;
                 }
-                Book newBook = version.findBookForJsonSlug(getContext(), chapter.getParent(getContext()).slug.substring(0, 3));
+                Book newBook = chapter.getBook();
 
-                Book newChapter = (newBook == null)? version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1) :
-                        newBook.getBibleChapter(getContext(), Integer.parseInt(chapter.number.trim()));
+                BibleChapter newChapter = (newBook == null)? version.getBooks().get(0).getBibleChapters().get(1) :
+                        newBook.getBibleChapters().get(Integer.parseInt(chapter.getNumber().trim()));
 
                 if(newChapter == null){
-                    newChapter = version.getChildModels(getContext()).get(0).getBibleChapter(getContext(), 1);
+                    newChapter = version.getBooks().get(0).getBibleChapters().get(1);
                 }
-                UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.uid);
+                UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
             }
         }
 
@@ -509,13 +514,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     @Override
     public Language getGroup(int groupPosition) {
-        Language model = currentProject.getChildModels(getContext()).get(groupPosition);
+        Language model = currentProject.getLanguages().get(groupPosition);
         return model;
     }
 
     @Override
     public int getGroupCount() {
-        int groupCount = currentProject.getChildModels(getContext()).size();
+        int groupCount = currentProject.getLanguages().size();
         return groupCount;
     }
 
@@ -528,7 +533,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         Language language = getGroup(groupPosition);
-        language.getChildModels(getContext());
+        language.getVersions();
         if (convertView == null) {
 
             LayoutInflater inflater = (LayoutInflater) getContext()
@@ -539,8 +544,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         TextView item = (TextView) convertView.findViewById(R.id.group_title);
         item.setTypeface(null, Typeface.BOLD);
-        LanguageLocale languageLocale = new LanguageLocaleDataSource(getContext()).getModelForSlug(language.languageAbbreviation);
-        item.setText(languageLocale.languageName);
+        LanguageLocale languageLocale = LanguageLocale.getLocalForKey(language.getLanguageAbbreviation(), DaoDBHelper.getDaoSession(getContext()));
+        item.setText(languageLocale.getLanguageName());
 
         return convertView;
     }
@@ -563,7 +568,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     }
 
 
-    private View.OnClickListener getInfoClickListener(final ViewHolderForGroup finalHolder, final VersionModel version){
+    private View.OnClickListener getInfoClickListener(final ViewHolderForGroup finalHolder, final Version version){
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {

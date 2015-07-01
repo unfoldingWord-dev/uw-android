@@ -234,6 +234,16 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
 
         return (model == null)? null : model;
     }
+
+    static public StoriesChapter getModelForId(long id, DaoSession session){
+
+        StoriesChapterDao dao = session.getStoriesChapterDao();
+        StoriesChapter model = dao.queryBuilder()
+                .where(StoriesChapterDao.Properties.Id.eq(id))
+                .unique();
+
+        return (model == null)? null : model;
+    }
     // KEEP METHODS END
 
 }

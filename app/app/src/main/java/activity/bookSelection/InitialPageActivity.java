@@ -182,6 +182,7 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
             mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
             mRefreshButton.setOnClickListener(this);
             mListView.addHeaderView(mview1);
+
             IntentFilter filter = new IntentFilter();
             filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
             filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
@@ -259,6 +260,8 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
 
     private void moveToNextActivity(Project project){
 
+
+
         Class nextActivity = (project.getSlug().equalsIgnoreCase(STORIES_SLUG))?
                 StoryReadingActivity.class : ReadingActivity.class;
 
@@ -290,7 +293,6 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         }
 
     }
-
 
     public void closeButtonClicked(View view) {
     }

@@ -129,17 +129,36 @@ public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Se
 
     @Override
     public String getSlug() {
-        return null;
+        return languageKey;
     }
 
     @Override
     public boolean updateWithModel(UWDatabaseModel newModel) {
+
+        LanguageLocale locale = (LanguageLocale) newModel;
+
+        this.languageDirection = locale.languageDirection;
+        this.languageKey = locale.languageKey;
+        this.languageName = locale.languageName;
+        this.cc = locale.cc;
+        this.LanguageRegion = locale.LanguageRegion;
+        this.pk = locale.pk;
+        this.gw = locale.gw;
+
         return false;
     }
 
     @Override
     public void insertModel(DaoSession session) {
 
+        session.getLanguageLocaleDao().insert(this);
+    }
+
+    public static LanguageLocale getLocalForKey(String key, DaoSession session){
+
+        return session.getLanguageLocaleDao().queryBuilder()
+                .where(LanguageLocaleDao.Properties.LanguageKey.eq(key))
+                .unique();
     }
     // KEEP METHODS END
 
