@@ -94,7 +94,16 @@ public class UWSigning {
             for (int i = 0; i < sigArray.length(); i++) {
                 JSONObject obj = sigArray.getJSONObject(i);
                 Verification model = new Verification();
-                model.setupModelFromJson(obj);
+                model = (Verification) model.setupModelFromJson(obj);
+
+                if(model == null){
+
+                    Verification errorModel = new Verification();
+                    errorModel.setStatus( 2);
+                    verifications.add(errorModel);
+                    updateVerifications(context, verifications, book.getId());
+                    return;
+                }
 
                 SigningEntity signingEntity = getSigningEntity(context);
 

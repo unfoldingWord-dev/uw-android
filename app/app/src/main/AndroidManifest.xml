@@ -28,7 +28,7 @@
         <activity
             android:name="activity.bookSelection.InitialPageActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/MainTheme" />
         <activity
             android:name="activity.bookSelection.BookSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -44,7 +44,7 @@
         <activity
             android:name="activity.reading.ReadingActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/MainTheme"/>
         <activity
             android:name="activity.reading.StoryReadingActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -57,6 +57,7 @@
         <service android:name="services.UpdateService" />
         <service android:name="services.UWUpdater" />
         <service android:name="services.VersionDownloadService" />
+        <service android:name="services.UWVersionDownloader" />
 
     </application>
 

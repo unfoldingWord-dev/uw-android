@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.DaoDBHelper;
+import model.DownloadState;
 import model.daoModels.Book;
 import model.daoModels.Version;
 import tasks.JsonDownloadTask;
@@ -37,18 +39,24 @@ public class UWVersionDownloader extends UWUpdater {
     @Override
     public void onCreate() {
         super.onCreate();
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Version version = (Version) intent.getSerializableExtra(VERSION_PARAM);
+        if(intent.getExtras() != null) {
+            long versionId = intent.getExtras().getLong(VERSION_PARAM);
+            Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getApplicationContext()));
 
-        for(Book book : version.getBooks()) {
-            addRunnable(new UpdateBookContentRunnable(book, this));
+            for (Book book : version.getBooks()) {
+                addRunnable(new UpdateBookContentRunnable(book, this));
+            }
+            version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+            version.update();
         }
 
         return START_STICKY;
     }
+
+
 }

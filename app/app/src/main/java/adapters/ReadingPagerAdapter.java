@@ -30,27 +30,27 @@ import utils.UWPreferenceManager;
 public class ReadingPagerAdapter extends PagerAdapter {
 
     private static final String TAG = "ViewPagerAdapter";
-    protected String SELECTED_POS = "";
 
     DBManager dbManager = null;
-    private Activity context;
-    private TextView chaptersText;
+    private Context context;
     private ViewGroup container;
     private List<BibleChapter> chapters;
     private View.OnTouchListener pagerOnTouchListener;
 
     private Book nextBook;
 
-    public ReadingPagerAdapter(Object context, List<BibleChapter> models, TextView chaptersText, String positionHolder, View.OnTouchListener pagerOnTouchListener) {
-        this.context = (Activity) context;
-//        Collections.sort(models);
+    public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener) {
+        this.context = context;
         chapters = models;
         getCount();
-        this.chaptersText = chaptersText;
         dbManager = DBManager.getInstance(this.context);
-        SELECTED_POS = positionHolder;
         this.pagerOnTouchListener = pagerOnTouchListener;
         setNextBook();
+    }
+
+    public void update(List<BibleChapter> models){
+        this.chapters = models;
+        notifyDataSetChanged();
     }
 
     public void setNextBook(){
@@ -108,18 +108,9 @@ public class ReadingPagerAdapter extends PagerAdapter {
             textWebView.setOnTouchListener(this.pagerOnTouchListener);
 
             ((ViewPager) container).addView(view);
-
-            manageActionbarText();
         }
+
         return view;
-    }
-
-    private void manageActionbarText(){
-        int index = ((ViewPager) container).getCurrentItem();
-        if(index < chapters.size()) {
-            String title = chapters.get(index).getTitle();
-            chaptersText.setText(title);
-        }
     }
 
     private String getTextCss(){
@@ -189,7 +180,6 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
         BibleChapter model = chapters.get(position);
         UWPreferenceManager.setSelectedBibleChapter(context, model.getId());
-        manageActionbarText();
     }
 
     private View getNextBookView(LayoutInflater inflater){
@@ -217,8 +207,6 @@ public class ReadingPagerAdapter extends PagerAdapter {
         UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).getId());
 
         String title = chapters.get(0).getTitle();
-        chaptersText.setText(title);
-
         notifyDataSetChanged();
 
         ((ViewPager) this.container).setCurrentItem(0);

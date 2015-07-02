@@ -30,6 +30,7 @@ public class UWUpdater extends Service {
     private Looper mServiceLooper;
     private Handler mServiceHandler;
 
+
     int numberRunning = 0;
 
     @Override

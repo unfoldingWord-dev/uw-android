@@ -3,8 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/myViewPager"
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/reading_fragment_frame">
+    </FrameLayout>
+
+    <TextView
+        android:layout_below="@+id/toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/no_selected_version_text"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:id="@+id/reading_error_text_view"
+        android:layout_margin="20dp"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        />
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package signing;
 
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.util.Date;
  *
  */
 public class SigningEntity {
+
+    private static final String TAG = "SigningEntity";
     private final PublicKey mCAPublicKey;
     private final PublicKey mPublicKey;
     public final Organization organization;
@@ -66,6 +69,12 @@ public class SigningEntity {
      * @return
      */
     public Status verifyContent(String signature, byte[] data) {
+
+        if(signature == null){
+            Log.e(TAG, "signature Error");
+            return Status.ERROR;
+        }
+
         byte[] sig = Base64.decode(signature, Base64.NO_WRAP);
         Status contentStatus = verifyContent(sig, data);
 

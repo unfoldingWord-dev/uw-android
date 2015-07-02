@@ -160,7 +160,16 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
 
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
-        return null;
+
+        try {
+            this.signingInstitution = json.getString("si");
+            this.signature = json.getString("sig");
+        }
+        catch (JSONException e){
+            e.toString();
+            return null;
+        }
+        return this;
     }
 
     @Override

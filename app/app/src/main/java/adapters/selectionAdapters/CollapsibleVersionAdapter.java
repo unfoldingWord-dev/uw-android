@@ -157,8 +157,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         // version-dependent settings
 
-        boolean isSelected = ((version.getId() == UWPreferenceManager.getSelectedBibleVersion(getContext()))
-                || (version.getId() == UWPreferenceManager.getSelectedStoryVersion(getContext())));
+        boolean isSelected = false;//((version.getId() == UWPreferenceManager.getSelectedBibleVersion(getContext()))
+//                || (version.getId() == UWPreferenceManager.getSelectedStoryVersion(getContext())));
 
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
@@ -344,7 +344,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
             version.update();
             Intent downloadIntent = new Intent(getContext(), UWVersionDownloader.class);
-            downloadIntent.putExtra(UWVersionDownloader.VERSION_PARAM, version);
+            downloadIntent.putExtra(UWVersionDownloader.VERSION_PARAM, version.getId());
             getContext().startService(downloadIntent);
             reload();
         }
@@ -362,10 +362,10 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                if(UWPreferenceManager.getSelectedBibleVersion(getContext()) == version.getId()){
-                                    UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
-                                    UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
-                                }
+//                                if(UWPreferenceManager.getSelectedBibleVersion(getContext()) == version.getId()){
+//                                    UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
+//                                    UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
+//                                }
                                 if(UWPreferenceManager.getSelectedStoryVersion(getContext()) == version.getId()){
                                     UWPreferenceManager.setSelectedStoryVersion(getContext(), -1);
                                     UWPreferenceManager.setSelectedStoryChapter(getContext(), -1);
@@ -450,9 +450,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                     if(isStoryChapter){
                         UWPreferenceManager.setSelectedStoryVersion(getContext(), version.getId());
                     }
-                    else {
-                        UWPreferenceManager.setSelectedBibleVersion(getContext(), version.getId());
-                    }
+//                    else {
+//                        UWPreferenceManager.setSelectedBibleVersion(getContext(), version.getId());
+//                    }
                 }
             ((VersionSelectionFragment) parentFragment).rowSelected();
             }

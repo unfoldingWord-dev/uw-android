@@ -85,14 +85,12 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     public void setupToolbar(boolean hasLogo){
 
         toolbar = new UWToolbar((Toolbar) findViewById(R.id.toolbar), this, hasLogo, getBackResource(), this);
-        setToolbarColor(getResources().getColor(R.color.light_brown_transperent));
-
+        setToolbarColor(getResources().getColor(R.color.primary_dark));
     }
 
     protected void setToolbarColor(int color){
         this.toolbar.setBackgroundColor(color);
     }
-
 
     @Override
     public void centerButtonClicked() {

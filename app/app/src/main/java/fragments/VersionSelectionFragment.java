@@ -21,6 +21,8 @@ import org.unfoldingword.mobile.R;
 
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import model.DaoDBHelper;
+import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -218,9 +220,10 @@ public class VersionSelectionFragment extends DialogFragment {
 
         Context context = getContext();
         int selectedIndex = -1;
-        long selectedVersion = UWPreferenceManager.getSelectedBibleVersion(context);
-        if(selectedVersion >= 0){
-            Version version = Version.getVersionForId(selectedVersion, DaoDBHelper.getDaoSession(context));
+        long selectedChapter = UWPreferenceManager.getSelectedBibleChapter(context);
+        if(selectedChapter >= 0){
+            Version version = BibleChapter.getModelForId(selectedChapter, DaoDBHelper.getDaoSession(context))
+                    .getBook().getVersion();
 
             for(int i = 0; i < chosenProject.getLanguages().size(); i++){
                 if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){

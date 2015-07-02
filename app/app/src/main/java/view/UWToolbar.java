@@ -83,18 +83,22 @@ public class UWToolbar {
 
     public void setTitle(String text, boolean clickable){
 
-        titleText.setText(text);
-        if(clickable){
-            titleLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    centerButtonClicked();
-                }
-            });
-            titleButtonIndicator.setVisibility(View.VISIBLE);
+        if(text != null) {
+            titleText.setText(text);
+            if (clickable) {
+                titleLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        centerButtonClicked();
+                    }
+                });
+                titleButtonIndicator.setVisibility(View.VISIBLE);
+            } else {
+                titleButtonIndicator.setVisibility(View.GONE);
+            }
         }
         else{
-            titleButtonIndicator.setVisibility(View.GONE);
+            titleLayout.setVisibility(View.GONE);
         }
 
         titleLayout.setVisibility(View.VISIBLE);
@@ -105,33 +109,48 @@ public class UWToolbar {
     }
 
     public void setCheckingLevelImage(int resource){
-        checkingLevelImage.setImageResource(resource);
-        checkingLevelImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkingLevelButtonClicked();
-            }
-        });
-        checkingLevelImage.setVisibility(View.VISIBLE);
+
+        if(resource > 0) {
+
+            checkingLevelImage.setImageResource(resource);
+            checkingLevelImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkingLevelButtonClicked();
+                }
+            });
+            checkingLevelImage.setVisibility(View.VISIBLE);
+        }
+        else{
+            checkingLevelImage.setVisibility(View.GONE);
+        }
     }
 
     public void setRightButtonText(String text, boolean clickable){
 
-        rightButtonText.setText(text);
-        if(clickable){
-            rightButtonLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rightButtonClicked();
-                }
-            });
-            rightButtonButtonIndicator.setVisibility(View.VISIBLE);
+        if(text != null) {
+            rightButtonText.setText(text);
+            if (clickable) {
+                rightButtonLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rightButtonClicked();
+                    }
+                });
+                rightButtonButtonIndicator.setVisibility(View.VISIBLE);
+            } else {
+                rightButtonButtonIndicator.setVisibility(View.GONE);
+            }
+
+            rightButtonText.setVisibility(View.VISIBLE);
         }
         else{
-            rightButtonButtonIndicator.setVisibility(View.GONE);
+            rightButtonLayout.setVisibility(View.GONE);
         }
+    }
 
-        rightButtonText.setVisibility(View.VISIBLE);
+    public void toggleHidden(){
+
     }
 
 
