@@ -11,7 +11,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,19 +27,18 @@ import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import activity.AnimationParadigm;
 import activity.SettingsActivity;
+import activity.UWBaseActivity;
 import activity.reading.ReadingActivity;
 import activity.reading.StoryReadingActivity;
-import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
+import adapters.selectionAdapters.UWGeneralListAdapter;
 import model.DaoDBHelper;
 import model.daoModels.Language;
 import model.daoModels.Project;
-import model.modelClasses.mainData.ProjectModel;
 import services.UWUpdater;
 import utils.NetWorkUtil;
 import utils.URLUtils;
@@ -48,7 +46,7 @@ import utils.URLUtils;
 /**
  * Created by Fechner on 2/27/15.
  */
-public class InitialPageActivity extends GeneralSelectionActivity implements View.OnClickListener {
+public class InitialPageActivity extends UWBaseActivity{
 
     static final public String PROJECT_PARAM = "PROJECT_PARAM";
 
@@ -58,13 +56,16 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
     static final String STORIES_SLUG = "obs";
     public static final String IS_FIRST_LAUNCH = "IS_FIRST_LAUNCH";
 
-    List<Project> mProjects = null;
+    private List<Project> mProjects = null;
 
-    FrameLayout visibleLayout = null;
-    Button mRefreshButton = null;
-    Button settingsButton = null;
+    private FrameLayout visibleLayout = null;
+    private Button mRefreshButton = null;
+    private Button settingsButton = null;
 
-    private Toolbar mToolbar;
+    private ListView listview;
+    UWGeneralListAdapter adapter;
+
+
     /**
      * This broadcast for When the update is completed
      */
@@ -83,17 +84,17 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getContentView());
-        setUI();
-        prepareListView();
+        setContentView(R.layout.initial_list_activity);
+        setupViews();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         boolean firstLaunch = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(IS_FIRST_LAUNCH, true);
         if(firstLaunch){
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -104,99 +105,48 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         }
     }
 
+    private void setupViews(){
+
+        setupToolbar(true, getString(R.string.app_name), false);
+        setupListView();
+        addSettingsFooter();
+        setupRefreshButton();
+    }
+
     private void reload(){
 
         mProjects = null;
-        this.prepareListView();
+        this.setupListView();
     }
 
     @Override
-    protected void setUI() {
-
-        setupActionBar();
-        this.prepareListView();
+    public int getBackResource() {
+        return -1;
     }
 
-    private void setupActionBar(){
+    protected void setupListView() {
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mActionBar = getSupportActionBar();
-        TextView actionbarTextView = (TextView) mToolbar.findViewById(R.id.actionbar_text_view);
-        actionbarTextView.setText(getActionBarTitle());
-        mToolbar.findViewById(R.id.icon_image_view).setVisibility(View.VISIBLE);
+        List<GeneralRowInterface> data = this.getData();
 
-//        mActionBar.setCustomView(view);
-//        mActionBar.setDisplayShowTitleEnabled(false);
-//        mActionBar.setDisplayShowCustomEnabled(true);
-//        mActionBar.setDisplayShowHomeEnabled(false);
-//        mActionBar.setHomeButtonEnabled(false);
-//        mActionBar.setDisplayHomeAsUpEnabled(false);
-    }
-
-//    @Override
-    protected String getActionBarTitle() {
-        return getResources().getString(R.string.app_name);
-    }
-
-    @Override
-    protected String getIndexStorageString() {
-        return INDEX_STORAGE_STRING;
-    }
-
-    @Override
-    protected Class getChildClass() {
-        return BookSelectionActivity.class;
-    }
-
-    @Override
-    protected Class getChildClass(GeneralRowInterface row){
-
-        String aClass = row.getClass().toString();
-
-        if(aClass.contains("Language")){
-            return VersionSelectionActivity.class;
-        }
-        return this.getChildClass();
-    }
-
-    private void moveToSettings(){
-
-        startActivity(new Intent(this, SettingsActivity.class));
-
-    }
-
-//    @Override
-    protected void prepareListView() {
-
-        ArrayList<GeneralRowInterface> data = this.getData();
-
-        if (mListView == null) {
-            mListView = (ListView) findViewById(R.id.generalList);
-        }
-        mListView.setOnItemClickListener(this);
-
-        if(mRefreshButton == null) {
-            LayoutInflater inflater = getLayoutInflater();
-            View mview1 = inflater.inflate(R.layout.header_view, null);
-            visibleLayout = (FrameLayout) mview1.findViewById(R.id.refreshView);
-            mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
-            mRefreshButton.setOnClickListener(this);
-            mListView.addHeaderView(mview1);
-
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
-            filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
-            registerReceiver(receiver, filter);
+        if (listview == null) {
+            listview = (ListView) findViewById(R.id.generalList);
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    moveToNextActivity(mProjects.get(position));
+                }
+            });
         }
 
-        if (data == null) {
-//            return;
-            // test code for adding database.
-            data = new ArrayList<GeneralRowInterface>();
-//            data.add(new InitialPageModel("test", "-1"));
+        if(adapter == null){
+            adapter = new UWGeneralListAdapter(this.getApplicationContext(), data, -1);
+            listview.setAdapter(adapter);
+        } else{
+            adapter.updateWithData(data);
         }
-        mListView.setAdapter(new GeneralAdapter(this.getApplicationContext(), data, this.actionbarTextView, this, this.getIndexStorageString()));
+    }
 
+    private void addSettingsFooter(){
         if(settingsButton == null) {
             LayoutInflater inflater = getLayoutInflater();
             View footerView = inflater.inflate(R.layout.settings_footer, null);
@@ -210,31 +160,54 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
                     moveToSettings();
                 }
             });
-            mListView.addFooterView(footerView);
+            listview.addFooterView(footerView);
+        }
+    }
+
+    private void setupRefreshButton() {
+
+        if(mRefreshButton == null) {
+            LayoutInflater inflater = getLayoutInflater();
+            View mview1 = inflater.inflate(R.layout.header_view, null);
+            visibleLayout = (FrameLayout) mview1.findViewById(R.id.refreshView);
+            mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
+            mRefreshButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    update();
+                }
+            });
+
+            listview.addHeaderView(mview1);
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
+            filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
+            registerReceiver(receiver, filter);
         }
     }
 
     @Override
-    protected int getContentView() {
-         return R.layout.initial_list_activity;
+    public AnimationParadigm getAnimationParadigm() {
+        return AnimationParadigm.ANIMATION_LEFT_RIGHT;
     }
 
-    protected ArrayList<GeneralRowInterface> getData(){
+    private void moveToSettings(){
 
-//        Map<String, GeneralRowInterface> data = new HashMap<String, GeneralRowInterface>();
+        goToNewActivity(SettingsActivity.class);
+    }
+
+    protected List<GeneralRowInterface> getData(){
 
         if(mProjects == null){
-            addProjects();
+            updateProjects();
         }
 
         if(mProjects == null || mProjects.size() < 1){
-//            Intent refresh = new Intent(this, SplashScreenActivity.class);
-//            startActivity(refresh);
-//            this.finish();
-            return null;
+            return new ArrayList<GeneralRowInterface>();
         }
 
-        ArrayList<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>(3);
+        List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
         for(Project row : mProjects) {
             dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getSlug(), row.getTitle()));
             List<Language> langs = row.getLanguages();
@@ -243,43 +216,24 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
         return dataList;
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
-
-//        Object itemAtPosition = adapterView.getItemAtPosition(position);
-//        if (itemAtPosition instanceof GeneralRowInterface) {
-//           PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt(INDEX_STORAGE_STRING, (int) rowIndex);
-//
-//            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(
-//                    this.getIndexStorageString(), (int) rowIndex).commit();
-//
-//            ProjectModel model = (ProjectModel) itemAtPosition;
-            moveToNextActivity(mProjects.get(position));
-//        }
-    }
-
     private void moveToNextActivity(Project project){
-
-
 
         Class nextActivity = (project.getSlug().equalsIgnoreCase(STORIES_SLUG))?
                 StoryReadingActivity.class : ReadingActivity.class;
 
-                startActivity(new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project));
-        overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
+        Intent newIntent = new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project);
+
+        goToNextActivity(newIntent);
     }
 
 
-    private void addProjects() {
+    private void updateProjects() {
 
-        if(mProjects == null){
-            mProjects = new ArrayList<Project>();
-            mProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
-        }
+        mProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
     }
 
-    @Override
-    public void onClick(View view) {
+    private void update(){
+
         if (!NetWorkUtil.isConnected(this)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Alert");
@@ -291,10 +245,6 @@ public class InitialPageActivity extends GeneralSelectionActivity implements Vie
             // to handle new data from network
             startService(new Intent(getApplicationContext(), UWUpdater.class));
         }
-
-    }
-
-    public void closeButtonClicked(View view) {
     }
 
     static public class CheckingLevelFragment extends DialogFragment {

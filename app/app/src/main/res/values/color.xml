@@ -103,5 +103,8 @@
 
     <color name="clear">#0000</color>
 
+    <color name="clear_color">#0000</color>
+    <color name="basic_button_pressed">#9aaa</color>
+
 
 </resources>

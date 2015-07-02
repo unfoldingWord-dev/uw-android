@@ -12,66 +12,130 @@
     app:contentInsetLeft="0dp"
     app:contentInsetStart="0dp"
     >
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="50dp">
 
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true">
-
-        </FrameLayout>
-
-        <FrameLayout
+        <ImageButton
+            android:id="@+id/toolbar_left_button"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:padding="@dimen/app_bar_button_padding"
             android:layout_width="50dp"
-            android:layout_height="fill_parent"
-            android:id="@+id/close_image_view"
-            android:visibility="gone"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="@drawable/language_button_click"
-            android:onClick="closeButtonClicked">
+            android:scaleType="centerInside"
+            android:src="@drawable/back_button_light"
+            android:background="@drawable/basic_button_selector"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:src="@drawable/x_button"
-                android:layout_gravity="center"
-                android:clickable="false"
-                />
-        </FrameLayout>
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/uw_transparent"
-            android:id="@+id/icon_image_view"
-            android:visibility="visible"
-            android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/actionbar_text_view"
-            android:layout_toStartOf="@+id/actionbar_text_view" />
-
-        <TextView
-            android:id="@+id/actionbar_text_view"
+        <LinearLayout
+            android:id="@+id/toolbar_middle_button_layout"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/app_name"
-            android:textColor="@color/white_mix_gary"
-            android:textSize="@dimen/actionbar_title_font_size"
-            android:textStyle="bold"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="@drawable/language_button_click"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:textAlignment="center"
-            />
+            android:layout_toLeftOf="@+id/toolbar_checking_level_image_view"
+            android:layout_toStartOf="@+id/toolbar_checking_level_image_view"
+            android:layout_toRightOf="@+id/toolbar_left_button"
+            android:layout_toEndOf="@+id/toolbar_left_button"
+            >
+
+            <ImageView
+                android:id="@+id/toolbar_logo_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/uw_transparent"
+                android:visibility="visible"
+                />
+
+            <TextView
+                android:gravity="center"
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="Galations 3"
+                android:textStyle="normal"
+                android:textAllCaps="false"
+                android:textSize="@dimen/actionbar_title_font_size"
+                android:textColor="#fff"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                />
+
+            <ImageView
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:id="@+id/toolbar_title_button_image"
+                android:layout_width="20dp"
+                android:layout_height="15dp"
+                android:src="@drawable/quickaction_arrow_down"
+                android:layout_gravity="center_vertical"
+                android:visibility="visible"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/toolbar_checking_level_image_view"
+            android:layout_width="@dimen/version_selection_image_size"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:cropToPadding="true"
+            android:padding="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:scaleType="center"
+            android:src="@drawable/level_one"
+            android:layout_toLeftOf="@+id/toolbar_right_button_layout"
+            android:background="@drawable/language_button_click"
+            android:layout_toStartOf="@+id/toolbar_right_button_layout"
+            android:visibility="visible"
+            android:layout_centerVertical="true" />
+
+        <LinearLayout
+            android:id="@+id/toolbar_right_button_layout"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:clickable="true"
+            android:background="@drawable/language_button_click"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true">
+
+            <TextView
+                android:id="@+id/toolbar_right_button_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Language"
+                android:textSize="@dimen/actionbar_version_font_size"
+                android:clickable="false"
+                android:textStyle="normal"
+                android:textAllCaps="false"
+                android:layout_gravity="center_vertical" />
+
+            <ImageView
+                android:id="@+id/toolbar_right_button_image_indicator"
+                android:layout_width="17dp"
+                android:layout_height="13dp"
+                android:src="@drawable/quickaction_arrow_down"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
+                android:paddingRight="0dp"
+                android:paddingEnd="0dp"
+                android:visibility="gone"/>
+        </LinearLayout>
     </RelativeLayout>
-
-
 
 </android.support.v7.widget.Toolbar>
 
