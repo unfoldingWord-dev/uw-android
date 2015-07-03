@@ -99,7 +99,7 @@ public class UWSigning {
                 if(model == null){
 
                     Verification errorModel = new Verification();
-                    errorModel.setStatus( 2);
+                    errorModel.setStatus(2);
                     verifications.add(errorModel);
                     updateVerifications(context, verifications, book.getId());
                     return;

@@ -1,6 +1,7 @@
 package tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +19,7 @@ import services.UWUpdater;
  */
 public class UpdateStoryPagesRunnable implements Runnable{
 
-    private static final String TAG = "UpdateVersionsRunnable";
+    private static final String TAG = "UpdateStoryPgsRunnable";
 
     private JSONArray jsonModels;
     private UWUpdater updater;
@@ -61,6 +62,7 @@ public class UpdateStoryPagesRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                            Log.d(TAG, "story page created");
                             if(isLast){
                                 updater.runnableFinished();
                             }

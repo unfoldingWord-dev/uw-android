@@ -62,6 +62,7 @@ public class UpdateVersionsRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                            Log.d(TAG, "version created");
                             if(shouldContinueUpdate != null){
                                 updateBooks(jsonObject, (Version) shouldContinueUpdate);
                             }
@@ -78,7 +79,6 @@ public class UpdateVersionsRunnable implements Runnable{
 
     private void updateBooks(JSONObject project, Version parent){
 
-        Log.d(TAG, "Version created or updated: " + parent.toString());
         try{
             JSONArray languages = project.getJSONArray(BOOKS_JSON_KEY);
             UpdateBooksRunnable runnable = new UpdateBooksRunnable(languages, updater, parent);

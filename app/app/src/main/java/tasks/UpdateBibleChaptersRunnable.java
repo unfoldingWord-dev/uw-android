@@ -1,6 +1,7 @@
 package tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +23,7 @@ import services.UWUpdater;
  */
 public class UpdateBibleChaptersRunnable implements Runnable{
 
-    private static final String TAG = "UpdateVersionsRunnable";
+    private static final String TAG = "UpdateBblChaptsRunnable";
 
     private byte[] usfm;
     private UWUpdater updater;
@@ -73,6 +74,7 @@ public class UpdateBibleChaptersRunnable implements Runnable{
             @Override
             public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                Log.d(TAG, "bible chapter created");
                 if(isLast){
                     updater.runnableFinished();
                 }

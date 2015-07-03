@@ -18,7 +18,7 @@ import services.UWUpdater;
  */
 public class UpdateStoriesChaptersRunnable implements Runnable{
 
-    private static final String TAG = "UpdateVersionsRunnable";
+    private static final String TAG = "UpdateStrysChapsRunbl";
     public static final String FRAMES_JSON_KEY = "frames";
 
     private JSONArray jsonModels;
@@ -62,6 +62,8 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                            Log.d(TAG, "story chapter created");
+
                             if(shouldContinueUpdate != null){
                                 updatePages(jsonObject, (StoriesChapter) shouldContinueUpdate);
                             }
@@ -78,7 +80,6 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
 
     private void updatePages(JSONObject project, StoriesChapter pageParent){
 
-        Log.d(TAG, "StoriesChapter created or updated: " + parent.toString());
         try{
             JSONArray pages = project.getJSONArray(FRAMES_JSON_KEY);
             UpdateStoryPagesRunnable runnable = new UpdateStoryPagesRunnable(pages, updater, pageParent);

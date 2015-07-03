@@ -61,6 +61,9 @@ public class UpdateLanguagesRunnable implements Runnable{
                     new LanguageSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener() {
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
+
+                            Log.d(TAG, "language created");
+
                             if(shouldContinueUpdate != null){
                                 updateVersions(jsonModel, (Language) shouldContinueUpdate);
                             }
@@ -76,7 +79,6 @@ public class UpdateLanguagesRunnable implements Runnable{
 
     private void updateVersions(JSONObject language, Language parent){
 
-        Log.d(TAG, "Language created or updated: " + parent.toString());
         try{
             JSONArray versions = language.getJSONArray(VERSIONS_JSON_KEY);
             UpdateVersionsRunnable runnable = new UpdateVersionsRunnable(versions, updater, parent);

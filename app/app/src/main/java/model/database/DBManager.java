@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
+import model.DaoDBHelper;
+import model.daoModels.Project;
 import model.datasource.LanguageLocaleDataSource;
 import model.datasource.ProjectDataSource;
 import model.modelClasses.mainData.LanguageModel;
@@ -122,103 +125,51 @@ public class DBManager extends SQLiteOpenHelper {
 //        backupDatabase();
     }
 
+        private boolean shouldLoadSavedDb() {
+
+            List<Project> existingProjects = Project.getAllModels(DaoDBHelper.getDaoSession(context));
+            return (existingProjects == null || existingProjects.size() < 1);
+        }
     /**
      * Check if the database is exist
      *
      * @return
      */
-    private boolean shouldLoadSavedDb() {
-        SQLiteDatabase checkDB = null;
-
-        try {
-            String myPath = DB_PATH + AMDatabaseIndex.DB_NAME;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null,
-                    SQLiteDatabase.OPEN_READONLY);
-
-            int version = checkDB.getVersion();
-            if(version < AMDatabaseIndex.DB_VERSION){
-                Log.i(TAG, "Database is old");
-                checkDB.close();
-                context.deleteDatabase(myPath);
-
-                return true;
-            }
-
-            if (checkDB != null) {
-                checkDB.close();
-            }
-        }
-        catch (Exception e) {
-            Log.e(TAG, "DB exception in shouldLoadSavedDb");
-            return (checkDB == null)? true : false;
-        }
-
-
-        boolean exists = (checkDB != null);
-
-        checkDB.close();
-        if(exists){
-            exists = this.dbIsUpdated();
-        }
-        boolean shouldUpdate = ! exists;
-        return shouldUpdate;
-    }
-
-    //endregion
-
-    /**
-     * Copies your database from your local assets-folder to the just created
-     * empty database (or overrides/deletes it if it exists) in the system folder, from where it can be accessed and
-     * handled. This is done by transferring ByteStream.
-     *
-     * @throws IOException
-     */
-//    private void copyDataBase() throws IOException {
-//
-//        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_catalog_file_name));
+//    private boolean shouldLoadSavedDb() {
+//        SQLiteDatabase checkDB = null;
 //
 //        try {
-//            JSONObject jsonObject = new JSONObject(jsonString);
-//            long modified = jsonObject.getLong(UWDataParser.LAST_MODIFIED_JSON_KEY);
-//            UWPreferenceManager.setLastUpdatedDate(context, modified);
+//            String myPath = DB_PATH + AMDatabaseIndex.DB_NAME;
+//            checkDB = SQLiteDatabase.openDatabase(myPath, null,
+//                    SQLiteDatabase.OPEN_READONLY);
 //
-//            UWDataParser.getInstance(context).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
+//            int version = checkDB.getVersion();
+//            if(version < AMDatabaseIndex.DB_VERSION){
+//                Log.i(TAG, "Database is old");
+//                checkDB.close();
+//                context.deleteDatabase(myPath);
+//
+//                return true;
+//            }
+//
+//            if (checkDB != null) {
+//                checkDB.close();
+//            }
 //        }
-//        catch (JSONException e){
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void copyLanguages() throws IOException {
-//
-//        String jsonString = loadDbFile(context.getResources().getString(R.string.preloaded_locales_file_name));
-//
-//        try {
-//            new LanguageLocaleDataSource(context).fastLoadJson(jsonString);
-//        }
-//        catch (JSONException e){
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//    private String loadDbFile(String fileName) throws IOException{
-//
-//        // Open your local model.db as the input stream
-//        InputStream inputStream = context.getAssets().open("preloaded_content/" + fileName);
-//
-//        InputStreamReader reader = new InputStreamReader(inputStream);
-//        StringBuilder builder = new StringBuilder();
-//        BufferedReader bufferReader = new BufferedReader(reader);
-//        String read = bufferReader.readLine();
-//
-//        while(read != null) {
-//            //System.out.println(read);
-//            builder.append(read);
-//            read =bufferReader.readLine();
+//        catch (Exception e) {
+//            Log.e(TAG, "DB exception in shouldLoadSavedDb");
+//            return (checkDB == null)? true : false;
 //        }
 //
-//        return builder.toString();
+//
+//        boolean exists = (checkDB != null);
+//
+//        checkDB.close();
+//        if(exists){
+//            exists = this.dbIsUpdated();
+//        }
+//        boolean shouldUpdate = ! exists;
+//        return shouldUpdate;
 //    }
 
     //endregion

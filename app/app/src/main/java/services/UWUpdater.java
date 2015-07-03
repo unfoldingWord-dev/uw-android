@@ -26,6 +26,8 @@ public class UWUpdater extends Service {
     private static final String TAG = "UpdateService";
 
     public static final String BROAD_CAST_DOWN_COMP = "org.unfoldingword.mobile.DOWNLOAD_COMPLETED";
+    public static final String PROJECTS_JSON_KEY = "cat";
+    public static final String MODIFIED_JSON_KEY = "mod";
 
     private Looper mServiceLooper;
     private Handler mServiceHandler;
@@ -38,7 +40,7 @@ public class UWUpdater extends Service {
         return null;
     }
 
-    private UWUpdater getThis(){
+    protected UWUpdater getThis(){
         return this;
     }
     @Override
@@ -66,7 +68,7 @@ public class UWUpdater extends Service {
         }
     }
 
-    private void stopService(){
+    protected void stopService(){
         getApplicationContext().sendBroadcast(new Intent(URLUtils.BROAD_CAST_DOWN_COMP));
         this.stopSelf();
     }
@@ -94,12 +96,12 @@ public class UWUpdater extends Service {
 
                     try{
                         JSONObject json = new JSONObject(jsonString);
-                        long lastModified = json.getLong("mod");
+                        long lastModified = json.getLong(MODIFIED_JSON_KEY);
 
                         long currentUpdated = UWPreferenceManager.getLastUpdatedDate(getApplicationContext());
                         if(true){//lastModified > currentUpdated) {
                             UWPreferenceManager.setLastUpdatedDate(getApplicationContext(), lastModified);
-                            addRunnable(new UpdateProjectsRunnable(json.getJSONArray("cat"), getThis()));
+                            addRunnable(new UpdateProjectsRunnable(json.getJSONArray(PROJECTS_JSON_KEY), getThis()));
                         }
                         runnableFinished();
                     } catch (JSONException e){

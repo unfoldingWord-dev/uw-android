@@ -60,6 +60,8 @@ public class UpdateProjectsRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                            Log.d(TAG, "project created");
+
                             if(shouldContinueUpdate != null){
                                 updateLanguages(jsonObject, (Project) shouldContinueUpdate);
                             }
@@ -76,7 +78,6 @@ public class UpdateProjectsRunnable implements Runnable{
 
     private void updateLanguages(JSONObject project, Project parentProject){
 
-        Log.d(TAG, "project created or updated: " + parentProject.toString());
         try{
             JSONArray languages = project.getJSONArray(LANGUAGES_JSON_KEY);
             UpdateLanguagesRunnable runnable = new UpdateLanguagesRunnable(languages, updater, parentProject);

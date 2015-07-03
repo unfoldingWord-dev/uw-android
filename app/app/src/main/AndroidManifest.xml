@@ -58,6 +58,7 @@
         <service android:name="services.UWUpdater" />
         <service android:name="services.VersionDownloadService" />
         <service android:name="services.UWVersionDownloader" />
+        <service android:name="services.UWPreLoader" />
 
     </application>
 

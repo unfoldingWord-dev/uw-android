@@ -1,6 +1,7 @@
 package tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,6 +62,7 @@ public class UpdateBooksRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
+                            Log.d(TAG, "Book created");
                             if(shouldContinueUpdate != null){
                                 updateChapters (jsonObject, (Book) shouldContinueUpdate);
                             }

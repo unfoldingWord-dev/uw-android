@@ -14,7 +14,7 @@ import model.daoModels.StoriesChapter;
 public class StoriesChapterParser extends UWDataParser{
 
     private static final String NUMBER_JSON_KEY = "number";
-    private static final String REFERENCE_JSON_KEY = "reference";
+    private static final String REFERENCE_JSON_KEY = "ref";
     private static final String TITLE_JSON_KEY = "title";
 
 
