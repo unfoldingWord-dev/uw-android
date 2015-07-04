@@ -64,7 +64,8 @@ public class UWPreLoader extends UWUpdater {
             hasUpdatedVersions = true;
         }
         else {
-            super.stopService();
+            getApplicationContext().sendBroadcast(new Intent(BROAD_CAST_PRELOAD_SUCCESSFUL));
+            this.stopSelf();
         }
     }
 
@@ -147,6 +148,15 @@ public class UWPreLoader extends UWUpdater {
                     e.printStackTrace();
                 }
             }
+
+            List<Version> versions = DaoDBHelper.getDaoSession(getApplicationContext())
+                    .getVersionDao().queryBuilder().list();
+
+            for(Version version : versions){
+                version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+                version.update();
+            }
+
             runnableFinished();
         }
     }

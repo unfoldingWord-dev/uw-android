@@ -113,7 +113,6 @@ public class ReadingActivity extends UWBaseActivity implements
     private void setupViews(){
         readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
         errorTextView = (TextView) findViewById(R.id.reading_error_text_view);
-        updateViews();
     }
 
     @Override
@@ -133,6 +132,14 @@ public class ReadingActivity extends UWBaseActivity implements
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(currentChapter != null) {
+            updateViews();
+        }
+    }
+
     private void updateViews(){
 
         updateToolbar();
@@ -141,7 +148,7 @@ public class ReadingActivity extends UWBaseActivity implements
 
     private void updateToolbar() {
 
-        boolean hasVersion = (currentChapter == null);
+        boolean hasVersion = (currentChapter != null);
 
         getToolbar().setCheckingLevelImage((hasVersion)? getCheckingLevelImage() : -1);
         getToolbar().setTitle((hasVersion) ? currentChapter.getTitle() : null, true);
@@ -190,13 +197,21 @@ public class ReadingActivity extends UWBaseActivity implements
 
     private void goToVersionSelection(){
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            return;
+//        Bundle extras = getIntent().getExtras();
+//        if (extras == null) {
+//            return;
+//        }
+
+        long projectId = -1;
+        List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        for(Project project : projects){
+
+            if(!project.getSlug().equalsIgnoreCase("obs")){
+                projectId = project.getId();
+                break;
+            }
         }
-
-        String projectId = Long.toString(currentChapter.getBook().getVersion().getLanguage().getProjectId());
-
 //        if(isTablet()){
 //
 //            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

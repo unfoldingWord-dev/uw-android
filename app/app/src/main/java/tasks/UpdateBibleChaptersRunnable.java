@@ -45,6 +45,7 @@ public class UpdateBibleChaptersRunnable implements Runnable{
 
         try {
             Map<String, String> parsedUsfm = new USFMParser().getChaptersFromUsfm(textBytes);
+            createModels(parsedUsfm);
         }
         catch (CharacterCodingException e){
             e.printStackTrace();

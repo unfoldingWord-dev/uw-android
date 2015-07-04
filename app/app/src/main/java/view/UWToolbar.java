@@ -70,7 +70,9 @@ public class UWToolbar {
 
         logoView.setVisibility((hasLogo)? View.VISIBLE : View.GONE);
         leftButton.setVisibility((backResource > 0)? View.VISIBLE : View.GONE);
-        leftButton.setImageResource(backResource);
+        if(backResource > 0) {
+            leftButton.setImageResource(backResource);
+        }
 
         titleLayout.setVisibility(View.GONE);
         checkingLevelImage.setVisibility(View.GONE);

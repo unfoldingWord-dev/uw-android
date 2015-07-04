@@ -7,6 +7,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.MessageQueue;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,13 +64,14 @@ public class UWUpdater extends Service {
     public void runnableFinished(){
 
         numberRunning--;
+        Log.d(TAG, "a runnable was finished. current Number: " + numberRunning);
         if(numberRunning == 0){
             stopService();
         }
     }
 
     protected void stopService(){
-        getApplicationContext().sendBroadcast(new Intent(URLUtils.BROAD_CAST_DOWN_COMP));
+        getApplicationContext().sendBroadcast(new Intent(BROAD_CAST_DOWN_COMP));
         this.stopSelf();
     }
 

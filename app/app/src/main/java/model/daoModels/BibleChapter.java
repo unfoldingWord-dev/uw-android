@@ -159,6 +159,7 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
     @Override
     public void insertModel(DaoSession session) {
 
+        session.getBibleChapterDao().insert(this);
     }
 
     @Override

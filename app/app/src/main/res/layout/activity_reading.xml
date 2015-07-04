@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
-        android:id="@+id/reading_fragment_frame">
+        android:id="@+id/reading_fragment_frame"
+        android:background="#fff">
     </FrameLayout>
 
     <TextView

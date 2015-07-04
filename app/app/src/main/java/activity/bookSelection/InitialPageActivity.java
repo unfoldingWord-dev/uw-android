@@ -133,7 +133,7 @@ public class InitialPageActivity extends UWBaseActivity{
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    moveToNextActivity(mProjects.get(position));
+                    moveToNextActivity(mProjects.get(position - 1));
                 }
             });
         }

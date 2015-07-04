@@ -24,6 +24,7 @@ public class BibleChapterParser extends UWDataParser{
         chapter.setNumber(number);
         chapter.setText(text);
         chapter.setSlug(parent.getSlug() + number);
+        chapter.setBookId(parent.getId());
 
         return chapter;
     }

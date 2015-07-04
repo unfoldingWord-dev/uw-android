@@ -488,7 +488,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         else{
             long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
             if(chapterId < 0){
-                BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(1);
+                BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(0);
                 UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
             }
             else {
