@@ -1,10 +1,8 @@
 package fragments;
 
-import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -16,13 +14,11 @@ import android.view.Window;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
-import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
-import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -39,17 +35,15 @@ import view.AnimatedExpandableListView;
 public class VersionSelectionFragment extends DialogFragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String CHOSEN_PROJECT_ID = "CHOSEN_PROJECT_ID";
+    private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
     static final String STORIES_SLUG = "obs";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
 
-    private String chosenProjectId;
     protected AnimatedExpandableListView mListView = null;
-    private View footerView = null;
     private Project chosenProject = null;
     CollapsibleVersionAdapter adapter;
 
-    private boolean showTitle = false;
+    private boolean showProjectTitle = false;
     private TextView titleTextView;
 
     private VersionSelectionFragmentListener mListener;
@@ -61,11 +55,11 @@ public class VersionSelectionFragment extends DialogFragment {
      *
      * @return A new instance of fragment VersionSelectionFragment.
      */
-    public static VersionSelectionFragment newInstance(String projId, boolean showTitle) {
+    public static VersionSelectionFragment newInstance(Project project, boolean showTitle) {
 
         VersionSelectionFragment fragment = new VersionSelectionFragment();
         Bundle args = new Bundle();
-        args.putString(CHOSEN_PROJECT_ID, projId);
+        args.putSerializable(CHOSEN_PROJECT, project);
         args.putBoolean(SHOW_TITLE_PARAM, showTitle);
         fragment.setArguments(args);
         return fragment;
@@ -80,15 +74,16 @@ public class VersionSelectionFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            chosenProjectId = getArguments().getString(CHOSEN_PROJECT_ID);
-            showTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+            chosenProject = (Project) getArguments().getSerializable(CHOSEN_PROJECT);
+            chosenProject = Project.getProjectForId(chosenProject.getId(), DaoDBHelper.getDaoSession(getContext()));
+            showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        showTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+        showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
 
     }
 
@@ -112,13 +107,10 @@ public class VersionSelectionFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(!showTitle){
+        if(!showProjectTitle){
             titleTextView.setVisibility(View.GONE);
         }
         else{
-            if (chosenProject == null) {
-                addProject();
-            }
             titleTextView.setText(chosenProject.getTitle());
             titleTextView.setVisibility(View.VISIBLE);
         }
@@ -126,21 +118,18 @@ public class VersionSelectionFragment extends DialogFragment {
 
     private void setupViews(View view, LayoutInflater inflater){
         titleTextView = (TextView) view.findViewById(R.id.version_selection_text_view);
-        if(!showTitle){
+        if(!showProjectTitle){
             titleTextView.setVisibility(View.GONE);
         }
         else{
-            if (chosenProject == null) {
-                addProject();
-            }
             titleTextView.setText(chosenProject.getTitle());
             titleTextView.setVisibility(View.VISIBLE);
         }
-        prepareListView(view, inflater);
+        prepareListView(view);
     }
 
 
-    protected void prepareListView(View view, LayoutInflater inflater){
+    protected void prepareListView(View view){
 
         //getting instance of ExpandableListView
         mListView = (AnimatedExpandableListView) view.findViewById(R.id.versions_list);
@@ -152,7 +141,7 @@ public class VersionSelectionFragment extends DialogFragment {
                 // We call collapseGroupWithAnimation(int) and
                 // expandGroupWithAnimation(int) to animate group
                 // expansion/collapse.
-                if(!showTitle) {
+                if(!showProjectTitle) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -171,73 +160,22 @@ public class VersionSelectionFragment extends DialogFragment {
             }
         });
 
-        if (chosenProject == null) {
-            addProject();
+
+        long selectedVersionId;
+
+        if(chosenProject.getSlug().equalsIgnoreCase(STORIES_SLUG)){
+            selectedVersionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
+        }
+        else{
+            selectedVersionId = UWPreferenceManager.getSelectedBibleChapter(getContext());
         }
 
-        adapter = new CollapsibleVersionAdapter(this, this.chosenProject);
-
+        adapter = new CollapsibleVersionAdapter(this, this.chosenProject,
+                Version.getVersionForId(selectedVersionId, DaoDBHelper.getDaoSession(getContext())));
         mListView.setAdapter(adapter);
 
         int selectedIndex;
-        if(chosenProject.getSlug().equalsIgnoreCase(STORIES_SLUG)){
-            setupForStories();
-        }
-        else{
-            selectedIndex = setupForBible();
-            if(selectedIndex >= 0) {
-                mListView.expandGroup(selectedIndex);
-            }
-        }
-    }
 
-    private int setupForStories(){
-
-        Context context = getContext();
-        int selectedIndex = 0;
-        long selectedVersion = UWPreferenceManager.getSelectedStoryVersion(context);
-        if(selectedVersion < 0){
-            selectedIndex = 0;
-        }
-        else {
-            Version version = Version.getVersionForId(selectedVersion, DaoDBHelper.getDaoSession(context));
-
-            for(int i = 0; i < chosenProject.getLanguages().size(); i++){
-                if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){
-                    selectedIndex = i;
-                    mListView.expandGroup(i);
-                }
-
-            }
-        }
-//        for(int i = 0; i < adapter.getGroupCount(); i++){
-//            mListView.expandGroup(i);
-//        }
-        return selectedIndex;
-    }
-
-    private int setupForBible(){
-
-        Context context = getContext();
-        int selectedIndex = -1;
-        long selectedChapter = UWPreferenceManager.getSelectedBibleChapter(context);
-        if(selectedChapter >= 0){
-            Version version = BibleChapter.getModelForId(selectedChapter, DaoDBHelper.getDaoSession(context))
-                    .getBook().getVersion();
-
-            for(int i = 0; i < chosenProject.getLanguages().size(); i++){
-                if(chosenProject.getLanguages().get(i).getSlug().equalsIgnoreCase(version.getLanguage().getSlug())){
-                    selectedIndex = i;
-                    break;
-                }
-            }
-        }
-        return selectedIndex;
-    }
-
-    private void addProject(){
-
-        this.chosenProject = Project.getProjectForId(Long.parseLong(chosenProjectId), DaoDBHelper.getDaoSession(getContext()));
     }
 
     private Context getContext(){
@@ -265,8 +203,9 @@ public class VersionSelectionFragment extends DialogFragment {
     }
 
     public void rowSelected(){
-
-        this.mListener.rowWasSelected();
+        if(mListener != null) {
+            this.mListener.rowWasSelected();
+        }
     }
 
     /**
@@ -280,7 +219,6 @@ public class VersionSelectionFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface VersionSelectionFragmentListener {
-        // TODO: Update argument type and name
         public void rowWasSelected();
     }
 

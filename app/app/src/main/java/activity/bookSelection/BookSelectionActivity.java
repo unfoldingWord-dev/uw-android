@@ -33,7 +33,6 @@ public class BookSelectionActivity extends GeneralSelectionActivity implements C
 
     @Override
     protected void prepareListView() {
-
     }
 
     @Override

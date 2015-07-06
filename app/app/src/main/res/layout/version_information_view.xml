@@ -3,11 +3,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/off_white"
-    android:paddingBottom="20dp">
+    android:background="@color/off_white">
 
     <TextView
-        android:layout_marginBottom="10dp"
         android:paddingLeft="50dp"
         android:paddingRight="50dp"
         android:paddingTop="10dp"
@@ -19,9 +17,11 @@
         android:layout_height="wrap_content"
         android:text="@string/version_information_title"
         android:textColor="@color/black"
-        android:background="@color/light_gray"/>
+        android:background="@color/light_gray"
+        android:id="@+id/version_information_title_view"/>
 
     <ScrollView
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minWidth="200dp">
@@ -50,7 +50,8 @@
                         android:singleLine="true"
                         android:text="@string/verification_title"
                         android:textColor="@color/black"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:id="@+id/version_verification_title"/>
 
                     <Button
                         android:gravity="center"
@@ -98,7 +99,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/checkingEntitytextView"
+                    android:id="@+id/checking_entity_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -172,7 +173,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/versionTextView"
+                    android:id="@+id/version_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -200,7 +201,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/publishDateTextView"
+                    android:id="@+id/publish_date_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"

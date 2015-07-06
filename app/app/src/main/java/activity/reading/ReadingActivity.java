@@ -6,45 +6,27 @@ import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.bookSelection.BookSelectionActivity;
-import activity.bookSelection.GeneralSelectionActivity;
-import activity.bookSelection.InitialPageActivity;
 import activity.bookSelection.VersionSelectionActivity;
-import adapters.ReadingPagerAdapter;
 import fragments.BibleReadingFragment;
 import fragments.BooksFragment;
 import fragments.ChapterSelectionFragment;
@@ -52,10 +34,10 @@ import fragments.ChaptersFragment;
 import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
-import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
+import view.ViewHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -161,7 +143,7 @@ public class ReadingActivity extends UWBaseActivity implements
 
         if(this.readingFragment == null){
             this.readingFragment = BibleReadingFragment.newInstance(currentChapter.getBook());
-            getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment");
+            getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment").commit();
         }
         else{
             readingFragment.updateReadingFragment(currentChapter.getBook());
@@ -202,13 +184,13 @@ public class ReadingActivity extends UWBaseActivity implements
 //            return;
 //        }
 
-        long projectId = -1;
+        Project selectedProject = new Project();
         List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
 
         for(Project project : projects){
 
             if(!project.getSlug().equalsIgnoreCase("obs")){
-                projectId = project.getId();
+                selectedProject = project;
                 break;
             }
         }
@@ -221,7 +203,7 @@ public class ReadingActivity extends UWBaseActivity implements
 //        }
 //        else {
             startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
-                    GeneralSelectionActivity.CHOSEN_ID, projectId));
+                    VersionSelectionActivity.PROJECT_PARAM, selectedProject));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
 //        }
     }
@@ -343,26 +325,26 @@ public class ReadingActivity extends UWBaseActivity implements
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.version_information_fragment, container, false);
-            TextView checkingEntityTextView = (TextView) view.findViewById(R.id.checkingEntitytextView);
+            View view = inflater.inflate(R.layout.version_information_view, container, false);
+            TextView checkingEntityTextView = (TextView) view.findViewById(R.id.checking_entity_text_view);
             ImageView checkingLevelImage = (ImageView) view.findViewById(R.id.checking_level_image);
-            TextView versionTextView = (TextView) view.findViewById(R.id.versionTextView);
-            TextView publishDateTextView = (TextView) view.findViewById(R.id.publishDateTextView);
+            TextView versionTextView = (TextView) view.findViewById(R.id.version_text_view);
+            TextView publishDateTextView = (TextView) view.findViewById(R.id.publish_date_text_view);
             TextView verificationTextView = (TextView) view.findViewById(R.id.verification_text_view);
             Button status = (Button) view.findViewById(R.id.status);
             TextView checkingLevelExplanationTextView = (TextView) view.findViewById(R.id.checking_level_explanation_text);
 
 
             checkingEntityTextView.setText(version.getStatusCheckingEntity());
-            checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+            checkingLevelImage.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
             versionTextView.setText(version.getStatusVersion());
             publishDateTextView.setText(version.getStatusPublishDate());
-            verificationTextView.setText(getVerificationText(version, getActivity().getApplicationContext()));
-            checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+            verificationTextView.setText(ViewHelper.getVerificationText(version));
+            checkingLevelExplanationTextView.setText(ViewHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
             int verificationStatus = 1;//version.getVerificationStatus(getActivity().getApplicationContext());
-            status.setBackgroundResource(getColorForStatus(verificationStatus));
-            status.setText(getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
+            status.setBackgroundResource(ViewHelper.getColorForStatus(verificationStatus));
+            status.setText(ViewHelper.getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
 
             return view;
         }
@@ -373,93 +355,6 @@ public class ReadingActivity extends UWBaseActivity implements
             Dialog dialog = super.onCreateDialog(savedInstanceState);
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             return dialog;
-        }
-
-        private int getCheckingLevelImage(int level){
-            switch (level){
-                case 2:{
-                    return R.drawable.level_two_dark;
-                }
-                case 3:{
-                    return R.drawable.level_three_dark;
-                }
-                default:{
-                    return R.drawable.level_one_dark;
-                }
-            }
-        }
-
-        private String getVerificationText(Version version, Context context){
-
-            String text;
-            int status = 1;// version.getstatus(context);
-            switch (status){
-                case 0:{
-                    text = context.getResources().getString(R.string.verified_title_start);
-                    break;
-                }
-                case 1:{
-                    text = context.getResources().getString(R.string.expired_title_start) + "\n";// + version.verificationText;
-                    break;
-                }
-                case 3:{
-                    text = context.getResources().getString(R.string.failed_title_start) + "\n";// + version.verificationText;
-                    break;
-                }
-                default:{
-                    text = context.getResources().getString(R.string.error_title_start) + "\n";// + version.verificationText;
-                }
-            }
-
-//            ArrayList<String> organizations = version.getSigningOrganizations(context);
-
-//            if(status == 0){
-//                for(String org : organizations){
-//                    text += " " + org + ",";
-//                }
-//                text = text.substring(0, text.length() - 1);
-//            }
-
-            return text;
-        }
-
-        private int getCheckingLevelText(int level){
-
-            switch (level){
-                case 2:{
-                    return R.string.level_two;
-                }
-                case 3:{
-                    return R.string.level_three;
-                }
-                default:{
-                    return R.string.level_one;
-                }
-            }
-        }
-
-        private int getColorForStatus(int currentStatus){
-
-            switch (currentStatus){
-                case 0:
-                    return R.drawable.green_checkmark;
-                case 1:
-                    return R.drawable.yellow_exclamation_point;
-                default:
-                    return R.drawable.red_x_button;
-            }
-        }
-
-        private String getButtonTextForStatus(int currentStatus, Context context){
-
-            switch (currentStatus){
-                case 0:
-                    return context.getResources().getString(R.string.verified_button_char);
-                case 1:
-                    return context.getResources().getString(R.string.expired_button_char);
-                default:
-                    return context.getResources().getString(R.string.x_button_char);
-            }
         }
     }
 }

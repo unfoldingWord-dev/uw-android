@@ -24,14 +24,12 @@
                 android:focusable="false"
                 android:orientation="horizontal"
                 android:layout_toLeftOf="@+id/linearLayout"
-                android:layout_toStartOf="@+id/linearLayout"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true">
+                android:layout_toStartOf="@+id/linearLayout">
 
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/languageTypeImageView"
+                android:id="@+id/language_type_image_view"
                 android:layout_width="@dimen/version_selection_image_size"
                 android:layout_height="@dimen/version_selection_image_size"
                 android:layout_gravity="center"
@@ -46,7 +44,7 @@
 
 
             <TextView
-                android:id="@+id/languageNameTextView"
+                android:id="@+id/language_name_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -58,8 +56,8 @@
                 android:typeface="sans"
                 android:layout_toStartOf="@+id/linearLayout"
                 android:layout_toLeftOf="@+id/linearLayout"
-                android:layout_toEndOf="@+id/languageTypeImageView"
-                android:layout_toRightOf="@+id/languageTypeImageView"
+                android:layout_toEndOf="@+id/language_type_image_view"
+                android:layout_toRightOf="@+id/language_type_image_view"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp" />
 
@@ -67,7 +65,7 @@
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/version_selection_row_height"
-                android:layout_gravity="right|center"
+                android:layout_gravity="right|center|end"
                 android:id="@+id/linearLayout"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
@@ -80,9 +78,11 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@drawable/version_row_click"
-                    android:layout_gravity="right|center"
+                    android:layout_gravity="right|center|end"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="5dp">
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="10dp">
 
                     <ImageView
                         android:id="@+id/version_info_image"
@@ -104,9 +104,10 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@drawable/version_row_click"
-                    android:layout_gravity="right|center"
+                    android:layout_gravity="right|center|end"
                     android:foregroundGravity="center"
-                    android:layout_marginLeft="10dp">
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp">
 
                     <ProgressBar
                         android:id="@+id/download_progress_bar"
@@ -117,6 +118,7 @@
                         android:max="200"
                         android:visibility="invisible"
                         android:paddingRight="5dp"
+                        android:paddingEnd="5dp"
                         />
 
                     <ImageView
@@ -126,7 +128,7 @@
                         android:layout_height="match_parent"
                         android:paddingTop="5dp"
                         android:paddingBottom="5dp"
-                        android:layout_gravity="right|center"
+                        android:layout_gravity="right|center|end"
                         android:scaleType="fitCenter"
                         android:paddingRight="5dp"
                         android:paddingLeft="5dp"
@@ -146,195 +148,217 @@
                     android:background="@drawable/green_checkmark"
                     android:layout_marginRight="10dp"
                     android:layout_marginLeft="15dp"
-                    android:layout_gravity="left|center_vertical"/>
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="start|center_vertical|left"/>
 
             </LinearLayout>
         </RelativeLayout>
 
-        <FrameLayout
-            android:id="@+id/visibleLayout"
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:id="@+id/version_information_layout"
+            android:orientation="vertical"
             android:visibility="gone">
 
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <include
+                android:id="@+id/row_version_information"
+                layout="@layout/version_information_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                />
 
-                <TextView
-                    android:layout_gravity="center"
-                    android:id="@+id/version_name_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black_light"
-                    android:textStyle="bold" />
+            <Button
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/delete_button"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@drawable/delete_button_click"
+                android:text="@string/delete_version"
+                android:textColor="#e11"
+                android:gravity="center"
+                android:layout_gravity="center"
+                />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/verification_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:text="@string/verification_title"
-                        android:textColor="@color/black_light"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/verification_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="15dp"
-                        android:singleLine="false"
-                        android:text="New Text"
-                        android:textColor="@color/black_light" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/checking_entity_constant_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:text="@string/checking_entity"
-                        android:textColor="@color/black_light"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/checkingEntitytextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="15dp"
-                        android:singleLine="false"
-                        android:text="New Text"
-                        android:textColor="@color/black_light" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/checkingLevelConstanttextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:text="@string/checking_level"
-                        android:textColor="@color/black_light"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:id="@+id/level_layout"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="15dp"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:id="@+id/checking_level_image"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/level_one"/>
-
-                        <TextView
-                            android:id="@+id/checking_level_explanation_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginRight="20dp"
-                            android:textColor="@color/black_light" />
-
-                    </LinearLayout>
+        </LinearLayout>
 
 
-                </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
+        <!--<FrameLayout-->
+            <!--android:id="@+id/visibleLayout"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:visibility="gone">-->
 
-                    <TextView
-                        android:id="@+id/versionConstanttextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:text="@string/version"
-                        android:textColor="@color/black_light"
-                        android:textStyle="bold" />
+            <!--<LinearLayout-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="vertical">-->
 
-                    <TextView
-                        android:id="@+id/versionTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="15dp"
-                        android:singleLine="true"
+                <!--<TextView-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:id="@+id/version_name_text"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textColor="@color/black_light"-->
+                    <!--android:textStyle="bold" />-->
 
-                        android:text="New Text"
-                        android:textColor="@color/black_light" />
-                </LinearLayout>
+                <!--<LinearLayout-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
+                    <!--<TextView-->
+                        <!--android:id="@+id/verification_title"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="@string/verification_title"-->
+                        <!--android:textColor="@color/black_light"-->
+                        <!--android:textStyle="bold" />-->
 
-                    <TextView
-                        android:id="@+id/publishDateConstanttextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:text="@string/publish_date"
-                        android:textColor="@color/black_light"
-                        android:textStyle="bold" />
+                    <!--<TextView-->
+                        <!--android:id="@+id/verification_text_view"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="20dp"-->
+                        <!--android:layout_marginTop="15dp"-->
+                        <!--android:singleLine="false"-->
+                        <!--android:text="New Text"-->
+                        <!--android:textColor="@color/black_light" />-->
 
-                    <TextView
-                        android:id="@+id/publishDateTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                <!--</LinearLayout>-->
 
-                        android:layout_marginTop="15dp"
-                        android:singleLine="true"
-                        android:text="New Text"
-                        android:textColor="@color/black_light" />
-                </LinearLayout>
+                <!--<LinearLayout-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:orientation="vertical">-->
 
-                <Button
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:id="@+id/delete_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:background="@drawable/delete_button_click"
-                    android:text="@string/delete_version"
-                    android:textColor="#e11"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    />
-            </LinearLayout>
-        </FrameLayout>
+                    <!--<TextView-->
+                        <!--android:id="@+id/checking_entity_constant_text_view"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="@string/checking_entity"-->
+                        <!--android:textColor="@color/black_light"-->
+                        <!--android:textStyle="bold" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/checkingEntitytextView"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="20dp"-->
+                        <!--android:layout_marginTop="15dp"-->
+                        <!--android:singleLine="false"-->
+                        <!--android:text="New Text"-->
+                        <!--android:textColor="@color/black_light" />-->
+                <!--</LinearLayout>-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/checkingLevelConstanttextView"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="@string/checking_level"-->
+                        <!--android:textColor="@color/black_light"-->
+                        <!--android:textStyle="bold" />-->
+
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/level_layout"-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="5dp"-->
+                        <!--android:layout_marginTop="15dp"-->
+                        <!--android:orientation="horizontal"-->
+                        <!--android:gravity="center">-->
+
+                        <!--<ImageView-->
+                            <!--android:id="@+id/checking_level_image"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:src="@drawable/level_one"/>-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/checking_level_explanation_text"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_gravity="center"-->
+                            <!--android:layout_marginLeft="20dp"-->
+                            <!--android:layout_marginRight="20dp"-->
+                            <!--android:textColor="@color/black_light" />-->
+
+                    <!--</LinearLayout>-->
+
+
+                <!--</LinearLayout>-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/versionConstanttextView"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="@string/version"-->
+                        <!--android:textColor="@color/black_light"-->
+                        <!--android:textStyle="bold" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/versionTextView"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="20dp"-->
+                        <!--android:layout_marginTop="15dp"-->
+                        <!--android:singleLine="true"-->
+
+                        <!--android:text="New Text"-->
+                        <!--android:textColor="@color/black_light" />-->
+                <!--</LinearLayout>-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/publishDateConstanttextView"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="@string/publish_date"-->
+                        <!--android:textColor="@color/black_light"-->
+                        <!--android:textStyle="bold" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/publishDateTextView"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="20dp"-->
+
+                        <!--android:layout_marginTop="15dp"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="New Text"-->
+                        <!--android:textColor="@color/black_light" />-->
+                <!--</LinearLayout>-->
+
+                <!-- -->
+            <!--</LinearLayout>-->
+        <!--</FrameLayout>-->
 
     </LinearLayout>
 

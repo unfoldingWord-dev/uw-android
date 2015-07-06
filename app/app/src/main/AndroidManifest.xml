@@ -40,7 +40,7 @@
         <activity
             android:name="activity.bookSelection.VersionSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/MainTheme" />
         <activity
             android:name="activity.reading.ReadingActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"

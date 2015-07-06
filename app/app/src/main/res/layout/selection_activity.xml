@@ -6,7 +6,16 @@
     <FrameLayout
         android:id="@+id/versions_frame"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/toolbar">
+
     </FrameLayout>
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        />
 </RelativeLayout>

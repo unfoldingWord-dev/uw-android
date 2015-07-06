@@ -145,6 +145,7 @@ public class UWToolbar {
             }
 
             rightButtonText.setVisibility(View.VISIBLE);
+            rightButtonLayout.setVisibility(View.VISIBLE);
         }
         else{
             rightButtonLayout.setVisibility(View.GONE);

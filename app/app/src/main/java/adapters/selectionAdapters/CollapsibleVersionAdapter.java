@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -26,8 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
-
-import java.util.ArrayList;
 
 import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
@@ -46,6 +43,8 @@ import utils.NetWorkUtil;
 import utils.URLUtils;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
+import view.VersionInformationViewHolder;
+import view.ViewHelper;
 
 
 public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
@@ -53,11 +52,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     private final static String TAG = "CollapseVersionAdapter";
     static final String STORIES_SLUG = "obs";
     private Fragment parentFragment;
-    Project currentProject = null;
+    private Project currentProject = null;
+    private Version selectedVersion;
 
-    public CollapsibleVersionAdapter(Fragment fragment, Project currentProject) {
+    public CollapsibleVersionAdapter(Fragment fragment, Project currentProject, Version selectedVersion) {
         this.parentFragment = fragment;
         this.currentProject = currentProject;
+        this.selectedVersion = selectedVersion;
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_COMP);
@@ -114,6 +115,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return count;
     }
 
+
+
     @Override
     public View getRealChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
@@ -124,30 +127,20 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.row_version_selector, parent, false);
             holder = new ViewHolderForGroup();
-            holder.languageNameTextView = (TextView) convertView.findViewById(R.id.languageNameTextView);
-            holder.languageTypeImageView = (ImageView) convertView.findViewById(R.id.languageTypeImageView);
-            holder.visibleFrameLayout = (FrameLayout) convertView.findViewById(R.id.visibleLayout);
-            holder.checkingEntityTextView = (TextView) convertView.findViewById(R.id.checkingEntitytextView);
-            holder.checkingLevelImage = (ImageView) convertView.findViewById(R.id.checking_level_image);
-            holder.versionTextView = (TextView) convertView.findViewById(R.id.versionTextView);
-            holder.publishDateTextView = (TextView) convertView.findViewById(R.id.publishDateTextView);
-            holder.checkingEntityConstantTextView = (TextView) convertView.findViewById(R.id.checking_entity_constant_text_view);
-            holder.checkingLevelConstantTextView = (TextView) convertView.findViewById(R.id.checkingLevelConstanttextView);
-            holder.versionConstantTextView = (TextView) convertView.findViewById(R.id.versionConstanttextView);
-            holder.publishDateConstantTextView = (TextView) convertView.findViewById(R.id.publishDateConstanttextView);
-            holder.verificationTextView = (TextView) convertView.findViewById(R.id.verification_text_view);
-            holder.verificationTitle = (TextView) convertView.findViewById(R.id.verification_title);
+            holder.languageNameTextView = (TextView) convertView.findViewById(R.id.language_name_text_view);
+            holder.languageTypeImageView = (ImageView) convertView.findViewById(R.id.language_type_image_view);
+            holder.versionInfoLayout = (LinearLayout) convertView.findViewById(R.id.version_information_layout);
+
             holder.clickableLayout = (LinearLayout) convertView.findViewById(R.id.clickableRow);
+
             holder.infoFrame = (FrameLayout) convertView.findViewById(R.id.info_image_frame);
             holder.status = (Button) convertView.findViewById(R.id.status);
-            holder.checkingLevelExplanationTextView = (TextView) convertView.findViewById(R.id.checking_level_explanation_text);
-            holder.versionNameTextView = (TextView) convertView.findViewById(R.id.version_name_text);
 
             holder.downloadButton = (ImageView) convertView.findViewById(R.id.download_status_image);
             holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
             holder.downloadProgressBar = (ProgressBar) convertView.findViewById(R.id.download_progress_bar);
             holder.deleteButton = (Button) convertView.findViewById(R.id.delete_button);
-
+            holder.versionInformationHolder = new VersionInformationViewHolder(convertView);
             final ViewHolderForGroup finalHolder = holder;
             holder.infoFrame.setOnClickListener(getInfoClickListener(finalHolder, version));
             convertView.setTag(holder);
@@ -157,28 +150,20 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         // version-dependent settings
 
-        boolean isSelected = false;//((version.getId() == UWPreferenceManager.getSelectedBibleVersion(getContext()))
-//                || (version.getId() == UWPreferenceManager.getSelectedStoryVersion(getContext())));
+        boolean isSelected =(selectedVersion != null) && version.getId() == (long) selectedVersion.getId();
 
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
         holder.downloadButton.setVisibility(View.VISIBLE);
+        holder.versionInformationHolder.setInfoForVersion(version);
 
         state = setRowState(holder, version, state);
 
         holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
         holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
         setColorChange(holder, getColorForState(state));
-        holder.languageTypeImageView.setImageResource(getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
-
+        holder.languageTypeImageView.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         holder.languageNameTextView.setText(version.getName());
-        holder.checkingEntityTextView.setText(version.getStatusCheckingEntity());
-        holder.checkingLevelImage.setImageResource(getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
-        holder.versionTextView.setText(version.getStatusVersion());
-        holder.publishDateTextView.setText(version.getStatusPublishDate());
-        holder.verificationTextView.setText(getVerificationText(version));
-        holder.checkingLevelExplanationTextView.setText(getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
-        holder.versionNameTextView.setText(version.getName());
 
         int verificationStatus = 1;//version.getVerificationStatus(getContext());
         holder.status.setBackgroundResource(getColorForStatus(verificationStatus));
@@ -187,76 +172,12 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return convertView;
     }
 
-    private int getCheckingLevelText(int level){
-
-        switch (level){
-            case 2:{
-                return R.string.level_two;
-            }
-            case 3:{
-                return R.string.level_three;
-            }
-            default:{
-                return R.string.level_one;
-            }
-        }
-    }
-
-    private int getCheckingLevelImage(int level){
-        switch (level){
-            case 2:{
-                return R.drawable.level_two_dark;
-            }
-            case 3:{
-                return R.drawable.level_three_dark;
-            }
-            default:{
-                return R.drawable.level_one_dark;
-            }
-        }
-    }
-
-    private String getVerificationText(Version version){
-
-        String text = "testing stuff";
-//        int status = version.getVerificationStatus(getContext());
-//        switch (status){
-//            case 0:{
-//                text = getContext().getResources().getString(R.string.verified_title_start);
-//                break;
-//            }
-//            case 1:{
-//                text = getContext().getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
-//                break;
-//            }
-//            case 3:{
-//                text = getContext().getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
-//                break;
-//            }
-//            default:{
-//                text = getContext().getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
-//            }
-//        }
-//
-//        ArrayList<String> organizations = version.getSigningOrganizations(getContext());
-
-//        if(status == 0){
-//            for(String org : organizations){
-//                text += " " + org + ",";
-//            }
-//            text = text.substring(0, text.length() - 1);
-//        }
-
-        return text;
-    }
-
     private int setRowState(ViewHolderForGroup holder, Version version, int selectionState){
 
+        holder.versionInformationHolder.setRowState(version);
         switch (DownloadState.createState(version.getSaveState())){
 
             case DOWNLOAD_STATE_DOWNLOADED:{
-                holder.verificationTextView.setVisibility(View.VISIBLE);
-                holder.verificationTitle.setVisibility(View.VISIBLE);
                 holder.status.setVisibility(View.VISIBLE);
                 holder.downloadButton.setVisibility(View.GONE);
                 holder.downloadProgressBar.setVisibility(View.GONE);
@@ -269,8 +190,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                 return selectionState;
             }
             case DOWNLOAD_STATE_DOWNLOADING:{
-                holder.verificationTextView.setVisibility(View.GONE);
-                holder.verificationTitle.setVisibility(View.GONE);
                 holder.status.setVisibility(View.GONE);
                 holder.downloadButton.setVisibility(View.INVISIBLE);
                 holder.downloadProgressBar.setVisibility(View.VISIBLE);
@@ -282,8 +201,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             }
 
             default:{
-                holder.verificationTextView.setVisibility(View.GONE);
-                holder.verificationTitle.setVisibility(View.GONE);
                 holder.status.setVisibility(View.GONE);
                 holder.downloadButton.setVisibility(View.VISIBLE);
                 holder.downloadProgressBar.setVisibility(View.GONE);
@@ -572,13 +489,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (finalHolder.visibleFrameLayout.getVisibility() == View.GONE) {
+                if (finalHolder.versionInfoLayout.getVisibility() == View.GONE) {
 
-                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
-                    finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
+                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
+                    finalHolder.versionInfoLayout.startAnimation(animationRelativeLayout);
                 } else {
-                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.visibleFrameLayout, 300, CustomSlideAnimationRelativeLayout.COLLAPSE);
-                    finalHolder.visibleFrameLayout.startAnimation(animationRelativeLayout);
+                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.COLLAPSE);
+                    finalHolder.versionInfoLayout.startAnimation(animationRelativeLayout);
                 }
             }
         };
@@ -630,29 +547,19 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     private static class ViewHolderForGroup {
 
+        VersionInformationViewHolder versionInformationHolder;
         TextView languageNameTextView;
         ImageView languageTypeImageView;
-        FrameLayout visibleFrameLayout;
-        TextView checkingEntityTextView;
-        ImageView checkingLevelImage;
-        TextView versionTextView;
-        TextView publishDateTextView;
-        TextView checkingEntityConstantTextView;
-        TextView checkingLevelConstantTextView;
-        TextView versionConstantTextView;
-        TextView publishDateConstantTextView;
-        TextView verificationTextView;
-        TextView verificationTitle;
+        LinearLayout versionInfoLayout;
         LinearLayout clickableLayout;
+
         FrameLayout infoFrame;
         Button status;
-        TextView versionNameTextView;
 
         ImageView downloadButton;
         FrameLayout downloadFrame;
         ProgressBar downloadProgressBar;
         Button deleteButton;
-        TextView checkingLevelExplanationTextView;
     }
 }
 
