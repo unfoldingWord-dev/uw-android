@@ -15,9 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
@@ -52,7 +49,6 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     private StoryChaptersFragmentListener mListener = null;
 
     protected ListView mListView = null;
-    ImageLoader mImageLoader;
     private boolean showTitle = false;
     private TextView titleTextView;
 
@@ -114,14 +110,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
             mListView = (ListView) view.findViewById(R.id.generalList);
             mListView.setOnItemClickListener(this);
 
-            mImageLoader = ImageLoader.getInstance();
-
-            if (mImageLoader.isInited()) {
-                ImageLoader.getInstance().destroy();
-            }
-
-            mImageLoader.init(ImageLoaderConfiguration.createDefault(getContext()));
-            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, this, mImageLoader, this.getIndexStorageString()));
+            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, this, this.getIndexStorageString()));
 
             int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(STORY_CHAPTERS_INDEX_STRING, -1);
             mListView.setSelection((scrollPosition > 0)? scrollPosition - 1 : 0);

@@ -6,23 +6,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.View;
-import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
-import java.io.IOException;
 import java.util.List;
 
-import activity.bookSelection.InitialPageActivity;
+import activity.bookSelection.InitialScreenActivity;
 import model.DaoDBHelper;
 import model.daoModels.Project;
-import model.database.DBManager;
 import services.UWPreLoader;
-import utils.URLUtils;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
@@ -84,7 +78,7 @@ public class SplashScreenActivity extends Activity {
     }
 
     private void goToInitialActivity(){
-        startActivity(new Intent(SplashScreenActivity.this, InitialPageActivity.class));
+        startActivity(new Intent(SplashScreenActivity.this, InitialScreenActivity.class));
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         finish();
     }

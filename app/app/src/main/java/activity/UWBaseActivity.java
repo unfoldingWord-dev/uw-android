@@ -149,8 +149,9 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
 
     public void goToNextActivity(Intent intent){
 
-        int enterAnimation = getNextAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
-        int exitAnimation = getNextAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
+        int enterAnimation = getNextAnimationEnter(getAnimationParadigm());
+        int exitAnimation = getNextAnimationExit(getAnimationParadigm());
+
         startActivity(intent);
         overridePendingTransition(enterAnimation, exitAnimation);
     }

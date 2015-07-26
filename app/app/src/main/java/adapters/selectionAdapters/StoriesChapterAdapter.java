@@ -1,22 +1,13 @@
 package adapters.selectionAdapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.unfoldingword.mobile.R;
 
@@ -24,33 +15,19 @@ import java.util.List;
 
 import model.daoModels.StoriesChapter;
 import utils.AsyncImageLoader;
+import view.ASyncImageView;
 
 /**
- * Created by Acts Media Inc on 4/12/14.
+ * Created by Acts Media Inc on 4/12/14.E
  */
-public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadingListener {
-    protected ImageLoader imageLoader;
-    DisplayImageOptions options;
+public class StoriesChapterAdapter extends GeneralAdapter{
 
-    public StoriesChapterAdapter(Context context, List<GeneralRowInterface> list, TextView actionbarTextView, ActionBarActivity activity, ImageLoader imageLoader, String storageString) {
+    public StoriesChapterAdapter(Context context, List<GeneralRowInterface> list, TextView actionbarTextView, ActionBarActivity activity, String storageString) {
         super(context, R.layout.row_for_frames, list, actionbarTextView, activity, storageString);
-        this.imageLoader = imageLoader;
-        setImageOptions();
     }
 
-    public StoriesChapterAdapter(Context context, List<GeneralRowInterface> list, Fragment fragment, ImageLoader imageLoader, String storageString) {
+    public StoriesChapterAdapter(Context context, List<GeneralRowInterface> list, Fragment fragment, String storageString) {
         super(context, R.layout.row_for_frames, list, fragment, storageString);
-        this.imageLoader = imageLoader;
-        setImageOptions();
-    }
-
-    private void setImageOptions() {
-        options = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).considerExifParams(true)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .resetViewBeforeLoading(true)
-                .showImageOnLoading(new ColorDrawable(Color.WHITE))
-                .showImageOnFail(new ColorDrawable(Color.BLACK)).build();
     }
 
     @Override
@@ -63,8 +40,7 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
             holder = new ViewHolder();
             holder.chapterNameTextView = (TextView) convertView.findViewById(R.id.chapterNametextView);
             holder.referenceTextView = (TextView) convertView.findViewById(R.id.refTextView);
-            holder.chapterScreenImageView = (ImageView) convertView.findViewById(R.id.chapterScreenImageView);
-
+            holder.chapterScreenImageView = (ASyncImageView) convertView.findViewById(R.id.chapterScreenImageView);
 
             convertView.setTag(holder);
         } else {
@@ -83,8 +59,7 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
         String imagePath = "assets://images/" + path;
 
 
-        imageLoader.displayImage(imagePath, holder.chapterScreenImageView, options, this);
-
+        holder.chapterScreenImageView.setImageUrl(imagePath);
         holder.chapterNameTextView.setText(positionModel.getTitle());
         holder.referenceTextView.setText(positionModel.getRef());
         return convertView;
@@ -95,37 +70,6 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
         holder.referenceTextView.setTextColor(color);
     }
 
-    @Override
-    public void onLoadingStarted(String s, View view) {
-
-    }
-
-    @Override
-    public void onLoadingFailed(String url, View view, FailReason failReason) {
-        ImageView imageView = (ImageView) view.findViewById(R.id.chapterScreenImageView);
-        if (url.contains("file")) {
-            String w = getLastBitFromUrl(url);
-            imageLoader.displayImage("assets://images/" + w, imageView, options);
-        } else {
-            String lastBitFromUrl = getLastBitFromUrl(url);
-
-            String s = lastBitFromUrl.replaceAll("[}]", "");
-
-            imageLoader.displayImage("assets://images/" + s, imageView, options);
-        }
-
-    }
-
-    @Override
-    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-
-    }
-
-    @Override
-    public void onLoadingCancelled(String s, View view) {
-
-    }
-
     public String getLastBitFromUrl(String url) {
         return url.replaceFirst(".*/([^/?]+).*", "$1");
     }
@@ -133,6 +77,6 @@ public class StoriesChapterAdapter extends GeneralAdapter implements ImageLoadin
     private static class ViewHolder {
         TextView chapterNameTextView;
         TextView referenceTextView;
-        ImageView chapterScreenImageView;
+        ASyncImageView chapterScreenImageView;
     }
 }

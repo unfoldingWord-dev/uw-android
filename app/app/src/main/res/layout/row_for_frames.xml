@@ -11,7 +11,7 @@
         android:orientation="horizontal"
         android:padding="5dp">
 
-        <ImageView
+        <view.ASyncImageView
             android:id="@+id/chapterScreenImageView"
             android:layout_width="@dimen/stories_row_height"
             android:layout_height="@dimen/stories_row_image_width"

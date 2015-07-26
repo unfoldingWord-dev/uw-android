@@ -16,40 +16,42 @@ import org.unfoldingword.mobile.R;
 import java.util.List;
 
 import adapters.ReadingPagerAdapter;
+import adapters.StoryPagerAdapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import model.daoModels.StoriesChapter;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link BibleReadingFragment#newInstance} factory method to
+ * Use the {@link StoryReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BibleReadingFragment extends Fragment {
+public class StoryReadingFragment extends Fragment {
 
-    private static final String BOOK_PARAM = "BOOK_PARAM";
+    private static final String CHAPTER_PARAM = "CHAPTER_PARAM";
 
     private ViewPager readingViewPager;
-    private Book currentBook;
+    private StoriesChapter currentChapter;
 
     private ReadingFragmentListener listener;
-    private ReadingPagerAdapter adapter;
+    private StoryPagerAdapter adapter;
 
-    public static BibleReadingFragment newInstance(Book book) {
-        BibleReadingFragment fragment = new BibleReadingFragment();
+    public static StoryReadingFragment newInstance(StoriesChapter chapter) {
+        StoryReadingFragment fragment = new StoryReadingFragment();
         Bundle args = new Bundle();
-        args.putSerializable(BOOK_PARAM, book);
+        args.putSerializable(CHAPTER_PARAM, chapter);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public BibleReadingFragment() {
+    public StoryReadingFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentBook = (Book) getArguments().getSerializable(BOOK_PARAM);
+            currentChapter = (StoriesChapter) getArguments().getSerializable(CHAPTER_PARAM);
         }
 
         if(getActivity() instanceof ReadingFragmentListener){
@@ -61,15 +63,15 @@ public class BibleReadingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_bible_reading, container, false);
+        View view = inflater.inflate(R.layout.fragment_story_reading, container, false);
         setupViews(view);
 
         return view;
     }
 
-    public void updateReadingFragment(Book book){
-        this.currentBook = book;
-        adapter.update(book.getBibleChapters());
+    public void updateReadingFragment(StoriesChapter chapter){
+        this.currentChapter = chapter;
+        adapter.update(chapter);
     }
 
     private void setupViews(View view){
@@ -79,9 +81,7 @@ public class BibleReadingFragment extends Fragment {
     private void setupPager(View view){
 
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
-
-        List<BibleChapter> chapters = currentBook.getBibleChapters();
-        adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters,  getDoubleTapTouchListener());
+        adapter = new StoryPagerAdapter(getActivity().getApplicationContext(), currentChapter);
 
         readingViewPager.setAdapter(adapter);
         readingViewPager.setOnTouchListener(getDoubleTapTouchListener());

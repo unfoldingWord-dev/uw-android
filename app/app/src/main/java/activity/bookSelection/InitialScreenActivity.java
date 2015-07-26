@@ -46,7 +46,7 @@ import utils.URLUtils;
 /**
  * Created by Fechner on 2/27/15.
  */
-public class InitialPageActivity extends UWBaseActivity{
+public class InitialScreenActivity extends UWBaseActivity{
 
     static final public String PROJECT_PARAM = "PROJECT_PARAM";
 
