@@ -2,7 +2,7 @@
 <resources>
     <integer name="fast_animation">150</integer>
 
-    <integer name="tap_timeout">75</integer>
-    <integer name="double_tap_timeout">210</integer>
+    <integer name="tap_timeout">90</integer>
+    <integer name="double_tap_timeout">280</integer>
 
 </resources>

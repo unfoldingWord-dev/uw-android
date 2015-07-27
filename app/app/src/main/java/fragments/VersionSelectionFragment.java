@@ -41,7 +41,7 @@ public class VersionSelectionFragment extends DialogFragment {
 
     protected AnimatedExpandableListView mListView = null;
     private Project chosenProject = null;
-    CollapsibleVersionAdapter adapter;
+    private CollapsibleVersionAdapter adapter;
 
     private boolean showProjectTitle = false;
     private TextView titleTextView;

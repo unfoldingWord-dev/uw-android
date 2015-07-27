@@ -134,7 +134,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         }
         else {
             BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
-            List<BibleChapter> chapters = model.getBook().getBibleChapters();
+            List<BibleChapter> chapters = model.getBook().getBibleChapters(true);
 
             long selectedId = model.getId();
             ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();

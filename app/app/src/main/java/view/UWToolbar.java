@@ -34,6 +34,8 @@ public class UWToolbar {
 
     UWToolbarListener listener;
 
+    private boolean hidden = false;
+
     public UWToolbar(Toolbar toolbar, Activity activity, boolean hasLogo, int backResource,  UWToolbarListener listener) {
 
         this.listener = listener;
@@ -98,12 +100,11 @@ public class UWToolbar {
             } else {
                 titleButtonIndicator.setVisibility(View.GONE);
             }
+            titleLayout.setVisibility(View.VISIBLE);
         }
         else{
             titleLayout.setVisibility(View.GONE);
         }
-
-        titleLayout.setVisibility(View.VISIBLE);
     }
 
     public void setBackButtonResource(int resource){
@@ -154,6 +155,19 @@ public class UWToolbar {
 
     public void toggleHidden(){
 
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) toolbar.getLayoutParams();
+        if(!hidden){
+            params.addRule(RelativeLayout.ABOVE, R.id.top_marker_layout);
+        }
+        else{
+            params.removeRule(RelativeLayout.ABOVE);
+        }
+
+        toolbar.setLayoutParams(params);
+        hidden = !hidden;
+//        for(int rule : params.getRules()){
+//            if(rule == new RelativeLayout.LayoutParams(RelativeLayout.ABOVE, R.id.top_marker_layout))
+//        }
     }
 
 

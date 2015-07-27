@@ -3,6 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:id="@+id/top_marker_layout"
+        android:layout_alignParentTop="true"
+        android:background="#0000">
+
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -22,7 +30,8 @@
         android:textAlignment="center"
         android:id="@+id/reading_error_text_view"
         android:layout_margin="20dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:gravity="center"/>
 
     <include
         android:id="@+id/toolbar"
@@ -30,5 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
+
         />
+
 </RelativeLayout>

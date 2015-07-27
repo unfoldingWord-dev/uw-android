@@ -1,6 +1,7 @@
 package view;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -25,12 +26,26 @@ public class ASyncImageView extends ImageView {
     public void setImageUrl(final String url, boolean crop){
 
         Picasso picasso = Picasso.with(getContext());
-//        picasso.setIndicatorsEnabled(true);
+        picasso.setIndicatorsEnabled(true);
+        picasso.setLoggingEnabled(true);
         if(crop) {
             picasso.load(url).fit().centerCrop().into(this);
         }
         else{
             picasso.load(url).fit().centerInside().into(this);
+        }
+    }
+
+    public void setLocalImage(final Uri uri, boolean crop){
+
+        Picasso picasso = Picasso.with(getContext());
+        picasso.setIndicatorsEnabled(true);
+        picasso.setLoggingEnabled(true);
+        if(crop) {
+            picasso.load(uri).into(this);
+        }
+        else{
+            picasso.load(uri).into(this);
         }
     }
 

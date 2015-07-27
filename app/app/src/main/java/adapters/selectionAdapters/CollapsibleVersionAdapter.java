@@ -384,20 +384,20 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             long chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
             if(chapterId < 0){
 
-                StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters().get(1);
+                StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters(true).get(1);
                 UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
             }
             else {
                 StoriesChapter chapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
-                    StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters().get(1);
+                    StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters(true).get(1);
                     UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
                     return;
                 }
                 Book newBook = chapter.getBook();
 
-                StoriesChapter newChapter = (newBook == null)? version.getBooks().get(0).getStoryChapters().get(1) :
-                        newBook.getStoryChapters().get(Integer.parseInt(chapter.getNumber()));
+                StoriesChapter newChapter = (newBook == null)? version.getBooks().get(0).getStoryChapters(true).get(1) :
+                        newBook.getStoryChapters(true).get(Integer.parseInt(chapter.getNumber()));
 
                 UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
             }
@@ -405,23 +405,23 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         else{
             long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
             if(chapterId < 0){
-                BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(0);
+                BibleChapter newChapter = version.getBooks().get(0).getBibleChapters(true).get(0);
                 UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
             }
             else {
                 BibleChapter chapter = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
-                    BibleChapter newChapter = version.getBooks().get(0).getBibleChapters().get(1);
+                    BibleChapter newChapter = version.getBooks().get(0).getBibleChapters(true).get(1);
                     UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
                     return;
                 }
                 Book newBook = chapter.getBook();
 
-                BibleChapter newChapter = (newBook == null)? version.getBooks().get(0).getBibleChapters().get(1) :
-                        newBook.getBibleChapters().get(Integer.parseInt(chapter.getNumber().trim()));
+                BibleChapter newChapter = (newBook == null)? version.getBooks().get(0).getBibleChapters(true).get(1) :
+                        newBook.getBibleChapters(true).get(Integer.parseInt(chapter.getNumber().trim()));
 
                 if(newChapter == null){
-                    newChapter = version.getBooks().get(0).getBibleChapters().get(1);
+                    newChapter = version.getBooks().get(0).getBibleChapters(true).get(1);
                 }
                 UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
             }

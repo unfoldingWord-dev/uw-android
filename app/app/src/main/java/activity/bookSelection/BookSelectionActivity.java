@@ -3,20 +3,26 @@ package activity.bookSelection;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import activity.AnimationParadigm;
+import activity.UWBaseActivity;
 import fragments.ChapterSelectionFragment;
+import fragments.StoryChaptersFragment;
+import model.daoModels.Project;
 
 /**
  * Created by Fechner on 2/27/15.
  */
-public class BookSelectionActivity extends GeneralSelectionActivity implements ChapterSelectionFragment.ChapterSelectionListener{
+public class BookSelectionActivity extends UWBaseActivity implements ChapterSelectionFragment.ChapterSelectionListener,
+        StoryChaptersFragment.StoryChaptersFragmentListener{
 
-    static String BOOK_INDEX_STRING = "BOOK_INDEX_STRING";
+    public static final String PROJECT_PARAM = "true";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,74 +31,38 @@ public class BookSelectionActivity extends GeneralSelectionActivity implements C
         if (savedInstanceState == null) {
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.versions_frame, ChapterSelectionFragment.newInstance(false))
+                    .add(R.id.versions_frame, getFragment())
                     .commit();
         }
         setUI();
     }
 
-    @Override
-    protected void prepareListView() {
+    private Fragment getFragment(){
+
+        Project project = (Project) getIntent().getSerializableExtra(PROJECT_PARAM);
+
+        boolean isStories = project.getSlug().contains("obs");
+        if(isStories){
+            return StoryChaptersFragment.newInstance(false);
+        }
+        else{
+            return ChapterSelectionFragment.newInstance(false);
+        }
     }
 
-    @Override
-    protected int getContentView() {
-        return -1;
-    }
-
-    @Override
-    protected String getIndexStorageString() {
-        return BOOK_INDEX_STRING;
-    }
-
-    @Override
-    protected Class getChildClass() {
-        return null;
-    }
-
-    protected String getActionBarTitle() {
-        return "Select Book";//mProjects.get(0).meta;
-    }
-
-    @Override
     protected void setUI() {
 
-        View view = getLayoutInflater().inflate(R.layout.actionbar_base, null);
-        setupActionBar(view);
-        setupCloseButton(view);
-    }
-
-    private void setupActionBar(View view){
-
-        mActionBar = getSupportActionBar();
-        mActionBar.setCustomView(view);
-        mActionBar.setDisplayShowCustomEnabled(true);
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setHomeButtonEnabled(false);
-        mActionBar.setDisplayHomeAsUpEnabled(false);
-
-        actionbarTextView = (TextView) view.findViewById(R.id.actionbar_text_view);
-        actionbarTextView.setText(getActionBarTitle());
-    }
-
-    private void setupCloseButton(View view){
-        FrameLayout closeButton = (FrameLayout) view.findViewById(R.id.close_image_view);
-        closeButton.setVisibility(View.VISIBLE);
+        setupToolbar(false, "Select Book", false);
     }
 
     public void closeButtonClicked(View view) {
         handleBack();
     }
 
-
     @Override
-    protected void handleBack(){
-
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getIndexStorageString(), -1).commit();
-        finish();
-        overridePendingTransition(R.anim.enter_center, R.anim.exit_on_bottom);
+    public AnimationParadigm getAnimationParadigm() {
+        return AnimationParadigm.ANIMATION_VERTICAL;
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -104,6 +74,11 @@ public class BookSelectionActivity extends GeneralSelectionActivity implements C
 
     @Override
     public void selectionFragmentChoseChapter() {
+        handleBack();
+    }
+
+    @Override
+    public void chapterWasSelected() {
         handleBack();
     }
 }

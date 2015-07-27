@@ -102,7 +102,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected void prepareListView(View view) {
 
-        List<GeneralRowInterface> chapterModels = this.getData();
+        List<StoriesChapter> chapterModels = this.getData();
 //        BookModel book = this.chosenVersion.getChildModels(getApplicationContext()).get(0);
 
         if (chapterModels != null) {
@@ -110,7 +110,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
             mListView = (ListView) view.findViewById(R.id.generalList);
             mListView.setOnItemClickListener(this);
 
-            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, this, this.getIndexStorageString()));
+            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, 2));
 
             int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(STORY_CHAPTERS_INDEX_STRING, -1);
             mListView.setSelection((scrollPosition > 0)? scrollPosition - 1 : 0);
@@ -119,8 +119,8 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected void reload(){
 
-        List<GeneralRowInterface> data = this.getData();
-        GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
+        List<StoriesChapter> data = this.getData();
+        StoriesChapterAdapter adapter = new StoriesChapterAdapter(getContext(), data, 2);
         mListView.setAdapter(adapter);
     }
 
@@ -128,27 +128,14 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         return this.getActivity().getApplicationContext();
     }
 
-    protected List<GeneralRowInterface> getData(){
+    protected List<StoriesChapter> getData(){
 
         long versionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
         Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getContext()));
 
-        List<StoriesChapter> chapters = version.getBooks().get(0)
-                .getStoryChapters();
+        List<StoriesChapter> chapters = version.getBooks().get(0).getStoryChapters(true);
 
-        long chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
-
-        List<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-        int i = 0;
-        for(StoriesChapter model : chapters){
-            if(chapterId == model.getId()){
-                PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(STORY_CHAPTERS_INDEX_STRING, i).commit();
-            }
-            data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(model.getId()), model.getTitle()));
-            i++;
-        }
-
-        return data;
+        return chapters;
     }
 
     @Override

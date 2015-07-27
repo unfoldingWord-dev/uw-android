@@ -31,6 +31,7 @@ import fragments.BooksFragment;
 import fragments.ChapterSelectionFragment;
 import fragments.ChaptersFragment;
 import fragments.CheckingLevelFragment;
+import fragments.ReadingFragmentListener;
 import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
@@ -46,7 +47,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         VersionSelectionFragment.VersionSelectionFragmentListener,
         ChapterSelectionFragment.ChapterSelectionListener,
         BooksFragment.BooksFragmentListener,
-        ChaptersFragment.ChaptersFragmentListener
+        ChaptersFragment.ChaptersFragmentListener,
+        ReadingFragmentListener
 {
     private static final String TAG = "ReadingActivity";
 
@@ -63,16 +65,14 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected int getCheckingLevelImage();
     abstract protected void updateReadingView();
     abstract protected Version getVersion();
+    abstract protected Project getProject();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reading);
-        setupToolbar(false);
-        boolean dataLoaded = loadData();
-        setupViews();
 
-        if(!dataLoaded){
+        if(!loadData()){
             goToVersionSelection();
         }
     }
@@ -91,20 +91,23 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected void onStart() {
         super.onStart();
 
+        setupToolbar(false);
+        setupViews();
+
         if (loadData()) {
             readingLayout.setVisibility(View.VISIBLE);
-            errorTextView.setVisibility(View.GONE);
+            setNoVersionSelectedVisibility(false);
         }
         else{
-            setContentView(R.layout.activity_reading);
             readingLayout.setVisibility(View.GONE);
-            errorTextView.setVisibility(View.VISIBLE);
+            setNoVersionSelectedVisibility(true);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        setupToolbar(false);
         updateViews();
     }
 
@@ -119,7 +122,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         int checkingLevelImage = getCheckingLevelImage();
         getToolbar().setCheckingLevelImage((checkingLevelImage > -1) ? checkingLevelImage : -1);
 
-        getToolbar().setTitle(getChapterLabelText(), true);
+        String title = getChapterLabelText();
+        getToolbar().setTitle(title, true);
         getToolbar().setRightButtonText(getVersionText(), true);
     }
 
@@ -138,6 +142,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
+    private void setNoVersionSelectedVisibility(boolean visible){
+        findViewById(R.id.reading_error_text_view).setVisibility((visible)? View.VISIBLE : View.GONE);
+    }
+
     private boolean isTablet(){
 
         int screen_density = (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
@@ -151,16 +159,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     protected void goToVersionSelection(){
 
-        Project selectedProject = new Project();
-        List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
-
-        for(Project project : projects){
-
-            if(!project.getSlug().equalsIgnoreCase("obs")){
-                selectedProject = project;
-                break;
-            }
-        }
 //        if(isTablet()){
 //
 //            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -170,7 +168,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 //        }
 //        else {
             startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
-                    VersionSelectionActivity.PROJECT_PARAM, selectedProject));
+                    VersionSelectionActivity.PROJECT_PARAM, getProject()));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
 //        }
     }
@@ -185,11 +183,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             fragment.show(ft, CHAPTER_SELECTION_FRAGMENT_ID);
         }
         else {
-            startActivity(new Intent(getApplicationContext(), BookSelectionActivity.class));
+            startActivity(new Intent(getApplicationContext(), BookSelectionActivity.class).putExtra(BookSelectionActivity.PROJECT_PARAM, getProject()));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
         }
     }
 
+    @Override
     public void toggleNavBar() {
         getToolbar().toggleHidden();
     }

@@ -252,6 +252,35 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     // KEEP METHODS - put your custom methods here
 
+    public List<BibleChapter> getBibleChapters(boolean sorted){
+        if(!sorted){
+            return getBibleChapters();
+        }
+        else{
+            BibleChapterDao targetDao = daoSession.getBibleChapterDao();
+            List<BibleChapter> bibleChaptersNew = targetDao.queryBuilder()
+                    .where(BibleChapterDao.Properties.BookId.eq(id))
+                    .orderAsc(BibleChapterDao.Properties.Number)
+                    .list();
+            return bibleChaptersNew;
+        }
+    }
+
+    public List<StoriesChapter> getStoryChapters(boolean sorted){
+        if(!sorted){
+            return getStoryChapters();
+        }
+        else{
+            StoriesChapterDao targetDao = daoSession.getStoriesChapterDao();
+            List<StoriesChapter> storiesChaptersNew = targetDao.queryBuilder()
+                    .where(StoriesChapterDao.Properties.BookId.eq(id))
+                    .orderAsc(StoriesChapterDao.Properties.Number)
+                    .list();
+            return storiesChaptersNew;
+        }
+    }
+
+
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
         return null;

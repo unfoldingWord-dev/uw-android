@@ -1,8 +1,12 @@
 package activity.reading;
 
 import android.os.Bundle;
+
+import java.util.List;
+
 import fragments.StoryReadingFragment;
 import model.DaoDBHelper;
+import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -49,6 +53,19 @@ public class StoryReadingActivity extends BaseReadingActivity {
             currentChapter = null;
             return false;
         }
+    }
+
+    @Override
+    protected Project getProject() {
+        List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        for(Project project : projects){
+
+            if(project.getSlug().equalsIgnoreCase("obs")){
+                return project;
+            }
+        }
+        return null;
     }
 
     @Override

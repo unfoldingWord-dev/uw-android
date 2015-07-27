@@ -44,8 +44,7 @@ import view.ViewHelper;
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
-public class ReadingActivity extends BaseReadingActivity implements
-        ReadingFragmentListener {
+public class ReadingActivity extends BaseReadingActivity {
     static private final String TAG = "ReadingActivity";
 
     private BibleChapter currentChapter;
@@ -78,6 +77,19 @@ public class ReadingActivity extends BaseReadingActivity implements
     }
 
     @Override
+    protected Project getProject() {
+        List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        for(Project project : projects){
+
+            if(!project.getSlug().equalsIgnoreCase("obs")){
+                return project;
+            }
+        }
+        return null;
+    }
+
+    @Override
     protected boolean loadData() {
 
         long chapterId = UWPreferenceManager.getSelectedBibleChapter(getApplicationContext());
@@ -94,11 +106,13 @@ public class ReadingActivity extends BaseReadingActivity implements
     @Override
     protected void updateReadingView() {
 
-        if (this.readingFragment == null) {
-            this.readingFragment = BibleReadingFragment.newInstance(currentChapter.getBook());
-            getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment").commit();
-        } else {
-            readingFragment.updateReadingFragment(currentChapter.getBook());
+        if(currentChapter != null) {
+            if (this.readingFragment == null) {
+                this.readingFragment = BibleReadingFragment.newInstance(currentChapter.getBook());
+                getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment").commit();
+            } else {
+                readingFragment.updateReadingFragment(currentChapter.getBook());
+            }
         }
     }
 

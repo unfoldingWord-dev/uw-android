@@ -2,6 +2,10 @@ package adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,6 +18,8 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import activity.bookSelection.StoryChapterSelectionActivity;
@@ -43,6 +49,7 @@ public class StoryPagerAdapter extends PagerAdapter {
         if(currentChapter != null) {
             lastChapterNumber = currentChapter.getBook().getStoryChapters().size();
         }
+        this.context = context;
     }
 
     @Override
@@ -74,12 +81,24 @@ public class StoryPagerAdapter extends PagerAdapter {
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
-            String imagePath = "assets://images/" + path;
+//            String imagePath = context.getAssets(). "assets://";/
 
-            chapterImageView.setImageUrl(imagePath);
+            chapterImageView.setImageBitmap(getBitmapFromAsset("images/" + path));
         }
         ((ViewPager) container).addView(view);
         return view;
+    }
+    private Bitmap getBitmapFromAsset(String strName)
+    {
+        AssetManager assetManager = context.getAssets();
+        InputStream istr = null;
+        try {
+            istr = assetManager.open(strName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Bitmap bitmap = BitmapFactory.decodeStream(istr);
+        return bitmap;
     }
 
     private View getNextChapterView(LayoutInflater inflater){
