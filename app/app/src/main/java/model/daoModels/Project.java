@@ -126,6 +126,10 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP METHODS - put your custom methods here
 
+    public boolean isBibleStories(){
+        return getSlug().equalsIgnoreCase("obs");
+    }
+
     static public List<Project> getAllModels(DaoSession session){
 
         return session.getProjectDao().queryBuilder().list();

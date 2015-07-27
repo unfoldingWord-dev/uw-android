@@ -10,13 +10,13 @@ import org.unfoldingword.mobile.R;
  */
 public class UWPreferenceManager {
 
-    private static final String STORY_VERSION_ID = "selected_story_version_id";
-    public static long getSelectedStoryVersion(Context context){
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_VERSION_ID, -1);
-    }
-    public static void setSelectedStoryVersion(Context context, long newValue){
-        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_VERSION_ID, newValue).commit();
-    }
+//    private static final String STORY_VERSION_ID = "selected_story_version_id";
+//    public static long getSelectedStoryVersion(Context context){
+//        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_VERSION_ID, -1);
+//    }
+//    public static void setSelectedStoryVersion(Context context, long newValue){
+//        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_VERSION_ID, newValue).commit();
+//    }
 
 //    private static final String BIBLE_VERSION_ID = "selected_bible_version_id";
 //    public static long getSelectedBibleVersion(Context context){
@@ -26,6 +26,7 @@ public class UWPreferenceManager {
 //
 //        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(BIBLE_VERSION_ID, newValue).commit();
 //    }
+
 
     private static final String BIBLE_CHAPTER_ID = "selected_bible_chapter_id";
     public static long getSelectedBibleChapter(Context context){

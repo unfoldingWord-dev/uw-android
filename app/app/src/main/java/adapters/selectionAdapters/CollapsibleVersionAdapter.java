@@ -40,6 +40,7 @@ import services.UWVersionDownloader;
 import services.VersionDownloadService;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
+import utils.RowStatusHelper;
 import utils.URLUtils;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
@@ -53,13 +54,19 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     static final String STORIES_SLUG = "obs";
     private Fragment parentFragment;
     private Project currentProject = null;
-    private Version selectedVersion;
+    private long selectedVersionId;
 
-    public CollapsibleVersionAdapter(Fragment fragment, Project currentProject, Version selectedVersion) {
+    private VersionAdapterListener listener;
+
+    public interface VersionAdapterListener{
+        void versionWasSelected(Version version);
+    }
+
+    public CollapsibleVersionAdapter(Fragment fragment, Project currentProject, long selectedVersionId, VersionAdapterListener listener) {
         this.parentFragment = fragment;
         this.currentProject = currentProject;
-        this.selectedVersion = selectedVersion;
-
+        this.selectedVersionId = selectedVersionId;
+        this.listener = listener;
         IntentFilter filter = new IntentFilter();
         filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_COMP);
         filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_ERROR);
@@ -150,7 +157,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         // version-dependent settings
 
-        boolean isSelected =(selectedVersion != null) && version.getId() == (long) selectedVersion.getId();
+        boolean isSelected = (version.getId() == selectedVersionId);
 
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
@@ -161,13 +168,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
         holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
-        setColorChange(holder, getColorForState(state));
+        setColorChange(holder, RowStatusHelper.getColorForState(getContext(), state));
         holder.languageTypeImageView.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         holder.languageNameTextView.setText(version.getName());
 
         int verificationStatus = 1;//version.getVerificationStatus(getContext());
-        holder.status.setBackgroundResource(getColorForStatus(verificationStatus));
-        holder.status.setText(getButtonTextForStatus(verificationStatus));
+        holder.status.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
+        holder.status.setText(RowStatusHelper.getButtonTextForStatus(getContext(), verificationStatus));
 
         return convertView;
     }
@@ -361,17 +368,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
             @Override
             public void onClick(View view) {
-                if (version instanceof Version) {
-                    boolean isStoryChapter = version.getLanguage().getProject().getSlug().equalsIgnoreCase(STORIES_SLUG);
-                    refreshChapterSelection(version, isStoryChapter);
-                    if(isStoryChapter){
-                        UWPreferenceManager.setSelectedStoryVersion(getContext(), version.getId());
-                    }
-//                    else {
-//                        UWPreferenceManager.setSelectedBibleVersion(getContext(), version.getId());
-//                    }
+                if(listener != null) {
+                    listener.versionWasSelected(version);
                 }
-            ((VersionSelectionFragment) parentFragment).rowSelected();
             }
         };
     }
@@ -508,41 +507,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         receiver = null;
     }
 
-    private String getButtonTextForStatus(int currentStatus){
 
-        switch (currentStatus){
-            case 0:
-                return getContext().getResources().getString(R.string.verified_button_char);
-            case 1:
-                return getContext().getResources().getString(R.string.expired_button_char);
-            default:
-                return getContext().getResources().getString(R.string.x_button_char);
-        }
-    }
-
-    private int getColorForStatus(int currentStatus){
-
-        switch (currentStatus){
-            case 0:
-                return R.drawable.green_checkmark;
-            case 1:
-                return R.drawable.yellow_exclamation_point;
-            default:
-                return R.drawable.red_x_button;
-        }
-    }
-
-    protected int getColorForState(int state){
-
-        switch (state){
-            case 1:
-                return getContext().getResources().getColor(R.color.black_light);
-            case 2:
-                return getContext().getResources().getColor(R.color.cyan);
-            default:
-                return getContext().getResources().getColor(R.color.lightgrey);
-        }
-    }
 
 
     private static class ViewHolderForGroup {

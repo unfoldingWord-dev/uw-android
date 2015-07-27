@@ -21,6 +21,7 @@ import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import services.UWPreLoader;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 
@@ -36,7 +37,6 @@ public class VersionSelectionFragment extends DialogFragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
-    static final String STORIES_SLUG = "obs";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
 
     protected AnimatedExpandableListView mListView = null;
@@ -163,19 +163,32 @@ public class VersionSelectionFragment extends DialogFragment {
 
         long selectedVersionId;
 
-        if(chosenProject.getSlug().equalsIgnoreCase(STORIES_SLUG)){
+        if(chosenProject.isBibleStories()){
             selectedVersionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
         }
         else{
             selectedVersionId = UWPreferenceManager.getSelectedBibleChapter(getContext());
         }
 
-        adapter = new CollapsibleVersionAdapter(this, this.chosenProject,
-                Version.getVersionForId(selectedVersionId, DaoDBHelper.getDaoSession(getContext())));
+        adapter = new CollapsibleVersionAdapter(this, this.chosenProject, selectedVersionId, new CollapsibleVersionAdapter.VersionAdapterListener(){
+            @Override
+            public void versionWasSelected(Version version) {
+                selectedVersion(version);
+            }
+        });
         mListView.setAdapter(adapter);
-
         int selectedIndex;
 
+    }
+
+    private void selectedVersion(Version version){
+
+        if(chosenProject.isBibleStories()){
+            UWPreferenceManager.setSelectedStoryVersion(getContext(), version.getId());
+        }
+        else{
+            UWPreferenceManager.setBib(getContext(),);
+        }
     }
 
     private Context getContext(){
