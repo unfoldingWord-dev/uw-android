@@ -8,6 +8,7 @@ import de.greenrobot.dao.DaoException;
 
 // KEEP INCLUDES - put your custom includes here
 import android.util.Log;
+import java.util.Collections;
 import model.UWDatabaseModel;
 import model.parsers.BookParser;
 import org.json.JSONException;
@@ -257,11 +258,8 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
             return getBibleChapters();
         }
         else{
-            BibleChapterDao targetDao = daoSession.getBibleChapterDao();
-            List<BibleChapter> bibleChaptersNew = targetDao.queryBuilder()
-                    .where(BibleChapterDao.Properties.BookId.eq(id))
-                    .orderAsc(BibleChapterDao.Properties.Number)
-                    .list();
+            List<BibleChapter> bibleChaptersNew = getBibleChapters();
+            Collections.sort(bibleChaptersNew);
             return bibleChaptersNew;
         }
     }
@@ -272,10 +270,8 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         }
         else{
             StoriesChapterDao targetDao = daoSession.getStoriesChapterDao();
-            List<StoriesChapter> storiesChaptersNew = targetDao.queryBuilder()
-                    .where(StoriesChapterDao.Properties.BookId.eq(id))
-                    .orderAsc(StoriesChapterDao.Properties.Number)
-                    .list();
+            List<StoriesChapter> storiesChaptersNew = getStoryChapters();
+            Collections.sort(storiesChaptersNew);
             return storiesChaptersNew;
         }
     }

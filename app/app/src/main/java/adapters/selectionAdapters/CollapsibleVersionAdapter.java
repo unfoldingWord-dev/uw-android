@@ -76,7 +76,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return this.parentFragment.getActivity();
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver receiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -120,8 +120,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         int count = getGroup(groupPosition).getVersions().size();
         return count;
     }
-
-
 
     @Override
     public View getRealChildView(final int groupPosition, final int childPosition,
@@ -168,7 +166,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
         holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
         setColorChange(holder, RowStatusHelper.getColorForState(getContext(), state));
-        holder.languageTypeImageView.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        holder.languageTypeImageView.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         holder.languageNameTextView.setText(version.getName());
 
         int verificationStatus = 1;//version.getVerificationStatus(getContext());
@@ -498,9 +496,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
         receiver = null;
     }
-
-
-
 
     private static class ViewHolderForGroup {
 

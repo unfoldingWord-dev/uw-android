@@ -15,6 +15,8 @@ import activity.UWBaseActivity;
 import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
 import model.daoModels.Project;
+import model.daoModels.Version;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -50,7 +52,8 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
     }
 
     @Override
-    public void rowWasSelected() {
+    public void versionWasSelected(Version version) {
+        UWPreferenceManager.selectedVersion(getApplicationContext(), version);
         handleBack();
     }
 }

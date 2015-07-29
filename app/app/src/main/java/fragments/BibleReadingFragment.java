@@ -1,6 +1,7 @@
 package fragments;
 
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,8 +17,10 @@ import org.unfoldingword.mobile.R;
 import java.util.List;
 
 import adapters.ReadingPagerAdapter;
+import adapters.ReadingScrollNotifications;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import utils.UWPreferenceManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,9 +70,10 @@ public class BibleReadingFragment extends Fragment {
         return view;
     }
 
-    public void updateReadingFragment(Book book){
-        this.currentBook = book;
-        adapter.update(book.getBibleChapters());
+    public void update(BibleChapter chapter){
+        this.currentBook = chapter.getBook();
+        adapter.update(chapter.getBook().getBibleChapters(true));
+        scrollToCurrentPage();
     }
 
     private void setupViews(View view){
@@ -80,11 +84,44 @@ public class BibleReadingFragment extends Fragment {
 
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
 
-        List<BibleChapter> chapters = currentBook.getBibleChapters();
+        List<BibleChapter> chapters = currentBook.getBibleChapters(true);
         adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters,  getDoubleTapTouchListener());
 
         readingViewPager.setAdapter(adapter);
         readingViewPager.setOnTouchListener(getDoubleTapTouchListener());
+        scrollToCurrentPage();
+        readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                if(position < adapter.getChapters().size()) {
+                    BibleChapter model = adapter.getChapters().get(position);
+                    UWPreferenceManager.setSelectedBibleChapter(getActivity().getApplicationContext(), model.getId());
+                    getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void scrollToCurrentPage(){
+
+        long currentItem = UWPreferenceManager.getSelectedBibleChapter(getActivity().getApplicationContext());
+        for(int i = 0; i < currentBook.getBibleChapters().size(); i++){
+            if(currentItem == currentBook.getBibleChapters().get(i).getId()){
+                readingViewPager.setCurrentItem(i);
+                return;
+            }
+        }
     }
 
     private View.OnTouchListener getDoubleTapTouchListener(){

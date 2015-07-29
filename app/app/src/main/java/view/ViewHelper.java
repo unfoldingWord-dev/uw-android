@@ -26,7 +26,7 @@ public class ViewHelper {
         }
     }
 
-    static public int getCheckingLevelImage(int level){
+    static public int getDarkCheckingLevelImage(int level){
         switch (level){
             case 2:{
                 return R.drawable.level_two_dark;
@@ -95,6 +95,21 @@ public class ViewHelper {
                 return context.getResources().getString(R.string.expired_button_char);
             default:
                 return context.getResources().getString(R.string.x_button_char);
+        }
+    }
+
+    public static int getCheckingLevelImage(int level){
+
+        switch (level){
+            case 2:{
+                return R.drawable.level_two;
+            }
+            case 3:{
+                return R.drawable.level_three;
+            }
+            default:{
+                return R.drawable.level_one;
+            }
         }
     }
 }

@@ -17,22 +17,15 @@ import model.daoModels.Version;
  */
 public class UWPreferenceManager {
 
-//    private static final String STORY_VERSION_ID = "selected_story_version_id";
-//    public static long getSelectedStoryVersion(Context context){
-//        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_VERSION_ID, -1);
-//    }
-//    public static void setSelectedStoryVersion(Context context, long newValue){
-//        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_VERSION_ID, newValue).commit();
-//    }
+    public static void selectedVersion(Context context, Version version){
 
-//    private static final String BIBLE_VERSION_ID = "selected_bible_version_id";
-//    public static long getSelectedBibleVersion(Context context){
-//        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_VERSION_ID, -1);
-//    }
-//    public static void setSelectedBibleVersion(Context context, long newValue){
-//
-//        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(BIBLE_VERSION_ID, newValue).commit();
-//    }
+        if(version.getLanguage().getProject().isBibleStories()){
+            UWPreferenceManager.setNewStoriesVersion(context, version);
+        }
+        else{
+            UWPreferenceManager.setNewBibleVersion(context, version);
+        }
+    }
 
     public static void setNewBibleVersion(Context context, Version version){
 

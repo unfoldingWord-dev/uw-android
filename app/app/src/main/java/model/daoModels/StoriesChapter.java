@@ -17,7 +17,7 @@ import model.parsers.StoriesChapterParser;
 /**
  * Entity mapped to table STORIES_CHAPTER.
  */
-public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Serializable {
+public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Serializable, Comparable<StoriesChapter> {
 
     private Long id;
     private String slug;
@@ -253,6 +253,11 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
                 .unique();
 
         return (model == null)? null : model;
+    }
+
+    @Override
+    public int compareTo(StoriesChapter another) {
+        return Integer.parseInt(this.getNumber()) - Integer.parseInt(another.getNumber());
     }
     // KEEP METHODS END
 

@@ -1,40 +1,31 @@
 package activity.reading;
 
 
-import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
-
-import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.bookSelection.BookSelectionActivity;
 import activity.bookSelection.VersionSelectionActivity;
-import fragments.BibleReadingFragment;
+import adapters.ReadingScrollNotifications;
 import fragments.BooksFragment;
 import fragments.ChapterSelectionFragment;
 import fragments.ChaptersFragment;
 import fragments.CheckingLevelFragment;
 import fragments.ReadingFragmentListener;
 import fragments.VersionSelectionFragment;
-import model.DaoDBHelper;
-import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -62,10 +53,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected boolean loadData();
     abstract protected String getChapterLabelText();
     abstract protected String getVersionText();
-    abstract protected int getCheckingLevelImage();
     abstract protected void updateReadingView();
     abstract protected Version getVersion();
     abstract protected Project getProject();
+    abstract protected void scrolled();
+
+
+    private BroadcastReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +96,26 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             readingLayout.setVisibility(View.GONE);
             setNoVersionSelectedVisibility(true);
         }
+        registerReceivers();
+    }
+
+    private void registerReceivers(){
+        receiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if (intent.getAction().equals(ReadingScrollNotifications.SCROLLED_PAGE)) {
+//                    if(intent.getExtras().containsKey(ReadingScrollNotifications.BIBLE_CHAPTER_PARAM)
+//                            || intent.getExtras().containsKey(ReadingScrollNotifications.STORY_PAGE_PARAM)) {
+                        scrolled();
+//                    }
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ReadingScrollNotifications.SCROLLED_PAGE);
+        getApplicationContext().registerReceiver(receiver, filter);
     }
 
     @Override
@@ -111,39 +125,40 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         updateViews();
     }
 
-    private void updateViews(){
+    @Override
+    protected void onPause() {
+
+        if(receiver != null) {
+            getApplicationContext().unregisterReceiver(receiver);
+        }
+        receiver = null;
+        super.onPause();
+
+    }
+
+    protected void updateViews(){
 
         updateToolbar();
         updateReadingView();
     }
 
-    private void updateToolbar() {
+    protected void updateToolbar() {
 
         int checkingLevelImage = getCheckingLevelImage();
         getToolbar().setCheckingLevelImage((checkingLevelImage > -1) ? checkingLevelImage : -1);
 
+        updateToolbarTitle();
+    }
+
+    protected void updateToolbarTitle(){
         String title = getChapterLabelText();
         getToolbar().setTitle(title, true);
         getToolbar().setRightButtonText(getVersionText(), true);
     }
 
-    protected int getCheckingLevelImage(int level){
-
-        switch (level){
-            case 2:{
-                return R.drawable.level_two;
-            }
-            case 3:{
-                return R.drawable.level_three;
-            }
-            default:{
-                return R.drawable.level_one;
-            }
-        }
-    }
-
     private void setNoVersionSelectedVisibility(boolean visible){
-        findViewById(R.id.reading_error_text_view).setVisibility((visible)? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.reading_error_text_view).setVisibility((visible) ? View.VISIBLE : View.GONE);
     }
 
     private boolean isTablet(){
@@ -209,7 +224,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void rowWasSelected() {
+    public void versionWasSelected(Version version) {
+        UWPreferenceManager.selectedVersion(getApplicationContext(), version);
         removeFragment(VERSION_FRAGMENT_ID);
     }
 
@@ -232,12 +248,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public void bookWasSelected(String chapterUid) {
-
     }
 
     @Override
     public void chapterWasSelected() {
-
     }
 
     private void goToCheckingLevelView(){
@@ -256,6 +270,17 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
         else {
 
+        }
+    }
+
+    protected int getCheckingLevelImage() {
+
+        Version currentVersion = getVersion();
+        if(currentVersion != null) {
+            return ViewHelper.getCheckingLevelImage(Integer.parseInt(currentVersion.getStatusCheckingLevel()));
+        }
+        else{
+            return -1;
         }
     }
 }

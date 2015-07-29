@@ -69,7 +69,7 @@ public class SplashScreenActivity extends Activity {
             goToInitialActivity();
         }
         else{
-            preLoadData();
+//            preLoadData();
         }
     }
 

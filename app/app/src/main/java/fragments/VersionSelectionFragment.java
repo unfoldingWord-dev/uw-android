@@ -18,10 +18,8 @@ import org.unfoldingword.mobile.R;
 
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import model.DaoDBHelper;
-import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
-import services.UWPreLoader;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 
@@ -46,7 +44,7 @@ public class VersionSelectionFragment extends DialogFragment {
     private boolean showProjectTitle = false;
     private TextView titleTextView;
 
-    private VersionSelectionFragmentListener mListener;
+    private VersionSelectionFragmentListener listener;
 
 
     /**
@@ -189,22 +187,12 @@ public class VersionSelectionFragment extends DialogFragment {
         adapter = new CollapsibleVersionAdapter(this, this.chosenProject, selectedVersionId, new CollapsibleVersionAdapter.VersionAdapterListener(){
             @Override
             public void versionWasSelected(Version version) {
-                selectedVersion(version);
+                if(listener != null){
+                    listener.versionWasSelected(version);
+                }
             }
         });
         mListView.setAdapter(adapter);
-        int selectedIndex;
-
-    }
-
-    private void selectedVersion(Version version){
-
-        if(chosenProject.isBibleStories()){
-            UWPreferenceManager.setNewStoriesVersion(getContext(), version);
-        }
-        else{
-            UWPreferenceManager.setNewBibleVersion(getContext(), version);
-        }
     }
 
     private Context getContext(){
@@ -215,7 +203,7 @@ public class VersionSelectionFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (VersionSelectionFragmentListener) activity;
+            listener = (VersionSelectionFragmentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -225,15 +213,8 @@ public class VersionSelectionFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
         if(adapter != null) {
             adapter.willDestroy();
-        }
-    }
-
-    public void rowSelected(){
-        if(mListener != null) {
-            this.mListener.rowWasSelected();
         }
     }
 
@@ -248,7 +229,7 @@ public class VersionSelectionFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface VersionSelectionFragmentListener {
-        public void rowWasSelected();
+        public void versionWasSelected(Version version);
     }
 
 }

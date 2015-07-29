@@ -7,6 +7,8 @@ import de.greenrobot.daogenerator.Schema;
 public class MyDaoGenerator {
 
     private static final String UW_DATABASE_MODEL_PROTOCOL = "model.UWDatabaseModel";
+    private static final String BIBLE_CHAPTER_COMPARABLE_INTERFACE = "Comparable<" + ModelNames.BIBLE_CHAPTER + ">";
+    private static final String STORY_CHAPTER_COMPARABLE_INTERFACE = "Comparable<" + ModelNames.STORY_CHAPTER + ">";
 
     public static void main(String[] args) throws Exception {
         Schema schema = new Schema(100, "model.daoModels");
@@ -102,6 +104,7 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.BIBLE_CHAPTER, ModelNames.BIBLE_CHAPTER_STRING_ATTRIBUTES);
         Entity bibleChapter =  DaoHelperMethods.createEntity(schema, bibleChapterInfo);
         bibleChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
+        bibleChapter.implementsInterface(BIBLE_CHAPTER_COMPARABLE_INTERFACE);
 
         DaoHelperMethods.createParentChildRelationship(
                 book, ModelNames.BOOK_BIBLE_CHAPTERS_ATTRIBUTE,
@@ -114,6 +117,7 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.STORY_CHAPTER, ModelNames.STORY_CHAPTER_STRING_ATTRIBUTES);
         Entity storyChapter = DaoHelperMethods.createEntity(schema, storyChapterInfo);
         storyChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
+        storyChapter.implementsInterface(STORY_CHAPTER_COMPARABLE_INTERFACE);
 
         DaoHelperMethods.createParentChildRelationship(
                 book, ModelNames.BOOK_STORY_CHAPTERS_ATTRIBUTE,

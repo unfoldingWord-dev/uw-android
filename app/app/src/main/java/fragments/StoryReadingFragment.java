@@ -69,7 +69,7 @@ public class StoryReadingFragment extends Fragment {
         return view;
     }
 
-    public void updateReadingFragment(StoriesChapter chapter){
+    public void update(StoriesChapter chapter){
         this.currentChapter = chapter;
         adapter.update(chapter);
     }

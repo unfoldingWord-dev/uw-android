@@ -1,45 +1,18 @@
 package activity.reading;
 
 
-import android.app.Dialog;
-import android.content.res.Configuration;
-import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import activity.AnimationParadigm;
-import activity.UWBaseActivity;
-import activity.bookSelection.BookSelectionActivity;
-import activity.bookSelection.VersionSelectionActivity;
+import adapters.ReadingScrollNotifications;
 import fragments.BibleReadingFragment;
-import fragments.BooksFragment;
-import fragments.ChapterSelectionFragment;
-import fragments.ChaptersFragment;
-import fragments.ReadingFragmentListener;
-import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
-import view.ViewHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -77,6 +50,16 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
+    protected void scrolled() {
+
+        long id = UWPreferenceManager.getSelectedBibleChapter(getApplicationContext());
+        if (id != currentChapter.getId()) {
+            currentChapter = BibleChapter.getModelForId(id, DaoDBHelper.getDaoSession(getApplicationContext()));
+            updateToolbarTitle();
+        }
+    }
+
+    @Override
     protected Project getProject() {
         List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
 
@@ -108,22 +91,20 @@ public class ReadingActivity extends BaseReadingActivity {
 
         if(currentChapter != null) {
             if (this.readingFragment == null) {
-                this.readingFragment = BibleReadingFragment.newInstance(currentChapter.getBook());
-                getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment").commit();
-            } else {
-                readingFragment.updateReadingFragment(currentChapter.getBook());
+
+                Fragment cachedFragment = getSupportFragmentManager().findFragmentByTag("BibleReadingFragment");
+                if(cachedFragment != null){
+                    this.readingFragment = (BibleReadingFragment) cachedFragment;
+                    readingFragment.update(currentChapter);
+                }
+                else {
+                    this.readingFragment = BibleReadingFragment.newInstance(currentChapter.getBook());
+                    getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment").commit();
+                }
             }
-        }
-    }
-
-    @Override
-    protected int getCheckingLevelImage() {
-
-        if(currentChapter != null) {
-            return getCheckingLevelImage(Integer.parseInt(currentChapter.getBook().getVersion().getStatusCheckingLevel()));
-        }
-        else{
-            return -1;
+            else {
+                readingFragment.update(currentChapter);
+            }
         }
     }
 }

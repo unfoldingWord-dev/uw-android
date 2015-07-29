@@ -1,6 +1,7 @@
 package activity.reading;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ import fragments.StoryReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
+import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
 
@@ -42,13 +44,24 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
+    protected void scrolled() {
+//        currentChapter = (StoryPage) extras.getSerializable(ReadingScrollNotifications.BIBLE_CHAPTER_PARAM);
+    }
+
+    @Override
     protected boolean loadData() {
 
-        long chapterId = UWPreferenceManager.getSelectedStoryPage(getApplicationContext());
+        long pageId = UWPreferenceManager.getSelectedStoryPage(getApplicationContext());
 
-        if (chapterId > -1) {
-            currentChapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getApplicationContext()));
-            return true;
+        if (pageId > -1) {
+            StoryPage page = DaoDBHelper.getDaoSession(getApplicationContext()).getStoryPageDao().loadDeep(pageId);
+            if(page != null){
+                currentChapter = page.getStoriesChapter();
+                return true;
+            }
+            else{
+                return false;
+            }
         } else {
             currentChapter = null;
             return false;
@@ -72,21 +85,19 @@ public class StoryReadingActivity extends BaseReadingActivity {
     protected void updateReadingView() {
 
         if (this.readingFragment == null) {
-            this.readingFragment = StoryReadingFragment.newInstance(currentChapter);
-            getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "StoryReadingFragment").commit();
-        } else {
-            readingFragment.updateReadingFragment(currentChapter);
-        }
-    }
 
-    @Override
-    protected int getCheckingLevelImage() {
-
-        if(currentChapter != null) {
-            return getCheckingLevelImage(Integer.parseInt(currentChapter.getBook().getVersion().getStatusCheckingLevel()));
+            Fragment cachedFragment = getSupportFragmentManager().findFragmentByTag("StoryReadingFragment");
+            if(cachedFragment != null){
+                this.readingFragment = (StoryReadingFragment) cachedFragment;
+                readingFragment.update(currentChapter);
+            }
+            else {
+                this.readingFragment = StoryReadingFragment.newInstance(currentChapter);
+                getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "StoryReadingFragment").commit();
+            }
         }
-        else{
-            return -1;
+        else {
+            readingFragment.update(currentChapter);
         }
     }
 }

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 /**
  * Entity mapped to table BIBLE_CHAPTER.
  */
-public class BibleChapter extends model.UWDatabaseModel  implements java.io.Serializable {
+public class BibleChapter extends model.UWDatabaseModel  implements java.io.Serializable, Comparable<BibleChapter> {
 
     private Long id;
     private String slug;
@@ -192,6 +192,11 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
         return session.getBibleChapterDao().queryBuilder()
                 .where(BibleChapterDao.Properties.Id.eq(id))
                 .unique();
+    }
+
+    @Override
+    public int compareTo(BibleChapter another) {
+        return Integer.parseInt(this.getNumber().trim()) - Integer.parseInt(another.getNumber().trim());
     }
     // KEEP METHODS END
 

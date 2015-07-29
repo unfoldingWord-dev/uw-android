@@ -1,7 +1,7 @@
 package adapters;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -10,17 +10,13 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import model.database.DBManager;
 import model.parsers.USFMParser;
 import utils.UWPreferenceManager;
 
@@ -31,7 +27,6 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     private static final String TAG = "ViewPagerAdapter";
 
-    DBManager dbManager = null;
     private Context context;
     private ViewGroup container;
     private List<BibleChapter> chapters;
@@ -39,17 +34,20 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     private Book nextBook;
 
+    public List<BibleChapter> getChapters() {
+        return chapters;
+    }
+
     public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener) {
         this.context = context;
         chapters = models;
-        getCount();
-        dbManager = DBManager.getInstance(this.context);
         this.pagerOnTouchListener = pagerOnTouchListener;
         setNextBook();
     }
 
     public void update(List<BibleChapter> models){
         this.chapters = models;
+        setNextBook();
         notifyDataSetChanged();
     }
 
@@ -177,9 +175,6 @@ public class ReadingPagerAdapter extends PagerAdapter {
         if(position == (this.getCount() - 1)){
             return;
         }
-
-        BibleChapter model = chapters.get(position);
-        UWPreferenceManager.setSelectedBibleChapter(context, model.getId());
     }
 
     private View getNextBookView(LayoutInflater inflater){
@@ -201,7 +196,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     private void moveToNextBook(){
 
-        this.chapters = nextBook.getBibleChapters();
+        this.chapters = nextBook.getBibleChapters(true);
         setNextBook();
 
         UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).getId());

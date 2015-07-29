@@ -21,7 +21,7 @@ public class BibleChapterParser extends UWDataParser{
     public static BibleChapter parseBibleChapter(Book parent, String number, String text) throws JSONException{
 
         BibleChapter chapter = new BibleChapter();
-        chapter.setNumber(number);
+        chapter.setNumber(number.trim());
         chapter.setText(text);
         chapter.setSlug(parent.getSlug() + number);
         chapter.setBookId(parent.getId());
