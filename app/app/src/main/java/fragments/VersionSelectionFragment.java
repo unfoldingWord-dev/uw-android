@@ -164,14 +164,26 @@ public class VersionSelectionFragment extends DialogFragment {
         long selectedVersionId;
 
         if(chosenProject.isBibleStories()){
-            selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
-                    .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
-                    .getStoriesChapter().getBook().getVersionId();
+            long pageId = UWPreferenceManager.getSelectedStoryPage(getContext());
+            if(pageId > -1) {
+                selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
+                        .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
+                        .getStoriesChapter().getBook().getVersionId();
+            }
+            else{
+                selectedVersionId = -1;
+            }
         }
         else{
-            selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
-                    .load(UWPreferenceManager.getSelectedBibleChapter(getContext()))
-                    .getBook().getVersionId();
+            long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
+            if(chapterId > -1) {
+                selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
+                        .load(chapterId)
+                        .getBook().getVersionId();
+            }
+            else{
+                selectedVersionId = -1;
+            }
         }
 
         adapter = new CollapsibleVersionAdapter(this, this.chosenProject, selectedVersionId, new CollapsibleVersionAdapter.VersionAdapterListener(){
