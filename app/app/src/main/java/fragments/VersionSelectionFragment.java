@@ -164,10 +164,14 @@ public class VersionSelectionFragment extends DialogFragment {
         long selectedVersionId;
 
         if(chosenProject.isBibleStories()){
-            selectedVersionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
+            selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
+                    .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
+                    .getStoriesChapter().getBook().getVersionId();
         }
         else{
-            selectedVersionId = UWPreferenceManager.getSelectedBibleChapter(getContext());
+            selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
+                    .load(UWPreferenceManager.getSelectedBibleChapter(getContext()))
+                    .getBook().getVersionId();
         }
 
         adapter = new CollapsibleVersionAdapter(this, this.chosenProject, selectedVersionId, new CollapsibleVersionAdapter.VersionAdapterListener(){
@@ -184,10 +188,10 @@ public class VersionSelectionFragment extends DialogFragment {
     private void selectedVersion(Version version){
 
         if(chosenProject.isBibleStories()){
-            UWPreferenceManager.setSelectedStoryVersion(getContext(), version.getId());
+            UWPreferenceManager.setNewStoriesVersion(getContext(), version);
         }
         else{
-            UWPreferenceManager.setBib(getContext(),);
+            UWPreferenceManager.setNewBibleVersion(getContext(), version);
         }
     }
 

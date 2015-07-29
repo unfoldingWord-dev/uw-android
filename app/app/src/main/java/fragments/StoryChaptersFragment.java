@@ -17,15 +17,13 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.StoriesChapterAdapter;
 import model.DaoDBHelper;
 import model.daoModels.StoriesChapter;
+import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
 
@@ -130,10 +128,10 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected List<StoriesChapter> getData(){
 
-        long versionId = UWPreferenceManager.getSelectedStoryVersion(getContext());
-        Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getContext()));
+        long storyId = UWPreferenceManager.getSelectedStoryPage(getContext());
+        StoryPage page = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao().loadDeep(storyId);
 
-        List<StoriesChapter> chapters = version.getBooks().get(0).getStoryChapters(true);
+        List<StoriesChapter> chapters = page.getStoriesChapter().getBook().getStoryChapters();
 
         return chapters;
     }
@@ -147,7 +145,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
             // put selected position  to sharedprefences
             PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(this.getIndexStorageString(), (int) rowIndex).commit();
-            UWPreferenceManager.setSelectedStoryChapter(getContext(), Long.parseLong(model.getChildIdentifier()));
+            UWPreferenceManager.setSelectedStoryPage(getContext(), Long.parseLong(model.getChildIdentifier()));
             mListener.chapterWasSelected();
 //            startActivityForResult(new Intent(this, this.getChildClass(model)).putExtra(
 //                    CHOSEN_ID, model.getChildIdentifier()), 1);

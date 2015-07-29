@@ -1,11 +1,9 @@
 package adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -24,7 +22,6 @@ import java.util.List;
 
 import activity.bookSelection.StoryChapterSelectionActivity;
 import model.daoModels.StoriesChapter;
-import model.database.DBManager;
 import utils.AsyncImageLoader;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
@@ -154,7 +151,7 @@ public class StoryPagerAdapter extends PagerAdapter {
         getCount();
 
         int current_value = Integer.parseInt(currentChapter.getNumber());
-        UWPreferenceManager.setSelectedStoryChapter(context, nextChapter.getId());
+        UWPreferenceManager.setSelectedStoryPage(context, nextChapter.getId());
 
         notifyDataSetChanged();
 

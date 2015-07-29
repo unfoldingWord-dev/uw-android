@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
-import fragments.VersionSelectionFragment;
 import model.DaoDBHelper;
 import model.DownloadState;
 import model.daoModels.BibleChapter;
@@ -286,14 +285,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-//                                if(UWPreferenceManager.getSelectedBibleVersion(getContext()) == version.getId()){
-//                                    UWPreferenceManager.setSelectedBibleVersion(getContext(), -1);
-//                                    UWPreferenceManager.setSelectedBibleChapter(getContext(), -1);
-//                                }
-                                if(UWPreferenceManager.getSelectedStoryVersion(getContext()) == version.getId()){
-                                    UWPreferenceManager.setSelectedStoryVersion(getContext(), -1);
-                                    UWPreferenceManager.setSelectedStoryChapter(getContext(), -1);
-                                }
+                                UWPreferenceManager.willDeleteVersion(getContext(), version);
                                 new DeleteVersionTask().execute(version);
                             }
                         })
@@ -380,17 +372,17 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         if(isStoryChapter){
 
-            long chapterId = UWPreferenceManager.getSelectedStoryChapter(getContext());
+            long chapterId = UWPreferenceManager.getSelectedStoryPage(getContext());
             if(chapterId < 0){
 
                 StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters(true).get(1);
-                UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
+                UWPreferenceManager.setSelectedStoryPage(getContext(), newChapter.getId());
             }
             else {
                 StoriesChapter chapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
                 if(chapter == null){
                     StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters(true).get(1);
-                    UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
+                    UWPreferenceManager.setSelectedStoryPage(getContext(), newChapter.getId());
                     return;
                 }
                 Book newBook = chapter.getBook();
@@ -398,7 +390,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                 StoriesChapter newChapter = (newBook == null)? version.getBooks().get(0).getStoryChapters(true).get(1) :
                         newBook.getStoryChapters(true).get(Integer.parseInt(chapter.getNumber()));
 
-                UWPreferenceManager.setSelectedStoryChapter(getContext(), newChapter.getId());
+                UWPreferenceManager.setSelectedStoryPage(getContext(), newChapter.getId());
             }
         }
         else{

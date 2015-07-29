@@ -44,7 +44,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
     @Override
     protected boolean loadData() {
 
-        long chapterId = UWPreferenceManager.getSelectedStoryChapter(getApplicationContext());
+        long chapterId = UWPreferenceManager.getSelectedStoryPage(getApplicationContext());
 
         if (chapterId > -1) {
             currentChapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getApplicationContext()));

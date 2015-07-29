@@ -225,6 +225,16 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
         return true;
     }
 
+    public StoryPage getStoriesChapterForNumber(String number, DaoSession session){
+
+        StoryPageDao dao = session.getStoryPageDao();
+        StoryPage model = dao.queryBuilder()
+                .where(StoryPageDao.Properties.StoryChapterId.eq(getId()), StoryPageDao.Properties.Slug.eq(number))
+                .unique();
+
+        return model;
+    }
+
     static public StoriesChapter getModelForSlug(String slug, DaoSession session){
 
         StoriesChapterDao dao = session.getStoriesChapterDao();

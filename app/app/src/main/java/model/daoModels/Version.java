@@ -289,7 +289,16 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
                 .where(VersionDao.Properties.Slug.eq(slug))
                 .unique();
 
-        return (model == null)? null : model;
+        return model;
+    }
+
+    public Book getBookForBookSlug(String slug, DaoSession session){
+        BookDao dao = session.getBookDao();
+        Book model = dao.queryBuilder()
+                .where(BookDao.Properties.VersionId.eq(getId()), BookDao.Properties.Slug.like("%" + slug + "%"))
+                .unique();
+
+        return model;
     }
 
     @Override

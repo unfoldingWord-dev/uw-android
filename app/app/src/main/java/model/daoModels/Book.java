@@ -296,6 +296,10 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         return null;
     }
 }
+    public String getSlugIdentifier(){
+
+        return slug.substring(slug.length() - 3);
+    }
 
     static public Book getModelForSlug(String slug, DaoSession session){
 
@@ -305,6 +309,25 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
                 .unique();
 
         return (model == null)? null : model;
+    }
+
+    public BibleChapter getBibleChapterForNumber(String number, DaoSession session){
+        BibleChapterDao dao = session.getBibleChapterDao();
+        BibleChapter model = dao.queryBuilder()
+                .where(BibleChapterDao.Properties.BookId.eq(getId()), BibleChapterDao.Properties.Slug.eq(number))
+                .unique();
+
+        return model;
+    }
+
+    public StoriesChapter getStoriesChapterForNumber(String number, DaoSession session){
+
+        StoriesChapterDao dao = session.getStoriesChapterDao();
+        StoriesChapter model = dao.queryBuilder()
+                .where(StoriesChapterDao.Properties.BookId.eq(getId()), StoriesChapterDao.Properties.Slug.eq(number))
+                .unique();
+
+        return model;
     }
 
     @Override
