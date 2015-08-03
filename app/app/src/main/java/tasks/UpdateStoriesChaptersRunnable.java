@@ -62,7 +62,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
-                            Log.d(TAG, "story chapter created");
+//                            Log.d(TAG, "story chapter created");
 
                             if(shouldContinueUpdate != null){
                                 updatePages(jsonObject, (StoriesChapter) shouldContinueUpdate);
@@ -83,7 +83,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         try{
             JSONArray pages = project.getJSONArray(FRAMES_JSON_KEY);
             UpdateStoryPagesRunnable runnable = new UpdateStoryPagesRunnable(pages, updater, pageParent);
-            updater.addRunnable(runnable, 5);
+            updater.addRunnable(runnable, 0);
         }
         catch (JSONException e){
             e.printStackTrace();

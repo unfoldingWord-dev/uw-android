@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -177,5 +178,17 @@ public class SigningEntity {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "SigningEntity{" +
+                "mCAPublicKey=" + mCAPublicKey +
+                ", mPublicKey=" + mPublicKey +
+                ", organization=" + organization +
+                ", mData=" + Arrays.toString(mData) +
+                ", mSignature=" + Arrays.toString(mSignature) +
+                ", mStatus=" + mStatus +
+                '}';
     }
 }

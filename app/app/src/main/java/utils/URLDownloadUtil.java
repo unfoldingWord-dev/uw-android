@@ -43,18 +43,30 @@ public class URLDownloadUtil {
      * @param url
      * @return
      */
-    public static String downloadString(String url) throws IOException {
+    public static String downloadString(String url){
 
-        HttpResponse response =  downloadUrl(url);
+        try {
+            HttpResponse response = downloadUrl(url);
 
-        return EntityUtils.toString(response.getEntity());
+            return EntityUtils.toString(response.getEntity());
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static byte[] downloadBytes(String url) throws IOException {
+    public static byte[] downloadBytes(String url) {
 
-        HttpResponse response =  downloadUrl(url);
+        try {
+            HttpResponse response = downloadUrl(url);
 
-        return EntityUtils.toByteArray(response.getEntity());
+            return EntityUtils.toByteArray(response.getEntity());
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
 
     }
 }

@@ -11,6 +11,7 @@ import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.daoModels.Version;
 import services.UWUpdater;
+import utils.URLDownloadUtil;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -46,20 +47,15 @@ public class UpdateBookContentRunnable implements Runnable{
     }
 
     private void updateUsfm(final Book parent){
+        byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
+        String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
 
-        new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
-                @Override
-                public void verificationFinishedWithResult(byte[] text) {
-                if (text != null){
-                    UpdateBibleChaptersRunnable runnable = new UpdateBibleChaptersRunnable(text, updater, parent);
-                    updater.addRunnable(runnable);
-                }
-            }
-        }).execute(parent);
+        UpdateVerificationRunnable runnable = new UpdateVerificationRunnable(parent, updater, bookText, sigText);
+        updater.addRunnable(runnable, 1);
+        updater.runnableFinished();
     }
 
     private void updateStories(final Book parent){
-
 
         new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
             @Override
@@ -71,6 +67,7 @@ public class UpdateBookContentRunnable implements Runnable{
                         UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
                                 new JSONObject(new String(text)).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
                         updater.addRunnable(runnable);
+                        updater.runnableFinished();
 
                     } catch (JSONException e) {
                         e.printStackTrace();

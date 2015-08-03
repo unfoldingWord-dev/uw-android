@@ -216,6 +216,16 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
 
         return (models == null)? null : models;
     }
+
+    @Override
+    public String toString() {
+        return "Verification{" +
+                "signature='" + signature + '\'' +
+                ", signingInstitution='" + signingInstitution + '\'' +
+                ", status=" + status +
+                "} " + super.toString();
+    }
+
     // KEEP METHODS END
 
 }

@@ -75,7 +75,7 @@ public class UpdateBibleChaptersRunnable implements Runnable{
             @Override
             public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
-                Log.d(TAG, "bible chapter created");
+//                Log.d(TAG, "bible chapter created");
                 if(isLast){
                     updater.runnableFinished();
                 }

@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import tasks.JsonDownloadTask;
 import tasks.UpdateLanguageLocaleRunnable;
@@ -30,12 +31,13 @@ public class UWUpdater extends Service {
     public static final String BROAD_CAST_DOWN_COMP = "org.unfoldingword.mobile.DOWNLOAD_COMPLETED";
     public static final String PROJECTS_JSON_KEY = "cat";
     public static final String MODIFIED_JSON_KEY = "mod";
+    private static final int MAX_NUMBER_THREADS = 20;
 
     private Looper mServiceLooper;
+
     private Handler mServiceHandler;
 
-    private SparseArray<Handler> threads;
-
+    private UpdaterThread[] threads;
 
     int numberRunning = 0;
 
@@ -49,14 +51,14 @@ public class UWUpdater extends Service {
     }
     @Override
     public void onCreate() {
-        HandlerThread thread = new HandlerThread("DataDownloadServiceThread", Process.THREAD_PRIORITY_BACKGROUND);
+        HandlerThread thread = new HandlerThread("DataDownloadServiceThread", Process.THREAD_PRIORITY_DEFAULT);
 
         thread.start();
         mServiceLooper = thread.getLooper();
         mServiceHandler = new Handler(mServiceLooper);
 
         super.onCreate();
-        threads = new SparseArray<Handler>();
+        threads = new UpdaterThread[MAX_NUMBER_THREADS];
     }
 
     public void addRunnable(Runnable runnable){
@@ -68,15 +70,38 @@ public class UWUpdater extends Service {
     synchronized public void addRunnable(Runnable runnable, int index){
 
         numberRunning++;
-        if(threads.indexOfKey(index) < 0 || threads.get(index) == null){
-            HandlerThread thread = new HandlerThread("DataDownloadServiceThreadIndex" + index, Process.THREAD_PRIORITY_BACKGROUND);
-            thread.start();
-            Looper looper = thread.getLooper();
-            Handler handler = new Handler(looper);
-            threads.put(index, handler);
+        for(int i = 0; i < MAX_NUMBER_THREADS; i++){
+
+            if(threads[i] == null){
+                threads[i] = new UpdaterThread("DataDownloadServiceThreadIndex" + i, Process.THREAD_PRIORITY_DEFAULT);
+                threads[i].start();
+            }
+            if(threads[i].isIdle){
+                boolean added = threads[i].post(runnable);
+                if(added){
+                    Log.i(TAG, "Added to thread: " + i);
+
+                    return;
+                }
+            }
         }
-        threads.get(index).post(runnable);
+
+        Log.i(TAG, "All threads were in use");
+
+        //fall through condition
+        Random r = new Random();
+        int num = r.nextInt(MAX_NUMBER_THREADS);
+        boolean added = threads[num].post(runnable);
+
+        if(!added){
+            Log.e(TAG, "Could not add to thread for some reason");
+//            addRunnable(runnable);
+        }
+        else {
+            Log.i(TAG, "Added to thread: " + num);
+        }
     }
+
 
     public void runnableFinished(){
 
@@ -89,6 +114,10 @@ public class UWUpdater extends Service {
 
     protected void stopService(){
         getApplicationContext().sendBroadcast(new Intent(BROAD_CAST_DOWN_COMP));
+        for(UpdaterThread thread : threads){
+            thread.safeStop();
+            thread.quit();
+        }
         this.stopSelf();
     }
 
@@ -147,7 +176,44 @@ public class UWUpdater extends Service {
 
                 }
             }).execute(UWPreferenceManager.getLanguagesDownloadUrl(getApplicationContext()));
+        }
+    }
 
+    private static class UpdaterThread extends HandlerThread{
+
+        private boolean keepGoing = true;
+        private Handler handler;
+
+        public boolean isIdle = false;
+        public UpdaterThread(String name) {
+            this(name, Process.THREAD_PRIORITY_DEFAULT);
+        }
+
+        public UpdaterThread(String name, int priority) {
+            super(name, priority);
+        }
+
+        public void safeStop(){
+            keepGoing = false;
+        }
+
+        @Override
+        public synchronized void start() {
+            super.start();
+            handler = new Handler(getLooper());
+
+            Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+                @Override
+                public boolean queueIdle() {
+                    isIdle = true;
+                    return keepGoing;
+                }
+            });
+        }
+
+        public boolean post(Runnable runnable){
+            isIdle = false;
+            return this.handler.post(runnable);
         }
     }
 }

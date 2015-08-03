@@ -22,14 +22,8 @@ public class JsonDownloadTask extends AsyncTask<String,Void, String> {
     protected String doInBackground(String... params) {
 
         String url = params[0];
-        try {
-            String json = URLDownloadUtil.downloadString(url);
-            return json;
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            return null;
-        }
+        String json = URLDownloadUtil.downloadString(url);
+        return json;
     }
 
     @Override

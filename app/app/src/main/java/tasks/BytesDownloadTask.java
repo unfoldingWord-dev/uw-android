@@ -21,14 +21,8 @@ public class BytesDownloadTask extends AsyncTask<String,Void, byte[]> {
     protected byte[] doInBackground(String... params) {
 
         String url = params[0];
-        try {
-            byte[] json = URLDownloadUtil.downloadBytes(url);
-            return json;
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            return null;
-        }
+        byte[] json = URLDownloadUtil.downloadBytes(url);
+        return json;
     }
 
     @Override

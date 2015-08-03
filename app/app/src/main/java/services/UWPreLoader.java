@@ -3,6 +3,7 @@ package services;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.ListIterator;
 
 import model.DaoDBHelper;
 import model.DownloadState;
@@ -25,6 +27,7 @@ import tasks.UpdateBookContentRunnable;
 import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
 import tasks.UpdateStoriesChaptersRunnable;
+import tasks.UpdateVerificationRunnable;
 import utils.UWPreferenceManager;
 
 /**
@@ -88,7 +91,7 @@ public class UWPreLoader extends UWUpdater {
                 long modified = jsonObject.getLong(UWUpdater.MODIFIED_JSON_KEY);
                 UWPreferenceManager.setLastUpdatedDate(getApplicationContext(), modified);
 
-                UWDataParser.getInstance(getApplicationContext()).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
+//                UWDataParser.getInstance(getApplicationContext()).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
                 addRunnable(new UpdateProjectsRunnable(jsonObject.getJSONArray(UWUpdater.PROJECTS_JSON_KEY), getThis()));
             }
             catch (JSONException e){
@@ -124,27 +127,20 @@ public class UWPreLoader extends UWUpdater {
             List<Book> books = DaoDBHelper.getDaoSession(getApplicationContext())
                     .getBookDao().queryBuilder().list();
 
-            for(Book book : books){
+            ListIterator li = books.listIterator(books.size());
 
+// Iterate in reverse.
+            while(li.hasPrevious()) {
+
+                Book book = (Book) li.previous();
                 try {
                     String signature = loadDbFile(getSavedUrl(book.getSignatureUrl()));
-                    byte[] text = loadDbFile(getSavedUrl(book.getSourceUrl())).getBytes();
+                    byte[] text = loadDbFileBytes(getSavedUrl(book.getSourceUrl()));
 
-                    UWSigning.updateVerification(getApplicationContext(), book, text, signature);
-
-                    if(book.getSourceUrl().contains("usfm")){
-                        addRunnable(new UpdateBibleChaptersRunnable(text, getThis(), book));
-                    }
-                    else{
-                        UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
-                                new JSONObject(new String(text)).getJSONArray(UpdateBookContentRunnable.CHAPTERS_JSON_KEY), getThis(), book);
-                        addRunnable(runnable);
-                    }
+                    UpdateVerificationRunnable runnable = new UpdateVerificationRunnable(book, getThis(), text, signature);
+                    addRunnable(runnable, 1);
                 }
                 catch (IOException e){
-                    e.printStackTrace();
-                }
-                catch (JSONException e){
                     e.printStackTrace();
                 }
             }
@@ -161,11 +157,22 @@ public class UWPreLoader extends UWUpdater {
         }
     }
 
-//    private byte[] loadDbFileBytes(String fileName) throws IOException{
-//
-//        // Open your local model.db as the input stream
-//        InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
-//
+    private byte[] loadDbFileBytes(String fileName) throws IOException{
+
+        // Open your local model.db as the input stream
+        InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
+
+        byte[] file = IOUtils.toByteArray(inputStream);
+        return file;
+    }
+
+    private String loadDbFile(String fileName) throws IOException{
+
+        // Open your local model.db as the input stream
+        InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
+        String file = IOUtils.toString(inputStream);
+        return file;
+
 //        InputStreamReader reader = new InputStreamReader(inputStream);
 //        StringBuilder builder = new StringBuilder();
 //        BufferedReader bufferReader = new BufferedReader(reader);
@@ -178,25 +185,6 @@ public class UWPreLoader extends UWUpdater {
 //        }
 //
 //        return builder.toString();
-//    }
-
-    private String loadDbFile(String fileName) throws IOException{
-
-        // Open your local model.db as the input stream
-        InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
-
-        InputStreamReader reader = new InputStreamReader(inputStream);
-        StringBuilder builder = new StringBuilder();
-        BufferedReader bufferReader = new BufferedReader(reader);
-        String read = bufferReader.readLine();
-
-        while(read != null) {
-            //System.out.println(read);
-            builder.append(read);
-            read =bufferReader.readLine();
-        }
-
-        return builder.toString();
     }
 
     private static String getSavedUrl(String url){

@@ -62,7 +62,7 @@ public class UpdateBooksRunnable implements Runnable{
                         @Override
                         public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
 
-                            Log.d(TAG, "Book created");
+//                            Log.d(TAG, "Book created");
                             if(shouldContinueUpdate != null){
                                 updateChapters (jsonObject, (Book) shouldContinueUpdate);
                             }

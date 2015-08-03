@@ -52,32 +52,21 @@ public class UpdateStoryPagesRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
-        new ModelCreationTask(new StoryPage(), parent, new ModelCreationTask.ModelCreationTaskListener() {
-            @Override
-            public void modelWasCreated(UWDatabaseModel model) {
+        UWDatabaseModel model = new ModelCreator(new StoryPage(), parent).start(jsonObject);
 
-                    if(model instanceof StoryPage) {
+        if(model instanceof StoryPage) {
+            new StoriesPageSaveOrUpdater(updater.getApplicationContext()).start(model);
+        }
 
-                    new StoriesPageSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
-
-                            Log.d(TAG, "story page created");
-                            if(isLast){
-                                updater.runnableFinished();
-                            }
-                        }
-                    }
-                    ).execute(model);
-                }
-            }
-        }).execute(jsonObject);
+        if(isLast) {
+            updater.runnableFinished();
+        }
     }
 
-    private class StoriesPageSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class StoriesPageSaveOrUpdater extends ModelSaveOrUpdater{
 
-        public StoriesPageSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
+        public StoriesPageSaveOrUpdater(Context context) {
+            super(context);
         }
 
         @Override

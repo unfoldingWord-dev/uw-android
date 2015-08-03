@@ -111,6 +111,9 @@ public class UWSigning {
                 if (sigStatus != Status.VERIFIED) {
                     Log.e(TAG, "Signature not verified: " + sigStatus.toString());
                 }
+                else{
+                    Log.i(TAG, "Signature status: " + sigStatus.toString());
+                }
                 model.setStatus(sigStatus.ordinal());
 
                 verifications.add(model);
