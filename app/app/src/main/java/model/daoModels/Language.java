@@ -9,7 +9,7 @@ import de.greenrobot.dao.DaoException;
 // KEEP INCLUDES - put your custom includes here
 import model.UWDatabaseModel;
 import model.parsers.LanguageParser;
-import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
@@ -19,6 +19,7 @@ import org.json.JSONObject;
 public class Language extends model.UWDatabaseModel  implements java.io.Serializable {
 
     private Long id;
+    private String uniqueSlug;
     private String slug;
     private String languageAbbreviation;
     private java.util.Date modified;
@@ -46,8 +47,9 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
         this.id = id;
     }
 
-    public Language(Long id, String slug, String languageAbbreviation, java.util.Date modified, long projectId) {
+    public Language(Long id, String uniqueSlug, String slug, String languageAbbreviation, java.util.Date modified, long projectId) {
         this.id = id;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.languageAbbreviation = languageAbbreviation;
         this.modified = modified;
@@ -66,6 +68,14 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {
@@ -212,7 +222,7 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
 
         Language newLanguage = (Language) newModel;
 
-        this.slug = newLanguage.slug;
+        this.uniqueSlug = newLanguage.uniqueSlug;
         this.languageAbbreviation = newLanguage.languageAbbreviation;
         this.projectId = newLanguage.projectId;
 

@@ -17,6 +17,7 @@ public class ProjectParser extends UWDataParser{
 
         Project newModel = new Project();
         newModel.setSlug(jsonObject.getString(SLUG_JSON_KEY));
+        newModel.setUniqueSlug(newModel.getSlug());
         newModel.setTitle(jsonObject.getString(TITLE_JSON_KEY));
         return newModel;
     }

@@ -14,6 +14,7 @@ public class SigningOrganization implements java.io.Serializable {
     private String email;
     private String name;
     private String url;
+    private String uniqueSlug;
     private String slug;
     private java.util.Date createdAt;
     private java.util.Date expiresAt;
@@ -29,11 +30,12 @@ public class SigningOrganization implements java.io.Serializable {
         this.id = id;
     }
 
-    public SigningOrganization(Long id, String email, String name, String url, String slug, java.util.Date createdAt, java.util.Date expiresAt, java.util.Date modifiedAt) {
+    public SigningOrganization(Long id, String email, String name, String url, String uniqueSlug, String slug, java.util.Date createdAt, java.util.Date expiresAt, java.util.Date modifiedAt) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.url = url;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
@@ -70,6 +72,14 @@ public class SigningOrganization implements java.io.Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {
@@ -133,7 +143,7 @@ public class SigningOrganization implements java.io.Serializable {
         this.email = org.email;
         this.name = org.name;
         this.url = org.url;
-        this.slug = org.slug;
+        this.uniqueSlug = org.slug;
         this.createdAt = org.createdAt;
         this.expiresAt = org.expiresAt;
         this.modifiedAt = org.modifiedAt;

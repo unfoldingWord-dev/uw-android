@@ -9,7 +9,7 @@ import de.greenrobot.dao.DaoException;
 // KEEP INCLUDES - put your custom includes here
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.util.Log;
+
 import model.UWDatabaseModel;
 import model.parsers.VersionParser;
 // KEEP INCLUDES END
@@ -19,6 +19,7 @@ import model.parsers.VersionParser;
 public class Version extends model.UWDatabaseModel  implements java.io.Serializable {
 
     private Long id;
+    private String uniqueSlug;
     private String slug;
     private String name;
     private String statusCheckingEntity;
@@ -55,8 +56,9 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         this.id = id;
     }
 
-    public Version(Long id, String slug, String name, String statusCheckingEntity, String statusCheckingLevel, String statusComments, String statusContributors, String statusPublishDate, String statusSourceText, String statusSourceTextVersion, String statusVersion, Integer saveState, java.util.Date modified, long languageId) {
+    public Version(Long id, String uniqueSlug, String slug, String name, String statusCheckingEntity, String statusCheckingLevel, String statusComments, String statusContributors, String statusPublishDate, String statusSourceText, String statusSourceTextVersion, String statusVersion, Integer saveState, java.util.Date modified, long languageId) {
         this.id = id;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.name = name;
         this.statusCheckingEntity = statusCheckingEntity;
@@ -84,6 +86,14 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {
@@ -313,7 +323,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
         Version newVersion = (Version) newModel;
 
-        this.slug = newVersion.slug;
+        this.uniqueSlug = newVersion.uniqueSlug;
         this.name = newVersion.name;
         this.statusCheckingEntity = newVersion.statusCheckingEntity;
         this.statusCheckingLevel = newVersion.statusCheckingLevel;

@@ -24,8 +24,9 @@ public class ProjectDao extends AbstractDao<Project, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
-        public final static Property Title = new Property(2, String.class, "title", false, "TITLE");
+        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
+        public final static Property Title = new Property(3, String.class, "title", false, "TITLE");
     };
 
     private DaoSession daoSession;
@@ -45,8 +46,9 @@ public class ProjectDao extends AbstractDao<Project, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'PROJECT' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'SLUG' TEXT," + // 1: slug
-                "'TITLE' TEXT);"); // 2: title
+                "'UNIQUE_SLUG' TEXT," + // 1: uniqueSlug
+                "'SLUG' TEXT," + // 2: slug
+                "'TITLE' TEXT);"); // 3: title
     }
 
     /** Drops the underlying database table. */
@@ -65,14 +67,19 @@ public class ProjectDao extends AbstractDao<Project, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(2, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(2, slug);
+            stmt.bindString(3, slug);
         }
  
         String title = entity.getTitle();
         if (title != null) {
-            stmt.bindString(3, title);
+            stmt.bindString(4, title);
         }
     }
 
@@ -93,8 +100,9 @@ public class ProjectDao extends AbstractDao<Project, Long> {
     public Project readEntity(Cursor cursor, int offset) {
         Project entity = new Project( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // title
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // title
         );
         return entity;
     }
@@ -103,8 +111,9 @@ public class ProjectDao extends AbstractDao<Project, Long> {
     @Override
     public void readEntity(Cursor cursor, Project entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setTitle(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTitle(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
      }
     
     /** @inheritdoc */

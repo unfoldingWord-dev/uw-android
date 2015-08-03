@@ -3,9 +3,6 @@ package tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-
-import org.json.JSONObject;
 
 import model.DaoDBHelper;
 import model.UWDatabaseModel;
@@ -32,7 +29,7 @@ public abstract class ModelSaveOrUpdateTask extends AsyncTask<UWDatabaseModel, V
 
         DaoSession session = DaoDBHelper.getDaoSession(context);
         UWDatabaseModel newModel = params[0];
-        UWDatabaseModel existingModel = getExistingModel(newModel.getSlug(), session);
+        UWDatabaseModel existingModel = getExistingModel(newModel.getUniqueSlug(), session);
 
         if(existingModel != null){
             if(existingModel.updateWithModel(newModel)){

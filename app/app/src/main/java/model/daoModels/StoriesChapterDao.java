@@ -29,11 +29,12 @@ public class StoriesChapterDao extends AbstractDao<StoriesChapter, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
-        public final static Property Number = new Property(2, String.class, "number", false, "NUMBER");
-        public final static Property Title = new Property(3, String.class, "title", false, "TITLE");
-        public final static Property Ref = new Property(4, String.class, "ref", false, "REF");
-        public final static Property BookId = new Property(5, long.class, "bookId", false, "BOOK_ID");
+        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
+        public final static Property Number = new Property(3, String.class, "number", false, "NUMBER");
+        public final static Property Title = new Property(4, String.class, "title", false, "TITLE");
+        public final static Property Ref = new Property(5, String.class, "ref", false, "REF");
+        public final static Property BookId = new Property(6, long.class, "bookId", false, "BOOK_ID");
     };
 
     private DaoSession daoSession;
@@ -54,11 +55,12 @@ public class StoriesChapterDao extends AbstractDao<StoriesChapter, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'STORIES_CHAPTER' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'SLUG' TEXT," + // 1: slug
-                "'NUMBER' TEXT," + // 2: number
-                "'TITLE' TEXT," + // 3: title
-                "'REF' TEXT," + // 4: ref
-                "'BOOK_ID' INTEGER NOT NULL );"); // 5: bookId
+                "'UNIQUE_SLUG' TEXT," + // 1: uniqueSlug
+                "'SLUG' TEXT," + // 2: slug
+                "'NUMBER' TEXT," + // 3: number
+                "'TITLE' TEXT," + // 4: title
+                "'REF' TEXT," + // 5: ref
+                "'BOOK_ID' INTEGER NOT NULL );"); // 6: bookId
     }
 
     /** Drops the underlying database table. */
@@ -77,26 +79,31 @@ public class StoriesChapterDao extends AbstractDao<StoriesChapter, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(2, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(2, slug);
+            stmt.bindString(3, slug);
         }
  
         String number = entity.getNumber();
         if (number != null) {
-            stmt.bindString(3, number);
+            stmt.bindString(4, number);
         }
  
         String title = entity.getTitle();
         if (title != null) {
-            stmt.bindString(4, title);
+            stmt.bindString(5, title);
         }
  
         String ref = entity.getRef();
         if (ref != null) {
-            stmt.bindString(5, ref);
+            stmt.bindString(6, ref);
         }
-        stmt.bindLong(6, entity.getBookId());
+        stmt.bindLong(7, entity.getBookId());
     }
 
     @Override
@@ -116,11 +123,12 @@ public class StoriesChapterDao extends AbstractDao<StoriesChapter, Long> {
     public StoriesChapter readEntity(Cursor cursor, int offset) {
         StoriesChapter entity = new StoriesChapter( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // number
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // title
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // ref
-            cursor.getLong(offset + 5) // bookId
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // number
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // title
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // ref
+            cursor.getLong(offset + 6) // bookId
         );
         return entity;
     }
@@ -129,11 +137,12 @@ public class StoriesChapterDao extends AbstractDao<StoriesChapter, Long> {
     @Override
     public void readEntity(Cursor cursor, StoriesChapter entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setNumber(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setTitle(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setRef(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setBookId(cursor.getLong(offset + 5));
+        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setNumber(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setTitle(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setRef(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setBookId(cursor.getLong(offset + 6));
      }
     
     /** @inheritdoc */

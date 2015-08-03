@@ -2,11 +2,8 @@ package activity.bookSelection;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
@@ -41,7 +38,7 @@ public class BookSelectionActivity extends UWBaseActivity implements ChapterSele
 
         Project project = (Project) getIntent().getSerializableExtra(PROJECT_PARAM);
 
-        boolean isStories = project.getSlug().contains("obs");
+        boolean isStories = project.getUniqueSlug().contains("obs");
         if(isStories){
             return StoryChaptersFragment.newInstance(false);
         }

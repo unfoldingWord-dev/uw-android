@@ -29,13 +29,14 @@ public class BookDao extends AbstractDao<Book, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
-        public final static Property Title = new Property(2, String.class, "title", false, "TITLE");
-        public final static Property Description = new Property(3, String.class, "description", false, "DESCRIPTION");
-        public final static Property SourceUrl = new Property(4, String.class, "sourceUrl", false, "SOURCE_URL");
-        public final static Property SignatureUrl = new Property(5, String.class, "signatureUrl", false, "SIGNATURE_URL");
-        public final static Property Modified = new Property(6, java.util.Date.class, "modified", false, "MODIFIED");
-        public final static Property VersionId = new Property(7, long.class, "versionId", false, "VERSION_ID");
+        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
+        public final static Property Title = new Property(3, String.class, "title", false, "TITLE");
+        public final static Property Description = new Property(4, String.class, "description", false, "DESCRIPTION");
+        public final static Property SourceUrl = new Property(5, String.class, "sourceUrl", false, "SOURCE_URL");
+        public final static Property SignatureUrl = new Property(6, String.class, "signatureUrl", false, "SIGNATURE_URL");
+        public final static Property Modified = new Property(7, java.util.Date.class, "modified", false, "MODIFIED");
+        public final static Property VersionId = new Property(8, long.class, "versionId", false, "VERSION_ID");
     };
 
     private DaoSession daoSession;
@@ -56,13 +57,14 @@ public class BookDao extends AbstractDao<Book, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'BOOK' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'SLUG' TEXT," + // 1: slug
-                "'TITLE' TEXT," + // 2: title
-                "'DESCRIPTION' TEXT," + // 3: description
-                "'SOURCE_URL' TEXT," + // 4: sourceUrl
-                "'SIGNATURE_URL' TEXT," + // 5: signatureUrl
-                "'MODIFIED' INTEGER," + // 6: modified
-                "'VERSION_ID' INTEGER NOT NULL );"); // 7: versionId
+                "'UNIQUE_SLUG' TEXT," + // 1: uniqueSlug
+                "'SLUG' TEXT," + // 2: slug
+                "'TITLE' TEXT," + // 3: title
+                "'DESCRIPTION' TEXT," + // 4: description
+                "'SOURCE_URL' TEXT," + // 5: sourceUrl
+                "'SIGNATURE_URL' TEXT," + // 6: signatureUrl
+                "'MODIFIED' INTEGER," + // 7: modified
+                "'VERSION_ID' INTEGER NOT NULL );"); // 8: versionId
     }
 
     /** Drops the underlying database table. */
@@ -81,36 +83,41 @@ public class BookDao extends AbstractDao<Book, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(2, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(2, slug);
+            stmt.bindString(3, slug);
         }
  
         String title = entity.getTitle();
         if (title != null) {
-            stmt.bindString(3, title);
+            stmt.bindString(4, title);
         }
  
         String description = entity.getDescription();
         if (description != null) {
-            stmt.bindString(4, description);
+            stmt.bindString(5, description);
         }
  
         String sourceUrl = entity.getSourceUrl();
         if (sourceUrl != null) {
-            stmt.bindString(5, sourceUrl);
+            stmt.bindString(6, sourceUrl);
         }
  
         String signatureUrl = entity.getSignatureUrl();
         if (signatureUrl != null) {
-            stmt.bindString(6, signatureUrl);
+            stmt.bindString(7, signatureUrl);
         }
  
         java.util.Date modified = entity.getModified();
         if (modified != null) {
-            stmt.bindLong(7, modified.getTime());
+            stmt.bindLong(8, modified.getTime());
         }
-        stmt.bindLong(8, entity.getVersionId());
+        stmt.bindLong(9, entity.getVersionId());
     }
 
     @Override
@@ -130,13 +137,14 @@ public class BookDao extends AbstractDao<Book, Long> {
     public Book readEntity(Cursor cursor, int offset) {
         Book entity = new Book( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // title
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // description
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // sourceUrl
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // signatureUrl
-            cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)), // modified
-            cursor.getLong(offset + 7) // versionId
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // title
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // description
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // sourceUrl
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // signatureUrl
+            cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)), // modified
+            cursor.getLong(offset + 8) // versionId
         );
         return entity;
     }
@@ -145,13 +153,14 @@ public class BookDao extends AbstractDao<Book, Long> {
     @Override
     public void readEntity(Cursor cursor, Book entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setTitle(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setDescription(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setSourceUrl(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setSignatureUrl(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setModified(cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)));
-        entity.setVersionId(cursor.getLong(offset + 7));
+        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTitle(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setDescription(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setSourceUrl(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setSignatureUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setModified(cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)));
+        entity.setVersionId(cursor.getLong(offset + 8));
      }
     
     /** @inheritdoc */

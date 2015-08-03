@@ -30,7 +30,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
     @Override
     protected String getVersionText() {
-        return (currentChapter != null)? currentChapter.getBook().getVersion().getSlug() : "Select Version";
+        return (currentChapter != null)? currentChapter.getBook().getVersion().getUniqueSlug() : "Select Version";
     }
 
     @Override
@@ -74,7 +74,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
         for(Project project : projects){
 
-            if(project.getSlug().equalsIgnoreCase("obs")){
+            if(project.getUniqueSlug().equalsIgnoreCase("obs")){
                 return project;
             }
         }

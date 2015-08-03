@@ -29,10 +29,11 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
-        public final static Property Number = new Property(2, String.class, "number", false, "NUMBER");
-        public final static Property Text = new Property(3, String.class, "text", false, "TEXT");
-        public final static Property BookId = new Property(4, long.class, "bookId", false, "BOOK_ID");
+        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
+        public final static Property Number = new Property(3, String.class, "number", false, "NUMBER");
+        public final static Property Text = new Property(4, String.class, "text", false, "TEXT");
+        public final static Property BookId = new Property(5, long.class, "bookId", false, "BOOK_ID");
     };
 
     private DaoSession daoSession;
@@ -53,10 +54,11 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'BIBLE_CHAPTER' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'SLUG' TEXT," + // 1: slug
-                "'NUMBER' TEXT," + // 2: number
-                "'TEXT' TEXT," + // 3: text
-                "'BOOK_ID' INTEGER NOT NULL );"); // 4: bookId
+                "'UNIQUE_SLUG' TEXT," + // 1: uniqueSlug
+                "'SLUG' TEXT," + // 2: slug
+                "'NUMBER' TEXT," + // 3: number
+                "'TEXT' TEXT," + // 4: text
+                "'BOOK_ID' INTEGER NOT NULL );"); // 5: bookId
     }
 
     /** Drops the underlying database table. */
@@ -75,21 +77,26 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(2, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(2, slug);
+            stmt.bindString(3, slug);
         }
  
         String number = entity.getNumber();
         if (number != null) {
-            stmt.bindString(3, number);
+            stmt.bindString(4, number);
         }
  
         String text = entity.getText();
         if (text != null) {
-            stmt.bindString(4, text);
+            stmt.bindString(5, text);
         }
-        stmt.bindLong(5, entity.getBookId());
+        stmt.bindLong(6, entity.getBookId());
     }
 
     @Override
@@ -109,10 +116,11 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
     public BibleChapter readEntity(Cursor cursor, int offset) {
         BibleChapter entity = new BibleChapter( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // number
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // text
-            cursor.getLong(offset + 4) // bookId
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // number
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // text
+            cursor.getLong(offset + 5) // bookId
         );
         return entity;
     }
@@ -121,10 +129,11 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
     @Override
     public void readEntity(Cursor cursor, BibleChapter entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setNumber(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setText(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setBookId(cursor.getLong(offset + 4));
+        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setNumber(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setText(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setBookId(cursor.getLong(offset + 5));
      }
     
     /** @inheritdoc */

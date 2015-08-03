@@ -209,7 +209,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
         for(Project row : mProjects) {
-            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getSlug(), row.getTitle()));
+            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getTitle()));
             List<Language> langs = row.getLanguages();
         }
 
@@ -218,7 +218,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     private void moveToNextActivity(Project project){
 
-        Class nextActivity = (project.getSlug().equalsIgnoreCase(STORIES_SLUG))?
+        Class nextActivity = (project.getUniqueSlug().equalsIgnoreCase(STORIES_SLUG))?
                 StoryReadingActivity.class : ReadingActivity.class;
 
         Intent newIntent = new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project);

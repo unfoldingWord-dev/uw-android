@@ -34,7 +34,8 @@ public class VersionParser extends UWDataParser{
         newModel.setSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
         newModel.setModified(getDateFromSecondString(jsonObject.getString(MODIFIED_JSON_KEY)));
         newModel.setName(jsonObject.getString(NAME_JSON_KEY));
-        newModel.setSlug(parent.getSlug() + jsonObject.getString(SLUG_JSON_KEY));
+        newModel.setSlug(jsonObject.getString(SLUG_JSON_KEY));
+        newModel.setUniqueSlug(parent.getUniqueSlug() + newModel.getSlug());
 
         JSONObject statusObject = jsonObject.getJSONObject(STATUS_JSON_KEY);
 

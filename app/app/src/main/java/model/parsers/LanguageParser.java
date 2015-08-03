@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import model.UWDatabaseModel;
 import model.daoModels.Language;
 import model.daoModels.Project;
-import model.daoModels.Version;
 
 /**
  * Created by Fechner on 6/22/15.
@@ -21,7 +20,8 @@ public class LanguageParser extends UWDataParser{
         Language newModel = new Language();
         newModel.setLanguageAbbreviation(jsonObject.getString(LANGUAGE_CODE_JSON_KEY));
         newModel.setModified(getDateFromSecondString(jsonObject.getString(MODIFIED_JSON_KEY)));
-        newModel.setSlug(parent.getSlug() + newModel.getLanguageAbbreviation());
+        newModel.setSlug(newModel.getLanguageAbbreviation().trim());
+        newModel.setUniqueSlug(parent.getUniqueSlug() + newModel.getSlug());
         newModel.setProjectId(((Project) parent).getId());
 
         return newModel;

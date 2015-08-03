@@ -10,7 +10,6 @@ import de.greenrobot.dao.DaoException;
 import model.UWDatabaseModel;
 import model.parsers.ProjectParser;
 
-import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
@@ -20,6 +19,7 @@ import org.json.JSONObject;
 public class Project extends model.UWDatabaseModel  implements java.io.Serializable {
 
     private Long id;
+    private String uniqueSlug;
     private String slug;
     private String title;
 
@@ -42,8 +42,9 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
         this.id = id;
     }
 
-    public Project(Long id, String slug, String title) {
+    public Project(Long id, String uniqueSlug, String slug, String title) {
         this.id = id;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.title = title;
     }
@@ -60,6 +61,14 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {
@@ -127,7 +136,7 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
     // KEEP METHODS - put your custom methods here
 
     public boolean isBibleStories(){
-        return getSlug().equalsIgnoreCase("obs");
+        return getUniqueSlug().equalsIgnoreCase("obs");
     }
 
     static public List<Project> getAllModels(DaoSession session){
@@ -173,7 +182,7 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
 
         Project newProject = (Project) newModel;
 
-        this.slug = newProject.slug;
+        this.uniqueSlug = newProject.uniqueSlug;
         this.title = newProject.title;
         update();
         return true;

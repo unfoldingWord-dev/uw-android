@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import model.UWDatabaseModel;
 import model.daoModels.Book;
-import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 
 /**
@@ -22,10 +21,11 @@ public class StoriesChapterParser extends UWDataParser{
 
         StoriesChapter newModel = new StoriesChapter();
 
-        newModel.setNumber(jsonObject.getString(NUMBER_JSON_KEY));
+        newModel.setNumber(jsonObject.getString(NUMBER_JSON_KEY).trim());
         newModel.setRef(jsonObject.getString(REFERENCE_JSON_KEY));
         newModel.setTitle(jsonObject.getString(TITLE_JSON_KEY));
-        newModel.setSlug(parent.getSlug() + newModel.getNumber());
+        newModel.setSlug(newModel.getNumber());
+        newModel.setUniqueSlug(parent.getUniqueSlug() + newModel.getSlug());
         newModel.setBookId(((Book) parent).getId());
 
         return newModel;

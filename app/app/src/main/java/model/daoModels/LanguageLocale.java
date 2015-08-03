@@ -128,7 +128,7 @@ public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Se
     }
 
     @Override
-    public String getSlug() {
+    public String getUniqueSlug() {
         return languageKey;
     }
 

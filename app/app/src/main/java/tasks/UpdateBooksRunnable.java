@@ -87,7 +87,7 @@ public class UpdateBooksRunnable implements Runnable{
         else if( (parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0)
                 && (parent.getStoryChapters() != null && parent.getStoryChapters().size() > 0) ) {
 
-            updater.addRunnable(new UpdateBookContentRunnable(parent, updater));
+            updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 4);
         }
     }
 

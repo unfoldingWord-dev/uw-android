@@ -82,7 +82,7 @@ public class UpdateVersionsRunnable implements Runnable{
         try{
             JSONArray languages = project.getJSONArray(BOOKS_JSON_KEY);
             UpdateBooksRunnable runnable = new UpdateBooksRunnable(languages, updater, parent);
-            updater.addRunnable(runnable);
+            updater.addRunnable(runnable, 2);
         }
         catch (JSONException e){
             e.printStackTrace();

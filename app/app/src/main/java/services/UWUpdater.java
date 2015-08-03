@@ -2,16 +2,17 @@ package services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.MessageQueue;
+import android.os.*;
+import android.os.Process;
 import android.util.Log;
+import android.util.SparseArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import tasks.JsonDownloadTask;
 import tasks.UpdateLanguageLocaleRunnable;
@@ -33,6 +34,8 @@ public class UWUpdater extends Service {
     private Looper mServiceLooper;
     private Handler mServiceHandler;
 
+    private SparseArray<Handler> threads;
+
 
     int numberRunning = 0;
 
@@ -46,19 +49,33 @@ public class UWUpdater extends Service {
     }
     @Override
     public void onCreate() {
-        HandlerThread thread = new HandlerThread("DataDownloadServiceThread", 2);
+        HandlerThread thread = new HandlerThread("DataDownloadServiceThread", Process.THREAD_PRIORITY_BACKGROUND);
 
         thread.start();
         mServiceLooper = thread.getLooper();
         mServiceHandler = new Handler(mServiceLooper);
 
         super.onCreate();
+        threads = new SparseArray<Handler>();
     }
 
     public void addRunnable(Runnable runnable){
 
         numberRunning++;
         mServiceHandler.post(runnable);
+    }
+
+    synchronized public void addRunnable(Runnable runnable, int index){
+
+        numberRunning++;
+        if(threads.indexOfKey(index) < 0 || threads.get(index) == null){
+            HandlerThread thread = new HandlerThread("DataDownloadServiceThreadIndex" + index, Process.THREAD_PRIORITY_BACKGROUND);
+            thread.start();
+            Looper looper = thread.getLooper();
+            Handler handler = new Handler(looper);
+            threads.put(index, handler);
+        }
+        threads.get(index).post(runnable);
     }
 
     public void runnableFinished(){
@@ -120,10 +137,12 @@ public class UWUpdater extends Service {
                     try{
 //                        JSONObject jsonObj = new JSONObject(jsonString);
                         JSONArray locales = new JSONArray(jsonString);
-                        addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()));
+                        addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
+                        runnableFinished();
 
                     }catch (JSONException e){
                         e.printStackTrace();
+                        runnableFinished();
                     }
 
                 }

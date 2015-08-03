@@ -29,10 +29,11 @@ public class LanguageDao extends AbstractDao<Language, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
-        public final static Property LanguageAbbreviation = new Property(2, String.class, "languageAbbreviation", false, "LANGUAGE_ABBREVIATION");
-        public final static Property Modified = new Property(3, java.util.Date.class, "modified", false, "MODIFIED");
-        public final static Property ProjectId = new Property(4, long.class, "projectId", false, "PROJECT_ID");
+        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
+        public final static Property LanguageAbbreviation = new Property(3, String.class, "languageAbbreviation", false, "LANGUAGE_ABBREVIATION");
+        public final static Property Modified = new Property(4, java.util.Date.class, "modified", false, "MODIFIED");
+        public final static Property ProjectId = new Property(5, long.class, "projectId", false, "PROJECT_ID");
     };
 
     private DaoSession daoSession;
@@ -53,10 +54,11 @@ public class LanguageDao extends AbstractDao<Language, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'LANGUAGE' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'SLUG' TEXT," + // 1: slug
-                "'LANGUAGE_ABBREVIATION' TEXT," + // 2: languageAbbreviation
-                "'MODIFIED' INTEGER," + // 3: modified
-                "'PROJECT_ID' INTEGER NOT NULL );"); // 4: projectId
+                "'UNIQUE_SLUG' TEXT," + // 1: uniqueSlug
+                "'SLUG' TEXT," + // 2: slug
+                "'LANGUAGE_ABBREVIATION' TEXT," + // 3: languageAbbreviation
+                "'MODIFIED' INTEGER," + // 4: modified
+                "'PROJECT_ID' INTEGER NOT NULL );"); // 5: projectId
     }
 
     /** Drops the underlying database table. */
@@ -75,21 +77,26 @@ public class LanguageDao extends AbstractDao<Language, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(2, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(2, slug);
+            stmt.bindString(3, slug);
         }
  
         String languageAbbreviation = entity.getLanguageAbbreviation();
         if (languageAbbreviation != null) {
-            stmt.bindString(3, languageAbbreviation);
+            stmt.bindString(4, languageAbbreviation);
         }
  
         java.util.Date modified = entity.getModified();
         if (modified != null) {
-            stmt.bindLong(4, modified.getTime());
+            stmt.bindLong(5, modified.getTime());
         }
-        stmt.bindLong(5, entity.getProjectId());
+        stmt.bindLong(6, entity.getProjectId());
     }
 
     @Override
@@ -109,10 +116,11 @@ public class LanguageDao extends AbstractDao<Language, Long> {
     public Language readEntity(Cursor cursor, int offset) {
         Language entity = new Language( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // languageAbbreviation
-            cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)), // modified
-            cursor.getLong(offset + 4) // projectId
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // languageAbbreviation
+            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // modified
+            cursor.getLong(offset + 5) // projectId
         );
         return entity;
     }
@@ -121,10 +129,11 @@ public class LanguageDao extends AbstractDao<Language, Long> {
     @Override
     public void readEntity(Cursor cursor, Language entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setLanguageAbbreviation(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setModified(cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)));
-        entity.setProjectId(cursor.getLong(offset + 4));
+        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setLanguageAbbreviation(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setModified(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
+        entity.setProjectId(cursor.getLong(offset + 5));
      }
     
     /** @inheritdoc */

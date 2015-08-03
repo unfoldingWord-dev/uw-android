@@ -27,7 +27,8 @@ public class BookParser extends UWDataParser{
 
         newModel.setDescription(jsonObject.getString(DESCRIPTION_JSON_KEY));
         newModel.setModified(getDateFromSecondString(jsonObject.getString(MODIFIED_JSON_KEY)));
-        newModel.setSlug(parent.getSlug() + jsonObject.getString(SLUG_JSON_KEY));
+        newModel.setSlug(jsonObject.getString(SLUG_JSON_KEY));
+        newModel.setUniqueSlug(parent.getUniqueSlug() + newModel.getSlug());
 
         newModel.setSourceUrl(jsonObject.getString(SOURCE_URL_JSON_KEY));
         newModel.setSignatureUrl(jsonObject.getString(SIGNATURE_URL_JSON_KEY));

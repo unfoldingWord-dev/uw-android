@@ -11,7 +11,7 @@ public abstract class UWDatabaseModel {
 
     abstract public UWDatabaseModel setupModelFromJson(JSONObject json);
     abstract public UWDatabaseModel setupModelFromJson(JSONObject json, UWDatabaseModel parent);
-    abstract public String getSlug();
+    abstract public String getUniqueSlug();
     abstract public boolean updateWithModel(UWDatabaseModel newModel);
     abstract public void insertModel(DaoSession session);
 }

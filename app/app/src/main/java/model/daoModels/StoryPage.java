@@ -18,6 +18,7 @@ import org.json.JSONObject;
 public class StoryPage extends model.UWDatabaseModel  implements java.io.Serializable {
 
     private Long id;
+    private String uniqueSlug;
     private String slug;
     private String number;
     private String text;
@@ -44,8 +45,9 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
         this.id = id;
     }
 
-    public StoryPage(Long id, String slug, String number, String text, String imageUrl, long storyChapterId) {
+    public StoryPage(Long id, String uniqueSlug, String slug, String number, String text, String imageUrl, long storyChapterId) {
         this.id = id;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.number = number;
         this.text = text;
@@ -65,6 +67,14 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {
@@ -190,7 +200,7 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
 
         StoryPage newPage = (StoryPage) newModel;
 
-        this.slug = newPage.slug;
+        this.uniqueSlug = newPage.uniqueSlug;
         this.number = newPage.number;
         this.text = newPage.text;
         this.imageUrl = newPage.imageUrl;

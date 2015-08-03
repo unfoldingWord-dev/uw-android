@@ -83,7 +83,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         try{
             JSONArray pages = project.getJSONArray(FRAMES_JSON_KEY);
             UpdateStoryPagesRunnable runnable = new UpdateStoryPagesRunnable(pages, updater, pageParent);
-            updater.addRunnable(runnable);
+            updater.addRunnable(runnable, 5);
         }
         catch (JSONException e){
             e.printStackTrace();

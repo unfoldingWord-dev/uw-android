@@ -29,19 +29,20 @@ public class VersionDao extends AbstractDao<Version, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
-        public final static Property Name = new Property(2, String.class, "name", false, "NAME");
-        public final static Property StatusCheckingEntity = new Property(3, String.class, "statusCheckingEntity", false, "STATUS_CHECKING_ENTITY");
-        public final static Property StatusCheckingLevel = new Property(4, String.class, "statusCheckingLevel", false, "STATUS_CHECKING_LEVEL");
-        public final static Property StatusComments = new Property(5, String.class, "statusComments", false, "STATUS_COMMENTS");
-        public final static Property StatusContributors = new Property(6, String.class, "statusContributors", false, "STATUS_CONTRIBUTORS");
-        public final static Property StatusPublishDate = new Property(7, String.class, "statusPublishDate", false, "STATUS_PUBLISH_DATE");
-        public final static Property StatusSourceText = new Property(8, String.class, "statusSourceText", false, "STATUS_SOURCE_TEXT");
-        public final static Property StatusSourceTextVersion = new Property(9, String.class, "statusSourceTextVersion", false, "STATUS_SOURCE_TEXT_VERSION");
-        public final static Property StatusVersion = new Property(10, String.class, "statusVersion", false, "STATUS_VERSION");
-        public final static Property SaveState = new Property(11, Integer.class, "saveState", false, "SAVE_STATE");
-        public final static Property Modified = new Property(12, java.util.Date.class, "modified", false, "MODIFIED");
-        public final static Property LanguageId = new Property(13, long.class, "languageId", false, "LANGUAGE_ID");
+        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
+        public final static Property Name = new Property(3, String.class, "name", false, "NAME");
+        public final static Property StatusCheckingEntity = new Property(4, String.class, "statusCheckingEntity", false, "STATUS_CHECKING_ENTITY");
+        public final static Property StatusCheckingLevel = new Property(5, String.class, "statusCheckingLevel", false, "STATUS_CHECKING_LEVEL");
+        public final static Property StatusComments = new Property(6, String.class, "statusComments", false, "STATUS_COMMENTS");
+        public final static Property StatusContributors = new Property(7, String.class, "statusContributors", false, "STATUS_CONTRIBUTORS");
+        public final static Property StatusPublishDate = new Property(8, String.class, "statusPublishDate", false, "STATUS_PUBLISH_DATE");
+        public final static Property StatusSourceText = new Property(9, String.class, "statusSourceText", false, "STATUS_SOURCE_TEXT");
+        public final static Property StatusSourceTextVersion = new Property(10, String.class, "statusSourceTextVersion", false, "STATUS_SOURCE_TEXT_VERSION");
+        public final static Property StatusVersion = new Property(11, String.class, "statusVersion", false, "STATUS_VERSION");
+        public final static Property SaveState = new Property(12, Integer.class, "saveState", false, "SAVE_STATE");
+        public final static Property Modified = new Property(13, java.util.Date.class, "modified", false, "MODIFIED");
+        public final static Property LanguageId = new Property(14, long.class, "languageId", false, "LANGUAGE_ID");
     };
 
     private DaoSession daoSession;
@@ -62,19 +63,20 @@ public class VersionDao extends AbstractDao<Version, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'VERSION' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
-                "'SLUG' TEXT," + // 1: slug
-                "'NAME' TEXT," + // 2: name
-                "'STATUS_CHECKING_ENTITY' TEXT," + // 3: statusCheckingEntity
-                "'STATUS_CHECKING_LEVEL' TEXT," + // 4: statusCheckingLevel
-                "'STATUS_COMMENTS' TEXT," + // 5: statusComments
-                "'STATUS_CONTRIBUTORS' TEXT," + // 6: statusContributors
-                "'STATUS_PUBLISH_DATE' TEXT," + // 7: statusPublishDate
-                "'STATUS_SOURCE_TEXT' TEXT," + // 8: statusSourceText
-                "'STATUS_SOURCE_TEXT_VERSION' TEXT," + // 9: statusSourceTextVersion
-                "'STATUS_VERSION' TEXT," + // 10: statusVersion
-                "'SAVE_STATE' INTEGER," + // 11: saveState
-                "'MODIFIED' INTEGER," + // 12: modified
-                "'LANGUAGE_ID' INTEGER NOT NULL );"); // 13: languageId
+                "'UNIQUE_SLUG' TEXT," + // 1: uniqueSlug
+                "'SLUG' TEXT," + // 2: slug
+                "'NAME' TEXT," + // 3: name
+                "'STATUS_CHECKING_ENTITY' TEXT," + // 4: statusCheckingEntity
+                "'STATUS_CHECKING_LEVEL' TEXT," + // 5: statusCheckingLevel
+                "'STATUS_COMMENTS' TEXT," + // 6: statusComments
+                "'STATUS_CONTRIBUTORS' TEXT," + // 7: statusContributors
+                "'STATUS_PUBLISH_DATE' TEXT," + // 8: statusPublishDate
+                "'STATUS_SOURCE_TEXT' TEXT," + // 9: statusSourceText
+                "'STATUS_SOURCE_TEXT_VERSION' TEXT," + // 10: statusSourceTextVersion
+                "'STATUS_VERSION' TEXT," + // 11: statusVersion
+                "'SAVE_STATE' INTEGER," + // 12: saveState
+                "'MODIFIED' INTEGER," + // 13: modified
+                "'LANGUAGE_ID' INTEGER NOT NULL );"); // 14: languageId
     }
 
     /** Drops the underlying database table. */
@@ -93,66 +95,71 @@ public class VersionDao extends AbstractDao<Version, Long> {
             stmt.bindLong(1, id);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(2, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(2, slug);
+            stmt.bindString(3, slug);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(3, name);
+            stmt.bindString(4, name);
         }
  
         String statusCheckingEntity = entity.getStatusCheckingEntity();
         if (statusCheckingEntity != null) {
-            stmt.bindString(4, statusCheckingEntity);
+            stmt.bindString(5, statusCheckingEntity);
         }
  
         String statusCheckingLevel = entity.getStatusCheckingLevel();
         if (statusCheckingLevel != null) {
-            stmt.bindString(5, statusCheckingLevel);
+            stmt.bindString(6, statusCheckingLevel);
         }
  
         String statusComments = entity.getStatusComments();
         if (statusComments != null) {
-            stmt.bindString(6, statusComments);
+            stmt.bindString(7, statusComments);
         }
  
         String statusContributors = entity.getStatusContributors();
         if (statusContributors != null) {
-            stmt.bindString(7, statusContributors);
+            stmt.bindString(8, statusContributors);
         }
  
         String statusPublishDate = entity.getStatusPublishDate();
         if (statusPublishDate != null) {
-            stmt.bindString(8, statusPublishDate);
+            stmt.bindString(9, statusPublishDate);
         }
  
         String statusSourceText = entity.getStatusSourceText();
         if (statusSourceText != null) {
-            stmt.bindString(9, statusSourceText);
+            stmt.bindString(10, statusSourceText);
         }
  
         String statusSourceTextVersion = entity.getStatusSourceTextVersion();
         if (statusSourceTextVersion != null) {
-            stmt.bindString(10, statusSourceTextVersion);
+            stmt.bindString(11, statusSourceTextVersion);
         }
  
         String statusVersion = entity.getStatusVersion();
         if (statusVersion != null) {
-            stmt.bindString(11, statusVersion);
+            stmt.bindString(12, statusVersion);
         }
  
         Integer saveState = entity.getSaveState();
         if (saveState != null) {
-            stmt.bindLong(12, saveState);
+            stmt.bindLong(13, saveState);
         }
  
         java.util.Date modified = entity.getModified();
         if (modified != null) {
-            stmt.bindLong(13, modified.getTime());
+            stmt.bindLong(14, modified.getTime());
         }
-        stmt.bindLong(14, entity.getLanguageId());
+        stmt.bindLong(15, entity.getLanguageId());
     }
 
     @Override
@@ -172,19 +179,20 @@ public class VersionDao extends AbstractDao<Version, Long> {
     public Version readEntity(Cursor cursor, int offset) {
         Version entity = new Version( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // statusCheckingEntity
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // statusCheckingLevel
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // statusComments
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // statusContributors
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // statusPublishDate
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // statusSourceText
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // statusSourceTextVersion
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // statusVersion
-            cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11), // saveState
-            cursor.isNull(offset + 12) ? null : new java.util.Date(cursor.getLong(offset + 12)), // modified
-            cursor.getLong(offset + 13) // languageId
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // name
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // statusCheckingEntity
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // statusCheckingLevel
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // statusComments
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // statusContributors
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // statusPublishDate
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // statusSourceText
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // statusSourceTextVersion
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // statusVersion
+            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // saveState
+            cursor.isNull(offset + 13) ? null : new java.util.Date(cursor.getLong(offset + 13)), // modified
+            cursor.getLong(offset + 14) // languageId
         );
         return entity;
     }
@@ -193,19 +201,20 @@ public class VersionDao extends AbstractDao<Version, Long> {
     @Override
     public void readEntity(Cursor cursor, Version entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setStatusCheckingEntity(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setStatusCheckingLevel(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setStatusComments(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setStatusContributors(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setStatusPublishDate(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setStatusSourceText(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setStatusSourceTextVersion(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setStatusVersion(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setSaveState(cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11));
-        entity.setModified(cursor.isNull(offset + 12) ? null : new java.util.Date(cursor.getLong(offset + 12)));
-        entity.setLanguageId(cursor.getLong(offset + 13));
+        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setStatusCheckingEntity(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setStatusCheckingLevel(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setStatusComments(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setStatusContributors(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setStatusPublishDate(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setStatusSourceText(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setStatusSourceTextVersion(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setStatusVersion(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setSaveState(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
+        entity.setModified(cursor.isNull(offset + 13) ? null : new java.util.Date(cursor.getLong(offset + 13)));
+        entity.setLanguageId(cursor.getLong(offset + 14));
      }
     
     /** @inheritdoc */

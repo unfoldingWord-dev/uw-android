@@ -105,7 +105,7 @@ public class UWPreLoader extends UWUpdater {
                 String jsonString = loadDbFile(getApplicationContext().getResources().getString(R.string.preloaded_locales_file_name));
                 JSONArray locales = new JSONArray(jsonString);
                 UWPreferenceManager.setHasDownloadedLocales(getApplicationContext(), true);
-                addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()));
+                addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -160,6 +160,25 @@ public class UWPreLoader extends UWUpdater {
             runnableFinished();
         }
     }
+
+//    private byte[] loadDbFileBytes(String fileName) throws IOException{
+//
+//        // Open your local model.db as the input stream
+//        InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
+//
+//        InputStreamReader reader = new InputStreamReader(inputStream);
+//        StringBuilder builder = new StringBuilder();
+//        BufferedReader bufferReader = new BufferedReader(reader);
+//        String read = bufferReader.readLine();
+//
+//        while(read != null) {
+//            //System.out.println(read);
+//            builder.append(read);
+//            read =bufferReader.readLine();
+//        }
+//
+//        return builder.toString();
+//    }
 
     private String loadDbFile(String fileName) throws IOException{
 

@@ -7,9 +7,7 @@ import de.greenrobot.dao.DaoException;
 
 // KEEP INCLUDES - put your custom includes here
 import model.UWDatabaseModel;
-import model.parsers.BibleChapterParser;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
 /**
@@ -18,6 +16,7 @@ import org.json.JSONObject;
 public class BibleChapter extends model.UWDatabaseModel  implements java.io.Serializable, Comparable<BibleChapter> {
 
     private Long id;
+    private String uniqueSlug;
     private String slug;
     private String number;
     private String text;
@@ -43,8 +42,9 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
         this.id = id;
     }
 
-    public BibleChapter(Long id, String slug, String number, String text, long bookId) {
+    public BibleChapter(Long id, String uniqueSlug, String slug, String number, String text, long bookId) {
         this.id = id;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.number = number;
         this.text = text;
@@ -63,6 +63,14 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {

@@ -20,6 +20,7 @@ import model.parsers.StoriesChapterParser;
 public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Serializable, Comparable<StoriesChapter> {
 
     private Long id;
+    private String uniqueSlug;
     private String slug;
     private String number;
     private String title;
@@ -47,8 +48,9 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
         this.id = id;
     }
 
-    public StoriesChapter(Long id, String slug, String number, String title, String ref, long bookId) {
+    public StoriesChapter(Long id, String uniqueSlug, String slug, String number, String title, String ref, long bookId) {
         this.id = id;
+        this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.number = number;
         this.title = title;
@@ -68,6 +70,14 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUniqueSlug() {
+        return uniqueSlug;
+    }
+
+    public void setUniqueSlug(String uniqueSlug) {
+        this.uniqueSlug = uniqueSlug;
     }
 
     public String getSlug() {
@@ -216,7 +226,7 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
 
         StoriesChapter newStoriesChapter = (StoriesChapter) newModel;
 
-        this.slug = newStoriesChapter.slug;
+        this.uniqueSlug = newStoriesChapter.uniqueSlug;
         this.number = newStoriesChapter.number;
         this.title = newStoriesChapter.title;
         this.ref = newStoriesChapter.ref;

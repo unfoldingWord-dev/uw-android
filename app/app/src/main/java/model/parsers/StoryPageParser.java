@@ -24,11 +24,12 @@ public class StoryPageParser extends UWDataParser{
         String idString = jsonObject.getString(ID_JSON_KEY);
 
         String[] splitString = idString.split("-");
-        newModel.setNumber(splitString[1]);
+        newModel.setNumber(splitString[1].trim());
 
         newModel.setImageUrl(jsonObject.getString(IMAGE_JSON_KEY));
         newModel.setText(jsonObject.getString(TEXT_JSON_KEY));
-        newModel.setSlug(parent.getSlug() + newModel.getNumber());
+        newModel.setSlug(newModel.getNumber());
+        newModel.setUniqueSlug(parent.getUniqueSlug() + newModel.getSlug());
         newModel.setStoryChapterId(((StoriesChapter) parent).getId());
 
         return newModel;

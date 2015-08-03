@@ -154,7 +154,7 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
 
 
     @Override
-    public String getSlug() {
+    public String getUniqueSlug() {
         return null;
     }
 

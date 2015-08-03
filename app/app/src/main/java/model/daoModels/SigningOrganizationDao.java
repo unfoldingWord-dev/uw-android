@@ -27,10 +27,11 @@ public class SigningOrganizationDao extends AbstractDao<SigningOrganization, Lon
         public final static Property Email = new Property(1, String.class, "email", false, "EMAIL");
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
         public final static Property Url = new Property(3, String.class, "url", false, "URL");
-        public final static Property Slug = new Property(4, String.class, "slug", false, "SLUG");
-        public final static Property CreatedAt = new Property(5, java.util.Date.class, "createdAt", false, "CREATED_AT");
-        public final static Property ExpiresAt = new Property(6, java.util.Date.class, "expiresAt", false, "EXPIRES_AT");
-        public final static Property ModifiedAt = new Property(7, java.util.Date.class, "modifiedAt", false, "MODIFIED_AT");
+        public final static Property UniqueSlug = new Property(4, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Slug = new Property(5, String.class, "slug", false, "SLUG");
+        public final static Property CreatedAt = new Property(6, java.util.Date.class, "createdAt", false, "CREATED_AT");
+        public final static Property ExpiresAt = new Property(7, java.util.Date.class, "expiresAt", false, "EXPIRES_AT");
+        public final static Property ModifiedAt = new Property(8, java.util.Date.class, "modifiedAt", false, "MODIFIED_AT");
     };
 
 
@@ -50,10 +51,11 @@ public class SigningOrganizationDao extends AbstractDao<SigningOrganization, Lon
                 "'EMAIL' TEXT," + // 1: email
                 "'NAME' TEXT," + // 2: name
                 "'URL' TEXT," + // 3: url
-                "'SLUG' TEXT," + // 4: slug
-                "'CREATED_AT' INTEGER," + // 5: createdAt
-                "'EXPIRES_AT' INTEGER," + // 6: expiresAt
-                "'MODIFIED_AT' INTEGER);"); // 7: modifiedAt
+                "'UNIQUE_SLUG' TEXT," + // 4: uniqueSlug
+                "'SLUG' TEXT," + // 5: slug
+                "'CREATED_AT' INTEGER," + // 6: createdAt
+                "'EXPIRES_AT' INTEGER," + // 7: expiresAt
+                "'MODIFIED_AT' INTEGER);"); // 8: modifiedAt
     }
 
     /** Drops the underlying database table. */
@@ -87,24 +89,29 @@ public class SigningOrganizationDao extends AbstractDao<SigningOrganization, Lon
             stmt.bindString(4, url);
         }
  
+        String uniqueSlug = entity.getUniqueSlug();
+        if (uniqueSlug != null) {
+            stmt.bindString(5, uniqueSlug);
+        }
+ 
         String slug = entity.getSlug();
         if (slug != null) {
-            stmt.bindString(5, slug);
+            stmt.bindString(6, slug);
         }
  
         java.util.Date createdAt = entity.getCreatedAt();
         if (createdAt != null) {
-            stmt.bindLong(6, createdAt.getTime());
+            stmt.bindLong(7, createdAt.getTime());
         }
  
         java.util.Date expiresAt = entity.getExpiresAt();
         if (expiresAt != null) {
-            stmt.bindLong(7, expiresAt.getTime());
+            stmt.bindLong(8, expiresAt.getTime());
         }
  
         java.util.Date modifiedAt = entity.getModifiedAt();
         if (modifiedAt != null) {
-            stmt.bindLong(8, modifiedAt.getTime());
+            stmt.bindLong(9, modifiedAt.getTime());
         }
     }
 
@@ -122,10 +129,11 @@ public class SigningOrganizationDao extends AbstractDao<SigningOrganization, Lon
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // email
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // url
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // slug
-            cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)), // createdAt
-            cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)), // expiresAt
-            cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)) // modifiedAt
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // uniqueSlug
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // slug
+            cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)), // createdAt
+            cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)), // expiresAt
+            cursor.isNull(offset + 8) ? null : new java.util.Date(cursor.getLong(offset + 8)) // modifiedAt
         );
         return entity;
     }
@@ -137,10 +145,11 @@ public class SigningOrganizationDao extends AbstractDao<SigningOrganization, Lon
         entity.setEmail(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setUrl(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setSlug(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setCreatedAt(cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)));
-        entity.setExpiresAt(cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)));
-        entity.setModifiedAt(cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)));
+        entity.setUniqueSlug(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setSlug(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setCreatedAt(cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)));
+        entity.setExpiresAt(cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)));
+        entity.setModifiedAt(cursor.isNull(offset + 8) ? null : new java.util.Date(cursor.getLong(offset + 8)));
      }
     
     /** @inheritdoc */
