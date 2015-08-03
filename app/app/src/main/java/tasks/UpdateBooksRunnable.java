@@ -1,7 +1,6 @@
 package tasks;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +11,6 @@ import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.daoModels.Version;
 import services.UWUpdater;
-import signing.UWSigning;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -101,7 +99,7 @@ public class UpdateBooksRunnable implements Runnable{
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return Book.getModelForSlug(slug, session);
+            return Book.getModelForUniqueSlug(slug, session);
         }
     }
 

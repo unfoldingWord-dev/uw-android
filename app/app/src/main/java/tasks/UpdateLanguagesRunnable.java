@@ -3,7 +3,6 @@ package tasks;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.http.util.LangUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -97,7 +96,7 @@ public class UpdateLanguagesRunnable implements Runnable{
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return Language.getModelForSlug(slug, session);
+            return Language.getModelForUniqueSlug(slug, session);
         }
     }
 

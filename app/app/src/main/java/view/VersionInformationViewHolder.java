@@ -1,5 +1,6 @@
 package view;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -9,6 +10,7 @@ import org.unfoldingword.mobile.R;
 
 import model.DownloadState;
 import model.daoModels.Version;
+import utils.RowStatusHelper;
 
 /**
  * Created by Fechner on 7/6/15.
@@ -47,15 +49,19 @@ public class VersionInformationViewHolder {
         this.publishDateTextView = (TextView) parent.findViewById(R.id.publish_date_text_view);
     }
 
-    public void setInfoForVersion(Version version){
+    public void setInfoForVersion(Context context, Version version){
 
         checkingEntityTextView.setText(version.getStatusCheckingEntity());
         checkingLevelImage.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getStatusVersion());
         publishDateTextView.setText(version.getStatusPublishDate());
-        verificationTextView.setText(ViewHelper.getVerificationText(version));
+        verificationTextView.setText(version.getVerificationText());
         checkingLevelTextView.setText(ViewHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getName());
+
+        int verificationStatus = version.getVerificationStatus();
+        statusImageButton.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
+        statusImageButton.setText(RowStatusHelper.getButtonTextForStatus(context, verificationStatus));
     }
 
     public void setRowState(Version version){

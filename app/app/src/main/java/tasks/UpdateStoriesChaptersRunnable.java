@@ -1,7 +1,6 @@
 package tasks;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,7 +97,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return StoriesChapter.getModelForSlug(slug, session);
+            return StoriesChapter.getModelForUniqueSlug(slug, session);
         }
     }
 }

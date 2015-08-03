@@ -144,10 +144,10 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
         return session.getProjectDao().queryBuilder().list();
     }
 
-    static public Project getModelForSlug(String slug, DaoSession session){
+    static public Project getModelForUniqueSlug(String uniqueSlug, DaoSession session){
         ProjectDao dao = session.getProjectDao();
         Project model = dao.queryBuilder()
-                .where(ProjectDao.Properties.Slug.eq(slug))
+                .where(ProjectDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return (model == null)? null : model;

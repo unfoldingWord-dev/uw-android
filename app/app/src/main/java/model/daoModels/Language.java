@@ -202,10 +202,10 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
         }
     }
 
-    static public Language getModelForSlug(String slug, DaoSession session){
+    static public Language getModelForUniqueSlug(String uniqueSlug, DaoSession session){
         LanguageDao dao = session.getLanguageDao();
         Language model = dao.queryBuilder()
-                .where(LanguageDao.Properties.Slug.eq(slug))
+                .where(LanguageDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return (model == null)? null : model;

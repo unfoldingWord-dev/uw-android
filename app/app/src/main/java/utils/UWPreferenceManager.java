@@ -52,7 +52,7 @@ public class UWPreferenceManager {
         if(currentId > -1){
 
             StoryPage currentPage = DaoDBHelper.getDaoSession(context).getStoryPageDao().loadDeep(currentId);
-            Book newBook = version.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlugIdentifier(), DaoDBHelper.getDaoSession(context));
+            Book newBook = version.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), DaoDBHelper.getDaoSession(context));
             if(newBook != null){
                 StoriesChapter requestedChapter = newBook.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber(), DaoDBHelper.getDaoSession(context));
                 if(requestedChapter != null){

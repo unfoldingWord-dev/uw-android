@@ -53,7 +53,7 @@ public class CheckingLevelFragment extends DialogFragment {
         TextView versionTextView = (TextView) view.findViewById(R.id.version_text_view);
         TextView publishDateTextView = (TextView) view.findViewById(R.id.publish_date_text_view);
         TextView verificationTextView = (TextView) view.findViewById(R.id.verification_text_view);
-        Button status = (Button) view.findViewById(R.id.status);
+        Button status = (Button) view.findViewById(R.id.verification_status);
         TextView checkingLevelExplanationTextView = (TextView) view.findViewById(R.id.checking_level_explanation_text);
 
 
@@ -61,10 +61,10 @@ public class CheckingLevelFragment extends DialogFragment {
         checkingLevelImage.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getStatusVersion());
         publishDateTextView.setText(version.getStatusPublishDate());
-        verificationTextView.setText(ViewHelper.getVerificationText(version));
+        verificationTextView.setText(version.getVerificationText());
         checkingLevelExplanationTextView.setText(ViewHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
-        int verificationStatus = 1;//version.getVerificationStatus(getActivity().getApplicationContext());
+        int verificationStatus = version.getVerificationStatus();
         status.setBackgroundResource(ViewHelper.getColorForStatus(verificationStatus));
         status.setText(ViewHelper.getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
 

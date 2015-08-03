@@ -4,6 +4,15 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+
 /**
  * Created by Fechner on 11/28/14.
  */
@@ -21,10 +30,10 @@ public class Downloader {
         
         purgeDirectory(kDirName);
         
-        String json = getStringFromUrl(kCatalogUrl);
+        String json = downloadString(kCatalogUrl);
         saveFile(json, kFileName);
         
-        String localesJson = getStringFromUrl(kLocalesUrl);
+        String localesJson = downloadString(kLocalesUrl);
         saveFile(localesJson, kLocalesFileName);
         saveUrlsForJson(json);
     }
@@ -54,59 +63,11 @@ public class Downloader {
         ArrayList<String> allUrls = UWJsonUrlFinder.getAllUrlsForJson(json);
         
         for(String url : allUrls){
-            String text = getStringFromUrl(url);
+            byte[] text = downloadBytes(url);
             if(text != null){
                 saveFile(text, prepareUrlForSaving(url));
             }
         }
-    }
-    
-    private static String getStringFromUrl(String url){
-    URL u;
-      InputStream is = null;
-      DataInputStream dis;
-      String s;
-      
-      String finalString = "";
- 
-      try {
-
-         u = new URL(url);
-
-         is = u.openStream();        
- 
-         dis = new DataInputStream(new BufferedInputStream(is));
-
-         while ((s = dis.readLine()) != null) {
-            finalString += s;
-         }
- 
-      } catch (MalformedURLException mue) {
- 
-         System.out.println("Ouch - a MalformedURLException happened.");
-         mue.printStackTrace();
-         return null;
- 
-      } catch (IOException ioe) {
- 
-         System.out.println("Oops- an IOException happened.");
-         ioe.printStackTrace();
-         return null;
- 
-      } finally {
-
-         try {
-            is.close();
-         } catch (IOException ioe) {
-            return null;
-         } catch(NullPointerException e){
-             e.printStackTrace();
-             return null;
-         }
- 
-      }
-      
-      return finalString;
     }
 
     private static void saveFile(String fileString, String fileName) {
@@ -138,8 +99,79 @@ public class Downloader {
         }
     }
     
+    private static void saveFile(byte[] fileBytes, String fileName) {
+
+        fileName = kDirName + File.separator + fileName;
+        System.out.println("Saving: fileName: " + fileName);
+        try {
+            File file = new File(fileName);
+
+            // if file doesnt exists, then create it 
+            
+            if (!file.getParentFile().exists()){
+                    file.getParentFile().mkdirs();
+            }
+            
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+            fos.write(fileBytes);
+            System.out.println("Done writing to " + fileName); //For testing 
+            
+        } catch (IOException e) {
+            System.out.println("Error: " + e);
+            e.printStackTrace();
+        }
+    }
+    
     private static String prepareUrlForSaving(String url){
         
         return url.replace(":", "#").replace("/", "*");
+    }
+    
+    static public HttpResponse downloadUrl(String url) throws IOException {
+
+        HttpParams httpParameters = new BasicHttpParams();
+
+        HttpConnectionParams.setConnectionTimeout(httpParameters,
+                4000);
+        HttpConnectionParams.setSoTimeout(httpParameters, 4000);
+
+        HttpClient httpClient = new DefaultHttpClient(httpParameters);
+        HttpGet get = new HttpGet(url);
+        HttpResponse response = httpClient.execute(get);
+        return response;
+    }
+    /**
+     * Download JSON data from URL
+     *
+     * @param url
+     * @return
+     */
+    public static String downloadString(String url){
+
+        try{
+            HttpResponse response =  downloadUrl(url);
+
+            return EntityUtils.toString(response.getEntity());
+        }
+        catch(IOException e){
+            return null;
+        }
+    }
+
+    public static byte[] downloadBytes(String url) {
+
+        try{
+            HttpResponse response =  downloadUrl(url);
+
+            return EntityUtils.toByteArray(response.getEntity());
+        }
+        catch(IOException e){
+            return null;
+        }
+            
     }
 }

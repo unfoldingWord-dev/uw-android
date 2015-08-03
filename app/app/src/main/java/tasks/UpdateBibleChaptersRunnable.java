@@ -1,10 +1,8 @@
 package tasks;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.nio.charset.CharacterCodingException;
 import java.util.Map;
@@ -13,7 +11,6 @@ import model.UWDatabaseModel;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
-import model.daoModels.StoryPage;
 import model.parsers.BibleChapterParser;
 import model.parsers.USFMParser;
 import services.UWUpdater;
@@ -92,7 +89,7 @@ public class UpdateBibleChaptersRunnable implements Runnable{
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return BibleChapter.getModelForSlug(slug, session);
+            return BibleChapter.getModelForUniqueSlug(slug, session);
         }
     }
 }

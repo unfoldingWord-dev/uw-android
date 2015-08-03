@@ -180,11 +180,11 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
         return null;
     }
 
-    static public BibleChapter getModelForSlug(String slug, DaoSession session){
+    static public BibleChapter getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         BibleChapterDao dao = session.getBibleChapterDao();
         BibleChapter model = dao.queryBuilder()
-                .where(BibleChapterDao.Properties.Slug.eq(slug))
+                .where(BibleChapterDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return (model == null)? null : model;

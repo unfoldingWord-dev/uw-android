@@ -277,6 +277,32 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
     // KEEP METHODS - put your custom methods here
 
 
+    public int getVerificationStatus(){
+
+        int status = 0;
+
+        for(Book book : getBooks()){
+
+            int bookStatus = book.getVerificationStatus();
+            if(bookStatus > status){
+                status = bookStatus;
+            }
+        }
+        return status;
+    }
+
+    public String getVerificationText(){
+
+        String text = "";
+        for(Book book : getBooks()){
+
+            text += book.getVerificationText();
+
+        }
+
+        return (text.length() == 0)? "All Content is Verified" : text;
+    }
+
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json, UWDatabaseModel parent) {
         try {
@@ -293,10 +319,10 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         return null;
     }
 
-    static public Version getModelForSlug(String slug, DaoSession session){
+    static public Version getModelForUniqueSlug(String uniqueSlug, DaoSession session){
         VersionDao dao = session.getVersionDao();
         Version model = dao.queryBuilder()
-                .where(VersionDao.Properties.Slug.eq(slug))
+                .where(VersionDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return model;

@@ -7,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PublicKey;
@@ -18,10 +17,8 @@ import model.DaoDBHelper;
 import model.daoModels.Book;
 import model.daoModels.SigningOrganization;
 import model.daoModels.Verification;
-import model.datasource.SigningOrganizationDataSource;
 import model.datasource.VerificationDataSource;
 import model.modelClasses.mainData.BookModel;
-import model.modelClasses.mainData.SigningOrganizationModel;
 import model.modelClasses.mainData.VerificationModel;
 import utils.URLDownloadUtil;
 
@@ -170,7 +167,7 @@ public class UWSigning {
 
     private static void updateOrganization(Context context, Organization org){
 
-        SigningOrganization oldOrg = SigningOrganization.getModelForSlug(org.slug, DaoDBHelper.getDaoSession(context));
+        SigningOrganization oldOrg = SigningOrganization.getModelForUniqueSlug(org.slug, DaoDBHelper.getDaoSession(context));
 
         if(oldOrg == null){
             SigningOrganization signingOrg = new SigningOrganization();
@@ -183,7 +180,7 @@ public class UWSigning {
 
 //    private static void updateOrganization(Context context, Organization org){
 //
-//        SigningOrganizationModel oldOrg = new SigningOrganizationDataSource(context).getModelForSlug(org.slug);
+//        SigningOrganizationModel oldOrg = new SigningOrganizationDataSource(context).getModelForUniqueSlug(org.slug);
 //
 //        if(oldOrg == null){
 //            SigningOrganizationModel signingOrg = new SigningOrganizationModel(org);

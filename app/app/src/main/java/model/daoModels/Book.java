@@ -10,6 +10,8 @@ import de.greenrobot.dao.DaoException;
 import java.util.Collections;
 import model.UWDatabaseModel;
 import model.parsers.BookParser;
+import signing.Status;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
@@ -262,6 +264,43 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     // KEEP METHODS - put your custom methods here
 
+    public int getVerificationStatus(){
+
+        int status = 0;
+        for(Verification verification : getVerifications()){
+            if(verification.getStatus() > status){
+                status = verification.getStatus();
+            }
+        }
+        return status;
+    }
+
+    public String getVerificationText(){
+
+        int status = 0;
+        for(Verification verification : getVerifications()){
+            if(verification.getStatus() > status){
+                status = verification.getStatus();
+            }
+        }
+
+        switch (Status.statusFromInt(status)) {
+
+            case VERIFIED:{
+                return "";
+            }
+            case EXPIRED:{
+                return "Verification for " + title + " has Expired\n";
+            }
+            case ERROR:{
+                return "Error Verifying " + title + "\n";
+            }
+            default:{
+                return "Failed to Verify " + title + "\n";
+            }
+        }
+    }
+
     public List<BibleChapter> getBibleChapters(boolean sorted){
         if(!sorted){
             return getBibleChapters();
@@ -306,11 +345,11 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         return uniqueSlug.substring(uniqueSlug.length() - 3);
     }
 
-    static public Book getModelForSlug(String slug, DaoSession session){
+    static public Book getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         BookDao dao = session.getBookDao();
         Book model = dao.queryBuilder()
-                .where(BookDao.Properties.Slug.eq(slug))
+                .where(BookDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return (model == null)? null : model;

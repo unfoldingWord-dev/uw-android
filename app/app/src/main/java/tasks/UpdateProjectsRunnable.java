@@ -97,7 +97,7 @@ public class UpdateProjectsRunnable implements Runnable{
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return Project.getModelForSlug(slug, session);
+            return Project.getModelForUniqueSlug(slug, session);
         }
     }
 

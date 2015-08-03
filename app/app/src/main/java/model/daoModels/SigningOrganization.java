@@ -117,11 +117,11 @@ public class SigningOrganization implements java.io.Serializable {
     // KEEP METHODS - put your custom methods here
 
 
-    static public SigningOrganization getModelForSlug(String slug, DaoSession session){
+    static public SigningOrganization getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         SigningOrganizationDao dao = session.getSigningOrganizationDao();
         SigningOrganization model = dao.queryBuilder()
-                .where(SigningOrganizationDao.Properties.Slug.eq(slug))
+                .where(SigningOrganizationDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return (model == null)? null : model;

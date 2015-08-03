@@ -1,7 +1,6 @@
 package tasks;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,7 +10,6 @@ import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
-import model.daoModels.Version;
 import services.UWUpdater;
 
 /**
@@ -71,7 +69,7 @@ public class UpdateStoryPagesRunnable implements Runnable{
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return StoryPage.getModelForSlug(slug, session);
+            return StoryPage.getModelForUniqueSlug(slug, session);
         }
     }
 }

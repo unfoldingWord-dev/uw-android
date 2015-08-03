@@ -138,7 +138,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             holder.clickableLayout = (LinearLayout) convertView.findViewById(R.id.clickableRow);
 
             holder.infoFrame = (FrameLayout) convertView.findViewById(R.id.info_image_frame);
-            holder.status = (Button) convertView.findViewById(R.id.status);
+            holder.status = (Button) convertView.findViewById(R.id.verification_status);
 
             holder.downloadButton = (ImageView) convertView.findViewById(R.id.download_status_image);
             holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
@@ -159,7 +159,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         int state = isSelected? 2 : 1;
         holder.downloadProgressBar.setVisibility(View.INVISIBLE);
         holder.downloadButton.setVisibility(View.VISIBLE);
-        holder.versionInformationHolder.setInfoForVersion(version);
+        holder.versionInformationHolder.setInfoForVersion(getContext(), version);
 
         state = setRowState(holder, version, state);
 
@@ -169,10 +169,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         holder.languageTypeImageView.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         holder.languageNameTextView.setText(version.getName());
 
-        int verificationStatus = 1;//version.getVerificationStatus(getContext());
+        int verificationStatus = version.getVerificationStatus();
         holder.status.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
         holder.status.setText(RowStatusHelper.getButtonTextForStatus(getContext(), verificationStatus));
-
         return convertView;
     }
 

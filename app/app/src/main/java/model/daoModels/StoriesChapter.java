@@ -245,11 +245,11 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
         return model;
     }
 
-    static public StoriesChapter getModelForSlug(String slug, DaoSession session){
+    static public StoriesChapter getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         StoriesChapterDao dao = session.getStoriesChapterDao();
         StoriesChapter model = dao.queryBuilder()
-                .where(StoriesChapterDao.Properties.Slug.eq(slug))
+                .where(StoriesChapterDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
 
         return (model == null)? null : model;

@@ -16,6 +16,5 @@ public class UWPreloader {
      */
     public static void main(String[] args) {
         Downloader.updateData();
-    }
-    
+    }   
 }

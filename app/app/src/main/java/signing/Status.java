@@ -22,4 +22,22 @@ public enum Status {
     public int weight() {
         return mWeight;
     }
+
+    public static Status statusFromInt(int weight){
+
+        switch (weight){
+            case 0:{
+                return Status.VERIFIED;
+            }
+            case 1:{
+                return Status.EXPIRED;
+            }
+            case 2:{
+                return Status.ERROR;
+            }
+            default:{
+                return Status.FAILED;
+            }
+        }
+    }
 }

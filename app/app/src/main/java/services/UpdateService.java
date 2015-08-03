@@ -134,7 +134,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //            for (int i = 0; i < jsonArray.length(); i++) {
 //
 //                ProjectModel newModel = new ProjectModel(jsonArray.getJSONObject(i));
-//                ProjectModel currentModel = dataSource.getModelForSlug(newModel.slug);
+//                ProjectModel currentModel = dataSource.getModelForUniqueSlug(newModel.slug);
 //
 //                if(currentModel != null) {
 //                    newModel.uid = currentModel.uid;
@@ -142,7 +142,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //
 //                if (currentModel == null || (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
 //                    dataSource.saveModel(newModel);
-//                    updateLanguages(dataSource.getModelForSlug(newModel.slug), forceUpdate);
+//                    updateLanguages(dataSource.getModelForUniqueSlug(newModel.slug), forceUpdate);
 //                }
 //            }
 //        }
@@ -162,7 +162,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //            for (int i = 0; i < jsonArray.length(); i++) {
 //
 //                LanguageModel newModel = new LanguageModel(jsonArray.getJSONObject(i), parent);
-//                LanguageModel currentModel = dataSource.getModelForSlug(newModel.slug);
+//                LanguageModel currentModel = dataSource.getModelForUniqueSlug(newModel.slug);
 //
 //                if(currentModel != null) {
 //                    newModel.uid = currentModel.uid;
@@ -170,7 +170,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //
 //                if (currentModel == null || (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
 //                    dataSource.saveModel(newModel);
-//                    updateVersions(dataSource.getModelForSlug(newModel.slug), forceUpdate);
+//                    updateVersions(dataSource.getModelForUniqueSlug(newModel.slug), forceUpdate);
 //                }
 //            }
 //        }
@@ -190,7 +190,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //            for (int i = 0; i < jsonArray.length(); i++) {
 //
 //                VersionModel newModel = new VersionModel(jsonArray.getJSONObject(i), parent);
-//                VersionModel currentModel = dataSource.getModelForSlug(newModel.slug);
+//                VersionModel currentModel = dataSource.getModelForUniqueSlug(newModel.slug);
 //
 //                if(currentModel != null) {
 //                    newModel.uid = currentModel.uid;
@@ -201,10 +201,10 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //                    dataSource.saveModel(newModel);
 //
 //                    if(newModel.usfmUrl.length() > 1){
-//                        this.parseUSFMForVersion(dataSource.getModelForSlug(newModel.slug));
+//                        this.parseUSFMForVersion(dataSource.getModelForUniqueSlug(newModel.slug));
 //                    }
 //                    else {
-//                        updateBooks(dataSource.getModelForSlug(newModel.slug), forceUpdate);
+//                        updateBooks(dataSource.getModelForUniqueSlug(newModel.slug), forceUpdate);
 //                    }
 //                }
 //            }
@@ -258,7 +258,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //        if (currentModel == null || (currentModel.dateModified < newModel.dateModified) || forceUpdate) {
 //
 //            dataSource.saveModel(newModel);
-//            updateStoryChapters(dataSource.getModelForSlug(newModel.slug) , jsonObject.getJSONArray("chapters"));
+//            updateStoryChapters(dataSource.getModelForUniqueSlug(newModel.slug) , jsonObject.getJSONArray("chapters"));
 //
 //            hasUpdatedImages = true;
 //        }
@@ -277,14 +277,14 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //            JSONObject jsonObject = jsonArray.getJSONObject(i);
 //
 //            StoriesChapterModel newModel = new StoriesChapterModel(jsonObject, parent);
-//            StoriesChapterModel currentModel = dataSource.getModelForSlug(newModel.slug);
+//            StoriesChapterModel currentModel = dataSource.getModelForUniqueSlug(newModel.slug);
 //
 //            if(currentModel != null) {
 //                newModel.uid = currentModel.uid;
 //            }
 //
 //                dataSource.saveModel(newModel);
-//                updateStoryPage(dataSource.getModelForSlug(newModel.slug), jsonObject.getJSONArray("frames"));
+//                updateStoryPage(dataSource.getModelForUniqueSlug(newModel.slug), jsonObject.getJSONArray("frames"));
 //        }
 //    }
 //
@@ -299,7 +299,7 @@ public class UpdateService extends Service implements AsyncImageLoader.onProgres
 //        for (int i = 0; i < jsonArray.length(); i++) {
 //
 //            PageModel newModel = new PageModel(jsonArray.getJSONObject(i), parent);
-//            PageModel currentModel = dataSource.getModelForSlug(newModel.slug);
+//            PageModel currentModel = dataSource.getModelForUniqueSlug(newModel.slug);
 //
 //            if(currentModel != null) {
 //                newModel.uid = currentModel.uid;
