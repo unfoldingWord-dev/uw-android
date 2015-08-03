@@ -140,16 +140,11 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
         Object itemAtPosition = adapterView.getItemAtPosition(position);
-        if (itemAtPosition instanceof GeneralRowInterface) {
-            GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
+        if (itemAtPosition instanceof StoriesChapter) {
+            StoriesChapter model = (StoriesChapter) itemAtPosition;
 
-            // put selected position  to sharedprefences
-            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(this.getIndexStorageString(), (int) rowIndex).commit();
-            UWPreferenceManager.setSelectedStoryPage(getContext(), Long.parseLong(model.getChildIdentifier()));
+            UWPreferenceManager.setSelectedStoryPage(getContext(), model.getStoryPages().get(0).getId());
             mListener.chapterWasSelected();
-//            startActivityForResult(new Intent(this, this.getChildClass(model)).putExtra(
-//                    CHOSEN_ID, model.getChildIdentifier()), 1);
-//            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
         }
     }
 

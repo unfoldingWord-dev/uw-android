@@ -16,8 +16,11 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import java.util.List;
+
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import model.DaoDBHelper;
+import model.daoModels.Language;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -45,7 +48,6 @@ public class VersionSelectionFragment extends DialogFragment {
     private TextView titleTextView;
 
     private VersionSelectionFragmentListener listener;
-
 
     /**
      * Use this factory method to create a new instance of
@@ -159,32 +161,26 @@ public class VersionSelectionFragment extends DialogFragment {
         });
 
 
-        long selectedVersionId;
+        Version version = null;
 
         if(chosenProject.isBibleStories()){
             long pageId = UWPreferenceManager.getSelectedStoryPage(getContext());
             if(pageId > -1) {
-                selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
+                version = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
                         .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
-                        .getStoriesChapter().getBook().getVersionId();
-            }
-            else{
-                selectedVersionId = -1;
+                        .getStoriesChapter().getBook().getVersion();
             }
         }
         else{
             long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
             if(chapterId > -1) {
-                selectedVersionId = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
+                version = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
                         .load(chapterId)
-                        .getBook().getVersionId();
-            }
-            else{
-                selectedVersionId = -1;
+                        .getBook().getVersion();
             }
         }
 
-        adapter = new CollapsibleVersionAdapter(this, this.chosenProject, selectedVersionId, new CollapsibleVersionAdapter.VersionAdapterListener(){
+        adapter = new CollapsibleVersionAdapter(this, this.chosenProject, (version != null)? version.getId() : -1, new CollapsibleVersionAdapter.VersionAdapterListener(){
             @Override
             public void versionWasSelected(Version version) {
                 if(listener != null){
@@ -193,6 +189,15 @@ public class VersionSelectionFragment extends DialogFragment {
             }
         });
         mListView.setAdapter(adapter);
+
+        if(version != null) {
+            Language language = version.getLanguage();
+            int expandedIndex = language.getProject().getLanguages().indexOf(language);
+            if(expandedIndex > -1){
+                mListView.expandGroup(expandedIndex);
+            }
+        }
+
     }
 
     private Context getContext(){

@@ -26,6 +26,7 @@ import fragments.ChaptersFragment;
 import fragments.CheckingLevelFragment;
 import fragments.ReadingFragmentListener;
 import fragments.VersionSelectionFragment;
+import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -37,8 +38,6 @@ import view.ViewHelper;
 public abstract class BaseReadingActivity extends UWBaseActivity implements
         VersionSelectionFragment.VersionSelectionFragmentListener,
         ChapterSelectionFragment.ChapterSelectionListener,
-        BooksFragment.BooksFragmentListener,
-        ChaptersFragment.ChaptersFragmentListener,
         ReadingFragmentListener
 {
     private static final String TAG = "ReadingActivity";
@@ -232,6 +231,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @Override
     public void selectionFragmentChoseChapter() {
         removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
+        updateViews();
     }
 
     private void removeFragment(String fragmentId){
@@ -244,14 +244,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
         ft.addToBackStack(null);
         ft.commit();
-    }
-
-    @Override
-    public void bookWasSelected(String chapterUid) {
-    }
-
-    @Override
-    public void chapterWasSelected() {
     }
 
     private void goToCheckingLevelView(){

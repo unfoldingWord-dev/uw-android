@@ -107,8 +107,12 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
             ((ViewPager) container).addView(view);
         }
-
         return view;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
     private String getTextCss(){

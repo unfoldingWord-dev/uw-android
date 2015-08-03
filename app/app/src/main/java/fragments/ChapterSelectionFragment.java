@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import model.daoModels.Book;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -165,14 +167,15 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
     }
 
     @Override
-    public void bookWasSelected(String chapterUid) {
+    public void bookWasSelected(Book book) {
 
-        chapterFragment.reload(chapterUid);
+        chapterFragment.reload(book);
         tabHost.setCurrentTab(1);
     }
 
     @Override
     public void chapterWasSelected() {
+
         mListener.selectionFragmentChoseChapter();
     }
 
@@ -187,6 +190,6 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface ChapterSelectionListener {
-        public void selectionFragmentChoseChapter();
+        void selectionFragmentChoseChapter();
     }
 }

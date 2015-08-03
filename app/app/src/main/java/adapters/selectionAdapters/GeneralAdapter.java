@@ -1,10 +1,7 @@
 package adapters.selectionAdapters;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,73 +18,35 @@ import java.util.List;
  */
 public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
 
-    protected String SELECTED_POS;
-
-
-    protected final List<GeneralRowInterface> models;
-    protected  ActionBarActivity activity = null;
-    protected TextView actionbarTextView = null;
+    protected List<GeneralRowInterface> models;
     protected Context context;
     protected Fragment fragment = null;
 
+    private int selectedRow;
 
 
-    public GeneralAdapter(Context context, int resource, List<GeneralRowInterface> models, Fragment fragment, String positionHolder) {
-        super(context, resource, models);
-        SELECTED_POS = positionHolder;
+    public void update(List<GeneralRowInterface> rows){
+        update(rows, -1);
+    }
+
+    public void update(List<GeneralRowInterface> rows, int selectedRow){
+        models = rows;
+        this.selectedRow = selectedRow;
+        notifyDataSetChanged();
+    }
+
+    public GeneralAdapter(Context context, List<GeneralRowInterface> models, Fragment fragment, int selectedRow) {
+        super(context, R.layout.row_general, models);
         this.context = context;
         this.models = models;
         this.fragment = fragment;
-    }
-
-    /**
-     *
-     * @param context
-     * @param resource
-     * @param models
-     * @param actionbarTextView
-     * @param activity
-     * @param positionHolder
-     */
-    public GeneralAdapter(Context context, int resource, List<GeneralRowInterface> models, TextView actionbarTextView, ActionBarActivity activity, String positionHolder) {
-        super(context, resource, models);
-        SELECTED_POS = positionHolder;
-        this.context = context;
-        this.models = models;
-        this.actionbarTextView = actionbarTextView;
-        this.activity = activity;
-    }
-
-    public GeneralAdapter(Context context, List<GeneralRowInterface> models, Fragment fragment, String positionHolder) {
-        super(context, R.layout.row_general, models);
-        SELECTED_POS = positionHolder;
-        this.context = context;
-        this.models = models;
-        this.fragment = fragment;
-//        this.actionbarTextView = actionbarTextView;
-//        this.activity = activity;
-    }
-
-    /**
-     *
-     * @param context
-     * @param models
-     * @param actionbarTextView
-     * @param activity
-     * @param positionHolder
-     */
-    public GeneralAdapter(Context context, List<GeneralRowInterface> models, TextView actionbarTextView, ActionBarActivity activity, String positionHolder) {
-        super(context, R.layout.row_general, models);
-        SELECTED_POS = positionHolder;
-        this.context = context;
-        this.models = models;
-        this.actionbarTextView = actionbarTextView;
-        this.activity = activity;
+        this.selectedRow = selectedRow;
     }
 
     @Override
     public View getView(final int pos, View view, ViewGroup parent) {
 
+        GeneralRowInterface row = getItem(pos);
         ViewHolderForGroup holder = null;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -100,21 +59,20 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
         } else {
             holder = (ViewHolderForGroup) view.getTag();
         }
-        int selectionPosition = PreferenceManager.getDefaultSharedPreferences(context).getInt(SELECTED_POS, -1);
 
-        setColorChange(holder, getColorForState(selectionPosition, pos));
-        holder.title.setText(models.get(pos).getTitle());
+        setColorChange(holder, getColorForState(selectedRow == pos));
+        holder.title.setText(row.getTitle());
 
         return view;
     }
 
-    protected int getColorForState(int selectionPosition, int itemPosition){
+    protected int getColorForState(boolean selected){
 
-        if(selectionPosition == -1 || itemPosition != selectionPosition){
-            return context.getResources().getColor(R.color.black_light);
+        if(selected){
+            return context.getResources().getColor(R.color.cyan);
         }
         else {
-            return context.getResources().getColor(R.color.cyan);
+            return context.getResources().getColor(R.color.black_light);
         }
     }
 

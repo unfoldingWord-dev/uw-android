@@ -54,9 +54,18 @@ public class StoryPagerAdapter extends PagerAdapter {
         return (currentChapter != null)? currentChapter.getStoryPages().size() + 1 : 0;
     }
 
+    public StoriesChapter getCurrentChapter() {
+        return currentChapter;
+    }
+
     public void update(StoriesChapter chapter){
         this.currentChapter = chapter;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
     @Override
@@ -85,6 +94,7 @@ public class StoryPagerAdapter extends PagerAdapter {
         ((ViewPager) container).addView(view);
         return view;
     }
+
     private Bitmap getBitmapFromAsset(String strName)
     {
         AssetManager assetManager = context.getAssets();

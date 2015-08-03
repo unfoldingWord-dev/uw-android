@@ -1,6 +1,7 @@
 package fragments;
 
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,10 +17,13 @@ import org.unfoldingword.mobile.R;
 import java.util.List;
 
 import adapters.ReadingPagerAdapter;
+import adapters.ReadingScrollNotifications;
 import adapters.StoryPagerAdapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.StoriesChapter;
+import model.daoModels.StoryPage;
+import utils.UWPreferenceManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,8 +87,31 @@ public class StoryReadingFragment extends Fragment {
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
         adapter = new StoryPagerAdapter(getActivity().getApplicationContext(), currentChapter);
 
-        readingViewPager.setAdapter(adapter);
-        readingViewPager.setOnTouchListener(getDoubleTapTouchListener());
+            readingViewPager.setAdapter(adapter);
+            readingViewPager.setOnTouchListener(getDoubleTapTouchListener());
+
+            readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+
+                    List<StoryPage> pages = adapter.getCurrentChapter().getStoryPages();
+                if (position < pages.size()) {
+                    StoryPage model = pages.get(position);
+                    UWPreferenceManager.setSelectedStoryPage(getActivity().getApplicationContext(), model.getId());
+                    getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private View.OnTouchListener getDoubleTapTouchListener(){

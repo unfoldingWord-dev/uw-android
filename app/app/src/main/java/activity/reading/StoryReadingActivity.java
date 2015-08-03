@@ -45,7 +45,12 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
     @Override
     protected void scrolled() {
-//        currentChapter = (StoryPage) extras.getSerializable(ReadingScrollNotifications.BIBLE_CHAPTER_PARAM);
+        long id = UWPreferenceManager.getSelectedStoryPage(getApplicationContext());
+        StoryPage page = DaoDBHelper.getDaoSession(getApplicationContext()).getStoryPageDao().loadDeep(id);
+        if (page.getStoryChapterId() != currentChapter.getId()) {
+            currentChapter = page.getStoriesChapter();
+            updateToolbarTitle();
+        }
     }
 
     @Override

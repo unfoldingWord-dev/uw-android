@@ -41,12 +41,12 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
     static String BOOK_FRAGMENT_INDEX_ID = "BOOK_FRAGMENT_INDEX_ID";
 
     private BooksFragmentListener mListener = null;
-
     public void setmListener(BooksFragmentListener mListener) {
         this.mListener = mListener;
     }
-
     protected ListView mListView = null;
+    private List<Book> books;
+    private int selectedRow = -1;
 
     /**
      * Use this factory method to create a new instance of
@@ -89,9 +89,10 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
     private void setupViews(View view){
         prepareListView(view);
     }
+
     protected void prepareListView(View view) {
 
-        ArrayList<GeneralRowInterface> data = this.getData();
+        List<GeneralRowInterface> data = this.getData();
 
         if (mListView == null) {
             mListView = (ListView) view.findViewById(R.id.generalList);
@@ -102,64 +103,72 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
         mListView.setOnItemClickListener(this);
         int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getIndexStorageString(), -1);
-        GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
+        GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, selectedRow);
         mListView.setAdapter(adapter);
 
 
-        mListView.setSelection((scrollPosition > 1) ? scrollPosition -1 : 0);
+        mListView.setSelection((scrollPosition > 1) ? scrollPosition - 1 : 0);
     }
 
     private Context getContext(){
         return this.getActivity().getApplicationContext();
     }
 
-    protected ArrayList<GeneralRowInterface> getData(){
-
-        Context context = getContext();
-
-        long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
-        if(chapterId < 0) {
-            return null;
-        }
-        else {
-            BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
-            List<Book> books = model.getBook().getVersion().getBooks();
-
-            long selectedId = model.getBookId();
-            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-            int i = 0;
-            for (Book book : books) {
-
-                if(book.getBibleChapters() == null || book.getBibleChapters().size() == 0){
-                    continue;
-                }
-                long uid = book.getId();
-                if(selectedId == uid){
-                    PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(getIndexStorageString(), i).commit();
-                }
-                data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(book.getId()), book.getTitle()));
-                i++;
-            }
-            return data;
-        }
-    }
+//    protected ArrayList<GeneralRowInterface> getData(){
+//
+//        Context context = getContext();
+//
+//        long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
+//        if(chapterId < 0) {
+//            return null;
+//        }
+//        else {
+//            BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
+//            List<Book> books = model.getBook().getVersion().getBooks();
+//
+//            long selectedId = model.getBookId();
+//            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
+//            int i = 0;
+//            for (Book book : books) {
+//
+//                if(book.getBibleChapters() == null || book.getBibleChapters().size() == 0){
+//                    continue;
+//                }
+//                long uid = book.getId();
+//                if(selectedId == uid){
+//                    PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(getIndexStorageString(), i).commit();
+//                }
+//                data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(book.getId()), book.getTitle()));
+//                i++;
+//            }
+//            return data;
+//        }
+//    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        Object itemAtPosition = adapterView.getItemAtPosition(position);
-        if (itemAtPosition instanceof GeneralRowInterface) {
-            GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
-
-            BookModel selectedModel = new BookDataSource(getContext()).getModel(model.getChildIdentifier());
-            long desiredId = selectedModel.getBibleChildModels(getContext()).get(0).uid;
-            if(mListener != null) {
-                mListener.bookWasSelected(Long.toString(desiredId));
-            }
-//            startActivityForResult(new Intent(this, this.getChildClass(model)).putExtra(
-//                    CHOSEN_ID, model.getChildIdentifier()), 1);
-//            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
+        if(mListener != null) {
+            mListener.bookWasSelected(books.get(position));
         }
+    }
+
+    protected List<GeneralRowInterface> getData(){
+
+        BibleChapter currentChapter = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
+                .loadDeep(UWPreferenceManager.getSelectedBibleChapter(getContext()));
+        books = currentChapter.getBook().getVersion().getBooks();
+        long currentBookId = currentChapter.getBookId();
+
+        List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
+        for(Book row : books) {
+            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getTitle()));
+            if(row.getId() == currentBookId){
+                selectedRow = books.indexOf(row);
+            }
+        }
+
+        return dataList;
     }
 
     @Override
@@ -197,7 +206,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface BooksFragmentListener {
-        public void bookWasSelected(String chapterUid);
+        void bookWasSelected(Book book);
     }
 
 }

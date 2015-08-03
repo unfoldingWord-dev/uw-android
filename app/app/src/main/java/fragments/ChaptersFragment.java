@@ -21,6 +21,7 @@ import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import utils.UWPreferenceManager;
 
 /**
@@ -45,8 +46,12 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         this.mListener = mListener;
     }
 
-    private String manualId = null;
     protected ListView mListView = null;
+
+    private List<BibleChapter> chapters;
+    private GeneralAdapter adapter;
+
+    private int selectedRow = -1;
 
     /**
      * Use this factory method to create a new instance of
@@ -73,7 +78,6 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
         }
     }
 
@@ -82,6 +86,9 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.general_list, container, false);
+        BibleChapter currentChapter = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
+                .loadDeep(UWPreferenceManager.getSelectedBibleChapter(getContext()));
+        chapters = currentChapter.getBook().getBibleChapters(true);
         setupViews(view);
         return view;
     }
@@ -91,7 +98,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     }
     protected void prepareListView(View view) {
 
-        ArrayList<GeneralRowInterface> data = this.getData();
+        List<GeneralRowInterface> data = this.getData();
 
         if (mListView == null) {
             mListView = (ListView) view.findViewById(R.id.generalList);
@@ -101,73 +108,44 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         }
 
         mListView.setOnItemClickListener(this);
-        GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
+        adapter = new GeneralAdapter(getContext(), data, this, selectedRow);
         mListView.setAdapter(adapter);
 
         int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getIndexStorageString(), -1);
-        mListView.setSelection((scrollPosition > 0)? scrollPosition - 1 : 0);
+        mListView.setSelection((scrollPosition > 0) ? scrollPosition - 1 : 0);
     }
 
-    protected void reload(String newId){
+    protected void reload(Book newBook){
 
-        manualId = newId;
-
-        ArrayList<GeneralRowInterface> data = this.getData();
-        GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, this.getIndexStorageString());
-        mListView.setAdapter(adapter);
+        this.chapters = newBook.getBibleChapters(true);
+        adapter.update(getData());
     }
 
     private Context getContext(){
         return this.getActivity().getApplicationContext();
     }
 
-    protected ArrayList<GeneralRowInterface> getData(){
+    protected List<GeneralRowInterface> getData(){
 
-        Context context = this.getActivity().getApplicationContext();
+        long selectedChapter = UWPreferenceManager.getSelectedBibleChapter(getContext());
+        List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
 
-        long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
-        if(this.manualId != null){
-            chapterId = Long.parseLong(manualId);
-        }
-        if(chapterId < 0) {
-            return null;
-        }
-        else {
-            BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
-            List<BibleChapter> chapters = model.getBook().getBibleChapters(true);
-
-            long selectedId = model.getId();
-            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-            int i = 0;
-            for (BibleChapter chapter : chapters) {
-                if(chapter.getId() == selectedId){
-                    int chosenIndex = (this.manualId == null)? i : Integer.parseInt(this.manualId);
-                    PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(getIndexStorageString(), chosenIndex).commit();
-                }
-                data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(chapter.getId()), chapter.getTitle()));
-                i++;
+        for(BibleChapter row : chapters) {
+            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getNumber()));
+            if(row.getId() == selectedChapter){
+                selectedRow = chapters.indexOf(row);
             }
-
-            return data;
         }
+
+        return dataList;
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        Object itemAtPosition = adapterView.getItemAtPosition(position);
-        if (itemAtPosition instanceof GeneralRowInterface) {
-            GeneralRowInterface model = (GeneralRowInterface) itemAtPosition;
-
-            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putInt(this.getIndexStorageString(), -1).commit();
-            // put selected position  to sharedprefences
-            UWPreferenceManager.setSelectedBibleChapter(getContext(), Long.parseLong(model.getChildIdentifier()));
-            if(mListener != null) {
-                mListener.chapterWasSelected();
-            }
-//            startActivityForResult(new Intent(this, this.getChildClass(model)).putExtra(
-//                    CHOSEN_ID, model.getChildIdentifier()), 1);
-//            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_on_left);
+        UWPreferenceManager.setSelectedBibleChapter(getContext(), chapters.get(position).getId());
+        if(mListener != null) {
+            mListener.chapterWasSelected();
         }
     }
 
