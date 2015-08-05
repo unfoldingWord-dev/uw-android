@@ -58,4 +58,20 @@ public class LanguageLocaleParser extends UWDataParser{
             return "";
         }
     }
+
+//    public static JSONObject getBookAsJson(LanguageLocale model) throws JSONException{
+//
+//        JSONObject jsonModel = new JSONObject();
+//
+//        jsonModel.put(GW_JSON_TAG, model.getGw());
+//        jsonModel.put(LANGUAGE_DIRECTION_JSON_KEY, model.getLanguageDirection());
+//        jsonModel.put(LANGUAGE_KEY_JSON_KEY, model.getLanguageKey());
+//        jsonModel.put(LANGUAGE_NAME_JSON_KEY, model.getLanguageName());
+//
+//        jsonModel.put(CC_JSON_KEY, model.getSignatureUrl());
+//        jsonModel.put(LANGUAGE_REGION_JSON_KEY, model.getLanguageRegion());
+//        jsonModel.put(PK_JSON_KEY, model.getPk());
+//
+//        return jsonModel;
+//    }
 }

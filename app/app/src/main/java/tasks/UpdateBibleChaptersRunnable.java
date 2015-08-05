@@ -1,9 +1,12 @@
 package tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.util.Map;
 
@@ -14,6 +17,7 @@ import model.daoModels.DaoSession;
 import model.parsers.BibleChapterParser;
 import model.parsers.USFMParser;
 import services.UWUpdater;
+import utils.FileNameHelper;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -48,6 +52,7 @@ public class UpdateBibleChaptersRunnable implements Runnable{
             e.printStackTrace();
         }
     }
+
 
     private void createModels(Map<String, String> models){
 

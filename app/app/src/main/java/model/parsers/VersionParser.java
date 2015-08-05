@@ -1,5 +1,6 @@
 package model.parsers;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,6 +14,7 @@ import model.daoModels.Version;
  */
 public class VersionParser extends UWDataParser{
 
+    private static final String BOOKS_JSON_KEY = "toc";
     private static final String MODIFIED_JSON_KEY = "mod";
     private static final String NAME_JSON_KEY = "name";
     private static final String SLUG_JSON_KEY = "slug";
@@ -51,5 +53,45 @@ public class VersionParser extends UWDataParser{
         newModel.setLanguageId(((Language) parent).getId());
 
         return newModel;
+    }
+
+    public static JSONArray getVersionsForLanguage(Language language) throws JSONException{
+
+        JSONArray jsonArray = new JSONArray();
+
+        for(Version version : language.getVersions()){
+            jsonArray.put(getVersionAsJson(version));
+        }
+        return jsonArray;
+    }
+
+    public static JSONObject getVersionAsJson(Version model) throws JSONException{
+
+        JSONObject jsonModel = new JSONObject();
+
+        jsonModel.put(MODIFIED_JSON_KEY, model.getModified().getTime());
+        jsonModel.put(NAME_JSON_KEY, model.getName());
+        jsonModel.put(SLUG_JSON_KEY, model.getSlug());
+        jsonModel.put(STATUS_JSON_KEY, getVersionStatusAsJson(model));
+
+        jsonModel.put(BOOKS_JSON_KEY, BookParser.getBooksJsonForVersion(model));
+
+        return jsonModel;
+    }
+
+    private static JSONObject getVersionStatusAsJson(Version model) throws JSONException{
+
+        JSONObject jsonModel = new JSONObject();
+
+        jsonModel.put(STATUS_CHECKING_ENTITY_JSON_KEY, model.getStatusCheckingEntity());
+        jsonModel.put(STATUS_CHECKING_LEVEL_JSON_KEY, model.getStatusCheckingLevel());
+        jsonModel.put(STATUS_COMMENTS_JSON_KEY, model.getStatusComments());
+        jsonModel.put(STATUS_CONTRIBUTORS_JSON_KEY, model.getStatusContributors());
+
+        jsonModel.put(STATUS_SOURCE_TEXT_JSON_KEY, model.getStatusSourceText());
+        jsonModel.put(STATUS_PUBLISH_DATE_JSON_KEY, model.getStatusPublishDate());
+        jsonModel.put(STATUS_VERSION_SOURCE_TEXT_JSON_KEY, model.getStatusSourceTextVersion());
+        jsonModel.put(STATUS_VERSION_JSON_KEY, model.getStatusVersion());
+        return jsonModel;
     }
 }

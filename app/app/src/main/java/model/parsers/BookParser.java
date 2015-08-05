@@ -1,5 +1,6 @@
 package model.parsers;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,5 +37,29 @@ public class BookParser extends UWDataParser{
         newModel.setVersionId(((Version) parent).getId());
 
         return newModel;
+    }
+
+    public static JSONArray getBooksJsonForVersion(Version version) throws JSONException{
+
+        JSONArray jsonArray = new JSONArray();
+
+        for(Book book : version.getBooks()){
+            jsonArray.put(getBookAsJson(book));
+        }
+        return jsonArray;
+    }
+
+    public static JSONObject getBookAsJson(Book model) throws JSONException{
+
+        JSONObject jsonModel = new JSONObject();
+
+        jsonModel.put(DESCRIPTION_JSON_KEY, model.getDescription());
+        jsonModel.put(MODIFIED_JSON_KEY, model.getModified().getTime());
+        jsonModel.put(SLUG_JSON_KEY, model.getSlug());
+        jsonModel.put(SOURCE_URL_JSON_KEY, model.getSourceUrl());
+        jsonModel.put(SIGNATURE_URL_JSON_KEY, model.getSignatureUrl());
+        jsonModel.put(TITLE_JSON_KEY, model.getTitle());
+
+        return jsonModel;
     }
 }

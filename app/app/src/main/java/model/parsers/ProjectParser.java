@@ -3,6 +3,7 @@ package model.parsers;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.daoModels.Language;
 import model.daoModels.Project;
 
 /**
@@ -10,8 +11,10 @@ import model.daoModels.Project;
  */
 public class ProjectParser extends UWDataParser{
 
+    public static final String LANGUAGES_JSON_KEY = "langs";
     private static final String SLUG_JSON_KEY = "slug";
     private static final String TITLE_JSON_KEY = "title";
+
 
     public static Project parseProject(JSONObject jsonObject) throws JSONException{
 
@@ -20,5 +23,19 @@ public class ProjectParser extends UWDataParser{
         newModel.setUniqueSlug(newModel.getSlug());
         newModel.setTitle(jsonObject.getString(TITLE_JSON_KEY));
         return newModel;
+    }
+
+    public static JSONObject getProjectAsJson(Project model, boolean onlyCurrentModel) throws JSONException {
+
+        JSONObject jsonModel = new JSONObject();
+
+        jsonModel.put(SLUG_JSON_KEY, model.getSlug());
+        jsonModel.put(TITLE_JSON_KEY, model.getTitle());
+
+        if (!onlyCurrentModel){
+            jsonModel.put(LANGUAGES_JSON_KEY, LanguageParser.getLanguageJsonForProject(model));
+        }
+
+        return jsonModel;
     }
 }

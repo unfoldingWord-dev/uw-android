@@ -1,16 +1,22 @@
 package tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.daoModels.Version;
 import services.UWUpdater;
+import utils.FileNameHelper;
 import utils.URLDownloadUtil;
 
 /**
@@ -18,7 +24,7 @@ import utils.URLDownloadUtil;
  */
 public class UpdateBookContentRunnable implements Runnable{
 
-    private static final String TAG = "UpdateBookContentRunnable";
+    private static final String TAG = "UpdateBookConttRunnable";
     public static final String CHAPTERS_JSON_KEY = "chapters";
     private UWUpdater updater;
     private Book book;
@@ -50,9 +56,32 @@ public class UpdateBookContentRunnable implements Runnable{
         byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
         String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
 
+        saveFile(bookText, book.getSourceUrl());
+        try {
+            saveFile(sigText.getBytes("UTF-8"), book.getSignatureUrl());
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
         UpdateVerificationRunnable runnable = new UpdateVerificationRunnable(parent, updater, bookText, sigText);
         updater.addRunnable(runnable, 1);
         updater.runnableFinished();
+    }
+
+
+    private void saveFile(byte[] bytes, String url){
+
+        try{
+            FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
+            fos.write(bytes);
+            fos.close();
+            Log.i(TAG, "File Saved");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            Log.e(TAG, "Error when saving USFM");
+        }
     }
 
     private void updateStories(final Book parent){

@@ -1,7 +1,9 @@
 package services;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -10,6 +12,7 @@ import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,6 +31,7 @@ import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
 import tasks.UpdateStoriesChaptersRunnable;
 import tasks.UpdateVerificationRunnable;
+import utils.FileNameHelper;
 import utils.UWPreferenceManager;
 
 /**
@@ -129,13 +133,15 @@ public class UWPreLoader extends UWUpdater {
 
             ListIterator li = books.listIterator(books.size());
 
-// Iterate in reverse.
+// Iterate in reverse to start with the stories.
             while(li.hasPrevious()) {
 
                 Book book = (Book) li.previous();
                 try {
-                    String signature = loadDbFile(getSavedUrl(book.getSignatureUrl()));
-                    byte[] text = loadDbFileBytes(getSavedUrl(book.getSourceUrl()));
+                    String signature = loadDbFile(FileNameHelper.getSaveFileNameFromUrl(book.getSignatureUrl()));
+                    byte[] text = loadDbFileBytes(FileNameHelper.getSaveFileNameFromUrl(book.getSourceUrl()));
+                    saveFile(text, book.getSourceUrl());
+                    saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
 
                     UpdateVerificationRunnable runnable = new UpdateVerificationRunnable(book, getThis(), text, signature);
                     addRunnable(runnable, 1);
@@ -154,6 +160,20 @@ public class UWPreLoader extends UWUpdater {
             }
 
             runnableFinished();
+        }
+    }
+
+    private void saveFile(byte[] bytes, String url){
+
+        try{
+            FileOutputStream fos = getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
+            fos.write(bytes);
+            fos.close();
+            Log.i(TAG, "USFM File Saved");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            Log.e(TAG, "Error when saving USFM");
         }
     }
 
@@ -187,8 +207,5 @@ public class UWPreLoader extends UWUpdater {
 //        return builder.toString();
     }
 
-    private static String getSavedUrl(String url){
 
-        return url.replace(":", "#").replace("/", "*");
-    }
 }
