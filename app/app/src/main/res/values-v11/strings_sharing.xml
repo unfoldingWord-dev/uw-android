@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+
+    <string name="qr_code_title">QR Code</string>
+    <string name="bluetooth_title">Bluetooth</string>
+    <string name="choose_directory_title">Choose Directory</string>
+    <string name="choose_file_title">Choose File</string>
+    <string name="external_storage_title">External Storage</string>
+    <string name="wi_fi_direct_title">WiFi-Direct</string>
+    <string name="other_title">Other</string>
+    <string name="auto_find_title">Auto-Find</string>
+
+    <string name="bluetooth_direction_text">"Now on the device to which you're sharing:\n\nSwipe down from the top of the device to open notifications,\nTap the notification \"Bluetooth Share: Incoming File\",\nAccept the transfer,\nOpen notifications and tap the notification \"Bluetooth Share: Received Files\",\nSelect the transferred file\nOpen with translationKeyboard"</string>
+</resources>

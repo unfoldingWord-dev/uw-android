@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/linearLayout1"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <fragment
+            class="wifiDirect.DeviceListFragment"
+            android:id="@+id/frag_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/frag_detail"
+            tools:layout="@layout/wifi_device_list"
+            android:layout_alignParentTop="true">
+        </fragment>
+
+        <fragment
+            android:layout_alignParentBottom="true"
+            class="wifiDirect.DeviceDetailFragment"
+            android:id="@+id/frag_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/device_detail"
+
+            >
+        </fragment>
+
+    </RelativeLayout>
+
+</LinearLayout>

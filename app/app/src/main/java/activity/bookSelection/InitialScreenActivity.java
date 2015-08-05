@@ -108,6 +108,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     private void setupViews(){
 
         setupToolbar(true, getString(R.string.app_name), false);
+        getToolbar().setRightImageVisible(true);
         setupListView();
         addSettingsFooter();
         setupRefreshButton();
@@ -245,6 +246,11 @@ public class InitialScreenActivity extends UWBaseActivity{
             // to handle new data from network
             startService(new Intent(getApplicationContext(), UWUpdater.class));
         }
+    }
+
+    @Override
+    public void rightButtonClicked() {
+        super.rightButtonClicked();
     }
 
     static public class CheckingLevelFragment extends DialogFragment {

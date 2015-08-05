@@ -113,8 +113,8 @@
             android:layout_alignParentEnd="true"
             android:paddingRight="5dp"
             android:paddingEnd="5dp"
-            android:paddingLeft="0dp"
-            android:paddingStart="0dp">
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp">
 
             <TextView
                 android:id="@+id/toolbar_right_button_text_view"
@@ -125,7 +125,8 @@
                 android:clickable="false"
                 android:textStyle="normal"
                 android:textAllCaps="false"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/toolbar_right_button_image_indicator"
@@ -138,6 +139,17 @@
                 android:paddingRight="0dp"
                 android:paddingEnd="0dp"
                 android:visibility="gone"/>
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:id="@+id/toolbar_right_image_button"
+                android:paddingRight="@dimen/download_icon_padding"
+                android:paddingLeft="@dimen/download_icon_padding"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/download_icon"
+                android:visibility="visible"/>
         </LinearLayout>
     </RelativeLayout>
 

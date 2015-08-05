@@ -28,5 +28,6 @@
     <dimen name="chapter_selection_top_padding">0dp</dimen>
 
     <dimen name="app_bar_button_padding">15dp</dimen>
+    <dimen name="download_icon_padding">10dp</dimen>
 
 </resources>

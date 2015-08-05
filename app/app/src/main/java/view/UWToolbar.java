@@ -16,23 +16,24 @@ import org.unfoldingword.mobile.R;
  */
 public class UWToolbar {
 
-    Activity activity;
+    private Activity activity;
 
-    Toolbar toolbar;
-    ImageButton leftButton;
-    ImageView logoView;
+    private Toolbar toolbar;
+    private ImageButton leftButton;
+    private ImageView logoView;
 
-    LinearLayout titleLayout;
-    TextView titleText;
-    ImageView titleButtonIndicator;
+    private LinearLayout titleLayout;
+    private TextView titleText;
+    private ImageView titleButtonIndicator;
 
-    ImageButton checkingLevelImage;
+    private ImageButton checkingLevelImage;
 
-    LinearLayout rightButtonLayout;
-    TextView rightButtonText;
-    ImageView rightButtonButtonIndicator;
+    private LinearLayout rightButtonLayout;
+    private TextView rightButtonText;
+    private ImageView rightButtonButtonIndicator;
+    private ImageView rightButtonImage;
 
-    UWToolbarListener listener;
+    private UWToolbarListener listener;
 
     private boolean hidden = false;
 
@@ -66,12 +67,13 @@ public class UWToolbar {
         this.rightButtonLayout = (LinearLayout) activity.findViewById(R.id.toolbar_right_button_layout);
         this.rightButtonText = (TextView) activity.findViewById(R.id.toolbar_right_button_text_view);
         this.rightButtonButtonIndicator = (ImageView) activity.findViewById(R.id.toolbar_right_button_image_indicator);
+        this.rightButtonImage = (ImageView) activity.findViewById(R.id.toolbar_right_image_button);
     }
 
     private void setVisibilities(boolean hasLogo, int backResource){
 
         logoView.setVisibility((hasLogo)? View.VISIBLE : View.GONE);
-        leftButton.setVisibility((backResource > 0)? View.VISIBLE : View.GONE);
+        leftButton.setVisibility((backResource > 0)? View.VISIBLE : View.INVISIBLE);
         if(backResource > 0) {
             leftButton.setImageResource(backResource);
         }
@@ -151,6 +153,14 @@ public class UWToolbar {
         else{
             rightButtonLayout.setVisibility(View.GONE);
         }
+    }
+
+    public void setRightImageVisible(boolean visible){
+
+        rightButtonButtonIndicator.setVisibility((visible)? View.GONE : View.VISIBLE);
+        rightButtonText.setVisibility((visible)? View.GONE : View.VISIBLE);
+        rightButtonImage.setVisibility((visible)? View.VISIBLE : View.GONE);
+        rightButtonLayout.setVisibility((visible)? View.VISIBLE : View.GONE);
     }
 
     public void toggleHidden(){
