@@ -461,6 +461,10 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         return null;
     }
 
+    static public List<Version> getAllModels(DaoSession session){
+
+        return session.getVersionDao().queryBuilder().list();
+    }
 
     // KEEP METHODS END
 

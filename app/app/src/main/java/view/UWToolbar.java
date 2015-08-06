@@ -161,6 +161,12 @@ public class UWToolbar {
         rightButtonText.setVisibility((visible)? View.GONE : View.VISIBLE);
         rightButtonImage.setVisibility((visible)? View.VISIBLE : View.GONE);
         rightButtonLayout.setVisibility((visible)? View.VISIBLE : View.GONE);
+        rightButtonLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rightButtonClicked();
+            }
+        });
     }
 
     public void toggleHidden(){

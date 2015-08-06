@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import activity.AnimationParadigm;
@@ -34,6 +36,9 @@ import activity.SettingsActivity;
 import activity.UWBaseActivity;
 import activity.reading.ReadingActivity;
 import activity.reading.StoryReadingActivity;
+import activity.sharing.LoadActivity;
+import activity.sharing.ShareActivity;
+import adapters.ShareAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.UWGeneralListAdapter;
 import model.DaoDBHelper;
@@ -250,7 +255,39 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     @Override
     public void rightButtonClicked() {
-        super.rightButtonClicked();
+        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Select Share Method");
+
+        AlertDialog dialogue = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT)
+                .setCustomTitle(titleView)
+                .setAdapter(new ShareAdapter(getApplicationContext(), Arrays.asList(new String[]{"Send/Save Versions", "Receive/Load Versions"})),
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                switch (which) {
+                                    case 0: {
+                                        startActivity(new Intent(getApplicationContext(), ShareActivity.class));
+                                        break;
+                                    }
+                                    case 1: {
+                                        startActivity(new Intent(getApplicationContext(), LoadActivity.class));
+                                        break;
+                                    }
+                                    default: {
+                                        dialog.cancel();
+                                    }
+                                }
+                            }
+                        })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).create();
+        dialogue.show();
     }
 
     static public class CheckingLevelFragment extends DialogFragment {
