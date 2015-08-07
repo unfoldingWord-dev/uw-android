@@ -35,7 +35,7 @@ import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
-import services.UWVersionDownloader;
+import services.UWVersionDownloaderService;
 import services.VersionDownloadService;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
@@ -263,8 +263,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         } else {
             version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
             version.update();
-            Intent downloadIntent = new Intent(getContext(), UWVersionDownloader.class);
-            downloadIntent.putExtra(UWVersionDownloader.VERSION_PARAM, version.getId());
+            Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
+            downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, version.getId());
             getContext().startService(downloadIntent);
             reload();
         }

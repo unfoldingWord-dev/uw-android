@@ -18,8 +18,6 @@ public class SideLoaderTypeHandler {
 
         List<String> sideLoadList = new ArrayList<String>();
 
-        sideLoadList.add(context.getResources().getString(R.string.qr_code_title));
-
         sideLoadList.add(context.getResources().getString((loading)? R.string.auto_find_title : R.string.external_storage_title));
         sideLoadList.add(context.getResources().getString((loading)? R.string.choose_file_title : R.string.choose_directory_title));
 
@@ -40,15 +38,12 @@ public class SideLoaderTypeHandler {
 
         switch (index){
             case 0:{
-                return SideLoadType.SIDE_LOAD_TYPE_QR_CODE;
-            }
-            case 1:{
                 return (loading)? SideLoadType.SIDE_LOAD_TYPE_AUTO_FIND : SideLoadType.SIDE_LOAD_TYPE_SD_CARD;
             }
-            case 2:{
+            case 1:{
                 return SideLoadType.SIDE_LOAD_TYPE_STORAGE;
             }
-            case 3:{
+            case 2:{
                 if(hasBluetooth(context) && !loading){
                     return SideLoadType.SIDE_LOAD_TYPE_BLUETOOTH;
                 }
@@ -59,7 +54,7 @@ public class SideLoaderTypeHandler {
                     return SideLoadType.SIDE_LOAD_TYPE_OTHER;
                 }
             }
-            case 4:{
+            case 3:{
                 if(hasWiFi(context)){
                     return SideLoadType.SIDE_LOAD_TYPE_WIFI;
                 }

@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import activity.AnimationParadigm;
+import activity.UWBaseActivity;
 import adapters.FilesListAdapter;
 import sideloading.SideLoader;
 
-public class FileFinderActivity extends ActionBarActivity {
+public class FileFinderActivity extends UWBaseActivity {
 
     private Map<String, File> filesMap;
 
@@ -33,15 +35,21 @@ public class FileFinderActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_finder);
+        setupToolbar(false, getString(R.string.app_name), false);
         filesMap = new HashMap<String, File>();
         setupViews();
         searchFiles();
     }
 
+    @Override
+    public AnimationParadigm getAnimationParadigm() {
+        return AnimationParadigm.ANIMATION_VERTICAL;
+    }
+
     private void searchFiles(){
 
-        recursiveSearch(Environment.getExternalStorageDirectory(), ".tk");
-        recursiveSearch(Environment.getRootDirectory(), ".tk");
+        recursiveSearch(Environment.getExternalStorageDirectory(), ".ufw");
+        recursiveSearch(Environment.getRootDirectory(), ".ufw");
 
     }
 

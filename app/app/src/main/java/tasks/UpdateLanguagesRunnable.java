@@ -11,7 +11,7 @@ import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.Language;
 import model.daoModels.Project;
-import services.UWUpdater;
+import services.UWUpdaterService;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -21,10 +21,10 @@ public class UpdateLanguagesRunnable implements Runnable{
     private static final String TAG = "UpdateLanguagesRunnable";
     public static final String VERSIONS_JSON_KEY = "vers";
     private JSONArray jsonModels;
-    private UWUpdater updater;
+    private UWUpdaterService updater;
     private Project parent;
 
-    public UpdateLanguagesRunnable(JSONArray jsonModels, UWUpdater updater, Project parent) {
+    public UpdateLanguagesRunnable(JSONArray jsonModels, UWUpdaterService updater, Project parent) {
         this.jsonModels = jsonModels;
         this.updater = updater;
         this.parent = parent;

@@ -10,7 +10,7 @@ import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.daoModels.StoriesChapter;
-import services.UWUpdater;
+import services.UWUpdaterService;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -21,10 +21,10 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
     public static final String FRAMES_JSON_KEY = "frames";
 
     private JSONArray jsonModels;
-    private UWUpdater updater;
+    private UWUpdaterService updater;
     private Book parent;
 
-    public UpdateStoriesChaptersRunnable(JSONArray jsonModels, UWUpdater updater, Book parent) {
+    public UpdateStoriesChaptersRunnable(JSONArray jsonModels, UWUpdaterService updater, Book parent) {
         this.jsonModels = jsonModels;
         this.updater = updater;
         this.parent = parent;

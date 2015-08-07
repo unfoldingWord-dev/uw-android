@@ -3,9 +3,12 @@ package sideloading;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +22,7 @@ import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +30,10 @@ import activity.sharing.BluetoothReceivingActivity;
 import activity.sharing.FileFinderActivity;
 import adapters.ShareAdapter;
 import ar.com.daidalos.afiledialog.FileChooserDialog;
+import model.parsers.LanguageParser;
+import model.parsers.ProjectParser;
+import model.parsers.VersionParser;
+import services.UWSideLoaderService;
 import utils.FileLoader;
 import utils.Zipper;
 import wifiDirect.WiFiDirectActivity;
@@ -130,7 +138,7 @@ public class SideLoader {
             finalDir += optionalDir;
         }
         FileChooserDialog dialog = new FileChooserDialog(activity, finalDir);
-        dialog.setFilter(".*tk");
+        dialog.setFilter(".*ufw");
         dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
             @Override
             public void onFileSelected(Dialog source, File file) {
@@ -149,8 +157,14 @@ public class SideLoader {
 
     public void loadFile(File file){
 
-        String fileText = FileLoader.getStringFromFile(file);
-        textWasFound(unzipText(fileText));
+        byte[] fileText = FileLoader.getbytesFromFile(file);
+        fileText = unzipText(fileText);
+        try {
+            textWasFound(fileText, getNamesOfVersions(new String(fileText, "UTF-8")));
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
     }
 
     private void showSuccessAlert(boolean success){
@@ -168,25 +182,24 @@ public class SideLoader {
                 .show();
     }
 
-    public String unzipText(String text){
-        return Zipper.decodeFromBase64EncodedString(text);
+    public byte[] unzipText(byte[] text){
+        return Zipper.getDecompressedBytes(text);
     }
 
-    public void textWasFound(final String json){
+    public void textWasFound(final byte[] json, List<String> names){
 
-        List<String> names = getNamesOfKeyboards(json);
-        String keyboardText = (names.size() == 1)? "Keyboard" : "Keyboards";
+        String versionText = (names.size() == 1)? "Version" : "Versions";
 
         View titleView = View.inflate(activity.getApplicationContext(), R.layout.alert_title, null);
-        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Import " + names.size() + " " + keyboardText + "?");
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Import " + names.size() + " " + versionText + "?");
 
         AlertDialog dialogue = new AlertDialog.Builder(activity)
                 .setCustomTitle(titleView)
-                .setMessage(keyboardText + ":\n\n" + getNames(names))
+                .setMessage(versionText + ":\n\n" + getNames(names))
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        saveKeyboards(json);
-                        showSuccessAlert(true);
+                        Uri tempUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), json, "temp_version.ufwtmp");
+                        saveVersion(tempUri);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -197,25 +210,24 @@ public class SideLoader {
                 .show();
     }
 
-    private List<String> getNamesOfKeyboards(String json){
+    private List<String> getNamesOfVersions(String json){
 
         List<String> names = new ArrayList<String>();
         try {
-            JSONArray availableKeyboards = new JSONObject(json).getJSONArray("keyboards");
+            JSONObject project = new JSONObject(json).getJSONObject("top");
 
-            for(int i = 0; i < availableKeyboards.length(); i++){
-                JSONObject available = availableKeyboards.getJSONObject(i);
-                JSONObject keyboards = available.getJSONObject("keyboards");
+            JSONArray languages = project.getJSONArray(ProjectParser.LANGUAGES_JSON_KEY);
 
-                String keyboardText = keyboards.getString("keyboard_name") + ": ";
+            for(int i = 0; i < languages.length(); i++){
 
-                JSONArray variants = keyboards.getJSONArray("keyboard_variants");
-                for(int j = 0; j < variants.length(); j++){
+                JSONObject language = languages.getJSONObject(i);
+                JSONArray versions = language.getJSONArray(LanguageParser.VERSION_JSON_KEY);
 
-                    keyboardText += variants.getJSONObject(j).getString("name") + ", ";
+                for(int j = 0; j < versions.length(); j++) {
+                    JSONObject version = versions.getJSONObject(j);
+                    String name = version.getString(VersionParser.NAME_JSON_KEY);
+                    names.add(name);
                 }
-
-                names.add(keyboardText);
             }
         }
         catch (JSONException e){
@@ -233,8 +245,8 @@ public class SideLoader {
             finalString += name + "\n";
         }
 
-        if(finalString.length() > 0){
-            finalString = finalString.substring(0, finalString.length() - 2);
+        if(finalString.length() > 1){
+            finalString = finalString.substring(0, finalString.length() - 1);
             return finalString;
         }
         else{
@@ -242,13 +254,36 @@ public class SideLoader {
         }
     }
 
-    private void saveKeyboards(String json){
+    private void saveVersion(Uri versionUri){
 
-//        KeyboardDataHandler.sideLoadKeyboards(activity.getApplicationContext(), json);
-        Log.i(TAG, "keyboard Loaded");
+        registerPreloadReceiver();
+        Intent intent = new Intent(activity.getApplicationContext(), UWSideLoaderService.class)
+                .setData(versionUri);
+        activity.startService(intent);
+        Log.i(TAG, "Version Loading Started");
     }
 
     public static boolean sdCardIsPresent() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
+
+    private void registerPreloadReceiver(){
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UWSideLoaderService.BROAD_CAST_SIDE_LOAD_SUCCESSFUL);
+        activity.registerReceiver(receiver, filter);
+    }
+
+    private void unRegisterPreloadReceiver(){
+
+        activity.unregisterReceiver(receiver);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            unRegisterPreloadReceiver();
+            showSuccessAlert(true);
+        }
+    };
 }

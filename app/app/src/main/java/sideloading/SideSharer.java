@@ -113,7 +113,7 @@ public class SideSharer {
 
     private void startShareOtherAction(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedText(), fileName);
+        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
         Intent sharingIntent = new Intent(
                 Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
@@ -146,7 +146,7 @@ public class SideSharer {
 
     private void openBluetoothSharing(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedText(), fileName);
+        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
 
 
         Intent sharingIntent = new Intent(
@@ -162,7 +162,7 @@ public class SideSharer {
 
     private void startNFCShareAction(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedText(), fileName);
+        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
 
         Intent sharingIntent = new Intent(
                 Intent.ACTION_SEND);
@@ -179,7 +179,7 @@ public class SideSharer {
 
     private void startWIFIShareAction(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedText(), fileName);
+        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
 
         Intent intent = new Intent(activity.getApplicationContext(), WiFiDirectActivity.class)
                 .setData(fileUri);
@@ -196,7 +196,7 @@ public class SideSharer {
     }
 
     private void startSDCardShareAction(){
-        FileLoader.saveFileToSDCard(activity.getApplicationContext(), getZippedText(), fileName);
+        FileLoader.saveFileToSdCard(activity.getApplicationContext(), getZippedBytes(), fileName);
         showSuccessAlert(true);
     }
 
@@ -217,12 +217,12 @@ public class SideSharer {
     }
 
     private void saveToFile(String dir){
-        FileLoader.saveFile(getZippedText(), dir, fileName);
+        FileLoader.saveFile(getZippedBytes(), dir, fileName);
         showSuccessAlert(true);
     }
 
-    private String getZippedText(){
-        return Zipper.encodeToBase64ZippedString(shareText);
+    private byte[] getZippedBytes(){
+        return Zipper.compressText(shareText);
     }
 
     private FileChooserDialog.OnFileSelectedListener fileChooserLister = new FileChooserDialog.OnFileSelectedListener() {

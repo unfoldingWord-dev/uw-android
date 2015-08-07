@@ -11,11 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
 
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -23,21 +21,16 @@ import model.DaoDBHelper;
 import model.DownloadState;
 import model.daoModels.Book;
 import model.daoModels.Version;
-import model.database.UWDataParser;
-import signing.UWSigning;
-import tasks.UpdateBibleChaptersRunnable;
-import tasks.UpdateBookContentRunnable;
 import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
-import tasks.UpdateStoriesChaptersRunnable;
-import tasks.UpdateVerificationRunnable;
+import tasks.UpdateAndVerifyBookRunnable;
 import utils.FileNameHelper;
 import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc on 11/12/14.
  */
-public class UWPreLoader extends UWUpdater {
+public class UWPreLoaderService extends UWUpdaterService {
 
     private static final String TAG = "UWPreLoader";
 
@@ -92,11 +85,11 @@ public class UWPreLoader extends UWUpdater {
                 String jsonString = loadDbFile(getApplicationContext().getResources().getString(R.string.preloaded_catalog_file_name));
 
                 JSONObject jsonObject = new JSONObject(jsonString);
-                long modified = jsonObject.getLong(UWUpdater.MODIFIED_JSON_KEY);
+                long modified = jsonObject.getLong(UWUpdaterService.MODIFIED_JSON_KEY);
                 UWPreferenceManager.setLastUpdatedDate(getApplicationContext(), modified);
 
 //                UWDataParser.getInstance(getApplicationContext()).updateProjects(jsonObject.getJSONArray(UWDataParser.PROJECTS_JSON_KEY), false);
-                addRunnable(new UpdateProjectsRunnable(jsonObject.getJSONArray(UWUpdater.PROJECTS_JSON_KEY), getThis()));
+                addRunnable(new UpdateProjectsRunnable(jsonObject.getJSONArray(UWUpdaterService.PROJECTS_JSON_KEY), getThis()));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -143,7 +136,7 @@ public class UWPreLoader extends UWUpdater {
                     saveFile(text, book.getSourceUrl());
                     saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
 
-                    UpdateVerificationRunnable runnable = new UpdateVerificationRunnable(book, getThis(), text, signature);
+                    UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(book, getThis(), text, signature);
                     addRunnable(runnable, 1);
                 }
                 catch (IOException e){

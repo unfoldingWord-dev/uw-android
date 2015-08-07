@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -400,10 +401,10 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
         try {
             JSONObject languageJson = LanguageParser.getLanguageAsJson(getLanguage(), true);
-            languageJson.put(LanguageParser.VERSION_JSON_KEY, VersionParser.getVersionAsJson(this));
+            languageJson.put(LanguageParser.VERSION_JSON_KEY, new JSONArray().put(VersionParser.getVersionAsJson(this)));
 
             JSONObject projectJson = ProjectParser.getProjectAsJson(getLanguage().getProject(), true);
-            projectJson.put(ProjectParser.LANGUAGES_JSON_KEY, languageJson);
+            projectJson.put(ProjectParser.LANGUAGES_JSON_KEY, new JSONArray().put(languageJson));
 
             JSONObject sideLoadJson = new JSONObject();
             sideLoadJson.put("top", projectJson);
@@ -414,8 +415,6 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
             e.printStackTrace();
             return null;
         }
-
-
     }
 
     private JSONObject getSourcesAsJson(Context context){
@@ -425,7 +424,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         for(Book book : getBooks()){
             try {
                 sourcesObject.put(book.getSourceUrl(), loadSource(book.getSourceUrl(), context));
-                sourcesObject.put(book.getSourceUrl(), loadSource(book.getSignatureUrl(), context));
+                sourcesObject.put(book.getSignatureUrl(), loadSource(book.getSignatureUrl(), context));
             }
             catch (JSONException e){
                 e.printStackTrace();

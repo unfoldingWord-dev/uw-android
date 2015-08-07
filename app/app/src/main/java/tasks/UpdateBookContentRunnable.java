@@ -3,7 +3,6 @@ package tasks;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,11 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import model.UWDatabaseModel;
 import model.daoModels.Book;
-import model.daoModels.DaoSession;
-import model.daoModels.Version;
-import services.UWUpdater;
+import services.UWUpdaterService;
 import utils.FileNameHelper;
 import utils.URLDownloadUtil;
 
@@ -26,10 +22,10 @@ public class UpdateBookContentRunnable implements Runnable{
 
     private static final String TAG = "UpdateBookConttRunnable";
     public static final String CHAPTERS_JSON_KEY = "chapters";
-    private UWUpdater updater;
+    private UWUpdaterService updater;
     private Book book;
 
-    public UpdateBookContentRunnable(Book book, UWUpdater updater) {
+    public UpdateBookContentRunnable(Book book, UWUpdaterService updater) {
         this.book = book;
         this.updater = updater;
     }
@@ -64,7 +60,7 @@ public class UpdateBookContentRunnable implements Runnable{
             e.printStackTrace();
         }
 
-        UpdateVerificationRunnable runnable = new UpdateVerificationRunnable(parent, updater, bookText, sigText);
+        UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(parent, updater, bookText, sigText);
         updater.addRunnable(runnable, 1);
         updater.runnableFinished();
     }

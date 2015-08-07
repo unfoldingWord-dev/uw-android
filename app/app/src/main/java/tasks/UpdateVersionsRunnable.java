@@ -11,7 +11,7 @@ import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.Language;
 import model.daoModels.Version;
-import services.UWUpdater;
+import services.UWUpdaterService;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -22,10 +22,10 @@ public class UpdateVersionsRunnable implements Runnable{
     public static final String BOOKS_JSON_KEY = "toc";
 
     private JSONArray jsonModels;
-    private UWUpdater updater;
+    private UWUpdaterService updater;
     private Language parent;
 
-    public UpdateVersionsRunnable(JSONArray jsonModels, UWUpdater updater, Language parent) {
+    public UpdateVersionsRunnable(JSONArray jsonModels, UWUpdaterService updater, Language parent) {
         this.jsonModels = jsonModels;
         this.updater = updater;
         this.parent = parent;

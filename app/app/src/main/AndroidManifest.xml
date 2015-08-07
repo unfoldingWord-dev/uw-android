@@ -64,7 +64,50 @@
         <activity
             android:name="activity.sharing.LoadActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/MainTheme" />
+            android:theme="@style/MainTheme">
+
+            <intent-filter android:label="unfoldingWord" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.ufw"
+                    android:scheme="content" />
+            </intent-filter>
+            <intent-filter android:label="unfoldingWord" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.ufw"
+                    android:scheme="file" />
+            </intent-filter>
+            <intent-filter android:label="unfoldingWord" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.ufw" />
+            </intent-filter>
+            <intent-filter android:label="unfoldingWord" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.ufw"
+                    android:scheme="file" />
+            </intent-filter>
+            </activity>
 
         <activity
             android:name="activity.sharing.ShareActivity"
@@ -92,10 +135,11 @@
         </activity>
 
         <service android:name="services.UpdateService" />
-        <service android:name="services.UWUpdater" />
+        <service android:name="services.UWUpdaterService" />
         <service android:name="services.VersionDownloadService" />
-        <service android:name="services.UWVersionDownloader" />
-        <service android:name="services.UWPreLoader" />
+        <service android:name="services.UWVersionDownloaderService" />
+        <service android:name="services.UWPreLoaderService" />
+        <service android:name="services.UWSideLoaderService" />
 
     </application>
 

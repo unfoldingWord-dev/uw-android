@@ -1,31 +1,27 @@
 package tasks;
 
-import android.content.Context;
-import android.os.AsyncTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 import model.daoModels.Book;
-import services.UWUpdater;
+import services.UWUpdaterService;
 import signing.UWSigning;
-import utils.URLDownloadUtil;
 
 /**
  * Created by Fechner on 6/17/15.
  */
-public class UpdateVerificationRunnable implements Runnable{
+public class UpdateAndVerifyBookRunnable implements Runnable{
 
     private static final String TAG = "UpdateVerificationRunnable";
     public static final String CHAPTERS_JSON_KEY = "chapters";
-    private UWUpdater updater;
+    private UWUpdaterService updater;
     private Book book;
     byte[] bookText;
     String sigText;
 
-    public UpdateVerificationRunnable(Book book, UWUpdater updater, byte[] bookText, String sigText) {
+    public UpdateAndVerifyBookRunnable(Book book, UWUpdaterService updater, byte[] bookText, String sigText) {
         this.book = book;
         this.updater = updater;
         this.bookText = bookText;

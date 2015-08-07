@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.unfoldingword.mobile.R;
 
 import java.io.BufferedReader;
@@ -12,6 +14,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +62,34 @@ public class FileLoader {
         }
 
         Log.i(TAG, "File saving was successful.");
+    }
+
+    public static void saveFileToSdCard(Context context, byte[] bytes, String fileName){
+        String fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+                + context.getString(R.string.app_name);
+        saveFile(bytes, fileDir, fileName);
+    }
+
+    public static Uri saveFile(byte[] bytes, String dirName, String fileName){
+
+        try{
+            File dir = new File(dirName);
+            dir.mkdirs();
+            File file = new File(dirName, fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bytes);
+            fos.close();
+            Log.i(TAG, "USFM File Saved");
+            return Uri.fromFile(file);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            Log.e(TAG, "Error when saving file");
+            return null;
+        }
     }
 
     public static void saveFile(CharSequence fileSequence, String dirName, String fileName){
@@ -124,10 +155,19 @@ public class FileLoader {
         Log.i(TAG, "File saving was successful.");
     }
 
+    public static Uri createTemporaryFile(Context context, byte[] bytes, String fileName){
+
+        clearTemporaryFiles(context);
+        String directory = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/" + context.getString(R.string.app_name) + "/temp";
+
+        return saveFile(bytes, directory, fileName);
+    }
+
     public static Uri createTemporaryFile(Context context, CharSequence fileSequence, String fileName){
 
         clearTemporaryFiles(context);
-        Log.i(TAG, "Attempting to save temporary file named:" + fileName);
+//        Log.i(TAG, "Attempting to save temporary file named:" + fileName);
 
         try {
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -143,7 +183,7 @@ public class FileLoader {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(fileString);
             bw.close();
-            Log.i(TAG, "createTemporaryFile saving was successful.");
+//            Log.i(TAG, "createTemporaryFile saving was successful.");
             return Uri.fromFile(file);
 
 //            FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -165,7 +205,7 @@ public class FileLoader {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/" + context.getString(R.string.app_name) + "/temp");
         if(file.exists()){
-            final File to = new File(file.getAbsolutePath() + System.currentTimeMillis());
+            final File to = new File(file.getAbsolutePath());
             boolean success = file.renameTo(to);
             success = file.delete();
         }
@@ -228,6 +268,27 @@ public class FileLoader {
 
             String resultString = getStringFromInputStream(fileStream, file.getName()).toString();
             return resultString;
+        }
+        catch (IOException e){
+            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
+            return null;
+        }
+    }
+
+    public static byte[] getbytesFromFile(File file){
+
+        try{
+            FileInputStream fileStream = new FileInputStream(file);
+
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fileStream.read(b)) != -1) {
+                bos.write(b, 0, bytesRead);
+            }
+            byte[] bytes = bos.toByteArray();
+            return bytes;
         }
         catch (IOException e){
             Log.e(TAG, "initializeKeyboards IOException: " + e.toString());

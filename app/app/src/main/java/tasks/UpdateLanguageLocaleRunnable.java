@@ -5,18 +5,15 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.dao.query.QueryBuilder;
 import model.DaoDBHelper;
 import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.LanguageLocale;
-import model.daoModels.LanguageLocaleDao;
-import services.UWUpdater;
+import services.UWUpdaterService;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -26,9 +23,9 @@ public class UpdateLanguageLocaleRunnable implements Runnable{
     private static final String TAG = "UpdateLangLocaleRunble";
 
     private JSONArray jsonModels;
-    private UWUpdater updater;
+    private UWUpdaterService updater;
 
-    public UpdateLanguageLocaleRunnable(JSONArray jsonModels, UWUpdater updater) {
+    public UpdateLanguageLocaleRunnable(JSONArray jsonModels, UWUpdaterService updater) {
         this.jsonModels = jsonModels;
         this.updater = updater;
     }

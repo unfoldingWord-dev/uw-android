@@ -1,39 +1,18 @@
 package services;
 
-import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.unfoldingword.mobile.R;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import model.DaoDBHelper;
 import model.DownloadState;
 import model.daoModels.Book;
 import model.daoModels.Version;
-import model.database.UWDataParser;
-import model.datasource.LanguageLocaleDataSource;
-import tasks.JsonDownloadTask;
 import tasks.UpdateBookContentRunnable;
-import tasks.UpdateLanguageLocaleRunnable;
-import tasks.UpdateProjectsRunnable;
-import utils.URLUtils;
-import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc on 11/12/14.
  */
-public class UWVersionDownloader extends UWUpdater {
+public class UWVersionDownloaderService extends UWUpdaterService {
 
     private static final String TAG = "UWVersionDownloader";
 

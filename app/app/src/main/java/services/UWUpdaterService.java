@@ -5,26 +5,22 @@ import android.content.Intent;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
-import android.util.SparseArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import tasks.JsonDownloadTask;
 import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
-import utils.URLUtils;
 import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc on 11/12/14.
  */
-public class UWUpdater extends Service {
+public class UWUpdaterService extends Service {
 
     private static final String TAG = "UpdateService";
 
@@ -46,7 +42,7 @@ public class UWUpdater extends Service {
         return null;
     }
 
-    protected UWUpdater getThis(){
+    protected UWUpdaterService getThis(){
         return this;
     }
     @Override

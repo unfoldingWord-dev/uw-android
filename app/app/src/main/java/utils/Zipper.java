@@ -38,7 +38,7 @@ public class Zipper {
         }
     }
 
-    public byte[] compressText(String text){
+    public static byte[] compressText(String text){
 
         try {
             byte[] inputBytes = text.getBytes("UTF-8");
@@ -84,7 +84,7 @@ public class Zipper {
 
     }
 
-    private static byte[] getDecompressedBytes(byte[] compressedBytes){
+    public static byte[] getDecompressedBytes(byte[] compressedBytes){
 
         try {
             Inflater decompressor = new Inflater();

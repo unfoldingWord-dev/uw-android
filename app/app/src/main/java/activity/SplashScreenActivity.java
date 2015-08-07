@@ -16,7 +16,7 @@ import java.util.List;
 import activity.bookSelection.InitialScreenActivity;
 import model.DaoDBHelper;
 import model.daoModels.Project;
-import services.UWPreLoader;
+import services.UWPreLoaderService;
 
 /**
  * Created by Acts Media Inc. on 2/12/14.
@@ -38,7 +38,7 @@ public class SplashScreenActivity extends Activity {
     private void registerPreloadReceiver(){
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UWPreLoader.BROAD_CAST_PRELOAD_SUCCESSFUL);
+        filter.addAction(UWPreLoaderService.BROAD_CAST_PRELOAD_SUCCESSFUL);
         registerReceiver(receiver, filter);
     }
 
@@ -75,7 +75,7 @@ public class SplashScreenActivity extends Activity {
     }
 
     private void preLoadData(){
-        startService(new Intent(getApplicationContext(), UWPreLoader.class));
+        startService(new Intent(getApplicationContext(), UWPreLoaderService.class));
     }
 
     private void goToInitialActivity(){

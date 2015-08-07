@@ -14,9 +14,9 @@ import model.daoModels.Version;
  */
 public class VersionParser extends UWDataParser{
 
-    private static final String BOOKS_JSON_KEY = "toc";
+    public static final String BOOKS_JSON_KEY = "toc";
     private static final String MODIFIED_JSON_KEY = "mod";
-    private static final String NAME_JSON_KEY = "name";
+    public static final String NAME_JSON_KEY = "name";
     private static final String SLUG_JSON_KEY = "slug";
     private static final String STATUS_JSON_KEY = "status";
 

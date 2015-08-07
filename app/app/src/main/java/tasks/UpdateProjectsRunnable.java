@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.Project;
-import services.UWUpdater;
+import services.UWUpdaterService;
 
 /**
  * Created by Fechner on 6/17/15.
@@ -20,9 +20,9 @@ public class UpdateProjectsRunnable implements Runnable{
     private static final String TAG = "UpdateProjectsRunnable";
     public static final String LANGUAGES_JSON_KEY = "langs";
     private JSONArray jsonModels;
-    private UWUpdater updater;
+    private UWUpdaterService updater;
 
-    public UpdateProjectsRunnable(JSONArray jsonModels, UWUpdater updater) {
+    public UpdateProjectsRunnable(JSONArray jsonModels, UWUpdaterService updater) {
         this.jsonModels = jsonModels;
         this.updater = updater;
 

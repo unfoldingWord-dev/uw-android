@@ -44,7 +44,7 @@ import adapters.selectionAdapters.UWGeneralListAdapter;
 import model.DaoDBHelper;
 import model.daoModels.Language;
 import model.daoModels.Project;
-import services.UWUpdater;
+import services.UWUpdaterService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
 
@@ -249,7 +249,7 @@ public class InitialScreenActivity extends UWBaseActivity{
         } else {
             visibleLayout.setVisibility(View.VISIBLE);
             // to handle new data from network
-            startService(new Intent(getApplicationContext(), UWUpdater.class));
+            startService(new Intent(getApplicationContext(), UWUpdaterService.class));
         }
     }
 
