@@ -465,6 +465,12 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         return session.getVersionDao().queryBuilder().list();
     }
 
+    public void deleteBooks(){
+        for(Book book : getBooks()){
+            book.delete();
+        }
+    }
+
     // KEEP METHODS END
 
 }

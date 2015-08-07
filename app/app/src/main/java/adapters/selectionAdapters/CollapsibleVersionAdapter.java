@@ -223,7 +223,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
             @Override
             public void onClick(View view) {
-                deleteRowPressed(version, finalHolder);
+                deleteVersion(version);
             }
         };
     }
@@ -270,7 +270,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
     }
 
-    private void deleteRowPressed(final Version version, final ViewHolderForGroup finalHolder){
+    private void deleteVersion(final Version version){
 
         (new DialogFragment() {
 
@@ -336,17 +336,18 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                 putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.getId())));
     }
 
-    private class DeleteVersionTask extends AsyncTask {
+    private class DeleteVersionTask extends AsyncTask<Version, Void, Void> {
 
         @Override
-        protected Object doInBackground(Object[] params) {
-//            return new VersionDataSource(getContext()).deleteDownloadedBookContent((VersionModel) params[0]);
+        protected Void doInBackground(Version... params) {
+            UWPreferenceManager.willDeleteVersion(getContext(), params[0]);
+            params[0].deleteBooks();
             return null;
         }
 
         @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
             reload();
         }
     }
