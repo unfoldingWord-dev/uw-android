@@ -51,7 +51,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean lastModel){
 
-        new ModelCreator(new StoriesChapter(), parent, new ModelCreator.ModelCreationTaskListener() {
+        new ModelCreator(new StoriesChapter(), parent, new ModelCreator.ModelCreationListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 

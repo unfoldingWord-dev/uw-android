@@ -56,7 +56,7 @@ public class UpdateStoryPagesRunnable implements Runnable{
 
     private StoryPage updateModel(final JSONObject jsonObject){
 
-        UWDatabaseModel model = new ModelCreators(new StoryPage(), parent).start(jsonObject);
+        UWDatabaseModel model = new ModelCreation(new StoryPage(), parent).start(jsonObject);
 
         if(model instanceof StoryPage) {
             return (StoryPage) model;

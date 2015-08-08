@@ -50,7 +50,7 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
-        new ModelCreator(new Book(), parent, new ModelCreator.ModelCreationTaskListener() {
+        new ModelCreator(new Book(), parent, new ModelCreator.ModelCreationListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
@@ -83,8 +83,6 @@ public class UpdateBooksRunnable implements Runnable{
             updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 4);
         }
     }
-
-
 
     private class BookSaveOrUpdater extends ModelSaveOrUpdater{
 

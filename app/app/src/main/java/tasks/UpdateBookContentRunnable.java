@@ -82,7 +82,7 @@ public class UpdateBookContentRunnable implements Runnable{
 
     private void updateStories(final Book parent){
 
-        new UpdateVerificationTask(updater.getApplicationContext(), new UpdateVerificationTask.VerificationTaskListener() {
+        new VerificationUpdater(updater.getApplicationContext(), new VerificationUpdater.VerificationTaskListener() {
             @Override
             public void verificationFinishedWithResult(byte[] text) {
 

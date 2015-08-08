@@ -50,7 +50,7 @@ public class UpdateProjectsRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean lastModel){
 
-        new ModelCreator(new Project(), null, new ModelCreator.ModelCreationTaskListener() {
+        new ModelCreator(new Project(), null, new ModelCreator.ModelCreationListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 

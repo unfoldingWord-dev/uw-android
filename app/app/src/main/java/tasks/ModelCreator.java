@@ -1,9 +1,6 @@
 package tasks;
 
 
-import android.os.AsyncTask;
-import android.util.Log;
-
 import org.json.JSONObject;
 
 import model.UWDatabaseModel;
@@ -15,11 +12,11 @@ public class ModelCreator{
 
     private static final String TAG = "ModelCreationTask";
 
-    private ModelCreationTaskListener listener;
+    private ModelCreationListener listener;
     private final UWDatabaseModel dbModel;
     private final UWDatabaseModel parentOrNull;
 
-    public ModelCreator(UWDatabaseModel dbModel, UWDatabaseModel parentSlugOrNull, ModelCreationTaskListener listener) {
+    public ModelCreator(UWDatabaseModel dbModel, UWDatabaseModel parentSlugOrNull, ModelCreationListener listener) {
 
         this.listener = listener;
 
@@ -39,7 +36,7 @@ public class ModelCreator{
         }
     }
 
-    interface ModelCreationTaskListener {
+    interface ModelCreationListener {
         void modelWasCreated(UWDatabaseModel model);
     }
 }

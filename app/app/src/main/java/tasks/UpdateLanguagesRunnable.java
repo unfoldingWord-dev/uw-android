@@ -51,7 +51,7 @@ public class UpdateLanguagesRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonModel, final boolean isLast){
 
-        new ModelCreator(new Language(), parent, new ModelCreator.ModelCreationTaskListener() {
+        new ModelCreator(new Language(), parent, new ModelCreator.ModelCreationListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
