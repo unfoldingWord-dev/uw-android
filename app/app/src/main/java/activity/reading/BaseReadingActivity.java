@@ -231,6 +231,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @Override
     public void selectionFragmentChoseChapter() {
         removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
+        loadData();
         updateViews();
     }
 

@@ -36,17 +36,23 @@ public class GeneralAdapter extends ArrayAdapter<GeneralRowInterface> {
     }
 
     public GeneralAdapter(Context context, List<GeneralRowInterface> models, Fragment fragment, int selectedRow) {
-        super(context, R.layout.row_general, models);
+        super(context, R.layout.row_general);
         this.context = context;
         this.models = models;
         this.fragment = fragment;
         this.selectedRow = selectedRow;
     }
 
+
+    @Override
+    public int getCount() {
+        return models.size();
+    }
+
     @Override
     public View getView(final int pos, View view, ViewGroup parent) {
 
-        GeneralRowInterface row = getItem(pos);
+        GeneralRowInterface row = models.get(pos);
         ViewHolderForGroup holder = null;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
