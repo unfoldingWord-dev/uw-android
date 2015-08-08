@@ -5,10 +5,14 @@ import android.content.Context;
 import org.json.JSONException;
 
 import java.nio.charset.CharacterCodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import model.DaoDBHelper;
 import model.UWDatabaseModel;
 import model.daoModels.BibleChapter;
+import model.daoModels.BibleChapterDao;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.parsers.BibleChapterParser;
@@ -52,12 +56,12 @@ public class UpdateBibleChaptersRunnable implements Runnable{
 
     private void createModels(Map<String, String> models){
 
+        List<BibleChapter> chapters = new ArrayList<BibleChapter>();
         int i = 0;
         for(Map.Entry<String, String> entry : models.entrySet()){
 
             try {
-                BibleChapter chapter = BibleChapterParser.parseBibleChapter(parent, entry.getKey(), entry.getValue());
-                updateModel(chapter, (i == (models.size() - 1)));
+                chapters.add(BibleChapterParser.parseBibleChapter(parent, entry.getKey(), entry.getValue()));
 
             }
             catch (JSONException e){
@@ -65,32 +69,16 @@ public class UpdateBibleChaptersRunnable implements Runnable{
             }
             i++;
         }
+        updateModels(chapters);
+        updater.runnableFinished();
     }
 
-    private void updateModel(BibleChapter chapter, final boolean isLast){
+    private void updateModels(List<BibleChapter> chapters){
 
-        new BibleChapterSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-            @Override
-            public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
-
-//                Log.d(TAG, "bible chapter created");
-                if(isLast){
-                    updater.runnableFinished();
-                }
-            }
-        }
-        ).execute(chapter);
-    }
-
-    private class BibleChapterSaveOrUpdateTask extends ModelSaveOrUpdateTask{
-
-        public BibleChapterSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
-        }
-
-        @Override
-        protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return BibleChapter.getModelForUniqueSlug(slug, session);
-        }
+        BibleChapterDao dao = DaoDBHelper.getDaoSession(updater.getApplicationContext()).getBibleChapterDao();
+        dao.queryBuilder()
+                .where(BibleChapterDao.Properties.BookId.eq(parent.getId()))
+                .buildDelete().executeDeleteWithoutDetachingEntities();
+        dao.insertOrReplaceInTx(chapters);
     }
 }

@@ -16,7 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table BOOK.
+ * Entity mapped to table "BOOK".
  */
 public class Book extends model.UWDatabaseModel  implements java.io.Serializable {
 

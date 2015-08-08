@@ -10,7 +10,7 @@ import model.UWDatabaseModel;
 import model.parsers.LanguageLocaleParser;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table LANGUAGE_LOCALE.
+ * Entity mapped to table "LANGUAGE_LOCALE".
  */
 public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Serializable {
 

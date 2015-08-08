@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table LANGUAGE.
+ * Entity mapped to table "LANGUAGE".
  */
 public class Language extends model.UWDatabaseModel  implements java.io.Serializable {
 

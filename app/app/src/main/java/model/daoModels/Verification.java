@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.List;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table VERIFICATION.
+ * Entity mapped to table "VERIFICATION".
  */
 public class Verification extends model.UWDatabaseModel  implements java.io.Serializable {
 
@@ -225,7 +225,6 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
                 ", status=" + status +
                 "} " + super.toString();
     }
-
     // KEEP METHODS END
 
 }

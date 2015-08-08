@@ -13,7 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table STORY_PAGE.
+ * Entity mapped to table "STORY_PAGE".
  */
 public class StoryPage extends model.UWDatabaseModel  implements java.io.Serializable {
 

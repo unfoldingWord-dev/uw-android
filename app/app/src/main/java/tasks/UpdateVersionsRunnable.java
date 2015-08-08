@@ -52,26 +52,21 @@ public class UpdateVersionsRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
-        new ModelCreationTask(new Version(), parent, new ModelCreationTask.ModelCreationTaskListener() {
+        new ModelCreator(new Version(), parent, new ModelCreator.ModelCreationTaskListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
                 if(model instanceof Version) {
 
-                    new VersionSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
+                    UWDatabaseModel shouldContinueUpdate = new VersionSaveOrUpdater(updater.getApplicationContext()).start(model);
 
-                            Log.d(TAG, "version created");
-                            if(shouldContinueUpdate != null){
-                                updateBooks(jsonObject, (Version) shouldContinueUpdate);
-                            }
-                            if(isLast){
-                                updater.runnableFinished();
-                            }
-                        }
+                    Log.d(TAG, "version created");
+                    if(shouldContinueUpdate != null){
+                        updateBooks(jsonObject, (Version) shouldContinueUpdate);
                     }
-                    ).execute(model);
+                    if(isLast){
+                        updater.runnableFinished();
+                    }
                 }
             }
         }).execute(jsonObject);
@@ -89,10 +84,10 @@ public class UpdateVersionsRunnable implements Runnable{
         }
     }
 
-    private class VersionSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class VersionSaveOrUpdater extends ModelSaveOrUpdater{
 
-        public VersionSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
+        public VersionSaveOrUpdater(Context context) {
+            super(context);
         }
 
         @Override

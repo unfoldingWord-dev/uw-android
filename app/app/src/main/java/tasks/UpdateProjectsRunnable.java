@@ -50,27 +50,22 @@ public class UpdateProjectsRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean lastModel){
 
-        new ModelCreationTask(new Project(), null, new ModelCreationTask.ModelCreationTaskListener() {
+        new ModelCreator(new Project(), null, new ModelCreator.ModelCreationTaskListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
                 if(model instanceof Project) {
 
-                    new ProjectSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
+                    UWDatabaseModel shouldContinueUpdate = new ProjectSaveOrUpdater(updater.getApplicationContext()).start(model);
 
-                            Log.d(TAG, "project created");
+                    Log.d(TAG, "project created");
 
-                            if(shouldContinueUpdate != null){
-                                updateLanguages(jsonObject, (Project) shouldContinueUpdate);
-                            }
-                            if(lastModel){
-                                updater.runnableFinished();
-                            }
-                        }
+                    if(shouldContinueUpdate != null){
+                        updateLanguages(jsonObject, (Project) shouldContinueUpdate);
                     }
-                    ).execute( model);
+                    if(lastModel){
+                        updater.runnableFinished();
+                    }
                 }
             }
         }).execute(jsonObject);
@@ -89,10 +84,10 @@ public class UpdateProjectsRunnable implements Runnable{
     }
 
 
-    private class ProjectSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class ProjectSaveOrUpdater extends ModelSaveOrUpdater{
 
-        public ProjectSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
+        public ProjectSaveOrUpdater(Context context) {
+            super(context);
         }
 
         @Override

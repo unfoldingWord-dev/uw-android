@@ -50,25 +50,20 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
-        new ModelCreationTask(new Book(), parent, new ModelCreationTask.ModelCreationTaskListener() {
+        new ModelCreator(new Book(), parent, new ModelCreator.ModelCreationTaskListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
                 if(model instanceof Book) {
 
-                    new BookSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
-
+                    UWDatabaseModel shouldContinueUpdate = new BookSaveOrUpdater(updater.getApplicationContext()).start(model);
 //                            Log.d(TAG, "Book created");
-                            if(shouldContinueUpdate != null){
-                                updateChapters (jsonObject, (Book) shouldContinueUpdate);
-                            }
-                            if(isLast){
-                                updater.runnableFinished();
-                            }
-                        }
-                    }).execute( model);
+                    if(shouldContinueUpdate != null){
+                        updateChapters (jsonObject, (Book) shouldContinueUpdate);
+                    }
+                    if(isLast){
+                        updater.runnableFinished();
+                    }
                 }
             }
         }).execute(jsonObject);
@@ -91,10 +86,10 @@ public class UpdateBooksRunnable implements Runnable{
 
 
 
-    private class BookSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class BookSaveOrUpdater extends ModelSaveOrUpdater{
 
-        public BookSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
+        public BookSaveOrUpdater(Context context) {
+            super(context);
         }
 
         @Override

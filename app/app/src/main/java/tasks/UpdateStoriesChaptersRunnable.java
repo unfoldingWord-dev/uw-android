@@ -51,29 +51,22 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean lastModel){
 
-        new ModelCreationTask(new StoriesChapter(), parent, new ModelCreationTask.ModelCreationTaskListener() {
+        new ModelCreator(new StoriesChapter(), parent, new ModelCreator.ModelCreationTaskListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
                 if(model instanceof StoriesChapter) {
 
-                    new StoriesChapterSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener(){
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
+                    UWDatabaseModel shouldContinueUpdate =  new StoriesChapterSaveOrUpdater(updater.getApplicationContext()).start(model);
 
-//                            Log.d(TAG, "story chapter created");
-
-                            if(shouldContinueUpdate != null){
-                                updatePages(jsonObject, (StoriesChapter) shouldContinueUpdate);
-                            }
-                            if(lastModel){
-                                updater.runnableFinished();
-                            }
+                        if(shouldContinueUpdate != null){
+                            updatePages(jsonObject, (StoriesChapter) shouldContinueUpdate);
+                        }
+                        if(lastModel){
+                            updater.runnableFinished();
                         }
                     }
-                    ).execute(model);
                 }
-            }
         }).execute(jsonObject);
     }
 
@@ -89,10 +82,10 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         }
     }
 
-    private class StoriesChapterSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class StoriesChapterSaveOrUpdater extends ModelSaveOrUpdater{
 
-        public StoriesChapterSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
+        public StoriesChapterSaveOrUpdater(Context context) {
+            super(context);
         }
 
         @Override

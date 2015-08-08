@@ -1,15 +1,17 @@
 package tasks;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import model.DaoDBHelper;
 import model.UWDatabaseModel;
-import model.daoModels.DaoSession;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
+import model.daoModels.StoryPageDao;
 import services.UWUpdaterService;
 
 /**
@@ -37,39 +39,38 @@ public class UpdateStoryPagesRunnable implements Runnable{
     }
     private void parseModels(JSONArray models){
 
+        List<StoryPage> pages = new ArrayList<StoryPage>();
+
         for(int i = 0; i < models.length(); i++){
 
             try {
-                updateModel(models.getJSONObject(i), i == (models.length() - 1));
+                pages.add(updateModel(models.getJSONObject(i)));
             }
             catch (JSONException e){
                 e.printStackTrace();
             }
         }
+        updatePages(pages);
+        updater.runnableFinished();
     }
 
-    private void updateModel(final JSONObject jsonObject, final boolean isLast){
+    private StoryPage updateModel(final JSONObject jsonObject){
 
-        UWDatabaseModel model = new ModelCreator(new StoryPage(), parent).start(jsonObject);
+        UWDatabaseModel model = new ModelCreators(new StoryPage(), parent).start(jsonObject);
 
         if(model instanceof StoryPage) {
-            new StoriesPageSaveOrUpdater(updater.getApplicationContext()).start(model);
+            return (StoryPage) model;
         }
-
-        if(isLast) {
-            updater.runnableFinished();
+        else{
+            return null;
         }
     }
 
-    private class StoriesPageSaveOrUpdater extends ModelSaveOrUpdater{
-
-        public StoriesPageSaveOrUpdater(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return StoryPage.getModelForUniqueSlug(slug, session);
-        }
+    private void updatePages(List<StoryPage> pages){
+        StoryPageDao dao = DaoDBHelper.getDaoSession(updater.getApplicationContext()).getStoryPageDao();
+        dao.queryBuilder()
+                .where(StoryPageDao.Properties.StoryChapterId.eq(parent.getId()))
+                .buildDelete().executeDeleteWithoutDetachingEntities();
+        dao.insertOrReplaceInTx(pages);
     }
 }

@@ -6,7 +6,7 @@ package model.daoModels;
 import signing.Organization;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table SIGNING_ORGANIZATION.
+ * Entity mapped to table "SIGNING_ORGANIZATION".
  */
 public class SigningOrganization implements java.io.Serializable {
 

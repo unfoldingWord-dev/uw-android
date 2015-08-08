@@ -51,26 +51,22 @@ public class UpdateLanguagesRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonModel, final boolean isLast){
 
-        new ModelCreationTask(new Language(), parent, new ModelCreationTask.ModelCreationTaskListener() {
+        new ModelCreator(new Language(), parent, new ModelCreator.ModelCreationTaskListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
                 if(model instanceof Language) {
 
-                    new LanguageSaveOrUpdateTask(updater.getApplicationContext(), new ModelSaveOrUpdateTask.ModelCreationTaskListener() {
-                        @Override
-                        public void modelWasUpdated(UWDatabaseModel shouldContinueUpdate) {
+                    UWDatabaseModel shouldContinueUpdate = new LanguageSaveOrUpdater(updater.getApplicationContext()).start(model);
 
-                            Log.d(TAG, "language created");
+                    Log.d(TAG, "language created");
 
-                            if(shouldContinueUpdate != null){
-                                updateVersions(jsonModel, (Language) shouldContinueUpdate);
-                            }
-                            if(isLast){
-                                updater.runnableFinished();
-                            }
-                        }
-                    }).execute(model);
+                    if(shouldContinueUpdate != null){
+                        updateVersions(jsonModel, (Language) shouldContinueUpdate);
+                    }
+                    if(isLast){
+                        updater.runnableFinished();
+                    }
                 }
             }
         }).execute(jsonModel);
@@ -88,10 +84,10 @@ public class UpdateLanguagesRunnable implements Runnable{
         }
     }
 
-    private class LanguageSaveOrUpdateTask extends ModelSaveOrUpdateTask{
+    private class LanguageSaveOrUpdater extends ModelSaveOrUpdater{
 
-        public LanguageSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
+        public LanguageSaveOrUpdater(Context context) {
+            super(context);
         }
 
         @Override

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import model.parsers.StoriesChapterParser;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table STORIES_CHAPTER.
+ * Entity mapped to table "STORIES_CHAPTER".
  */
 public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Serializable, Comparable<StoriesChapter> {
 

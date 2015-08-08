@@ -60,16 +60,4 @@ public class UpdateLanguageLocaleRunnable implements Runnable{
 
         updater.runnableFinished();
     }
-
-    private class LanguageLocaleSaveOrUpdateTask extends ModelSaveOrUpdateTask{
-
-        public LanguageLocaleSaveOrUpdateTask(Context context, ModelCreationTaskListener listener) {
-            super(context, listener);
-        }
-
-        @Override
-        protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return LanguageLocale.getLocalForKey(slug, session);
-        }
-    }
 }

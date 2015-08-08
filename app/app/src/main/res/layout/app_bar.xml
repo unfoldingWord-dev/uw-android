@@ -149,7 +149,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:src="@drawable/download_icon"
-                android:visibility="visible"/>
+                android:visibility="gone"/>
         </LinearLayout>
     </RelativeLayout>
 

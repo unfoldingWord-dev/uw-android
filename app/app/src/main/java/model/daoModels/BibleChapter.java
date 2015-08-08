@@ -11,7 +11,7 @@ import model.UWDatabaseModel;
 import org.json.JSONObject;
 // KEEP INCLUDES END
 /**
- * Entity mapped to table BIBLE_CHAPTER.
+ * Entity mapped to table "BIBLE_CHAPTER".
  */
 public class BibleChapter extends model.UWDatabaseModel  implements java.io.Serializable, Comparable<BibleChapter> {
 
