@@ -15,15 +15,7 @@ import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-import activity.SplashScreenActivity;
-import adapters.selectionAdapters.GeneralAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import model.database.DBManager;
-import view.popover.ActionItem;
-import view.popover.QuickAction;
 
 /**
  * Created by Fechner on 3/3/15.

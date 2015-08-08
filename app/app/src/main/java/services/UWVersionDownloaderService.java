@@ -14,6 +14,9 @@ import tasks.UpdateBookContentRunnable;
  */
 public class UWVersionDownloaderService extends UWUpdaterService {
 
+    public static final String STOP_DOWNLOAD_VERSION_MESSAGE = "STOP_DOWNLOAD_VERSION_MESSAGE";
+    public static final String VERSION_ID = "VERSION_ID";
+
     private static final String TAG = "UWVersionDownloader";
 
     public static final String VERSION_PARAM = "VERSION_PARAM";

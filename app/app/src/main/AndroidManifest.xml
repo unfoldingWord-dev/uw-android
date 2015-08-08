@@ -134,9 +134,7 @@
             android:label="@string/title_activity_settings" >
         </activity>
 
-        <service android:name="services.UpdateService" />
         <service android:name="services.UWUpdaterService" />
-        <service android:name="services.VersionDownloadService" />
         <service android:name="services.UWVersionDownloaderService" />
         <service android:name="services.UWPreLoaderService" />
         <service android:name="services.UWSideLoaderService" />

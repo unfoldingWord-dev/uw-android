@@ -36,7 +36,6 @@ import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
 import services.UWVersionDownloaderService;
-import services.VersionDownloadService;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
 import utils.RowStatusHelper;
@@ -82,7 +81,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
             Bundle extra = intent.getExtras();
             if (extra != null) {
-                String itemId = extra.getString(VersionDownloadService.VERSION_ID);
+                String itemId = extra.getString(UWVersionDownloaderService.VERSION_ID);
                 Log.d(TAG, itemId);
             }
             if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
@@ -332,8 +331,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     private void stopDownloadService(Version version){
 
-        getContext().sendBroadcast(new Intent(VersionDownloadService.STOP_DOWNLOAD_VERSION_MESSAGE).
-                putExtra(VersionDownloadService.VERSION_ID, Long.toString(version.getId())));
+        getContext().sendBroadcast(new Intent(UWVersionDownloaderService.STOP_DOWNLOAD_VERSION_MESSAGE).
+                putExtra(UWVersionDownloaderService.VERSION_ID, Long.toString(version.getId())));
     }
 
     private class DeleteVersionTask extends AsyncTask<Version, Void, Void> {

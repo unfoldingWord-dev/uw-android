@@ -21,10 +21,6 @@ import adapters.selectionAdapters.GeneralRowInterface;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import model.datasource.BibleChapterDataSource;
-import model.datasource.BookDataSource;
-import model.modelClasses.mainData.BibleChapterModel;
-import model.modelClasses.mainData.BookModel;
 import utils.UWPreferenceManager;
 
 /**

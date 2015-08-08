@@ -17,10 +17,6 @@ import model.DaoDBHelper;
 import model.daoModels.Book;
 import model.daoModels.SigningOrganization;
 import model.daoModels.Verification;
-import model.datasource.VerificationDataSource;
-import model.modelClasses.mainData.BookModel;
-import model.modelClasses.mainData.VerificationModel;
-import utils.URLDownloadUtil;
 
 /**
  * Created by Fechner on 3/13/15.
@@ -33,44 +29,6 @@ public class UWSigning {
     private static final String stockCert = "certs/uW_vk_2.pem";
     private static final String stockCertPub = "certs/ca.pub";
 
-    public static void addAndVerifySignatureForBook(Context context, BookModel book, byte[] text) throws IOException{
-
-        try {
-            String sigData = URLDownloadUtil.downloadString(book.signatureUrl);
-
-            ArrayList<VerificationModel> verifications = new ArrayList<VerificationModel>();
-
-            if(sigData.contains("404")){
-                VerificationModel errorModel = new VerificationModel();
-                errorModel.verificationStatus = 2;
-                verifications.add(errorModel);
-                updateVerifications(context, verifications, book.uid);
-                return;
-            }
-
-            JSONArray sigArray = new JSONArray(sigData);
-            for (int i = 0; i < sigArray.length(); i++) {
-                JSONObject obj = sigArray.getJSONObject(i);
-                VerificationModel model = new VerificationModel(obj, book.uid, false);
-
-                SigningEntity signingEntity = getSigningEntity(context);
-
-                Status sigStatus = signingEntity.verifyContent(model.signature, text);
-                if (sigStatus != Status.VERIFIED) {
-                    Log.e(TAG, "Signature not verified: " + sigStatus.toString());
-                }
-                model.verificationStatus = sigStatus.ordinal();
-
-                verifications.add(model);
-            }
-
-            updateVerifications(context, verifications, book.uid);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-
-    }
 
     public static void updateVerification(Context context, Book book, byte[] text, String sigData) throws IOException{
 
@@ -136,20 +94,6 @@ public class UWSigning {
         }
     }
 
-    private static void updateVerifications(Context context, ArrayList<VerificationModel> newModels, long bookId){
-        VerificationDataSource dataSource = new VerificationDataSource(context);
-        ArrayList<VerificationModel> currentVerifications = dataSource.getVerificationsForParentId(Long.toString(bookId));
-
-        for(VerificationModel oldModel : currentVerifications){
-            dataSource.deleteModel(oldModel);
-        }
-
-        for(VerificationModel newModel : newModels){
-            dataSource.createOrUpdateDatabaseModel(newModel);
-        }
-    }
-
-
     private static SigningEntity getSigningEntity(Context context) throws IOException{
 
         InputStream uwKeyFile = context.getAssets().open(stockCertPub);
@@ -177,14 +121,4 @@ public class UWSigning {
             oldOrg.updateWithOrganization(org, DaoDBHelper.getDaoSession(context));
         }
     }
-
-//    private static void updateOrganization(Context context, Organization org){
-//
-//        SigningOrganizationModel oldOrg = new SigningOrganizationDataSource(context).getModelForUniqueSlug(org.slug);
-//
-//        if(oldOrg == null){
-//            SigningOrganizationModel signingOrg = new SigningOrganizationModel(org);
-//            new SigningOrganizationDataSource(context).createOrUpdateDatabaseModel(signingOrg);
-//        }
-//    }
 }
