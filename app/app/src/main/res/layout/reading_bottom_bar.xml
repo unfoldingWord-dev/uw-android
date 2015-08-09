@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_alignParentBottom="true"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/light_brown">
+
+    <LinearLayout
+        android:id="@+id/bottom_bar_left_button"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:clickable="true"
+        android:background="@drawable/language_button_click"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp">
+
+        <TextView
+            android:id="@+id/bottom_bar_left_button_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Language"
+            android:textSize="@dimen/actionbar_version_font_size"
+            android:clickable="false"
+            android:textStyle="normal"
+            android:textAllCaps="false"
+            android:layout_gravity="center_vertical"
+            android:textColor="#fff"/>
+
+        <ImageView
+            android:id="@+id/bottom_bar_left_button_image_indicator"
+            android:layout_width="17dp"
+            android:layout_height="13dp"
+            android:src="@drawable/quickaction_arrow_down"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <ImageButton
+            android:background="@drawable/basic_button_selector"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/bottom_bar_level_button"
+            android:paddingRight="@dimen/bottom_bar_icon_padding"
+            android:paddingLeft="@dimen/bottom_bar_icon_padding"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/level_three" />
+
+        <ImageButton
+            android:background="@drawable/basic_button_selector"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/bottom_bar_share_button"
+            android:paddingRight="@dimen/bottom_bar_icon_padding"
+            android:paddingLeft="@dimen/bottom_bar_icon_padding"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/download_icon"
+            />
+
+    </LinearLayout>
+</RelativeLayout>

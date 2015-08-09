@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import org.unfoldingword.mobile.R;
 
@@ -24,13 +25,14 @@ import model.daoModels.Book;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.UWPreferenceManager;
+import view.ReadingBottomBarViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link StoryReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoryReadingFragment extends Fragment {
+public class StoryReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener{
 
     private static final String CHAPTER_PARAM = "CHAPTER_PARAM";
 
@@ -39,6 +41,7 @@ public class StoryReadingFragment extends Fragment {
 
     private ReadingFragmentListener listener;
     private StoryPagerAdapter adapter;
+    private ReadingBottomBarViewGroup bottomBar;
 
     public static StoryReadingFragment newInstance(StoriesChapter chapter) {
         StoryReadingFragment fragment = new StoryReadingFragment();
@@ -69,18 +72,25 @@ public class StoryReadingFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_story_reading, container, false);
         setupViews(view);
+        updateVersionInfo();
 
         return view;
     }
 
     public void update(StoriesChapter chapter){
         this.currentChapter = chapter;
+        updateVersionInfo();
         adapter.update(chapter);
         readingViewPager.setCurrentItem(0);
     }
 
     private void setupViews(View view){
+        bottomBar = new ReadingBottomBarViewGroup((RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentChapter.getBook().getVersion(), this);
         setupPager(view);
+    }
+
+    private void updateVersionInfo(){
+        this.bottomBar.updateWithVersion(currentChapter.getBook().getVersion());
     }
 
     private void setupPager(View view){
@@ -101,18 +111,18 @@ public class StoryReadingFragment extends Fragment {
                 public void onPageSelected(int position) {
 
                     List<StoryPage> pages = adapter.getCurrentChapter().getStoryPages();
-                if (position < pages.size()) {
-                    StoryPage model = pages.get(position);
-                    UWPreferenceManager.setSelectedStoryPage(getActivity().getApplicationContext(), model.getId());
-                    getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+                    if (position < pages.size()) {
+                        StoryPage model = pages.get(position);
+                        UWPreferenceManager.setSelectedStoryPage(getActivity().getApplicationContext(), model.getId());
+                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+                    }
                 }
-            }
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
+                @Override
+                public void onPageScrollStateChanged(int state) {
 
-            }
-        });
+                }
+            });
     }
 
     private View.OnTouchListener getDoubleTapTouchListener(){
@@ -168,6 +178,7 @@ public class StoryReadingFragment extends Fragment {
                         if(numberOfTaps == 2){
                             if(listener != null) {
                                 listener.toggleNavBar();
+                                bottomBar.toggleHidden();
                                 return true;
                             }
                         }
@@ -179,5 +190,19 @@ public class StoryReadingFragment extends Fragment {
         };
     }
 
+    @Override
+    public void checkingLevelPressed() {
+        listener.showCheckingLevel(currentChapter.getBook().getVersion());
+    }
+
+    @Override
+    public void shareButtonClicked() {
+
+    }
+
+    @Override
+    public void versionButtonClicked() {
+        listener.chooseVersion(false);
+    }
 
 }

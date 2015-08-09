@@ -7,27 +7,25 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
 import fragments.LoadingFragment;
-import view.UWToolbar;
+import view.UWToolbarViewGroup;
 
 /**
  * A login screen that offers login via email/password.
  */
-abstract public class UWBaseActivity extends ActionBarActivity implements UWToolbar.UWToolbarListener{
+abstract public class UWBaseActivity extends ActionBarActivity implements UWToolbarViewGroup.UWToolbarListener{
 
-    private UWToolbar toolbar = null;
+    private UWToolbarViewGroup toolbar = null;
 
-    public UWToolbar getToolbar(){
+    public UWToolbarViewGroup getToolbar(){
         return toolbar;
     }
     private LoadingFragment loadingFragment;
@@ -83,7 +81,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
 
     public void setupToolbar(boolean hasLogo){
 
-        toolbar = new UWToolbar((Toolbar) findViewById(R.id.toolbar), this, hasLogo, getBackResource(), this);
+        toolbar = new UWToolbarViewGroup((Toolbar) findViewById(R.id.toolbar), this, hasLogo, getBackResource(), this);
         setToolbarColor(getResources().getColor(R.color.primary_dark));
     }
 
@@ -158,6 +156,21 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
             handleBack();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        handleBack();
+    }
+
+    // Before 2.0
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            handleBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     protected void handleBack(){

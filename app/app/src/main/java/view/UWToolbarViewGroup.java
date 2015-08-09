@@ -14,7 +14,7 @@ import org.unfoldingword.mobile.R;
 /**
  * Created by Fechner on 7/1/15.
  */
-public class UWToolbar {
+public class UWToolbarViewGroup {
 
     private Activity activity;
 
@@ -33,7 +33,7 @@ public class UWToolbar {
 
     private boolean hidden = false;
 
-    public UWToolbar(Toolbar toolbar, Activity activity, boolean hasLogo, int backResource,  UWToolbarListener listener) {
+    public UWToolbarViewGroup(Toolbar toolbar, Activity activity, boolean hasLogo, int backResource, UWToolbarListener listener) {
 
         this.listener = listener;
         this.toolbar = toolbar;

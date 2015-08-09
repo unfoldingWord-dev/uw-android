@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
@@ -24,6 +25,7 @@ import adapters.ReadingScrollNotifications;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceManager;
+import view.ReadingBottomBarViewGroup;
 import view.ViewHelper;
 
 /**
@@ -31,7 +33,7 @@ import view.ViewHelper;
  * Use the {@link BibleReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BibleReadingFragment extends Fragment {
+public class BibleReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener{
 
     private static final String BOOK_PARAM = "BOOK_PARAM";
 
@@ -41,8 +43,7 @@ public class BibleReadingFragment extends Fragment {
     private ReadingFragmentListener listener;
     private ReadingPagerAdapter adapter;
 
-    private ImageButton checkingLevelButton;
-    private TextView versionTextView;
+    private ReadingBottomBarViewGroup bottomBar;
 
     public static BibleReadingFragment newInstance(Book book) {
         BibleReadingFragment fragment = new BibleReadingFragment();
@@ -86,39 +87,12 @@ public class BibleReadingFragment extends Fragment {
     }
 
     private void setupViews(View view){
-        this.checkingLevelButton = (ImageButton) view.findViewById(R.id.bottom_bar_level_button);
-        this.versionTextView = (TextView) view.findViewById(R.id.bottom_bar_left_button_text_view);
-
-        checkingLevelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkingLevelPressed();
-            }
-        });
-
-        view.findViewById(R.id.bottom_bar_left_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                versionButtonClicked();
-            }
-        });
-
-        view.findViewById(R.id.bottom_bar_share_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareButtonClicked();
-            }
-        });
-
-
+        bottomBar = new ReadingBottomBarViewGroup((RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentBook.getVersion(), this);
         setupPager(view);
     }
 
     private void updateVersionInfo(){
-
-        this.versionTextView.setText(currentBook.getVersion().getName());
-        this.checkingLevelButton.setImageResource(ViewHelper.getCheckingLevelImage(
-                Integer.parseInt(currentBook.getVersion().getStatusCheckingLevel())));
+        this.bottomBar.updateWithVersion(currentBook.getVersion());
     }
 
     private void setupPager(View view){
@@ -140,7 +114,7 @@ public class BibleReadingFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
 
-                if(position < adapter.getChapters().size()) {
+                if (position < adapter.getChapters().size()) {
                     BibleChapter model = adapter.getChapters().get(position);
                     UWPreferenceManager.setSelectedBibleChapter(getActivity().getApplicationContext(), model.getId());
                     getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
@@ -218,6 +192,7 @@ public class BibleReadingFragment extends Fragment {
                         if(numberOfTaps == 2){
                             if(listener != null) {
                                 listener.toggleNavBar();
+                                bottomBar.toggleHidden();
                                 return true;
                             }
                         }
@@ -229,15 +204,17 @@ public class BibleReadingFragment extends Fragment {
         };
     }
 
-
+    @Override
     public void checkingLevelPressed() {
         listener.showCheckingLevel(currentBook.getVersion());
     }
 
+    @Override
     public void shareButtonClicked() {
 
     }
 
+    @Override
     public void versionButtonClicked() {
         listener.chooseVersion(false);
     }

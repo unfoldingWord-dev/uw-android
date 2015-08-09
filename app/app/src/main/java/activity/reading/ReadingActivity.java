@@ -20,7 +20,6 @@ public class ReadingActivity extends BaseReadingActivity {
     static private final String TAG = "ReadingActivity";
 
     private BibleChapter currentChapter;
-
     private BibleReadingFragment readingFragment;
 
     @Override
