@@ -85,6 +85,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         super.onStart();
 
         setupToolbar(false);
+        getToolbar().setRightImageResource(R.drawable.diglot_icon);
         setupViews();
 
         if (loadData()) {
@@ -122,6 +123,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         super.onResume();
         setupToolbar(false);
         updateViews();
+        getToolbar().setRightImageResource(R.drawable.diglot_icon);
     }
 
     @Override
@@ -143,16 +145,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     protected void updateToolbar() {
 
-        int checkingLevelImage = getCheckingLevelImage();
-        getToolbar().setCheckingLevelImage((checkingLevelImage > -1) ? checkingLevelImage : -1);
-
         updateToolbarTitle();
     }
 
     protected void updateToolbarTitle(){
         String title = getChapterLabelText();
         getToolbar().setTitle(title, true);
-        getToolbar().setRightButtonText(getVersionText(), true);
     }
 
     private void setNoVersionSelectedVisibility(boolean visible){
@@ -209,7 +207,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public void rightButtonClicked() {
-        goToVersionSelection();
+
     }
 
     @Override
@@ -218,8 +216,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void checkingLevelButtonClicked() {
-        goToCheckingLevelView();
+    public void chooseVersion(boolean isSecondReadingView) {
+        goToVersionSelection();
+    }
+
+    @Override
+    public void showCheckingLevel(Version version) {
+        goToCheckingLevelView(version);
     }
 
     @Override
@@ -247,8 +250,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         ft.commit();
     }
 
-    private void goToCheckingLevelView(){
-        CheckingLevelFragment fragment = CheckingLevelFragment.createFragment(getVersion());
+    private void goToCheckingLevelView(Version version){
+        CheckingLevelFragment fragment = CheckingLevelFragment.createFragment(version);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);

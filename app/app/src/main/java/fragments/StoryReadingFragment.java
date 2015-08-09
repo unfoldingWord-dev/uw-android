@@ -76,6 +76,7 @@ public class StoryReadingFragment extends Fragment {
     public void update(StoriesChapter chapter){
         this.currentChapter = chapter;
         adapter.update(chapter);
+        readingViewPager.setCurrentItem(0);
     }
 
     private void setupViews(View view){

@@ -56,7 +56,7 @@
 
                     <Button
                         android:gravity="center"
-                        android:id="@+id/status"
+                        android:id="@+id/verification_status"
                         android:text="@string/unknown_button_char"
                         android:textStyle="bold"
                         android:textColor="#FFFFFF"

@@ -69,11 +69,10 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         return isActive;
     }
 
-    public void setupToolbar(boolean hasLogo, String titleText, boolean titleClickable,
-                             String rightButtonText, boolean rightButtonClickable){
+    public void setupToolbar(boolean hasLogo, String titleText, boolean titleClickable, boolean rightButtonClickable){
 
         setupToolbar(hasLogo, titleText, titleClickable);
-        toolbar.setRightButtonText(rightButtonText, rightButtonClickable);
+        toolbar.setRightImageVisible(rightButtonClickable);
     }
 
     public void setupToolbar(boolean hasLogo, String titleText, boolean titleClickable){
@@ -100,10 +99,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     public void leftButtonClicked() {
         handleBack();
     }
-    @Override
-    public void checkingLevelButtonClicked() {
 
-    }
     @Override
     public void rightButtonClicked() {
 

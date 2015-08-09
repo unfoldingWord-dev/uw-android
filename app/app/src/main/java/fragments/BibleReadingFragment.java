@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
@@ -21,6 +24,7 @@ import adapters.ReadingScrollNotifications;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceManager;
+import view.ViewHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +40,9 @@ public class BibleReadingFragment extends Fragment {
 
     private ReadingFragmentListener listener;
     private ReadingPagerAdapter adapter;
+
+    private ImageButton checkingLevelButton;
+    private TextView versionTextView;
 
     public static BibleReadingFragment newInstance(Book book) {
         BibleReadingFragment fragment = new BibleReadingFragment();
@@ -66,18 +73,52 @@ public class BibleReadingFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_bible_reading, container, false);
         setupViews(view);
+        updateVersionInfo();
 
         return view;
     }
 
     public void update(BibleChapter chapter){
         this.currentBook = chapter.getBook();
+        updateVersionInfo();
         adapter.update(chapter.getBook().getBibleChapters(true));
         scrollToCurrentPage();
     }
 
     private void setupViews(View view){
+        this.checkingLevelButton = (ImageButton) view.findViewById(R.id.bottom_bar_level_button);
+        this.versionTextView = (TextView) view.findViewById(R.id.bottom_bar_left_button_text_view);
+
+        checkingLevelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkingLevelPressed();
+            }
+        });
+
+        view.findViewById(R.id.bottom_bar_left_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                versionButtonClicked();
+            }
+        });
+
+        view.findViewById(R.id.bottom_bar_share_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareButtonClicked();
+            }
+        });
+
+
         setupPager(view);
+    }
+
+    private void updateVersionInfo(){
+
+        this.versionTextView.setText(currentBook.getVersion().getName());
+        this.checkingLevelButton.setImageResource(ViewHelper.getCheckingLevelImage(
+                Integer.parseInt(currentBook.getVersion().getStatusCheckingLevel())));
     }
 
     private void setupPager(View view){
@@ -189,4 +230,15 @@ public class BibleReadingFragment extends Fragment {
     }
 
 
+    public void checkingLevelPressed() {
+        listener.showCheckingLevel(currentBook.getVersion());
+    }
+
+    public void shareButtonClicked() {
+
+    }
+
+    public void versionButtonClicked() {
+        listener.chooseVersion(false);
+    }
 }

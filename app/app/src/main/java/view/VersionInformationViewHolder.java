@@ -38,7 +38,7 @@ public class VersionInformationViewHolder {
     private void setupViews(View parent){
 
         this.titleView = (TextView) parent.findViewById(R.id.version_information_title_view);
-        this.statusImageButton = (Button) parent.findViewById(R.id.status);
+        this.statusImageButton = (Button) parent.findViewById(R.id.verification_status);
         this.verificationTextView = (TextView) parent.findViewById(R.id.verification_text_view);
         this.checkingEntityTextView = (TextView) parent.findViewById(R.id.checking_entity_text_view);
         this.checkingLevelTitle = (TextView) parent.findViewById(R.id.version_verification_title);
