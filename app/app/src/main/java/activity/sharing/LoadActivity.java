@@ -1,14 +1,19 @@
 package activity.sharing;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ListView;
 
 
 import org.unfoldingword.mobile.R;
 
+import java.io.File;
+import java.util.Arrays;
+
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import sideloading.SideLoader;
+import utils.FileLoader;
 
 public class LoadActivity extends UWBaseActivity {
 
@@ -27,8 +32,11 @@ public class LoadActivity extends UWBaseActivity {
         setupToolbar(false, getString(R.string.app_name), false);
         loader.startLoading();
 
-//        File keyboardFile = new File(uri.getPath());
-//        loader.textWasFound(loader.unzipText(FileLoader.getStringFromFile(keyboardFile)));
+        Uri uri = getIntent().getData();
+        if(uri != null) {
+            File keyboardFile = new File(uri.getPath());
+            loader.textWasFound(loader.unzipText(FileLoader.getbytesFromFile(keyboardFile)));
+        }
     }
 
     @Override

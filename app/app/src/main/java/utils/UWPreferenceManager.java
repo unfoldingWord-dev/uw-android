@@ -97,6 +97,23 @@ public class UWPreferenceManager {
         }
     }
 
+    private static final String BIBLE_CHAPTER_ID_SECONDARY = "selected_bible_chapter_id_secondary";
+    public static long getSelectedBibleChapterSecondary(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_CHAPTER_ID_SECONDARY, -1);
+    }
+    public static void setSelectedBibleChapterSecondary(Context context, long newValue){
+
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(BIBLE_CHAPTER_ID_SECONDARY, newValue).commit();
+    }
+
+    private static final String STORY_PAGE_SECONDARY = "selected_story_page_id";
+    public static long getSelectedStoryPageSecondary(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_PAGE_SECONDARY, -1);
+    }
+    public static void setSelectedStoryPageSecondary(Context context, long newValue){
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_PAGE_SECONDARY, newValue).commit();
+    }
+
     private static final String BIBLE_CHAPTER_ID = "selected_bible_chapter_id";
     public static long getSelectedBibleChapter(Context context){
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_CHAPTER_ID, -1);

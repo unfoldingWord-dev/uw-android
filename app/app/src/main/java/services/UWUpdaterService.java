@@ -33,6 +33,7 @@ public class UWUpdaterService extends Service {
 
     private Handler mServiceHandler;
 
+
     private UpdaterThread[] threads;
 
     int numberRunning = 0;

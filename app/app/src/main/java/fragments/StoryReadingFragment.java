@@ -24,6 +24,9 @@ import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
+import model.daoModels.Version;
+import sideloading.SideLoadType;
+import sideloading.SideSharer;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
 
@@ -198,6 +201,21 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
     @Override
     public void shareButtonClicked() {
 
+        SideSharer sharer = new SideSharer(getActivity(), new SideSharer.SideLoaderListener() {
+            @Override
+            public void sideLoadingSucceeded(String response) {
+            }
+            @Override
+            public void sideLoadingFailed(String errorMessage) {
+            }
+            @Override
+            public boolean confirmSideLoadingType(SideLoadType type) {
+                return true;
+            }
+        });
+        Version currentVersion = currentChapter.getBook().getVersion();
+        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
+                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
     }
 
     @Override

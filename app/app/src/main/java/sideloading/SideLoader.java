@@ -159,12 +159,7 @@ public class SideLoader {
 
         byte[] fileText = FileLoader.getbytesFromFile(file);
         fileText = unzipText(fileText);
-        try {
-            textWasFound(fileText, getNamesOfVersions(new String(fileText, "UTF-8")));
-        }
-        catch (UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
+        textWasFound(fileText);
     }
 
     private void showSuccessAlert(boolean success){
@@ -184,6 +179,15 @@ public class SideLoader {
 
     public byte[] unzipText(byte[] text){
         return Zipper.getDecompressedBytes(text);
+    }
+
+    public void textWasFound(final byte[] json) {
+        try{
+            textWasFound(json, getNamesOfVersions(new String(json, "UTF-8")));
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
     }
 
     public void textWasFound(final byte[] json, List<String> names){

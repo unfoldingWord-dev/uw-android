@@ -109,7 +109,7 @@ public class UWSigning {
         return entity;
     }
 
-    private static void updateOrganization(Context context, Organization org){
+    synchronized private static void updateOrganization(Context context, Organization org){
 
         SigningOrganization oldOrg = SigningOrganization.getModelForUniqueSlug(org.slug, DaoDBHelper.getDaoSession(context));
 

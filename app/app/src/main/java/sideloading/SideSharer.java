@@ -27,7 +27,6 @@ import wifiDirect.WiFiDirectActivity;
 public class SideSharer {
 
     private static final String TAG = "SideLoader";
-
     public static final String SHARE_TEXT_PARAM = "SHARE_TEXT_PARAM";
 
     private String fileName;
@@ -64,7 +63,7 @@ public class SideSharer {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                startSideLoading(SideLoaderTypeHandler.getTypeForIndex(activity, which, false));
+                                startSideSharing(SideLoaderTypeHandler.getTypeForIndex(activity, which, false));
                             }
                         })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -76,7 +75,7 @@ public class SideSharer {
         dialogue.show();
     }
 
-    private void startSideLoading(SideLoadType type){
+    private void startSideSharing(SideLoadType type){
 
         if(listener.confirmSideLoadingType(type)) {
 

@@ -21,6 +21,7 @@ public class ReadingActivity extends BaseReadingActivity {
 
     private BibleChapter currentChapter;
     private BibleReadingFragment readingFragment;
+    private BibleReadingFragment secondaryReadingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

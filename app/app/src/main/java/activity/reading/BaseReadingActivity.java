@@ -47,6 +47,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected static final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
 
     protected FrameLayout readingLayout;
+    protected FrameLayout secondaryReadingLayout;
     protected TextView errorTextView;
 
     abstract protected boolean loadData();

@@ -12,13 +12,13 @@ import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
-import adapters.VersionAdapter;
+import adapters.VersionShareAdapter;
 import model.DaoDBHelper;
 import model.daoModels.Version;
 import sideloading.SideLoadType;
 import sideloading.SideSharer;
 
-public class ShareActivity extends UWBaseActivity implements VersionAdapter.VersionAdapterListener {
+public class ShareActivity extends UWBaseActivity implements VersionShareAdapter.VersionAdapterListener {
 
     private static final String TAG = "ShareActivity";
     private ShareSelectionFragment selectionFragment;
@@ -59,16 +59,14 @@ public class ShareActivity extends UWBaseActivity implements VersionAdapter.Vers
             public void sideLoadingSucceeded(String response) {
 
             }
-
             @Override
             public void sideLoadingFailed(String errorMessage) {
 
             }
-
             @Override
             public boolean confirmSideLoadingType(SideLoadType type) {
 
-//                if(type == SideLoadType.SIDE_LOAD_TYPE_QR_CODE && selectionFragment.getSelectedVersions().size() > 1){
+//                if(type == SideLoadType.SIDE_LOAD_TYPE_QR_CODE && selectionFragment.getSelectedVersion().size() > 1){
 //                    showAmountAlert();
 //                    return false;
 //                }
@@ -77,16 +75,14 @@ public class ShareActivity extends UWBaseActivity implements VersionAdapter.Vers
 //                }
             }
         });
-
-        if(selectionFragment.getSelectedVersions() != null && selectionFragment.getSelectedVersions().size() > 0) {
-            sharer.startSharing(getData(), getFileName());
+        Version version = selectionFragment.getSelectedVersion();
+        if(version != null) {
+            sharer.startSharing(getData(version), getFileName(version));
         }
 
     }
 
-    private String getData() {
-
-        Version version = selectionFragment.getSelectedVersions().get(0);
+    private String getData(Version version) {
 
         JSONObject requestedKeyboardData = version.getAsPreloadJson(getApplicationContext());
 
@@ -100,9 +96,9 @@ public class ShareActivity extends UWBaseActivity implements VersionAdapter.Vers
         }
     }
 
-    private String getFileName(){
+    private String getFileName(Version version){
 
-        return selectionFragment.getSelectedVersions().get(0).getName() + ".ufw";
+        return version.getName() + getString(R.string.save_file_extension);
     }
 
 //    private void showAmountAlert(){
@@ -129,6 +125,6 @@ public class ShareActivity extends UWBaseActivity implements VersionAdapter.Vers
 
     @Override
     public void rowSelectedOrDeselected() {
-//        int numOfKeyboards = selectionFragment.getSelectedVersions().size();
+//        int numOfKeyboards = selectionFragment.getSelectedVersion().size();
     }
 }

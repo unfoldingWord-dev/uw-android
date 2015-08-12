@@ -16,7 +16,9 @@ import utils.UWPreferenceManager;
 public class StoryReadingActivity extends BaseReadingActivity {
 
     private StoryReadingFragment readingFragment;
+    private StoryReadingFragment secondaryReadingFragment;
     private StoriesChapter currentChapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

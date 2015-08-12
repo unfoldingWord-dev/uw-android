@@ -18,7 +18,7 @@ import model.daoModels.Version;
 /**
  * Created by Fechner on 2/27/15.
  */
-public class VersionAdapter extends ArrayAdapter<Version> {
+public class VersionShareAdapter extends ArrayAdapter<Version> {
 
     private VersionAdapterListener listener;
 
@@ -29,22 +29,18 @@ public class VersionAdapter extends ArrayAdapter<Version> {
     protected List<Version> models;
     protected Context context;
 
-    private Boolean[] selections;
+    private int chosenIndex = -1;
 
-    public VersionAdapter(Context context, List<Version> models, VersionAdapterListener listener) {
+    public VersionShareAdapter(Context context, List<Version> models, VersionAdapterListener listener) {
         super(context, R.layout.row_version_selection, models);
         this.context = context;
         this.models = models;
-        seedSelections();
         this.listener = listener;
     }
 
-    private void seedSelections(){
+    private void resetSelection(){
 
-        selections = new Boolean[models.size()];
-        for(int i = 0; i < models.size(); i++){
-            selections[i] = false;
-        }
+        chosenIndex = -1;
     }
 
     @Override
@@ -70,21 +66,19 @@ public class VersionAdapter extends ArrayAdapter<Version> {
         holder.position = pos;
 
         view.setOnClickListener(new KeyboardsAdapterRowClickListener(pos, holder));
+        holder.completedImageView.setImageResource((pos == chosenIndex) ? R.drawable.checkbox_selected : R.drawable.checkbox);
 
         return view;
     }
 
-    public List<Version> getSelectedVersions(){
+    public Version getSelectedVersion(){
 
-        List<Version> selectedVersions = new ArrayList<Version>();
-
-        for(int i = 0; i < selections.length; i++){
-            if(selections[i]){
-                selectedVersions.add(models.get(i));
-            }
+        if(chosenIndex > -1 && models.size() > chosenIndex) {
+            return models.get(chosenIndex);
         }
-
-        return selectedVersions;
+        else{
+            return null;
+        }
     }
 
 
@@ -101,9 +95,15 @@ public class VersionAdapter extends ArrayAdapter<Version> {
 
         @Override
         public void onClick(View v) {
-            selections[pos] = ! selections[pos];
-            viewGroup.completedImageView.setImageResource((selections[pos])? R.drawable.checkbox_selected : R.drawable.checkbox);
+            if(chosenIndex == pos){
+                resetSelection();
+            }
+            else{
+                chosenIndex = pos;
+            }
+            viewGroup.completedImageView.setImageResource((pos == chosenIndex)? R.drawable.checkbox_selected : R.drawable.checkbox);
             listener.rowSelectedOrDeselected();
+            notifyDataSetChanged();
         }
     }
 

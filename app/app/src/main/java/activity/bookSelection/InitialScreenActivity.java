@@ -116,7 +116,6 @@ public class InitialScreenActivity extends UWBaseActivity{
         getToolbar().setRightImageVisible(true);
         setupListView();
         addSettingsFooter();
-        setupRefreshButton();
     }
 
     private void reload(){
@@ -142,6 +141,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                     moveToNextActivity(mProjects.get(position - 1));
                 }
             });
+            setupRefreshButton();
         }
 
         if(adapter == null){

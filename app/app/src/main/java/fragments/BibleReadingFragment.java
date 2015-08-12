@@ -24,6 +24,9 @@ import adapters.ReadingPagerAdapter;
 import adapters.ReadingScrollNotifications;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import model.daoModels.Version;
+import sideloading.SideLoadType;
+import sideloading.SideSharer;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
 import view.ViewHelper;
@@ -157,14 +160,15 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
             public boolean onTouch(View v, MotionEvent event) {
 
                 switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_DOWN: {
                         touchDownMs = System.currentTimeMillis();
                         if ((numberOfTaps > 0)
                                 && (System.currentTimeMillis() - lastTapTimeMs) < doubleTapTimeout) {
                             return true;
                         }
                         break;
-                    case MotionEvent.ACTION_UP:
+                    }
+                    case MotionEvent.ACTION_UP: {
                         handler.removeCallbacksAndMessages(null);
 
                         if ((System.currentTimeMillis() - touchDownMs) > tapTimeout) {
@@ -189,14 +193,14 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 //                            return false;
 //                        }
 
-                        if(numberOfTaps == 2){
-                            if(listener != null) {
+                        if (numberOfTaps == 2) {
+                            if (listener != null) {
                                 listener.toggleNavBar();
                                 bottomBar.toggleHidden();
                                 return true;
                             }
                         }
-
+                    }
                 }
 
                 return false;
@@ -211,7 +215,21 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     @Override
     public void shareButtonClicked() {
-
+        SideSharer sharer = new SideSharer(getActivity(), new SideSharer.SideLoaderListener() {
+            @Override
+            public void sideLoadingSucceeded(String response) {
+            }
+            @Override
+            public void sideLoadingFailed(String errorMessage) {
+            }
+            @Override
+            public boolean confirmSideLoadingType(SideLoadType type) {
+                return true;
+            }
+        });
+        Version currentVersion = currentBook.getVersion();
+        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
+                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
     }
 
     @Override

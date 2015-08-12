@@ -7,7 +7,7 @@ import android.support.v4.app.ListFragment;
 import java.util.Arrays;
 import java.util.List;
 
-import adapters.VersionAdapter;
+import adapters.VersionShareAdapter;
 import model.daoModels.Version;
 
 /**
@@ -49,8 +49,8 @@ public class ShareSelectionFragment extends ListFragment {
             versions = (Version[]) getArguments().getSerializable(VERSIONS_PARAM);
         }
 
-        setListAdapter(new VersionAdapter(getActivity().getApplicationContext(), Arrays.asList(versions),
-                (VersionAdapter.VersionAdapterListener) getActivity()));
+        setListAdapter(new VersionShareAdapter(getActivity().getApplicationContext(), Arrays.asList(versions),
+                (VersionShareAdapter.VersionAdapterListener) getActivity()));
     }
 
 
@@ -59,9 +59,9 @@ public class ShareSelectionFragment extends ListFragment {
         super.onAttach(activity);
     }
 
-    public List<Version> getSelectedVersions(){
+    public Version getSelectedVersion(){
 
-        return ((VersionAdapter) getListAdapter()).getSelectedVersions();
+        return ((VersionShareAdapter) getListAdapter()).getSelectedVersion();
     }
 
     @Override

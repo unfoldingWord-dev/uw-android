@@ -130,6 +130,11 @@
             android:theme="@style/MainTheme" />
 
         <activity
+            android:name="wifiDirect.WiFiDirectActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:theme="@style/MainTheme" />
+
+        <activity
             android:name="activity.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>

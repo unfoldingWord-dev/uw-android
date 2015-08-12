@@ -12,13 +12,32 @@
 
     </FrameLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:id="@+id/reading_fragment_frame"
-        android:background="#fff">
-    </FrameLayout>
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/reading_fragment_frame"
+            android:background="#fff"
+            android:layout_marginRight="1dp">
+        </FrameLayout>
+
+
+
+        <FrameLayout
+            android:layout_marginLeft="1dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/secondary_reading_fragment_frame"
+            android:background="#000"
+            android:layout_weight="0">
+        </FrameLayout>
+    </LinearLayout>
+
 
     <TextView
         android:layout_below="@+id/toolbar"

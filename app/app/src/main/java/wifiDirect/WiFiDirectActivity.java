@@ -103,7 +103,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
                 .findFragmentById(R.id.frag_detail);
 
         if(selectedUri == null){
-            findViewById(R.id.device_detail_fragment_base_view).setVisibility(View.GONE);
+            View view = findViewById(R.id.device_detail_fragment_base_view);
+            if(view != null) {
+                view.setVisibility(View.GONE);
+            }
         }
     }
 
