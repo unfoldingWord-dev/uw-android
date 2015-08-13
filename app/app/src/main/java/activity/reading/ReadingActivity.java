@@ -3,12 +3,14 @@ package activity.reading;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.widget.FrameLayout;
 
 import java.util.List;
 
 import fragments.BibleReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -51,10 +53,21 @@ public class ReadingActivity extends BaseReadingActivity {
     @Override
     protected void scrolled() {
 
+        updateChapters();
+    }
+
+    private void updateChapters(){
+
         long id = UWPreferenceManager.getSelectedBibleChapter(getApplicationContext());
         if (id != currentChapter.getId()) {
             currentChapter = BibleChapter.getModelForId(id, DaoDBHelper.getDaoSession(getApplicationContext()));
             updateToolbarTitle();
+        }
+        if(readingFragment != null) {
+            readingFragment.scrollToCurrentPage();
+        }
+        if(secondaryReadingFragment != null) {
+            secondaryReadingFragment.scrollToCurrentPage();
         }
     }
 
@@ -88,22 +101,35 @@ public class ReadingActivity extends BaseReadingActivity {
     @Override
     protected void updateReadingView() {
 
+        updateChapters();
         if(currentChapter != null) {
             if (this.readingFragment == null) {
-
-                Fragment cachedFragment = getSupportFragmentManager().findFragmentByTag("BibleReadingFragment");
-                if(cachedFragment != null){
-                    this.readingFragment = (BibleReadingFragment) cachedFragment;
-                    readingFragment.update(currentChapter);
-                }
-                else {
-                    this.readingFragment = BibleReadingFragment.newInstance(currentChapter.getBook());
-                    getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "BibleReadingFragment").commit();
-                }
+                this.readingFragment = createReadingFragment(readingLayout, false);
             }
             else {
-                readingFragment.update(currentChapter);
+                readingFragment.update();
             }
+            if(this.secondaryReadingFragment == null){
+                this.secondaryReadingFragment = createReadingFragment(secondaryReadingLayout, true);
+            }
+            else{
+                secondaryReadingFragment.update();
+            }
+        }
+    }
+
+    private BibleReadingFragment createReadingFragment(FrameLayout layout, boolean secondLayout){
+
+        Fragment cachedFragment = getSupportFragmentManager().findFragmentByTag("BibleReadingFragment" + layout.getId());
+        if(cachedFragment != null){
+            BibleReadingFragment fragment = (BibleReadingFragment) cachedFragment;
+            fragment.update();
+            return fragment;
+        }
+        else {
+            BibleReadingFragment fragment = BibleReadingFragment.newInstance(secondLayout);
+            getSupportFragmentManager().beginTransaction().add(layout.getId(), fragment, "BibleReadingFragment" + layout.getId()).commit();
+            return fragment;
         }
     }
 }

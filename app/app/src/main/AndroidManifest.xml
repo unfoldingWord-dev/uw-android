@@ -32,23 +32,23 @@
         </activity>
 
         <activity
-            android:name="activity.bookSelection.StoryChapterSelectionActivity"
+            android:name="activity.textSelection.StoryChapterSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
         <activity
-            android:name="activity.bookSelection.InitialScreenActivity"
+            android:name="activity.textSelection.InitialScreenActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
         <activity
-            android:name="activity.bookSelection.BookSelectionActivity"
+            android:name="activity.textSelection.BookSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
         <activity
-            android:name="activity.bookSelection.BibleChapterSelectionActivity"
+            android:name="activity.textSelection.BibleChapterSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
         <activity
-            android:name="activity.bookSelection.VersionSelectionActivity"
+            android:name="activity.textSelection.VersionSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
         <activity
@@ -66,7 +66,7 @@
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme">
 
-            <intent-filter android:label="unfoldingWord" >
+            <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -77,17 +77,17 @@
                     android:pathPattern=".*\\.ufw"
                     android:scheme="content" />
             </intent-filter>
-            <intent-filter android:label="unfoldingWord" >
-                <action android:name="android.intent.action.VIEW" />
+            <!--<intent-filter android:label="unfoldingWord" >-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\\.ufw"
-                    android:scheme="file" />
-            </intent-filter>
-            <intent-filter android:label="unfoldingWord" >
+                <!--<data-->
+                    <!--android:mimeType="*/*"-->
+                    <!--android:pathPattern=".*\\.ufw"-->
+                    <!--android:scheme="file" />-->
+            <!--</intent-filter>-->
+            <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -96,7 +96,7 @@
                 <data android:host="*" />
                 <data android:pathPattern=".*\\.ufw" />
             </intent-filter>
-            <intent-filter android:label="unfoldingWord" >
+            <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />

@@ -13,7 +13,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import activity.bookSelection.InitialScreenActivity;
+import activity.textSelection.InitialScreenActivity;
 import model.DaoDBHelper;
 import model.daoModels.Project;
 import services.UWPreLoaderService;

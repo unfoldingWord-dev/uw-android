@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import activity.bookSelection.StoryChapterSelectionActivity;
+import activity.textSelection.StoryChapterSelectionActivity;
 import model.daoModels.StoriesChapter;
 import utils.AsyncImageLoader;
 import utils.UWPreferenceManager;

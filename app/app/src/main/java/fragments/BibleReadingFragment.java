@@ -19,6 +19,7 @@ import java.util.List;
 
 import adapters.ReadingPagerAdapter;
 import adapters.ReadingScrollNotifications;
+import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;
@@ -34,8 +35,9 @@ import view.ReadingBottomBarViewGroup;
  */
 public class BibleReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener{
 
-    private static final String BOOK_PARAM = "BOOK_PARAM";
+    private static final String IS_SECONDARY_PARAM = "IS_SECONDARY_PARAM";
 
+    private boolean isSecondary;
     private ViewPager readingViewPager;
     private Book currentBook;
 
@@ -44,10 +46,10 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     private ReadingBottomBarViewGroup bottomBar;
 
-    public static BibleReadingFragment newInstance(Book book) {
+    public static BibleReadingFragment newInstance(boolean isSecondary) {
         BibleReadingFragment fragment = new BibleReadingFragment();
         Bundle args = new Bundle();
-        args.putSerializable(BOOK_PARAM, book);
+        args.putBoolean(IS_SECONDARY_PARAM, isSecondary);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,12 +61,18 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentBook = (Book) getArguments().getSerializable(BOOK_PARAM);
+            loadBook();
+            isSecondary = getArguments().getBoolean(IS_SECONDARY_PARAM);
         }
 
         if(getActivity() instanceof ReadingFragmentListener){
             this.listener = (ReadingFragmentListener) getActivity();
         }
+    }
+
+    private void loadBook(){
+        long currentItem = UWPreferenceManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        currentBook = BibleChapter.getModelForId(currentItem, DaoDBHelper.getDaoSession(getActivity().getApplicationContext())).getBook();
     }
 
     @Override
@@ -78,10 +86,10 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
         return view;
     }
 
-    public void update(BibleChapter chapter){
-        this.currentBook = chapter.getBook();
+    public void update(){
+        loadBook();
         updateVersionInfo();
-        adapter.update(chapter.getBook().getBibleChapters(true));
+        adapter.update(currentBook.getBibleChapters(true));
         scrollToCurrentPage();
     }
 
@@ -115,7 +123,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
                 if (position < adapter.getChapters().size()) {
                     BibleChapter model = adapter.getChapters().get(position);
-                    UWPreferenceManager.setSelectedBibleChapter(getActivity().getApplicationContext(), model.getId());
+                    UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
                     getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
                 }
             }
@@ -127,12 +135,13 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
         });
     }
 
-    private void scrollToCurrentPage(){
+    public void scrollToCurrentPage(){
 
-        long currentItem = UWPreferenceManager.getSelectedBibleChapter(getActivity().getApplicationContext());
+        long currentItem = UWPreferenceManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+
         for(int i = 0; i < currentBook.getBibleChapters().size(); i++){
             if(currentItem == currentBook.getBibleChapters().get(i).getId()){
-                readingViewPager.setCurrentItem(i);
+                readingViewPager.setCurrentItem(i, false);
                 return;
             }
         }
@@ -230,6 +239,6 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     @Override
     public void versionButtonClicked() {
-        listener.clickedChooseVersion(false);
+        listener.clickedChooseVersion(isSecondary);
     }
 }

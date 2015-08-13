@@ -8,6 +8,7 @@ import org.unfoldingword.mobile.R;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import model.daoModels.DaoSession;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
@@ -16,6 +17,40 @@ import model.daoModels.Version;
  * Created by Fechner on 3/25/15.
  */
 public class UWPreferenceManager {
+
+    public static long getCurrentBibleChapter(Context context, boolean isSecond){
+
+        return (isSecond)? getSelectedBibleChapterSecondary(context) : getSelectedBibleChapter(context);
+    }
+
+    public static void changedToBibleChapter(Context context, long chapterId, boolean isSecond){
+        if(isSecond){
+            setSelectedBibleChapterSecondary(context, chapterId);
+        }
+        else{
+            setSelectedBibleChapter(context, chapterId);
+        }
+
+        updateChapterSelection(context, chapterId, isSecond);
+    }
+
+    private static void updateChapterSelection(Context context, long activeChapterId, boolean isSecond){
+
+        DaoSession session = DaoDBHelper.getDaoSession(context);
+        long changingId = (isSecond)? getSelectedBibleChapter(context) : getSelectedBibleChapterSecondary(context);
+        BibleChapter activeChapter = BibleChapter.getModelForId(activeChapterId, session);
+        BibleChapter changingChapter = BibleChapter.getModelForId(changingId, session);
+
+        Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
+        BibleChapter newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber(), session);
+
+        if(isSecond){
+            setSelectedBibleChapter(context, newChapter.getId());
+        }
+        else{
+            setSelectedBibleChapterSecondary(context, newChapter.getId());
+        }
+    }
 
     public static void selectedVersion(Context context, Version version, boolean isSecond){
 
@@ -29,7 +64,7 @@ public class UWPreferenceManager {
 
     public static void setNewBibleVersion(Context context, Version version, boolean isSecond){
 
-        long currentId = getSelectedBibleChapter(context);
+        long currentId = getCurrentBibleChapter(context, isSecond);
         BibleChapter requestedChapter = null;
         if(currentId > -1){
             BibleChapter currentChapter = BibleChapter.getModelForId(currentId, DaoDBHelper.getDaoSession(context));
@@ -42,12 +77,14 @@ public class UWPreferenceManager {
             requestedChapter = version.getBooks().get(0).getBibleChapters(true).get(0);
         }
 
-        if(isSecond) {
-            setSelectedBibleChapterSecondary(context, requestedChapter.getId());
-        }
-        else{
-            setSelectedBibleChapter(context, requestedChapter.getId());
-        }
+        changedToBibleChapter(context, requestedChapter.getId(), isSecond);
+
+//        if(isSecond) {
+//            setSelectedBibleChapterSecondary(context, requestedChapter.getId());
+//        }
+//        else{
+//            setSelectedBibleChapter(context, requestedChapter.getId());
+//        }
     }
 
     public static void setNewStoriesVersion(Context context, Version version, boolean isSecond) {

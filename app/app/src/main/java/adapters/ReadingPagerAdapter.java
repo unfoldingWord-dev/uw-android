@@ -122,8 +122,8 @@ public class ReadingPagerAdapter extends PagerAdapter {
                 ".verse { font-size: 10pt}" +
                 ".q, .q1, .q2 { margin:0; display: block; padding:0;}\n" +
                 ".q, .q1 { margin-left: 1em; }\n" +
-                ".q2 { margin-left: 2em; }\n" +
-                "p { width:96%; font-size: 15pt; text-align: justify; line-height: 1.5; padding:10px; unicode-bidi:bidi-override; direction:" +
+                ".q2 { margin-left: 1em; }\n" +
+                "p { width:94%; font-size: 15pt; text-align: justify; line-height: 1.5; padding:10px; unicode-bidi:bidi-override; direction:" +
                 getTextDirection() + " ;}\n" +
                 "-->\n" +
                 ".footnote {font-size: 12pt;}" +

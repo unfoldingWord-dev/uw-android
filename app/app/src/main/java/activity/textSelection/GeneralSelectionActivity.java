@@ -1,17 +1,14 @@
-package activity.bookSelection;
+package activity.textSelection;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 

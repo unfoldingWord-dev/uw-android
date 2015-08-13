@@ -1,6 +1,7 @@
 package activity.reading;
 
 
+import android.animation.LayoutTransition;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,22 +12,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
-import activity.bookSelection.BookSelectionActivity;
-import activity.bookSelection.VersionSelectionActivity;
+import activity.textSelection.BookSelectionActivity;
+import activity.textSelection.VersionSelectionActivity;
 import adapters.ReadingScrollNotifications;
-import fragments.BooksFragment;
 import fragments.ChapterSelectionFragment;
-import fragments.ChaptersFragment;
 import fragments.CheckingLevelFragment;
 import fragments.ReadingFragmentListener;
 import fragments.VersionSelectionFragment;
-import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
@@ -70,6 +69,19 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
+    private void setAnimated(){
+        if(android.os.Build.VERSION.SDK_INT > 15) {
+            LayoutTransition transition = new LayoutTransition();
+            transition.enableTransitionType(LayoutTransition.CHANGING);
+            transition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+            transition.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+            transition.enableTransitionType(LayoutTransition.APPEARING);
+            transition.enableTransitionType(LayoutTransition.DISAPPEARING);
+            transition.setDuration(300);
+            ((LinearLayout) findViewById(R.id.reading_layout)).setLayoutTransition(transition);
+        }
+    }
+
     @Override
     public AnimationParadigm getAnimationParadigm() {
         return AnimationParadigm.ANIMATION_LEFT_RIGHT;
@@ -77,6 +89,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     protected void setupViews(){
         readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
+        secondaryReadingLayout = (FrameLayout) findViewById(R.id.secondary_reading_fragment_frame);
         errorTextView = (TextView) findViewById(R.id.reading_error_text_view);
     }
 
@@ -208,6 +221,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public void rightButtonClicked() {
+        toggleDiglot();
     }
 
     @Override
@@ -238,6 +252,19 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         updateViews();
     }
 
+    private void toggleDiglot(){
+
+        LinearLayout.LayoutParams mainReadingParams = (LinearLayout.LayoutParams) readingLayout.getLayoutParams();
+        LinearLayout.LayoutParams secondaryReadingParams = (LinearLayout.LayoutParams) secondaryReadingLayout.getLayoutParams();
+        boolean isDiglot = (secondaryReadingParams.weight > .1f);
+
+        mainReadingParams.weight = (isDiglot)? 1.0f : 0.4f;
+        secondaryReadingParams.weight = (isDiglot)? 0.0f : 0.4f;
+
+        readingLayout.setLayoutParams(mainReadingParams);
+        secondaryReadingLayout.setLayoutParams(secondaryReadingParams);
+        secondaryReadingLayout.setVisibility((isDiglot)? View.GONE : View.VISIBLE);
+    }
     private void removeFragment(String fragmentId){
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

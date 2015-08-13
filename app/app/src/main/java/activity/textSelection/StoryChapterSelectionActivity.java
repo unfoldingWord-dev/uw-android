@@ -1,4 +1,4 @@
-package activity.bookSelection;
+package activity.textSelection;
 
 import android.os.Bundle;
 import android.view.View;
