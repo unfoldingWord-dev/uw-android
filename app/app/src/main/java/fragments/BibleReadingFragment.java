@@ -11,10 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
@@ -29,7 +26,6 @@ import sideloading.SideLoadType;
 import sideloading.SideSharer;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
-import view.ViewHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -234,6 +230,6 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     @Override
     public void versionButtonClicked() {
-        listener.chooseVersion(false);
+        listener.clickedChooseVersion(false);
     }
 }

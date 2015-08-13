@@ -24,8 +24,10 @@ import utils.UWPreferenceManager;
 public class VersionSelectionActivity extends UWBaseActivity implements VersionSelectionFragment.VersionSelectionFragmentListener {
 
     public static final String PROJECT_PARAM = "PROJECT_PARAM";
-
+    public static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
     private Project chosenProject;
+
+    private boolean isSecondVersion = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +36,20 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
         setContentView(R.layout.selection_activity);
 
         Bundle extras = getIntent().getExtras();
-            if (extras != null) {
+        if (extras != null) {
 
-                chosenProject = (Project) extras.getSerializable(PROJECT_PARAM);
-                setupToolbar(false, chosenProject.getTitle(), false);
+            chosenProject = (Project) extras.getSerializable(PROJECT_PARAM);
+            setupToolbar(false, chosenProject.getTitle(), false);
 
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProject, false))
-                        .commit();
+            if(extras.containsKey(IS_SECOND_VERSION_PARAM)){
+                isSecondVersion = extras.getBoolean(IS_SECOND_VERSION_PARAM);
             }
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProject, false, isSecondVersion))
+                    .commit();
+
+        }
     }
 
 
@@ -52,8 +59,8 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
     }
 
     @Override
-    public void versionWasSelected(Version version) {
-        UWPreferenceManager.selectedVersion(getApplicationContext(), version);
+    public void versionWasSelected(Version version, boolean secondVersion) {
+        UWPreferenceManager.selectedVersion(getApplicationContext(), version, secondVersion);
         handleBack();
     }
 }

@@ -364,7 +364,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         };
     }
 
-
     private void refreshChapterSelection(Version version, boolean isStoryChapter){
 
         if(isStoryChapter){

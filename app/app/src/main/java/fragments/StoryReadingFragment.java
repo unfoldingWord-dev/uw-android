@@ -17,11 +17,8 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import adapters.ReadingPagerAdapter;
 import adapters.ReadingScrollNotifications;
 import adapters.StoryPagerAdapter;
-import model.daoModels.BibleChapter;
-import model.daoModels.Book;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
@@ -220,7 +217,7 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
 
     @Override
     public void versionButtonClicked() {
-        listener.chooseVersion(false);
+        listener.clickedChooseVersion(false);
     }
 
 }

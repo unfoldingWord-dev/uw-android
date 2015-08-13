@@ -17,17 +17,17 @@ import model.daoModels.Version;
  */
 public class UWPreferenceManager {
 
-    public static void selectedVersion(Context context, Version version){
+    public static void selectedVersion(Context context, Version version, boolean isSecond){
 
         if(version.getLanguage().getProject().isBibleStories()){
-            UWPreferenceManager.setNewStoriesVersion(context, version);
+            UWPreferenceManager.setNewStoriesVersion(context, version, isSecond);
         }
         else{
-            UWPreferenceManager.setNewBibleVersion(context, version);
+            UWPreferenceManager.setNewBibleVersion(context, version, isSecond);
         }
     }
 
-    public static void setNewBibleVersion(Context context, Version version){
+    public static void setNewBibleVersion(Context context, Version version, boolean isSecond){
 
         long currentId = getSelectedBibleChapter(context);
         BibleChapter requestedChapter = null;
@@ -42,29 +42,39 @@ public class UWPreferenceManager {
             requestedChapter = version.getBooks().get(0).getBibleChapters(true).get(0);
         }
 
-        setSelectedBibleChapter(context, requestedChapter.getId());
+        if(isSecond) {
+            setSelectedBibleChapterSecondary(context, requestedChapter.getId());
+        }
+        else{
+            setSelectedBibleChapter(context, requestedChapter.getId());
+        }
     }
 
-    public static void setNewStoriesVersion(Context context, Version version){
+    public static void setNewStoriesVersion(Context context, Version version, boolean isSecond) {
 
         long currentId = getSelectedStoryPage(context);
         StoryPage requestedPage = null;
-        if(currentId > -1){
+        if (currentId > -1) {
 
             StoryPage currentPage = DaoDBHelper.getDaoSession(context).getStoryPageDao().loadDeep(currentId);
             Book newBook = version.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), DaoDBHelper.getDaoSession(context));
-            if(newBook != null){
+            if (newBook != null) {
                 StoriesChapter requestedChapter = newBook.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber(), DaoDBHelper.getDaoSession(context));
-                if(requestedChapter != null){
+                if (requestedChapter != null) {
                     requestedPage = requestedChapter.getStoriesChapterForNumber(currentPage.getNumber(), DaoDBHelper.getDaoSession(context));
                 }
             }
         }
-        if(requestedPage == null){
+        if (requestedPage == null) {
             requestedPage = version.getBooks().get(0).getStoryChapters(true).get(0).getStoryPages().get(0);
         }
 
-        setSelectedStoryPage(context, requestedPage.getId());
+        if (isSecond){
+            setSelectedStoryPageSecondary(context, requestedPage.getId());
+        }
+        else{
+            setSelectedStoryPage(context, requestedPage.getId());
+        }
     }
 
 

@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.List;
-
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import model.DaoDBHelper;
 import model.daoModels.Language;
@@ -39,10 +37,12 @@ public class VersionSelectionFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
+    private static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
 
     protected AnimatedExpandableListView mListView = null;
     private Project chosenProject = null;
     private CollapsibleVersionAdapter adapter;
+    private boolean isSecondVersion;
 
     private boolean showProjectTitle = false;
     private TextView titleTextView;
@@ -55,12 +55,13 @@ public class VersionSelectionFragment extends DialogFragment {
      *
      * @return A new instance of fragment VersionSelectionFragment.
      */
-    public static VersionSelectionFragment newInstance(Project project, boolean showTitle) {
+    public static VersionSelectionFragment newInstance(Project project, boolean showTitle, boolean isSecondVersion) {
 
         VersionSelectionFragment fragment = new VersionSelectionFragment();
         Bundle args = new Bundle();
         args.putSerializable(CHOSEN_PROJECT, project);
         args.putBoolean(SHOW_TITLE_PARAM, showTitle);
+        args.putBoolean(IS_SECOND_VERSION_PARAM, isSecondVersion);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,6 +78,7 @@ public class VersionSelectionFragment extends DialogFragment {
             chosenProject = (Project) getArguments().getSerializable(CHOSEN_PROJECT);
             chosenProject = Project.getProjectForId(chosenProject.getId(), DaoDBHelper.getDaoSession(getContext()));
             showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+            isSecondVersion = getArguments().getBoolean(IS_SECOND_VERSION_PARAM);
         }
     }
 
@@ -184,7 +186,7 @@ public class VersionSelectionFragment extends DialogFragment {
             @Override
             public void versionWasSelected(Version version) {
                 if(listener != null){
-                    listener.versionWasSelected(version);
+                    listener.versionWasSelected(version, isSecondVersion);
                 }
             }
         });
@@ -234,7 +236,7 @@ public class VersionSelectionFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface VersionSelectionFragmentListener {
-        public void versionWasSelected(Version version);
+        public void versionWasSelected(Version version, boolean isSecondVersion);
     }
 
 }

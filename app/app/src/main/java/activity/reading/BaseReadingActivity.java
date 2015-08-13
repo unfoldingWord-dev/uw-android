@@ -58,7 +58,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected Project getProject();
     abstract protected void scrolled();
 
-
     private BroadcastReceiver receiver;
 
     @Override
@@ -67,7 +66,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         setContentView(R.layout.activity_reading);
 
         if(!loadData()){
-            goToVersionSelection();
+            goToVersionSelection(false);
         }
     }
 
@@ -170,7 +169,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
-    protected void goToVersionSelection(){
+    protected void goToVersionSelection(boolean isSecondVersion){
 
 //        if(isTablet()){
 //
@@ -181,7 +180,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 //        }
 //        else {
             startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
-                    VersionSelectionActivity.PROJECT_PARAM, getProject()));
+                    VersionSelectionActivity.PROJECT_PARAM, getProject())
+                    .putExtra(VersionSelectionActivity.IS_SECOND_VERSION_PARAM, isSecondVersion));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
 //        }
     }
@@ -208,7 +208,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public void rightButtonClicked() {
-
     }
 
     @Override
@@ -217,8 +216,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void chooseVersion(boolean isSecondReadingView) {
-        goToVersionSelection();
+    public void clickedChooseVersion(boolean isSecondReadingView) {
+        goToVersionSelection(isSecondReadingView);
     }
 
     @Override
@@ -227,8 +226,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void versionWasSelected(Version version) {
-        UWPreferenceManager.selectedVersion(getApplicationContext(), version);
+    public void versionWasSelected(Version version, boolean isSecondVersion) {
+        UWPreferenceManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
         removeFragment(VERSION_FRAGMENT_ID);
     }
 

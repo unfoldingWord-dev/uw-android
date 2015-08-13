@@ -9,5 +9,5 @@ public interface ReadingFragmentListener {
 
     void toggleNavBar();
     void showCheckingLevel(Version version);
-    void chooseVersion(boolean isSecondReadingView);
+    void clickedChooseVersion(boolean isSecondReadingView);
 }
