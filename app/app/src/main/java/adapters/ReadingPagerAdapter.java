@@ -32,50 +32,22 @@ public class ReadingPagerAdapter extends PagerAdapter {
     private List<BibleChapter> chapters;
     private View.OnTouchListener pagerOnTouchListener;
 
-    private Book nextBook;
+    private ReadingPagerAdapterListener listener;
 
     public List<BibleChapter> getChapters() {
         return chapters;
     }
 
-    public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener) {
+    public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener, ReadingPagerAdapterListener listener) {
         this.context = context;
+        this.listener = listener;
         chapters = models;
         this.pagerOnTouchListener = pagerOnTouchListener;
-        setNextBook();
     }
 
     public void update(List<BibleChapter> models){
         this.chapters = models;
-        setNextBook();
         notifyDataSetChanged();
-    }
-
-    public void setNextBook(){
-
-        List<Book> versionBooks = chapters.get(0).getBook().getVersion().getBooks();
-
-        long currentBookId = chapters.get(0).getBookId();
-        int currentIndex = -1;
-
-        for(int i = 0; i < versionBooks.size(); i++){
-
-            Book book = versionBooks.get(i);
-            if(book.getId() == currentBookId){
-                currentIndex = i + 1;
-                break;
-            }
-        }
-
-        if(currentIndex < 0 || currentIndex >= versionBooks.size()){
-            currentIndex = 0;
-        }
-
-        Book newBook = versionBooks.get(currentIndex);
-        if(newBook.getBibleChapters() == null || newBook.getBibleChapters().size() == 0){
-            newBook = versionBooks.get(currentIndex + 1);
-        }
-        this.nextBook = newBook;
     }
 
     @Override
@@ -184,29 +156,39 @@ public class ReadingPagerAdapter extends PagerAdapter {
         View nextChapterView = inflater.inflate(R.layout.next_chapter_screen_layout, container, false);
         Button nextButton = (Button) nextChapterView.findViewById(R.id.next_chapter_screen_button);
 
-        String nextButtonString = context.getResources().getString(R.string.next_book);
-        nextButton.setText(nextButtonString + " " + nextBook.getTitle());
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToNextBook();
-            }
-        });
+        Book nextBook = chapters.get(0).getBook().getNextBook();
+        if(nextBook != null) {
+            String nextButtonString = context.getResources().getString(R.string.next_book);
+            nextButton.setText(nextButtonString + " " + nextBook.getTitle());
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    moveToNextBook();
+                }
+            });
+        }
 
         return nextChapterView;
     }
 
     private void moveToNextBook(){
 
-        this.chapters = nextBook.getBibleChapters(true);
-        setNextBook();
+        if(listener != null) {
+            listener.goToNextBook();
+        }
 
-        UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).getId());
+//        this.chapters = nextBook.getBibleChapters(true);
+//        setNextBook();
+//
+//        UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).getId());
+//
+//        String title = chapters.get(0).getTitle();
+//        notifyDataSetChanged();
+//
+//        ((ViewPager) this.container).setCurrentItem(0);
+    }
 
-        String title = chapters.get(0).getTitle();
-        notifyDataSetChanged();
-
-        ((ViewPager) this.container).setCurrentItem(0);
-
+    public interface ReadingPagerAdapterListener{
+        void goToNextBook();
     }
 }

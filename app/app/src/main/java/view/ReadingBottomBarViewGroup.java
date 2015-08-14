@@ -1,9 +1,13 @@
 package view;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import org.unfoldingword.mobile.R;
 
@@ -28,14 +32,14 @@ public class ReadingBottomBarViewGroup {
     private TextView versionTextView;
     private BottomBarListener listener;
 
-    public ReadingBottomBarViewGroup(RelativeLayout layout, Version version, BottomBarListener listener) {
+    public ReadingBottomBarViewGroup(Context context, RelativeLayout layout, Version version, BottomBarListener listener) {
         baseLayout = layout;
         this.listener = listener;
-        setupViews();
+        setupViews(context);
         updateWithVersion(version);
     }
 
-    private void setupViews(){
+    private void setupViews(Context context){
 
         this.checkingLevelButton = (ImageButton) baseLayout.findViewById(R.id.bottom_bar_level_button);
         this.versionTextView = (TextView) baseLayout.findViewById(R.id.bottom_bar_left_button_text_view);
@@ -53,7 +57,10 @@ public class ReadingBottomBarViewGroup {
             }
         });
 
-        baseLayout.findViewById(R.id.bottom_bar_share_button).setOnClickListener(new View.OnClickListener() {
+        ImageButton shareButton = (ImageButton) baseLayout.findViewById(R.id.bottom_bar_share_button);
+        shareButton.setImageDrawable(new IconDrawable(context, FontAwesomeIcons.fa_share).colorRes(R.color.white).sizeDp(30));
+
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.shareButtonClicked();

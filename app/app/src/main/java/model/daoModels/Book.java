@@ -1,5 +1,7 @@
 package model.daoModels;
 
+import android.support.annotation.Nullable;
+
 import java.util.List;
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
@@ -263,6 +265,11 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     }
 
     // KEEP METHODS - put your custom methods here
+
+    @Nullable
+    public Book getNextBook(){
+        return this.getVersion().getNextBook(this);
+    }
 
     public int getVerificationStatus(){
 

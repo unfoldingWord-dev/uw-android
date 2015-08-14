@@ -1,4 +1,4 @@
-package activity.textSelection;
+package activity.readingSelection;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

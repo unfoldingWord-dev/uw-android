@@ -46,8 +46,14 @@ public class UWPreferenceManager {
         BibleChapter activeChapter = BibleChapter.getModelForId(activeChapterId, session);
         BibleChapter changingChapter = BibleChapter.getModelForId(changingId, session);
 
-        Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
-        BibleChapter newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber(), session);
+        BibleChapter newChapter;
+        if(changingChapter != null) {
+            Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
+            newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber(), session);
+        }
+        else{
+            newChapter = activeChapter;
+        }
 
         if(isSecond){
             setSelectedBibleChapter(context, newChapter.getId());

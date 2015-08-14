@@ -146,7 +146,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        UWPreferenceManager.setSelectedBibleChapter(getContext(), chapters.get(position).getId());
+        UWPreferenceManager.changedToBibleChapter(getContext(), chapters.get(position).getId(), false);
         if(mListener != null) {
             mListener.chapterWasSelected();
         }

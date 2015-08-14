@@ -9,6 +9,7 @@ import de.greenrobot.dao.DaoException;
 // KEEP INCLUDES - put your custom includes here
 import java.io.IOException;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.FileInputStream;
@@ -288,6 +289,17 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP METHODS - put your custom methods here
 
+    @Nullable
+    public Book getNextBook(Book book){
+        int index = getBooks().indexOf(book);
+
+        if(getBooks().size() > (index + 1)){
+            return getBooks().get(index + 1);
+        }
+        else{
+            return null;
+        }
+    }
 
     public int getVerificationStatus(){
 

@@ -19,8 +19,8 @@ import org.unfoldingword.mobile.R;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
-import activity.textSelection.BookSelectionActivity;
-import activity.textSelection.VersionSelectionActivity;
+import activity.readingSelection.BookSelectionActivity;
+import activity.readingSelection.VersionSelectionActivity;
 import adapters.ReadingScrollNotifications;
 import fragments.ChapterSelectionFragment;
 import fragments.CheckingLevelFragment;

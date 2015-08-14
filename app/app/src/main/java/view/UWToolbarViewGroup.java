@@ -126,14 +126,15 @@ public class UWToolbarViewGroup {
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) toolbar.getLayoutParams();
         if(!hidden){
+            hidden = true;
             params.addRule(RelativeLayout.ABOVE, R.id.top_marker_layout);
         }
         else{
+            hidden = false;
             params.removeRule(RelativeLayout.ABOVE);
         }
 
         toolbar.setLayoutParams(params);
-        hidden = !hidden;
 //        for(int rule : params.getRules()){
 //            if(rule == new RelativeLayout.LayoutParams(RelativeLayout.ABOVE, R.id.top_marker_layout))
 //        }

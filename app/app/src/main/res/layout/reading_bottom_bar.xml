@@ -5,9 +5,10 @@
     android:layout_alignParentBottom="true"
     android:layout_width="match_parent"
     android:layout_height="40dp"
-    android:background="@color/light_brown">
+    android:background="@color/light_brown"
+    android:animateLayoutChanges="true">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/bottom_bar_left_button"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -18,24 +19,34 @@
         android:layout_alignParentStart="true"
         android:paddingRight="5dp"
         android:paddingEnd="5dp"
-        android:paddingLeft="15dp"
-        android:paddingStart="15dp"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
         android:layout_toLeftOf="@+id/toolbar_right_button_layout"
         android:layout_toStartOf="@+id/toolbar_right_button_layout">
 
         <TextView
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:id="@+id/bottom_bar_left_button_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Language"
+            android:text="Language and some other text in order to test some thaweourjao;eiwjrao;ijwerings.Language and some other text in order to test some things."
             android:textSize="@dimen/actionbar_version_font_size"
             android:clickable="false"
             android:textStyle="normal"
             android:textAllCaps="false"
             android:layout_gravity="center_vertical"
-            android:textColor="#fff"/>
+            android:textColor="#fff"
+            android:ellipsize="start"
+            android:maxLines="2"
+            android:paddingRight="20dp"
+            android:paddingEnd="20dp"/>
 
         <ImageView
+            android:layout_toRightOf="@+id/bottom_bar_left_button_text_view"
+            android:layout_toEndOf="@+id/bottom_bar_left_button_text_view"
+            android:layout_centerVertical="true"
             android:id="@+id/bottom_bar_left_button_image_indicator"
             android:layout_width="17dp"
             android:layout_height="13dp"
@@ -44,9 +55,11 @@
             android:paddingLeft="5dp"
             android:paddingStart="5dp"
             android:paddingRight="0dp"
-            android:paddingEnd="0dp" />
+            android:paddingEnd="0dp"
+            android:layout_marginLeft="-17dp"
+            android:layout_marginStart="-17dp"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

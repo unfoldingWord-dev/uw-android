@@ -35,7 +35,7 @@ import view.ReadingBottomBarViewGroup;
  * Use the {@link BibleReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BibleReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener{
+public class BibleReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener, ReadingPagerAdapter.ReadingPagerAdapterListener{
 
     private static final String TAG = "BibleReadingFragment";
     private static final String IS_SECONDARY_PARAM = "IS_SECONDARY_PARAM";
@@ -92,7 +92,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     private void setupViews(View view){
-        bottomBar = new ReadingBottomBarViewGroup((RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentBook.getVersion(), this);
+        bottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentBook.getVersion(), this);
         setupPager(view);
     }
 
@@ -100,12 +100,22 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
         this.bottomBar.updateWithVersion(currentBook.getVersion());
     }
 
+    @Override
+    public void goToNextBook() {
+        Book nextBook = currentBook.getNextBook();
+        if(nextBook != null){
+            BibleChapter nextChapter = nextBook.getBibleChapters(true).get(0);
+            UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), nextChapter.getId(), isSecondary);
+            getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+        }
+    }
+
     private void setupPager(View view){
 
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
 
         List<BibleChapter> chapters = currentBook.getBibleChapters(true);
-        adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters,  getDoubleTapTouchListener());
+        adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters, getDoubleTapTouchListener(), this);
 
         readingViewPager.setAdapter(adapter);
         readingViewPager.setOnTouchListener(getDoubleTapTouchListener());
@@ -169,6 +179,9 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 //                         Log.i(TAG, "won't scroll from: " + currentModel.getNumber() +" to: " + model.getNumber() + " IsSecondary: " + isSecondary);
 //                     }
                 }
+                else{
+//                    goToNextBook();
+                }
             }
         });
     }
@@ -176,7 +189,12 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     private void updateBook(){
         BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
         if(currentItem != null) {
+            boolean needsToUpdateBook = (this.currentBook != null && !currentBook.getId().equals(currentItem.getBookId()));
             this.currentBook = currentItem.getBook();
+            if(needsToUpdateBook){
+                adapter.update(currentBook.getBibleChapters());
+                readingViewPager.setCurrentItem(0, false);
+            }
         }
     }
 

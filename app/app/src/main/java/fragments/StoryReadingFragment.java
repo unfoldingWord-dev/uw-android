@@ -85,7 +85,7 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     private void setupViews(View view){
-        bottomBar = new ReadingBottomBarViewGroup((RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentChapter.getBook().getVersion(), this);
+        bottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentChapter.getBook().getVersion(), this);
         setupPager(view);
     }
 
