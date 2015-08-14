@@ -133,7 +133,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
     }
 
     private String getTextDirection(){
-        
+
         if(isRTL()){
             return "rtl";
         }

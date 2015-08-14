@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +37,7 @@ import view.ReadingBottomBarViewGroup;
  */
 public class BibleReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener{
 
+    private static final String TAG = "BibleReadingFragment";
     private static final String IS_SECONDARY_PARAM = "IS_SECONDARY_PARAM";
 
     private boolean isSecondary;
@@ -62,18 +64,13 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            loadBook();
             isSecondary = getArguments().getBoolean(IS_SECONDARY_PARAM);
+            updateBook();
         }
 
         if(getActivity() instanceof ReadingFragmentListener){
             this.listener = (ReadingFragmentListener) getActivity();
         }
-    }
-
-    private void loadBook(){
-        BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        currentBook = currentItem.getBook();
     }
 
     @Override
@@ -88,7 +85,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     public void update(){
-        loadBook();
+        updateBook();
         updateVersionInfo();
         adapter.update(currentBook.getBibleChapters(true));
         scrollToCurrentPage();
@@ -122,30 +119,81 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
             @Override
             public void onPageSelected(int position) {
 
-                if (position < adapter.getChapters().size()) {
-                    BibleChapter model = adapter.getChapters().get(position);
-                    UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
-                    getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
-                }
+//                if (position < adapter.getChapters().size()) {
+//                    BibleChapter model = adapter.getChapters().get(position);
+//
+//                    BibleChapter currentModel = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+//                    BibleChapter otherModel = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), !isSecondary);
+//                    if(currentModel == null || otherModel == null){
+//                        return;
+//                    }
+//                    boolean needsUpdate = (!currentModel.getId().equals(model.getId()) && currentModel.getNumber().equals(otherModel.getNumber())) ;
+//
+//                     if(needsUpdate) {
+//
+////                        Log.i(TAG, "will scroll from: " + currentModel.getNumber() +" to: " + model.getNumber() + " IsSecondary: " + isSecondary);
+//                        UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
+//                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+//                    }
+////                    else{
+////                         Log.i(TAG, "won't scroll from: " + currentModel.getNumber() +" to: " + model.getNumber() + " IsSecondary: " + isSecondary);
+////                     }
+//                }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.i(TAG, "scroll state changed: " + state);
+                if(state != 0){
+                    return;
+                }
 
+                int position = readingViewPager.getCurrentItem();
+                if (position < adapter.getChapters().size()) {
+                    BibleChapter model = adapter.getChapters().get(position);
+
+                    BibleChapter currentModel = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+                    BibleChapter otherModel = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), !isSecondary);
+                    if (currentModel == null || otherModel == null) {
+                        return;
+                    }
+                    boolean needsUpdate = (!currentModel.getId().equals(model.getId()) && currentModel.getNumber().equals(otherModel.getNumber()));
+
+                    if (needsUpdate) {
+
+//                        Log.i(TAG, "will scroll from: " + currentModel.getNumber() +" to: " + model.getNumber() + " IsSecondary: " + isSecondary);
+                        UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
+                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+                    }
+//                    else{
+//                         Log.i(TAG, "won't scroll from: " + currentModel.getNumber() +" to: " + model.getNumber() + " IsSecondary: " + isSecondary);
+//                     }
+                }
             }
         });
     }
 
-    public void scrollToCurrentPage(){
-
+    private void updateBook(){
         BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        if(currentItem == null){
-            return;
+        if(currentItem != null) {
+            this.currentBook = currentItem.getBook();
         }
-        for(int i = 0; i < currentBook.getBibleChapters().size(); i++){
-            if(currentItem.getId() == currentBook.getBibleChapters().get(i).getId()){
-                readingViewPager.setCurrentItem(i, false);
-                return;
+    }
+
+    public void scrollToCurrentPage(){
+        updateBook();
+        BibleChapter correctItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        BibleChapter currentItem = currentBook.getBibleChapters(true).get(readingViewPager.getCurrentItem());
+
+        boolean shouldUpdate = (correctItem != null && currentItem != null && !correctItem.getId().equals(currentItem.getId()));
+
+        if(shouldUpdate) {
+
+            for (int i = 0; i < currentBook.getBibleChapters().size(); i++) {
+                if (correctItem.getId().equals(currentBook.getBibleChapters().get(i).getId())) {
+                    readingViewPager.setCurrentItem(i, true);
+                    return;
+                }
             }
         }
     }
