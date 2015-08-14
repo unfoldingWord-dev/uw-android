@@ -21,6 +21,7 @@ import adapters.selectionAdapters.GeneralRowInterface;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
@@ -151,8 +152,10 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
     protected List<GeneralRowInterface> getData(){
 
-        BibleChapter currentChapter = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
-                .loadDeep(UWPreferenceManager.getSelectedBibleChapter(getContext()));
+        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
+        if(currentChapter == null){
+            return null;
+        }
         books = currentChapter.getBook().getVersion().getBooks();
         long currentBookId = currentChapter.getBookId();
 

@@ -215,8 +215,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void toggleNavBar() {
-        getToolbar().toggleHidden();
+    public boolean toggleNavBar() {
+        boolean isHidden = getToolbar().toggleHidden();
+        return isHidden;
     }
 
     @Override

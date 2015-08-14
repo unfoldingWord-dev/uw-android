@@ -119,23 +119,21 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
         String css = "<style type=\"text/css\">\n" +
                 "<!--\n" +
-                ".verse { font-size: 10pt}" +
+                ".verse { font-size: 9pt}" +
                 ".q, .q1, .q2 { margin:0; display: block; padding:0;}\n" +
                 ".q, .q1 { margin-left: 1em; }\n" +
                 ".q2 { margin-left: 1em; }\n" +
-                "p { width:94%; font-size: 15pt; text-align: justify; line-height: 1.5; padding:10px; unicode-bidi:bidi-override; direction:" +
+                "p { width:96%; font-size: 13pt; text-align: justify; line-height: 1.3; padding:5px; unicode-bidi:bidi-override; direction:" +
                 getTextDirection() + " ;}\n" +
                 "-->\n" +
-                ".footnote {font-size: 12pt;}" +
+                ".footnote {font-size: 11pt;}" +
                 "sup {font-size: 9pt;}" +
                 "</style>";
         return css;
     }
 
     private String getTextDirection(){
-
-        String language = chapters.get(0).getBook().getVersion().getLanguage().getLanguageAbbreviation();
-
+        
         if(isRTL()){
             return "rtl";
         }

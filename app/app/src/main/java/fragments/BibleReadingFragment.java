@@ -25,6 +25,7 @@ import model.daoModels.Book;
 import model.daoModels.Version;
 import sideloading.SideLoadType;
 import sideloading.SideSharer;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
 
@@ -71,8 +72,8 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     private void loadBook(){
-        long currentItem = UWPreferenceManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        currentBook = BibleChapter.getModelForId(currentItem, DaoDBHelper.getDaoSession(getActivity().getApplicationContext())).getBook();
+        BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        currentBook = currentItem.getBook();
     }
 
     @Override
@@ -137,10 +138,12 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     public void scrollToCurrentPage(){
 
-        long currentItem = UWPreferenceManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-
+        BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        if(currentItem == null){
+            return;
+        }
         for(int i = 0; i < currentBook.getBibleChapters().size(); i++){
-            if(currentItem == currentBook.getBibleChapters().get(i).getId()){
+            if(currentItem.getId() == currentBook.getBibleChapters().get(i).getId()){
                 readingViewPager.setCurrentItem(i, false);
                 return;
             }
@@ -201,7 +204,6 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
                         if (numberOfTaps == 2) {
                             if (listener != null) {
                                 listener.toggleNavBar();
-                                bottomBar.toggleHidden();
                                 return true;
                             }
                         }
@@ -211,6 +213,10 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
                 return false;
             }
         };
+    }
+
+    public void setBottomBarHidden(boolean hide){
+        bottomBar.setHidden(hide);
     }
 
     @Override

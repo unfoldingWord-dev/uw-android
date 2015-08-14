@@ -25,6 +25,7 @@ import model.DaoDBHelper;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
@@ -36,10 +37,6 @@ import utils.UWPreferenceManager;
  * create an instance of this fragment.
  */
 public class StoryChaptersFragment extends DialogFragment implements AdapterView.OnItemClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-    // TODO: Rename and change types of parameters
 
     public static String STORY_CHAPTERS_INDEX_STRING = "STORY_CHAPTERS_INDEX_STRING";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
@@ -57,7 +54,6 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
      * @return A new instance of fragment BookSelectionFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static StoryChaptersFragment newInstance(boolean showTitle) {
         StoryChaptersFragment fragment = new StoryChaptersFragment();
         Bundle args = new Bundle();
@@ -128,8 +124,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected List<StoriesChapter> getData(){
 
-        long storyId = UWPreferenceManager.getSelectedStoryPage(getContext());
-        StoryPage page = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao().loadDeep(storyId);
+        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
 
         List<StoriesChapter> chapters = page.getStoriesChapter().getBook().getStoryChapters();
 

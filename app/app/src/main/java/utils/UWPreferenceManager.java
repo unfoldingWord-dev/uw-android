@@ -18,6 +18,11 @@ import model.daoModels.Version;
  */
 public class UWPreferenceManager {
 
+    public static long getCurrentStoryPage(Context context, boolean isSecond){
+
+        return (isSecond)? getSelectedStoryPageSecondary(context) : getSelectedStoryPage(context);
+    }
+
     public static long getCurrentBibleChapter(Context context, boolean isSecond){
 
         return (isSecond)? getSelectedBibleChapterSecondary(context) : getSelectedBibleChapter(context);

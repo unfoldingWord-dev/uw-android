@@ -22,6 +22,7 @@ import adapters.selectionAdapters.GeneralRowInterface;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
@@ -33,12 +34,8 @@ import utils.UWPreferenceManager;
  * create an instance of this fragment.
  */
 public class ChaptersFragment extends Fragment implements AdapterView.OnItemClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-    // TODO: Rename and change types of parameters
-
     public static String BOOK_CHAPTERS_INDEX_STRING = "BOOK_CHAPTERS_INDEX_STRING";
+
 
     private ChaptersFragmentListener mListener = null;
 
@@ -86,11 +83,17 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.general_list, container, false);
-        BibleChapter currentChapter = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
-                .loadDeep(UWPreferenceManager.getSelectedBibleChapter(getContext()));
-        chapters = currentChapter.getBook().getBibleChapters(true);
+        setupData();
         setupViews(view);
         return view;
+    }
+
+    private void setupData(){
+        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
+
+        if(currentChapter != null) {
+            chapters = currentChapter.getBook().getBibleChapters(true);
+        }
     }
 
     private void setupViews(View view){
@@ -127,12 +130,12 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
 
     protected List<GeneralRowInterface> getData(){
 
-        long selectedChapter = UWPreferenceManager.getSelectedBibleChapter(getContext());
+        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
         List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
 
         for(BibleChapter row : chapters) {
             dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getNumber()));
-            if(row.getId() == selectedChapter){
+            if(row.getId() == currentChapter.getId()){
                 selectedRow = chapters.indexOf(row);
             }
         }

@@ -68,8 +68,13 @@ public class ReadingBottomBarViewGroup {
 
     public void toggleHidden(){
 
+        setHidden(!hidden);
+    }
+
+    public void setHidden(boolean hide){
+
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) baseLayout.getLayoutParams();
-        if(!hidden){
+        if(hide){
             params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
         }
         else{
@@ -78,8 +83,6 @@ public class ReadingBottomBarViewGroup {
 
         baseLayout.setLayoutParams(params);
         hidden = !hidden;
-//        for(int rule : params.getRules()){
-//            if(rule == new RelativeLayout.LayoutParams(RelativeLayout.ABOVE, R.id.top_marker_layout))
-//        }
+
     }
 }

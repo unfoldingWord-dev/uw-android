@@ -122,7 +122,7 @@ public class UWToolbarViewGroup {
         setRightImageVisible(true);
     }
 
-    public void toggleHidden(){
+    public boolean toggleHidden(){
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) toolbar.getLayoutParams();
         if(!hidden){
@@ -137,6 +137,7 @@ public class UWToolbarViewGroup {
 //        for(int rule : params.getRules()){
 //            if(rule == new RelativeLayout.LayoutParams(RelativeLayout.ABOVE, R.id.top_marker_layout))
 //        }
+        return hidden;
     }
 
 

@@ -10,10 +10,9 @@ import java.util.List;
 import fragments.BibleReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
-import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
-import utils.UWPreferenceManager;
+import utils.UWPreferenceDataManager;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -51,6 +50,15 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
+    public boolean toggleNavBar() {
+        boolean isHidden = super.toggleNavBar();
+
+        readingFragment.setBottomBarHidden(isHidden);
+        secondaryReadingFragment.setBottomBarHidden(isHidden);
+        return isHidden;
+    }
+
+    @Override
     protected void scrolled() {
 
         updateChapters();
@@ -58,9 +66,9 @@ public class ReadingActivity extends BaseReadingActivity {
 
     private void updateChapters(){
 
-        long id = UWPreferenceManager.getSelectedBibleChapter(getApplicationContext());
-        if (id != currentChapter.getId()) {
-            currentChapter = BibleChapter.getModelForId(id, DaoDBHelper.getDaoSession(getApplicationContext()));
+        currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
+
+        if (currentChapter != null) {
             updateToolbarTitle();
         }
         if(readingFragment != null) {
@@ -87,15 +95,10 @@ public class ReadingActivity extends BaseReadingActivity {
     @Override
     protected boolean loadData() {
 
-        long chapterId = UWPreferenceManager.getSelectedBibleChapter(getApplicationContext());
+        currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
 
-        if (chapterId > -1) {
-            currentChapter = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getApplicationContext()));
-            return true;
-        } else {
-            currentChapter = null;
-            return false;
-        }
+        boolean isValid = (currentChapter != null);;
+        return isValid;
     }
 
     @Override
