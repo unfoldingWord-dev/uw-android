@@ -24,6 +24,7 @@ import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import sideloading.SideLoadType;
 import sideloading.SideSharer;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
 
@@ -32,21 +33,20 @@ import view.ReadingBottomBarViewGroup;
  * Use the {@link StoryReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoryReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener{
-
-    private static final String CHAPTER_PARAM = "CHAPTER_PARAM";
+public class StoryReadingFragment extends Fragment{
 
     private ViewPager readingViewPager;
-    private StoriesChapter currentChapter;
+    private StoriesChapter mainChapter;
+    private StoriesChapter secondChapter;
 
     private ReadingFragmentListener listener;
     private StoryPagerAdapter adapter;
-    private ReadingBottomBarViewGroup bottomBar;
+    private ReadingBottomBarViewGroup mainBottomBar;
+    private ReadingBottomBarViewGroup secondBottomBar;
 
-    public static StoryReadingFragment newInstance(StoriesChapter chapter) {
+    public static StoryReadingFragment newInstance() {
         StoryReadingFragment fragment = new StoryReadingFragment();
         Bundle args = new Bundle();
-        args.putSerializable(CHAPTER_PARAM, chapter);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,9 +57,6 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            currentChapter = (StoriesChapter) getArguments().getSerializable(CHAPTER_PARAM);
-        }
 
         if(getActivity() instanceof ReadingFragmentListener){
             this.listener = (ReadingFragmentListener) getActivity();
@@ -71,32 +68,85 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_story_reading, container, false);
+        updateData();
         setupViews(view);
         updateVersionInfo();
 
         return view;
     }
 
-    public void update(StoriesChapter chapter){
-        this.currentChapter = chapter;
+    private void updateData(){
+        StoryPage mainPage = UWPreferenceDataManager.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+        StoryPage secondaryPage = UWPreferenceDataManager.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+
+        if(mainPage != null){
+            mainChapter = mainPage.getStoriesChapter();
+        }
+
+        if(secondaryPage != null){
+            secondChapter = secondaryPage.getStoriesChapter();
+        }
+    }
+
+
+    public void update(){
+        updateData();
         updateVersionInfo();
-        adapter.update(chapter);
-        readingViewPager.setCurrentItem(0);
+        adapter.update(mainChapter, secondChapter);
     }
 
     private void setupViews(View view){
-        bottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentChapter.getBook().getVersion(), this);
+        setupBottomBars(view);
         setupPager(view);
+        setBottomBarsDiglot(false);
     }
 
     private void updateVersionInfo(){
-        this.bottomBar.updateWithVersion(currentChapter.getBook().getVersion());
+        this.mainBottomBar.updateWithVersion(mainChapter.getBook().getVersion());
+    }
+
+    private void setupBottomBars(View view){
+        mainBottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_main_layout),
+                mainChapter.getBook().getVersion(), new ReadingBottomBarViewGroup.BottomBarListener() {
+            @Override
+            public void checkingLevelPressed() {
+                listener.showCheckingLevel(mainChapter.getBook().getVersion());
+            }
+
+            @Override
+            public void versionButtonClicked() {
+                shareVersion(mainChapter.getBook().getVersion());
+            }
+
+            @Override
+            public void shareButtonClicked() {
+                listener.clickedChooseVersion(false);
+            }
+        });
+
+        secondBottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_second_layout),
+                secondChapter.getBook().getVersion(), new ReadingBottomBarViewGroup.BottomBarListener() {
+            @Override
+            public void checkingLevelPressed() {
+                listener.showCheckingLevel(secondChapter.getBook().getVersion());
+            }
+
+            @Override
+            public void versionButtonClicked() {
+                shareVersion(secondChapter.getBook().getVersion());
+            }
+
+            @Override
+            public void shareButtonClicked() {
+                listener.clickedChooseVersion(true);
+            }
+        });
     }
 
     private void setupPager(View view){
 
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
-        adapter = new StoryPagerAdapter(getActivity().getApplicationContext(), currentChapter);
+        adapter = new StoryPagerAdapter(getActivity().getApplicationContext(), mainChapter, secondChapter);
 
             readingViewPager.setAdapter(adapter);
             readingViewPager.setOnTouchListener(getDoubleTapTouchListener());
@@ -110,7 +160,7 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
                 @Override
                 public void onPageSelected(int position) {
 
-                    List<StoryPage> pages = adapter.getCurrentChapter().getStoryPages();
+                    List<StoryPage> pages = adapter.getMainChapter().getStoryPages();
                     if (position < pages.size()) {
                         StoryPage model = pages.get(position);
                         UWPreferenceManager.setSelectedStoryPage(getActivity().getApplicationContext(), model.getId());
@@ -178,7 +228,7 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
                         if(numberOfTaps == 2){
                             if(listener != null) {
                                 listener.toggleNavBar();
-                                bottomBar.toggleHidden();
+                                mainBottomBar.toggleHidden();
                                 return true;
                             }
                         }
@@ -190,13 +240,7 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
         };
     }
 
-    @Override
-    public void checkingLevelPressed() {
-        listener.showCheckingLevel(currentChapter.getBook().getVersion());
-    }
-
-    @Override
-    public void shareButtonClicked() {
+    public void shareVersion(Version version) {
 
         SideSharer sharer = new SideSharer(getActivity(), new SideSharer.SideLoaderListener() {
             @Override
@@ -210,14 +254,23 @@ public class StoryReadingFragment extends Fragment implements ReadingBottomBarVi
                 return true;
             }
         });
-        Version currentVersion = currentChapter.getBook().getVersion();
-        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
-                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
+        sharer.startSharing(version.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
+                version.getName() + getActivity().getString(R.string.save_file_extension));
     }
 
-    @Override
-    public void versionButtonClicked() {
-        listener.clickedChooseVersion(false);
+    public void setDiglotShowing(boolean showing){
+        adapter.setIsDiglot(showing);
     }
 
+    public void setBottomBarsDiglot(boolean showing){
+        View view = getView();
+        if(view != null) {
+            view.findViewById(R.id.story_bottom_bar_second_layout).setVisibility((showing) ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public void setBottomBarHidden(boolean hide){
+        mainBottomBar.setHidden(hide);
+        secondBottomBar.setHidden(hide);
+    }
 }

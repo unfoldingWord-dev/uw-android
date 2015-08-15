@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import activity.readingSelection.StoryChapterSelectionActivity;
 import model.daoModels.StoriesChapter;
+import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
@@ -36,36 +36,53 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private Context context;
     private ViewGroup container;
-    private StoriesChapter currentChapter;
+    private StoriesChapter mainChapter;
+    private StoriesChapter secondChapter;
 
     private int lastChapterNumber = -1;
+    private boolean isDiglot;
 
 
-    public StoryPagerAdapter(Context context, StoriesChapter model) {
-        currentChapter = model;
-        if(currentChapter != null) {
-            lastChapterNumber = currentChapter.getBook().getStoryChapters().size();
+    public StoryPagerAdapter(Context context, StoriesChapter mainChapter, StoriesChapter secondChapter) {
+        this.mainChapter = mainChapter;
+        this.secondChapter = secondChapter;
+        if(mainChapter != null) {
+            lastChapterNumber = mainChapter.getBook().getStoryChapters().size();
         }
         this.context = context;
     }
 
     @Override
     public int getCount() {
-        return (currentChapter != null)? currentChapter.getStoryPages().size() + 1 : 0;
+        return (mainChapter != null)? mainChapter.getStoryPages().size() + 1 : 0;
     }
 
-    public StoriesChapter getCurrentChapter() {
-        return currentChapter;
+    public StoriesChapter getMainChapter() {
+        return mainChapter;
     }
 
-    public void update(StoriesChapter chapter){
-        this.currentChapter = chapter;
+    public void update(StoriesChapter mainChapter, StoriesChapter secondChapter){
+        this.mainChapter = mainChapter;
+        this.secondChapter = secondChapter;
+        notifyDataSetChanged();
+    }
+
+    public void setIsDiglot(boolean isDiglot){
+        this.isDiglot = isDiglot;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemPosition(Object object) {
         return POSITION_NONE;
+    }
+
+    private StoryPage getMainModelForRow(int index){
+        return mainChapter.getStoryPages().get(index);
+    }
+
+    private StoryPage getSecondModelForRow(int index){
+        return secondChapter.getStoryPages().get(index);
     }
 
     @Override
@@ -79,20 +96,30 @@ public class StoryPagerAdapter extends PagerAdapter {
             view = getNextChapterView(inflater);
         } else {
 
+            StoryPage currentMainPage = getMainModelForRow(position);
+            StoryPage currentSecondPage = getSecondModelForRow(position);
+
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
             ASyncImageView chapterImageView = (ASyncImageView) view.findViewById(R.id.chapter_image_view);
-            TextView storyTextView = (TextView) view.findViewById(R.id.story_text_view);
-            storyTextView.setText(currentChapter.getStoryPages().get(position).getText());
-            String imgUrl = currentChapter.getStoryPages().get(position).getImageUrl();
+            TextView mainTextView = (TextView) view.findViewById(R.id.story_main_text_view);
+            TextView secondaryTextView = (TextView) view.findViewById(R.id.story_secondary_text_view);
+
+            mainTextView.setText(currentMainPage.getText());
+            secondaryTextView.setText(currentSecondPage.getText());
+            String imgUrl = mainChapter.getStoryPages().get(position).getImageUrl();
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
-
-//            String imagePath = context.getAssets(). "assets://";/
-
             chapterImageView.setImageBitmap(getBitmapFromAsset("images/" + path));
+
+            setupPageForDiglot(mainTextView, secondaryTextView);
         }
         ((ViewPager) container).addView(view);
         return view;
+    }
+
+    private void setupPageForDiglot(TextView mainView, TextView secondView){
+
+        secondView.setVisibility((isDiglot)? View.VISIBLE : View.GONE);
     }
 
     private Bitmap getBitmapFromAsset(String strName)
@@ -113,7 +140,7 @@ public class StoryPagerAdapter extends PagerAdapter {
         View view = inflater.inflate(R.layout.next_chapter_screen_layout, container, false);
         Button nextButton = (Button) view.findViewById(R.id.next_chapter_screen_button);
 
-        if(Integer.parseInt(currentChapter.getNumber()) == lastChapterNumber){
+        if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
             String nextButtonString = context.getResources().getString(R.string.chapters);
             nextButton.setText(nextButtonString);
 //            nextButton.setOnClickListener(new View.OnClickListener() {
@@ -138,17 +165,17 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private void moveToNextChapter(){
 
-        int chapterNumber = Integer.parseInt(currentChapter.getNumber());
-//        String languageName = currentChapter.language;
+        int chapterNumber = Integer.parseInt(mainChapter.getNumber());
+//        String languageName = mainChapter.language;
         String nextChapterNumber = Integer.toString(chapterNumber + 1);
         if(nextChapterNumber.length() == 1){
             nextChapterNumber = "0" + nextChapterNumber;
         }
 
-        List<StoriesChapter> chapters = currentChapter.getBook().getStoryChapters();
+        List<StoriesChapter> chapters = mainChapter.getBook().getStoryChapters();
 
         StoriesChapter nextChapter = null;
-        int newChapterNumber = Integer.parseInt(this.currentChapter.getNumber());
+        int newChapterNumber = Integer.parseInt(this.mainChapter.getNumber());
         for(StoriesChapter chapter : chapters){
             if(Integer.parseInt(chapter.getNumber()) == newChapterNumber + 1){
                 nextChapter = chapter;
@@ -156,11 +183,10 @@ public class StoryPagerAdapter extends PagerAdapter {
             }
         }
 
-        this.currentChapter = nextChapter;
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(StoryChapterSelectionActivity.CHAPTERS_INDEX_STRING, newChapterNumber).commit();
+        this.mainChapter = nextChapter;
         getCount();
 
-        int current_value = Integer.parseInt(currentChapter.getNumber());
+        int current_value = Integer.parseInt(mainChapter.getNumber());
         UWPreferenceManager.setSelectedStoryPage(context, nextChapter.getId());
 
         notifyDataSetChanged();

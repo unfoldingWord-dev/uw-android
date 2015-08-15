@@ -187,6 +187,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     private void updateBook(){
+
         BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
         if(currentItem != null) {
             boolean needsToUpdateBook = (this.currentBook != null && !currentBook.getId().equals(currentItem.getBookId()));

@@ -36,10 +36,6 @@
         </activity>
 
         <activity
-            android:name="activity.readingSelection.StoryChapterSelectionActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/MainTheme" />
-        <activity
             android:name="activity.readingSelection.InitialScreenActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />

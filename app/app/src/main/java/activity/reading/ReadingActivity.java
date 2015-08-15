@@ -3,7 +3,9 @@ package activity.reading;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -134,6 +136,21 @@ public class ReadingActivity extends BaseReadingActivity {
             getSupportFragmentManager().beginTransaction().add(layout.getId(), fragment, "BibleReadingFragment" + layout.getId()).commit();
             return fragment;
         }
+    }
+
+    @Override
+    protected void toggleDiglot(){
+
+        LinearLayout.LayoutParams mainReadingParams = (LinearLayout.LayoutParams) readingLayout.getLayoutParams();
+        LinearLayout.LayoutParams secondaryReadingParams = (LinearLayout.LayoutParams) secondaryReadingLayout.getLayoutParams();
+        boolean isDiglot = (secondaryReadingParams.weight > .1f);
+
+        mainReadingParams.weight = (isDiglot)? 1.0f : 0.4f;
+        secondaryReadingParams.weight = (isDiglot)? 0.0f : 0.4f;
+
+        readingLayout.setLayoutParams(mainReadingParams);
+        secondaryReadingLayout.setLayoutParams(secondaryReadingParams);
+        secondaryReadingLayout.setVisibility((isDiglot)? View.GONE : View.VISIBLE);
     }
 }
 

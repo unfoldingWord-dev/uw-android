@@ -14,10 +14,30 @@
     </android.support.v4.view.ViewPager>
 
 
-    <include
-        android:id="@+id/bottom_bar_layout"
-        layout="@layout/reading_bottom_bar"
-        />
+    <LinearLayout
+        android:layout_above="@+id/bottom_marker_layout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/story_bottom_bar_main_layout"
+            layout="@layout/reading_bottom_bar"
+            android:layout_weight="1.0"
+            />
+
+        <include
+            android:layout_marginStart="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/story_bottom_bar_second_layout"
+            layout="@layout/reading_bottom_bar"
+            android:layout_weight="1.0"
+            />
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

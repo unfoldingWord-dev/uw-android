@@ -9,9 +9,34 @@ import model.daoModels.DaoSession;
  */
 public abstract class UWDatabaseModel {
 
+    /**
+     * @param json
+     * @return A Model based on the json
+     */
     abstract public UWDatabaseModel setupModelFromJson(JSONObject json);
+
+    /**
+     * @param json
+     * @param parent
+     * @return a model based on json, based on it's parent
+     */
     abstract public UWDatabaseModel setupModelFromJson(JSONObject json, UWDatabaseModel parent);
+
+    /**
+     * @return a Slug unique to only this object
+     */
     abstract public String getUniqueSlug();
+
+    /**
+     * Update based on the passed model and save to DB
+     * @param newModel
+     * @return
+     */
     abstract public boolean updateWithModel(UWDatabaseModel newModel);
+
+    /**
+     * Easy way to insert model
+     * @param session
+     */
     abstract public void insertModel(DaoSession session);
 }

@@ -15,6 +15,10 @@ public class DaoDBHelper {
 
     static private DaoMaster daoMaster;
 
+    /**
+     * @param context
+     * @return a new DaoSession attached to the passed context
+     */
     static public DaoSession getDaoSession(Context context){
 
         if(daoMaster == null) {

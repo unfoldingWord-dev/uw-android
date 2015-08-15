@@ -55,7 +55,7 @@ public class UWPreferenceDataManager {
     }
 
     @Nullable
-    synchronized public BibleChapter getCurrentSecondChapter(Context context) {
+    synchronized private BibleChapter getCurrentSecondChapter(Context context) {
 
         long chapterId = UWPreferenceManager.getCurrentBibleChapter(context, true);
         if(currentSecondChapter == null || chapterId != currentSecondChapter.getId()){
@@ -90,7 +90,7 @@ public class UWPreferenceDataManager {
     }
 
     @Nullable
-    synchronized public StoryPage getCurrentSecondPage(Context context) {
+    synchronized private StoryPage getCurrentSecondPage(Context context) {
 
         long chapterId = UWPreferenceManager.getCurrentStoryPage(context, true);
         if(currentSecondPage == null || chapterId != currentSecondPage.getId()){

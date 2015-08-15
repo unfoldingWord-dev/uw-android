@@ -56,6 +56,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected Version getVersion();
     abstract protected Project getProject();
     abstract protected void scrolled();
+    abstract protected void toggleDiglot();
 
     private BroadcastReceiver receiver;
 
@@ -253,19 +254,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         updateViews();
     }
 
-    private void toggleDiglot(){
 
-        LinearLayout.LayoutParams mainReadingParams = (LinearLayout.LayoutParams) readingLayout.getLayoutParams();
-        LinearLayout.LayoutParams secondaryReadingParams = (LinearLayout.LayoutParams) secondaryReadingLayout.getLayoutParams();
-        boolean isDiglot = (secondaryReadingParams.weight > .1f);
 
-        mainReadingParams.weight = (isDiglot)? 1.0f : 0.4f;
-        secondaryReadingParams.weight = (isDiglot)? 0.0f : 0.4f;
-
-        readingLayout.setLayoutParams(mainReadingParams);
-        secondaryReadingLayout.setLayoutParams(secondaryReadingParams);
-        secondaryReadingLayout.setVisibility((isDiglot)? View.GONE : View.VISIBLE);
-    }
     private void removeFragment(String fragmentId){
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
