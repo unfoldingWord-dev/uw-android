@@ -53,7 +53,7 @@ public class FileFinderActivity extends UWBaseActivity {
 
     }
 
-    private Activity getSelf(){
+    private UWBaseActivity getSelf(){
         return this;
     }
 

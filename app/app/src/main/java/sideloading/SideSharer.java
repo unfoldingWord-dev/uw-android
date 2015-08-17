@@ -15,6 +15,7 @@ import org.unfoldingword.mobile.R;
 
 import java.io.File;
 
+import activity.UWBaseActivity;
 import adapters.ShareAdapter;
 import ar.com.daidalos.afiledialog.FileChooserDialog;
 import utils.FileLoader;
@@ -31,7 +32,7 @@ public class SideSharer {
 
     private String fileName;
     private String shareText;
-    private Activity activity;
+    private UWBaseActivity activity;
     private SideLoaderListener listener;
 
     public interface SideLoaderListener{
@@ -40,7 +41,7 @@ public class SideSharer {
         boolean confirmSideLoadingType(SideLoadType type);
     }
 
-    public SideSharer(Activity activity, SideLoaderListener listener) {
+    public SideSharer(UWBaseActivity activity, SideLoaderListener listener) {
         this.activity = activity;
         this.listener = listener;
 
@@ -195,6 +196,7 @@ public class SideSharer {
     }
 
     private void startSDCardShareAction(){
+        activity.setLoadingViewVisibility(true, "Saving", false);
         FileLoader.saveFileToSdCard(activity.getApplicationContext(), getZippedBytes(), fileName);
         showSuccessAlert(true);
     }
@@ -202,14 +204,17 @@ public class SideSharer {
 
     private void showSuccessAlert(boolean success){
 
+        activity.setLoadingViewVisibility(false, "", false);
+        View titleView = View.inflate(activity.getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Share Status");
         new AlertDialog.Builder(activity)
-                .setTitle("Share Status")
+                .setCustomTitle(titleView)
                 .setMessage((success)? "Sharing was successful" : "Sharing failed")
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        activity.finish();
+                        activity.onBackPressed(true);
                     }
                 })
                 .show();
@@ -249,7 +254,7 @@ public class SideSharer {
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        activity.finish();
+                        activity.onBackPressed(true);
                     }
                 })
                 .create();

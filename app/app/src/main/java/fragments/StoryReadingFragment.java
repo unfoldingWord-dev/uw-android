@@ -20,6 +20,8 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
+import activity.UWBaseActivity;
+import activity.reading.BaseReadingActivity;
 import adapters.ReadingScrollNotifications;
 import adapters.StoryPagerAdapter;
 import model.daoModels.StoriesChapter;
@@ -39,7 +41,7 @@ import view.ReadingBottomBarViewGroup;
 public class StoryReadingFragment extends Fragment{
 
     private ViewPager readingViewPager;
-    private StoriesChapter mainChapter;
+    private StoriesChapter  mainChapter;
     private StoriesChapter secondChapter;
 
     private ReadingFragmentListener listener;
@@ -101,6 +103,11 @@ public class StoryReadingFragment extends Fragment{
         updateData();
         updateVersionInfo();
         adapter.update(mainChapter, secondChapter);
+        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+        if(page != null) {
+            int currentIndex = page.getStoriesChapter().getStoryPages().indexOf(page);
+            readingViewPager.setCurrentItem(currentIndex);
+        }
     }
 
     private void setupViews(View view){
@@ -264,7 +271,7 @@ public class StoryReadingFragment extends Fragment{
     public void shareVersion(Version version) {
 
 
-        SideSharer sharer = new SideSharer(getActivity(), new SideSharer.SideLoaderListener() {
+        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
             @Override
             public void sideLoadingSucceeded(String response) {
             }

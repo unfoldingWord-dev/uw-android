@@ -286,14 +286,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
-    protected int getCheckingLevelImage() {
-
-        Version currentVersion = getVersion();
-        if(currentVersion != null) {
-            return ViewHelper.getCheckingLevelImage(Integer.parseInt(currentVersion.getStatusCheckingLevel()));
-        }
-        else{
-            return -1;
+    @Override
+    public void onBackPressed(boolean isSharing) {
+        if(!isSharing) {
+            super.onBackPressed(isSharing);
         }
     }
 }

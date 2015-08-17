@@ -286,11 +286,11 @@ public class InitialScreenActivity extends UWBaseActivity{
 
                                 switch (which) {
                                     case 0: {
-                                        startActivity(new Intent(getApplicationContext(), ShareActivity.class));
+                                        goToNewActivity(new Intent(getApplicationContext(), ShareActivity.class));
                                         break;
                                     }
                                     case 1: {
-                                        startActivity(new Intent(getApplicationContext(), LoadActivity.class));
+                                        goToNewActivity(new Intent(getApplicationContext(), LoadActivity.class));
                                         break;
                                     }
                                     default: {

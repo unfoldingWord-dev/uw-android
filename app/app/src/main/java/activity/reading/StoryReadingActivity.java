@@ -22,7 +22,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
     private boolean isDiglot = false;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

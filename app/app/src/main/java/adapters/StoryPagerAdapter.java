@@ -60,7 +60,13 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return (mainChapter != null)? mainChapter.getStoryPages().size() + 1 : 0;
+
+        if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
+            return (mainChapter != null)? mainChapter.getStoryPages().size() : 0;
+        }
+        else {
+            return (mainChapter != null) ? mainChapter.getStoryPages().size() + 1 : 0;
+        }
     }
 
     public StoriesChapter getMainChapter() {
@@ -100,7 +106,8 @@ public class StoryPagerAdapter extends PagerAdapter {
 
         if (position == getCount() - 1) {
             view = getNextChapterView(inflater);
-        } else {
+        }
+        if(view == null){
 
             StoryPage currentMainPage = getMainModelForRow(position);
             StoryPage currentSecondPage = getSecondModelForRow(position);
@@ -149,14 +156,15 @@ public class StoryPagerAdapter extends PagerAdapter {
         Button nextButton = (Button) view.findViewById(R.id.next_chapter_screen_button);
 
         if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
-            String nextButtonString = context.getResources().getString(R.string.chapters);
-            nextButton.setText(nextButtonString);
-            nextButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    context.onBackPressed();
-                }
-            });
+//            String nextButtonString = context.getResources().getString(R.string.chapters);
+//            nextButton.setText(nextButtonString);
+//            nextButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    context.onBackPressed();
+//                }
+//            });
+            return null;
         }
         else {
             String nextButtonString = context.getResources().getString(R.string.next_chapter);

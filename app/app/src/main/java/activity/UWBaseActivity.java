@@ -163,6 +163,10 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         handleBack();
     }
 
+    public void onBackPressed(boolean isSharing) {
+        handleBack();
+    }
+
     // Before 2.0
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -199,7 +203,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         finish();
     }
 
-    protected void setLoadingViewVisibility(final boolean visible, final String loadingText, final boolean cancelable){
+    public void setLoadingViewVisibility(final boolean visible, final String loadingText, final boolean cancelable){
 
         runOnUiThread(new Runnable() {
                 @Override
@@ -332,6 +336,8 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
             return R.drawable.back_button_light;
         }
     }
+
+
 }
 
 

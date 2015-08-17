@@ -49,6 +49,7 @@ public class DaoHelperMethods {
         if(arrayIsValid(intAttributes)) {
             for (String name : intAttributes) {
                 entity.addIntProperty(name);
+
             }
         }
     }

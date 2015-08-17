@@ -18,6 +18,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
+import activity.UWBaseActivity;
 import adapters.ReadingPagerAdapter;
 import adapters.ReadingScrollNotifications;
 import model.DaoDBHelper;
@@ -295,7 +296,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     @Override
     public void shareButtonClicked() {
-        SideSharer sharer = new SideSharer(getActivity(), new SideSharer.SideLoaderListener() {
+        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
             @Override
             public void sideLoadingSucceeded(String response) {
             }

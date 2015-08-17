@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import activity.UWBaseActivity;
 import activity.sharing.BluetoothReceivingActivity;
 import activity.sharing.FileFinderActivity;
 import adapters.ShareAdapter;
@@ -45,10 +46,10 @@ public class SideLoader {
 
     private static final String TAG = "SideLoader";
 
-    private Activity activity;
+    private UWBaseActivity activity;
     private ListView optionsListView;
 
-    public SideLoader(Activity activity, ListView optionsListView) {
+    public SideLoader(UWBaseActivity activity, ListView optionsListView) {
         this.activity = activity;
         this.optionsListView = optionsListView;
 
@@ -120,7 +121,7 @@ public class SideLoader {
 
     private void startAutoFindAction(){
         activity.startActivity(new Intent(activity.getApplicationContext(), FileFinderActivity.class));
-        activity.finish();
+        activity.onBackPressed();
     }
 
     private void startStorageLoadAction(){
@@ -164,14 +165,17 @@ public class SideLoader {
 
     private void showSuccessAlert(boolean success){
 
+        activity.setLoadingViewVisibility(false, "", false);
+        View titleView = View.inflate(activity.getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Load Status");
         new AlertDialog.Builder(activity)
-                .setTitle("Load Status")
-                .setMessage((success)? "Loading was successful" : "Loading failed")
+                .setCustomTitle(titleView)
+                .setMessage((success) ? "Loading was successful" : "Loading failed")
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        activity.finish();
+                        activity.onBackPressed();
                     }
                 })
                 .show();
@@ -202,6 +206,7 @@ public class SideLoader {
                 .setMessage(versionText + ":\n\n" + getNames(names))
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        activity.setLoadingViewVisibility(true, "Importing...", false);
                         Uri tempUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), json, "temp_version.ufwtmp");
                         saveVersion(tempUri);
                     }

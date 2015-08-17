@@ -52,7 +52,14 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return chapters.size() + 1;
+        Book nextBook = chapters.get(0).getBook().getNextBook();
+
+        if(nextBook == null){
+            return chapters.size();
+        }
+        else {
+            return chapters.size() + 1;
+        }
     }
 
     @Override
@@ -64,9 +71,8 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
         if (position == getCount() - 1) {
             view = getNextBookView(inflater);
-            ((ViewPager) container).addView(view);
-
-        } else {
+        }
+        if(view == null){
 
             view = inflater.inflate(R.layout.reading_pager_layout, container, false);
             view.setEnabled(false);
@@ -77,8 +83,9 @@ public class ReadingPagerAdapter extends PagerAdapter {
             textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
             textWebView.setOnTouchListener(this.pagerOnTouchListener);
 
-            ((ViewPager) container).addView(view);
+
         }
+        ((ViewPager) container).addView(view);
         return view;
     }
 
@@ -166,9 +173,11 @@ public class ReadingPagerAdapter extends PagerAdapter {
                     moveToNextBook();
                 }
             });
+            return nextChapterView;
         }
-
-        return nextChapterView;
+        else{
+            return null;
+        }
     }
 
     private void moveToNextBook(){
