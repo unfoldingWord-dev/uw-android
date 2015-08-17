@@ -114,6 +114,8 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     protected void reload(){
 
         List<StoriesChapter> data = this.getData();
+        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
+        int index = data.indexOf(page);
         StoriesChapterAdapter adapter = new StoriesChapterAdapter(getContext(), data, 2);
         mListView.setAdapter(adapter);
     }
@@ -138,7 +140,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         if (itemAtPosition instanceof StoriesChapter) {
             StoriesChapter model = (StoriesChapter) itemAtPosition;
 
-            UWPreferenceManager.setSelectedStoryPage(getContext(), model.getStoryPages().get(0).getId());
+            UWPreferenceManager.setNewStoriesPage(getContext(), model.getStoryPages().get(0), false);
             mListener.chapterWasSelected();
         }
     }

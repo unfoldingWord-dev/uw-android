@@ -1,12 +1,16 @@
 package adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import org.unfoldingword.mobile.R;
 
@@ -44,13 +48,20 @@ public class ShareAdapter extends ArrayAdapter<String> {
 
         holder.labelTextView.setText(currentRow);
 
-        int icon = getResourceForText(currentRow);
-        if(icon > -1){
-            holder.iconView.setImageResource(getResourceForText(currentRow));
+        Drawable image = getDrawableForText(currentRow);
+        if(image != null){
+            holder.iconView.setImageDrawable(image);
             holder.iconView.setVisibility(View.VISIBLE);
         }
         else{
-            holder.iconView.setVisibility(View.INVISIBLE);
+            int icon = getResourceForText(currentRow);
+            if(icon > -1){
+                holder.iconView.setImageResource(getResourceForText(currentRow));
+                holder.iconView.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.iconView.setVisibility(View.INVISIBLE);
+            }
         }
 
         return view;
@@ -67,17 +78,25 @@ public class ShareAdapter extends ArrayAdapter<String> {
         else if(text.contains(getContext().getString(R.string.external_storage_title))){
             return R.drawable.sd_card_icon;
         }
-        else if(text.contains(getContext().getString(R.string.choose_directory_title)) || text.contains(getContext().getString(R.string.choose_file_title))){
-            return R.drawable.folder_icon;
-        }
-        else if(text.contains(getContext().getString(R.string.auto_find_title))){
-            return R.drawable.search_image;
-        }
-        else if(text.contains(getContext().getString(R.string.wi_fi_direct_title))){
-            return R.drawable.wifi_icon;
-        }
+
         else{
             return -1;
+        }
+    }
+
+    private Drawable getDrawableForText(String text){
+
+        if(text.contains(getContext().getString(R.string.wi_fi_direct_title))){
+            return new IconDrawable(getContext(), FontAwesomeIcons.fa_wifi).colorRes(R.color.black);
+        }
+        else if(text.contains(getContext().getString(R.string.choose_directory_title)) || text.contains(getContext().getString(R.string.choose_file_title))){
+            return new IconDrawable(getContext(), FontAwesomeIcons.fa_folder).colorRes(R.color.black);
+        }
+        else if(text.contains(getContext().getString(R.string.auto_find_title))){
+            return new IconDrawable(getContext(), FontAwesomeIcons.fa_search).colorRes(R.color.black);
+        }
+        else{
+            return null;
         }
     }
 

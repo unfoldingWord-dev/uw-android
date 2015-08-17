@@ -9,6 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+
 import org.unfoldingword.mobile.R;
 
 /**
@@ -120,6 +123,11 @@ public class UWToolbarViewGroup {
     public void setRightImageResource(int resource){
         rightButtonImage.setImageResource(resource);
         setRightImageVisible(true);
+    }
+
+    public void setRightImageFontAwesome(FontAwesomeIcons icon){
+        setRightImageVisible(true);
+        rightButtonImage.setImageDrawable(new IconDrawable(activity, icon).colorRes(R.color.white).sizeDp(30));
     }
 
     public boolean toggleHidden(){

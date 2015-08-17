@@ -24,6 +24,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
@@ -74,20 +76,24 @@ public class InitialScreenActivity extends UWBaseActivity{
     /**
      * This broadcast for When the update is completed
      */
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
+    private BroadcastReceiver receiver;
 
-            if (intent.getAction().equals(URLUtils.BROAD_CAST_DOWN_COMP)) {
-                Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
+    private BroadcastReceiver createReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
 
-            } else {
-                Toast.makeText(context, "Download error", Toast.LENGTH_SHORT).show();
+                if (intent.getAction().equals(URLUtils.BROAD_CAST_DOWN_COMP)) {
+                    Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(context, "Download error", Toast.LENGTH_SHORT).show();
+                }
+                visibleLayout.setVisibility(View.GONE);
+                reload();
             }
-            visibleLayout.setVisibility(View.GONE);
-            reload();
-        }
-    };
+        };
+    }
 
 
     @Override
@@ -110,10 +116,21 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
     }
 
+    @Override
+    protected void onPause() {
+
+        if(receiver != null) {
+            getApplicationContext().unregisterReceiver(receiver);
+        }
+        receiver = null;
+
+        super.onPause();
+    }
+
     private void setupViews(){
 
         setupToolbar(true, getString(R.string.app_name), false);
-        getToolbar().setRightImageVisible(true);
+        getToolbar().setRightImageFontAwesome(FontAwesomeIcons.fa_download);
         setupListView();
         addSettingsFooter();
     }
@@ -189,6 +206,7 @@ public class InitialScreenActivity extends UWBaseActivity{
             IntentFilter filter = new IntentFilter();
             filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
             filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
+            createReceiver();
             registerReceiver(receiver, filter);
         }
     }

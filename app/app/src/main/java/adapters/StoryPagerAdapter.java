@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class StoryPagerAdapter extends PagerAdapter {
     private int lastChapterNumber = -1;
     private boolean isDiglot;
 
+    private boolean isLandscape = false;
 
     public StoryPagerAdapter(Context context, StoriesChapter mainChapter, StoriesChapter secondChapter) {
         this.mainChapter = mainChapter;
@@ -101,6 +103,8 @@ public class StoryPagerAdapter extends PagerAdapter {
 
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
             ASyncImageView chapterImageView = (ASyncImageView) view.findViewById(R.id.chapter_image_view);
+            chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.FIT_START);
+
             TextView mainTextView = (TextView) view.findViewById(R.id.story_main_text_view);
             TextView secondaryTextView = (TextView) view.findViewById(R.id.story_secondary_text_view);
 
@@ -119,7 +123,7 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private void setupPageForDiglot(TextView mainView, TextView secondView){
 
-        secondView.setVisibility((isDiglot)? View.VISIBLE : View.GONE);
+        secondView.setVisibility((isDiglot) ? View.VISIBLE : View.GONE);
     }
 
     private Bitmap getBitmapFromAsset(String strName)
@@ -202,5 +206,10 @@ public class StoryPagerAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         ((ViewPager) container).removeView((RelativeLayout) object);
+    }
+
+    public void setIsLandscape(boolean isLandscape){
+        this.isLandscape = isLandscape;
+        notifyDataSetChanged();
     }
 }

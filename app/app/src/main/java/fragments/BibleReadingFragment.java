@@ -156,7 +156,6 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.i(TAG, "scroll state changed: " + state);
                 if(state != 0){
                     return;
                 }

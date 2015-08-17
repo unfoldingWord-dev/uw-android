@@ -26,16 +26,6 @@ public class UWPreferenceManager {
         return (isSecond)? getSelectedStoryPageSecondary(context) : getSelectedStoryPage(context);
     }
 
-    private static void setCurrentStoryPage(Context context, long id, boolean isSecond){
-
-        if(isSecond){
-            setSelectedStoryPageSecondary(context, id);
-        }
-        else{
-            setSelectedStoryPage(context, id);
-        }
-    }
-
     public static long getCurrentBibleChapter(Context context, boolean isSecond){
 
         return (isSecond)? getSelectedBibleChapterSecondary(context) : getSelectedBibleChapter(context);
@@ -117,8 +107,8 @@ public class UWPreferenceManager {
 
         if(currentPage == null){
             long newPageId = newVersion.getBooks().get(0).getStoryChapters().get(0).getId();
-            setCurrentStoryPage(context, newPageId, isSecond);
-            setCurrentStoryPage(context, newPageId, !isSecond);
+            changedToStoryPage(context, newPageId, isSecond);
+            changedToStoryPage(context, newPageId, !isSecond);
             return;
         }
 
@@ -126,9 +116,33 @@ public class UWPreferenceManager {
         Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
         StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber(), session);
         StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber(), session);
-        setCurrentStoryPage(context, newPage.getId(), isSecond);
+        changedToStoryPage(context, newPage.getId(), isSecond);
     }
 
+    public static void setNewStoriesPage(Context context, StoryPage newPage, boolean isSecond) {
+
+        changedToStoryPage(context, newPage.getId(), isSecond);
+
+        StoryPage otherPage = UWPreferenceDataManager.getCurrentStoryPage(context, !isSecond);
+        if(otherPage != null) {
+            Version version = otherPage.getStoriesChapter().getBook().getVersion();
+            DaoSession session = DaoDBHelper.getDaoSession(context);
+            Book book = version.getBookForBookSlug(newPage.getStoriesChapter().getBook().getSlug(), session);
+            StoriesChapter newChapter = book.getStoriesChapterForNumber(newPage.getStoriesChapter().getNumber(), session);
+            StoryPage newOtherPage = newChapter.getStoryPageForNumber(newPage.getNumber(), session);
+            changedToStoryPage(context, newOtherPage.getId(), !isSecond);
+        }
+    }
+
+    private static void changedToStoryPage(Context context, long id, boolean isSecond){
+
+        if(isSecond){
+            setSelectedStoryPageSecondary(context, id);
+        }
+        else{
+            setSelectedStoryPage(context, id);
+        }
+    }
 
     public static void willDeleteVersion(Context context, Version version){
         willDeleteStoryVersion(context, version);

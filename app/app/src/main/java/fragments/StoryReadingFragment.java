@@ -2,6 +2,7 @@ package fragments;
 
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -96,7 +97,6 @@ public class StoryReadingFragment extends Fragment{
         }
     }
 
-
     public void update(){
         updateData();
         updateVersionInfo();
@@ -108,6 +108,7 @@ public class StoryReadingFragment extends Fragment{
         setupPager(view);
         secondBarView = view.findViewById(R.id.story_bottom_bar_second_layout);
         setBottomBarsDiglot(false);
+        adapter.setIsLandscape(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
     private void updateVersionInfo(){
@@ -177,17 +178,22 @@ public class StoryReadingFragment extends Fragment{
                 @Override
                 public void onPageSelected(int position) {
 
-                    List<StoryPage> pages = adapter.getMainChapter().getStoryPages();
-                    if (position < pages.size()) {
-                        StoryPage model = pages.get(position);
-                        UWPreferenceManager.setSelectedStoryPage(getActivity().getApplicationContext(), model.getId());
-                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
-                    }
                 }
 
                 @Override
                 public void onPageScrollStateChanged(int state) {
 
+                    if(state != 0){
+                        return;
+                    }
+                    int position = readingViewPager.getCurrentItem();
+                    List<StoryPage> pages = adapter.getMainChapter().getStoryPages();
+
+                    if (position < pages.size()) {
+                        StoryPage model = pages.get(position);
+                        UWPreferenceManager.setNewStoriesPage(getActivity().getApplicationContext(), model, false);
+//                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+                    }
                 }
             });
     }
@@ -257,6 +263,7 @@ public class StoryReadingFragment extends Fragment{
 
     public void shareVersion(Version version) {
 
+
         SideSharer sharer = new SideSharer(getActivity(), new SideSharer.SideLoaderListener() {
             @Override
             public void sideLoadingSucceeded(String response) {
@@ -297,5 +304,9 @@ public class StoryReadingFragment extends Fragment{
         }
 
         layout.setLayoutParams(params);
+    }
+
+    public void setOrientationAsLandscape(boolean isLandscape){
+        adapter.setIsLandscape(isLandscape);
     }
 }

@@ -148,7 +148,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
         receiver = null;
         super.onPause();
-
     }
 
     protected void updateViews(){

@@ -1,5 +1,6 @@
 package activity.reading;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -113,5 +114,11 @@ public class StoryReadingActivity extends BaseReadingActivity {
         boolean isHidden = super.toggleNavBar();
         readingFragment.setBottomBarHidden(isHidden);
         return isHidden;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        readingFragment.setOrientationAsLandscape((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE));
     }
 }

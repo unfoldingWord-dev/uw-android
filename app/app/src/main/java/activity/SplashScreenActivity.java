@@ -43,7 +43,6 @@ public class SplashScreenActivity extends Activity {
     }
 
     private void unRegisterPreloadReceiver(){
-
         unregisterReceiver(receiver);
     }
 

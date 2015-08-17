@@ -58,7 +58,7 @@ public class ReadingBottomBarViewGroup {
         });
 
         ImageButton shareButton = (ImageButton) baseLayout.findViewById(R.id.bottom_bar_share_button);
-        shareButton.setImageDrawable(new IconDrawable(context, FontAwesomeIcons.fa_share).colorRes(R.color.white).sizeDp(30));
+        shareButton.setImageDrawable(new IconDrawable(context, FontAwesomeIcons.fa_share_square_o).colorRes(R.color.white).sizeDp(30));
 
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
