@@ -78,6 +78,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_bible_reading, container, false);
+        updateBook();
         setupViews(view);
         updateVersionInfo();
 
@@ -92,8 +93,10 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     private void setupViews(View view){
-        bottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentBook.getVersion(), this);
-        setupPager(view);
+        if(currentBook != null) {
+            bottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout), currentBook.getVersion(), this);
+            setupPager(view);
+        }
     }
 
     private void updateVersionInfo(){

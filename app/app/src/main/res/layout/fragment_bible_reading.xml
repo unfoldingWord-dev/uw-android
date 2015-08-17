@@ -12,6 +12,7 @@
 
     </android.support.v4.view.ViewPager>
 
+
     <include
         android:id="@+id/bottom_bar_layout"
         layout="@layout/reading_bottom_bar"

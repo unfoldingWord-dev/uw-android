@@ -69,8 +69,15 @@ public class ReadingBottomBarViewGroup {
     }
 
     public void updateWithVersion(Version version){
-        this.checkingLevelButton.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
-        this.versionTextView.setText(version.getName());
+        if(version != null) {
+            this.checkingLevelButton.setVisibility(View.VISIBLE);
+            this.checkingLevelButton.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+            this.versionTextView.setText(version.getName());
+        }
+        else{
+            this.checkingLevelButton.setVisibility(View.INVISIBLE);
+            this.versionTextView.setText("Select Version");
+        }
     }
 
     public void toggleHidden(){
@@ -90,6 +97,5 @@ public class ReadingBottomBarViewGroup {
 
         baseLayout.setLayoutParams(params);
         hidden = !hidden;
-
     }
 }

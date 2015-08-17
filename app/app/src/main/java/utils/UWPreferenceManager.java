@@ -2,6 +2,7 @@ package utils;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.unfoldingword.mobile.R;
 
@@ -18,9 +19,21 @@ import model.daoModels.Version;
  */
 public class UWPreferenceManager {
 
+    private static final String TAG = "UWPreferenceManager";
+
     public static long getCurrentStoryPage(Context context, boolean isSecond){
 
         return (isSecond)? getSelectedStoryPageSecondary(context) : getSelectedStoryPage(context);
+    }
+
+    private static void setCurrentStoryPage(Context context, long id, boolean isSecond){
+
+        if(isSecond){
+            setSelectedStoryPageSecondary(context, id);
+        }
+        else{
+            setSelectedStoryPage(context, id);
+        }
     }
 
     public static long getCurrentBibleChapter(Context context, boolean isSecond){
@@ -98,31 +111,22 @@ public class UWPreferenceManager {
 //        }
     }
 
-    public static void setNewStoriesVersion(Context context, Version version, boolean isSecond) {
+    public static void setNewStoriesVersion(Context context, Version newVersion, boolean isSecond) {
 
-        long currentId = getSelectedStoryPage(context);
-        StoryPage requestedPage = null;
-        if (currentId > -1) {
+        StoryPage currentPage = UWPreferenceDataManager.getCurrentStoryPage(context, isSecond);
 
-            StoryPage currentPage = DaoDBHelper.getDaoSession(context).getStoryPageDao().loadDeep(currentId);
-            Book newBook = version.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), DaoDBHelper.getDaoSession(context));
-            if (newBook != null) {
-                StoriesChapter requestedChapter = newBook.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber(), DaoDBHelper.getDaoSession(context));
-                if (requestedChapter != null) {
-                    requestedPage = requestedChapter.getStoriesChapterForNumber(currentPage.getNumber(), DaoDBHelper.getDaoSession(context));
-                }
-            }
-        }
-        if (requestedPage == null) {
-            requestedPage = version.getBooks().get(0).getStoryChapters(true).get(0).getStoryPages().get(0);
+        if(currentPage == null){
+            long newPageId = newVersion.getBooks().get(0).getStoryChapters().get(0).getId();
+            setCurrentStoryPage(context, newPageId, isSecond);
+            setCurrentStoryPage(context, newPageId, !isSecond);
+            return;
         }
 
-        if (isSecond){
-            setSelectedStoryPageSecondary(context, requestedPage.getId());
-        }
-        else{
-            setSelectedStoryPage(context, requestedPage.getId());
-        }
+        DaoSession session = DaoDBHelper.getDaoSession(context);
+        Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
+        StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber(), session);
+        StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber(), session);
+        setCurrentStoryPage(context, newPage.getId(), isSecond);
     }
 
 
@@ -179,14 +183,19 @@ public class UWPreferenceManager {
     public static void setSelectedStoryPage(Context context, long newValue){
 
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_PAGE, newValue).commit();
+        Log.i(TAG, "set main story page: " + newValue);
     }
 
-    private static final String STORY_PAGE_SECONDARY = "selected_story_page_id";
+    private static final String STORY_PAGE_SECONDARY = "selected_secondary_story_page_id";
     public static long getSelectedStoryPageSecondary(Context context){
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_PAGE_SECONDARY, -1);
+
+        long id = android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_PAGE_SECONDARY, -1);
+        return id;
     }
     public static void setSelectedStoryPageSecondary(Context context, long newValue){
+
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_PAGE_SECONDARY, newValue).commit();
+        Log.i(TAG, "set secondary story page: " + newValue);
     }
 
     private static final String LAST_UPDATED_ID = "last_updated_date";

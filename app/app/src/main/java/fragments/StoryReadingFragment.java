@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.unfoldingword.mobile.R;
@@ -44,6 +46,10 @@ public class StoryReadingFragment extends Fragment{
     private ReadingBottomBarViewGroup mainBottomBar;
     private ReadingBottomBarViewGroup secondBottomBar;
 
+    private RelativeLayout baseLayout;
+
+    private View secondBarView;
+
     public static StoryReadingFragment newInstance() {
         StoryReadingFragment fragment = new StoryReadingFragment();
         Bundle args = new Bundle();
@@ -68,9 +74,11 @@ public class StoryReadingFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_story_reading, container, false);
+        baseLayout = (RelativeLayout) view.findViewById(R.id.story_reading_fragment_base_layout);
         updateData();
         setupViews(view);
         updateVersionInfo();
+        setDiglotShowing(false);
 
         return view;
     }
@@ -98,16 +106,24 @@ public class StoryReadingFragment extends Fragment{
     private void setupViews(View view){
         setupBottomBars(view);
         setupPager(view);
+        secondBarView = view.findViewById(R.id.story_bottom_bar_second_layout);
         setBottomBarsDiglot(false);
     }
 
     private void updateVersionInfo(){
-        this.mainBottomBar.updateWithVersion(mainChapter.getBook().getVersion());
+
+        if(mainChapter != null && secondChapter != null){
+            this.mainBottomBar.updateWithVersion(mainChapter.getBook().getVersion());
+            this.secondBottomBar.updateWithVersion(secondChapter.getBook().getVersion());
+        }
     }
 
     private void setupBottomBars(View view){
+
+        Version mainVersion = (mainChapter != null)? mainChapter.getBook().getVersion() : null;
+
         mainBottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_main_layout),
-                mainChapter.getBook().getVersion(), new ReadingBottomBarViewGroup.BottomBarListener() {
+                mainVersion, new ReadingBottomBarViewGroup.BottomBarListener() {
             @Override
             public void checkingLevelPressed() {
                 listener.showCheckingLevel(mainChapter.getBook().getVersion());
@@ -115,17 +131,18 @@ public class StoryReadingFragment extends Fragment{
 
             @Override
             public void versionButtonClicked() {
-                shareVersion(mainChapter.getBook().getVersion());
+                listener.clickedChooseVersion(false);
             }
 
             @Override
             public void shareButtonClicked() {
-                listener.clickedChooseVersion(false);
+                shareVersion(mainChapter.getBook().getVersion());
             }
         });
 
+        Version secondVersion = (secondChapter != null)? secondChapter.getBook().getVersion() : null;
         secondBottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_second_layout),
-                secondChapter.getBook().getVersion(), new ReadingBottomBarViewGroup.BottomBarListener() {
+                secondVersion, new ReadingBottomBarViewGroup.BottomBarListener() {
             @Override
             public void checkingLevelPressed() {
                 listener.showCheckingLevel(secondChapter.getBook().getVersion());
@@ -133,12 +150,12 @@ public class StoryReadingFragment extends Fragment{
 
             @Override
             public void versionButtonClicked() {
-                shareVersion(secondChapter.getBook().getVersion());
+                listener.clickedChooseVersion(true);
             }
 
             @Override
             public void shareButtonClicked() {
-                listener.clickedChooseVersion(true);
+                shareVersion(secondChapter.getBook().getVersion());
             }
         });
     }
@@ -228,11 +245,9 @@ public class StoryReadingFragment extends Fragment{
                         if(numberOfTaps == 2){
                             if(listener != null) {
                                 listener.toggleNavBar();
-                                mainBottomBar.toggleHidden();
                                 return true;
                             }
                         }
-
                 }
 
                 return false;
@@ -259,18 +274,28 @@ public class StoryReadingFragment extends Fragment{
     }
 
     public void setDiglotShowing(boolean showing){
-        adapter.setIsDiglot(showing);
+
+        if(adapter != null) {
+            adapter.setIsDiglot(showing);
+        }
+        setBottomBarsDiglot(showing);
     }
 
     public void setBottomBarsDiglot(boolean showing){
-        View view = getView();
-        if(view != null) {
-            view.findViewById(R.id.story_bottom_bar_second_layout).setVisibility((showing) ? View.VISIBLE : View.GONE);
-        }
+        secondBarView.findViewById(R.id.story_bottom_bar_second_layout).setVisibility((showing) ? View.VISIBLE : View.GONE);
     }
 
     public void setBottomBarHidden(boolean hide){
-        mainBottomBar.setHidden(hide);
-        secondBottomBar.setHidden(hide);
+
+        LinearLayout layout = (LinearLayout) baseLayout.findViewById(R.id.stories_bottom_bar_layout);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
+        if(hide){
+            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
+        }
+        else{
+            params.removeRule(RelativeLayout.BELOW);
+        }
+
+        layout.setLayoutParams(params);
     }
 }

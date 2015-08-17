@@ -3,7 +3,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_alignParentBottom="true"
-    android:layout_width="wrap_parent"
+    android:layout_width="wrap_content"
     android:layout_height="40dp"
     android:background="@color/light_brown"
     android:animateLayoutChanges="true">
@@ -92,4 +92,5 @@
             />
 
     </LinearLayout>
+
 </RelativeLayout>
