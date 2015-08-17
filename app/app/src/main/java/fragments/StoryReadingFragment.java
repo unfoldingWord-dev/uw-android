@@ -164,7 +164,7 @@ public class StoryReadingFragment extends Fragment{
     private void setupPager(View view){
 
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
-        adapter = new StoryPagerAdapter(getActivity().getApplicationContext(), mainChapter, secondChapter);
+        adapter = new StoryPagerAdapter(getActivity(), mainChapter, secondChapter);
 
             readingViewPager.setAdapter(adapter);
             readingViewPager.setOnTouchListener(getDoubleTapTouchListener());

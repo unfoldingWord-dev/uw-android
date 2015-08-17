@@ -1,6 +1,8 @@
 package adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +28,7 @@ import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
+import view.popover.ActionItem;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -35,7 +38,7 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private static final String TAG = "ViewPagerAdapter";
 
-    private Context context;
+    private Activity context;
     private ViewGroup container;
     private StoriesChapter mainChapter;
     private StoriesChapter secondChapter;
@@ -45,11 +48,12 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private boolean isLandscape = false;
 
-    public StoryPagerAdapter(Context context, StoriesChapter mainChapter, StoriesChapter secondChapter) {
+    public StoryPagerAdapter(Activity context, StoriesChapter mainChapter, StoriesChapter secondChapter) {
         this.mainChapter = mainChapter;
         this.secondChapter = secondChapter;
         if(mainChapter != null) {
-            lastChapterNumber = mainChapter.getBook().getStoryChapters().size();
+            List<StoriesChapter> chapters = mainChapter.getBook().getStoryChapters();
+            lastChapterNumber = Integer.parseInt(chapters.get(chapters.size() -1 ).getNumber());
         }
         this.context = context;
     }
@@ -147,12 +151,12 @@ public class StoryPagerAdapter extends PagerAdapter {
         if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
             String nextButtonString = context.getResources().getString(R.string.chapters);
             nextButton.setText(nextButtonString);
-//            nextButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    activity.finish();
-//                }
-//            });
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    context.onBackPressed();
+                }
+            });
         }
         else {
             String nextButtonString = context.getResources().getString(R.string.next_chapter);
@@ -190,12 +194,12 @@ public class StoryPagerAdapter extends PagerAdapter {
         this.mainChapter = nextChapter;
         getCount();
 
-        int current_value = Integer.parseInt(mainChapter.getNumber());
-        UWPreferenceManager.setSelectedStoryPage(context, nextChapter.getId());
-
+//        int current_value = Integer.parseInt(mainChapter.getNumber());
+        UWPreferenceManager.setSelectedStoryPage(context, nextChapter.getStoryPages().get(0).getId());
         notifyDataSetChanged();
-
         ((ViewPager) this.container).setCurrentItem(0);
+        context.getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
+
     }
 
     @Override

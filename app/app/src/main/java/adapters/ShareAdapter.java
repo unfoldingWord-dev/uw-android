@@ -40,7 +40,6 @@ public class ShareAdapter extends ArrayAdapter<String> {
             holder.labelTextView = (TextView) view.findViewById(R.id.share_label);
             holder.iconView = (ImageView) view.findViewById(R.id.share_icon);
 
-
             view.setTag(holder);
         } else {
             holder = (ViewHolderForGroup) view.getTag();

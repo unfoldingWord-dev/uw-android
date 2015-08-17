@@ -104,7 +104,9 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
             mListView = (ListView) view.findViewById(R.id.generalList);
             mListView.setOnItemClickListener(this);
 
-            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, 2));
+            StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
+            int selectedIndex = Integer.parseInt(page.getStoriesChapter().getNumber()) - 1;
+            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
 
             int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(STORY_CHAPTERS_INDEX_STRING, -1);
             mListView.setSelection((scrollPosition > 0)? scrollPosition - 1 : 0);
