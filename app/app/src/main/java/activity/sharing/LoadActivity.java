@@ -8,12 +8,11 @@ import android.widget.ListView;
 import org.unfoldingword.mobile.R;
 
 import java.io.File;
-import java.util.Arrays;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import sideloading.SideLoader;
-import utils.FileLoader;
+import utils.FileUtil;
 
 public class LoadActivity extends UWBaseActivity {
 
@@ -35,7 +34,7 @@ public class LoadActivity extends UWBaseActivity {
         Uri uri = getIntent().getData();
         if(uri != null) {
             File keyboardFile = new File(uri.getPath());
-            loader.textWasFound(loader.unzipText(FileLoader.getbytesFromFile(keyboardFile)));
+            loader.textWasFound(loader.unzipText(FileUtil.getbytesFromFile(keyboardFile)));
         }
     }
 

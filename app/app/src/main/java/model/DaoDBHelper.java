@@ -22,11 +22,18 @@ public class DaoDBHelper {
     static public DaoSession getDaoSession(Context context){
 
         if(daoMaster == null) {
-            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context,
+            DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
                     context.getResources().getString(R.string.database_name), null);
             daoMaster = new DaoMaster(helper.getWritableDatabase());
         }
         DaoSession session = daoMaster.newSession();
         return session;
+    }
+
+    static public void saveDatabase(Context context){
+
+        DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
+                context.getResources().getString(R.string.database_name), null);
+        helper.saveDatabase();
     }
 }

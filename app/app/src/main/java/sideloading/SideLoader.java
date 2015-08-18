@@ -1,6 +1,5 @@
 package sideloading;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -35,7 +34,7 @@ import model.parsers.LanguageParser;
 import model.parsers.ProjectParser;
 import model.parsers.VersionParser;
 import services.UWSideLoaderService;
-import utils.FileLoader;
+import utils.FileUtil;
 import utils.Zipper;
 import wifiDirect.WiFiDirectActivity;
 
@@ -158,7 +157,7 @@ public class SideLoader {
 
     public void loadFile(File file){
 
-        byte[] fileText = FileLoader.getbytesFromFile(file);
+        byte[] fileText = FileUtil.getbytesFromFile(file);
         fileText = unzipText(fileText);
         textWasFound(fileText);
     }
@@ -207,7 +206,7 @@ public class SideLoader {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         activity.setLoadingViewVisibility(true, "Importing...", false);
-                        Uri tempUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), json, "temp_version.ufwtmp");
+                        Uri tempUri = FileUtil.createTemporaryFile(activity.getApplicationContext(), json, "temp_version.ufwtmp");
                         saveVersion(tempUri);
                     }
                 })

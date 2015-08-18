@@ -1,6 +1,5 @@
 package sideloading;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -18,7 +17,7 @@ import java.io.File;
 import activity.UWBaseActivity;
 import adapters.ShareAdapter;
 import ar.com.daidalos.afiledialog.FileChooserDialog;
-import utils.FileLoader;
+import utils.FileUtil;
 import utils.Zipper;
 import wifiDirect.WiFiDirectActivity;
 
@@ -113,7 +112,7 @@ public class SideSharer {
 
     private void startShareOtherAction(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
+        Uri fileUri = FileUtil.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
         Intent sharingIntent = new Intent(
                 Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
@@ -146,7 +145,7 @@ public class SideSharer {
 
     private void openBluetoothSharing(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
+        Uri fileUri = FileUtil.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
 
 
         Intent sharingIntent = new Intent(
@@ -162,7 +161,7 @@ public class SideSharer {
 
     private void startNFCShareAction(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
+        Uri fileUri = FileUtil.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
 
         Intent sharingIntent = new Intent(
                 Intent.ACTION_SEND);
@@ -179,7 +178,7 @@ public class SideSharer {
 
     private void startWIFIShareAction(){
 
-        Uri fileUri = FileLoader.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
+        Uri fileUri = FileUtil.createTemporaryFile(activity.getApplicationContext(), getZippedBytes(), fileName);
 
         Intent intent = new Intent(activity.getApplicationContext(), WiFiDirectActivity.class)
                 .setData(fileUri);
@@ -197,7 +196,7 @@ public class SideSharer {
 
     private void startSDCardShareAction(){
         activity.setLoadingViewVisibility(true, "Saving", false);
-        FileLoader.saveFileToSdCard(activity.getApplicationContext(), getZippedBytes(), fileName);
+        FileUtil.saveFileToSdCard(activity.getApplicationContext(), getZippedBytes(), fileName);
         showSuccessAlert(true);
     }
 
@@ -221,7 +220,7 @@ public class SideSharer {
     }
 
     private void saveToFile(String dir){
-        FileLoader.saveFile(getZippedBytes(), dir, fileName);
+        FileUtil.saveFile(getZippedBytes(), dir, fileName);
         showSuccessAlert(true);
     }
 

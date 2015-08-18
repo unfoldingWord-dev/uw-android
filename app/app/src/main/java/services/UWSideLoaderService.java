@@ -13,10 +13,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 
 import model.DaoDBHelper;
 import model.DownloadState;
@@ -28,7 +26,7 @@ import model.parsers.LanguageParser;
 import model.parsers.ProjectParser;
 import model.parsers.VersionParser;
 import tasks.UpdateAndVerifyBookRunnable;
-import utils.FileLoader;
+import utils.FileUtil;
 import utils.FileNameHelper;
 
 /**
@@ -58,7 +56,7 @@ public class UWSideLoaderService extends UWUpdaterService {
 
         Uri fileUri = intent.getData();
         File file = new File(fileUri.getPath());
-        sideLoadText = FileLoader.getStringFromFile(file);
+        sideLoadText = FileUtil.getStringFromFile(file);
 
         addRunnable(new SideVersionsRunnable());
 
