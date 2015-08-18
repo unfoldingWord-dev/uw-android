@@ -106,7 +106,8 @@ public class UWPreferenceManager {
         StoryPage currentPage = UWPreferenceDataManager.getCurrentStoryPage(context, isSecond);
 
         if(currentPage == null){
-            long newPageId = newVersion.getBooks().get(0).getStoryChapters().get(0).getId();
+            StoryPage page = newVersion.getBooks().get(0).getStoryChapters().get(0).getStoryPages().get(0);
+            long newPageId = page.getId();
             changedToStoryPage(context, newPageId, isSecond);
             changedToStoryPage(context, newPageId, !isSecond);
             return;
@@ -173,7 +174,7 @@ public class UWPreferenceManager {
         }
     }
 
-    private static final String BIBLE_CHAPTER_ID = "selected_bible_chapter_id";
+    private static final String BIBLE_CHAPTER_ID = "selected_normal_bible_chapter_id";
     public static long getSelectedBibleChapter(Context context){
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_CHAPTER_ID, -1);
     }
@@ -182,7 +183,7 @@ public class UWPreferenceManager {
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(BIBLE_CHAPTER_ID, newValue).commit();
     }
 
-    private static final String BIBLE_CHAPTER_ID_SECONDARY = "selected_bible_chapter_id_secondary";
+    private static final String BIBLE_CHAPTER_ID_SECONDARY = "selected_normal_bible_chapter_id_secondary";
     public static long getSelectedBibleChapterSecondary(Context context){
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_CHAPTER_ID_SECONDARY, -1);
     }

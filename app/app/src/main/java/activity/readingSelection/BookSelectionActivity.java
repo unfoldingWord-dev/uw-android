@@ -10,14 +10,14 @@ import org.unfoldingword.mobile.R;
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import fragments.ChapterSelectionFragment;
+import fragments.ChapterSelectionFragmentListener;
 import fragments.StoryChaptersFragment;
 import model.daoModels.Project;
 
 /**
  * Created by Fechner on 2/27/15.
  */
-public class BookSelectionActivity extends UWBaseActivity implements ChapterSelectionFragment.ChapterSelectionListener,
-        StoryChaptersFragment.StoryChaptersFragmentListener{
+public class BookSelectionActivity extends UWBaseActivity implements ChapterSelectionFragmentListener {
 
     public static final String PROJECT_PARAM = "true";
 
@@ -67,11 +67,6 @@ public class BookSelectionActivity extends UWBaseActivity implements ChapterSele
         if(resultCode == 1){
             finish();
         }
-    }
-
-    @Override
-    public void selectionFragmentChoseChapter() {
-        handleBack();
     }
 
     @Override

@@ -23,7 +23,7 @@ import model.daoModels.Book;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link fragments.ChapterSelectionFragment.ChapterSelectionListener} interface
+ * {@link fragments.ChapterSelectionFragmentListener} interface
  * to handle interaction events.
  * Use the {@link ChapterSelectionFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -32,7 +32,7 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
 
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
 
-    private ChapterSelectionListener mListener;
+    private ChapterSelectionFragmentListener mListener;
 
     private BooksFragment booksFragment;
     private ChaptersFragment chapterFragment;
@@ -145,7 +145,7 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (ChapterSelectionListener) activity;
+            mListener = (ChapterSelectionFragmentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -176,20 +176,6 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
     @Override
     public void chapterWasSelected() {
 
-        mListener.selectionFragmentChoseChapter();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface ChapterSelectionListener {
-        void selectionFragmentChoseChapter();
+        mListener.chapterWasSelected();
     }
 }

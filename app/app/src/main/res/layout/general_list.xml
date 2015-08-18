@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:textColor="#fff"
         android:background="@color/very_dark_gray"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
