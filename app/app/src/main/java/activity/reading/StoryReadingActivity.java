@@ -33,21 +33,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected String getVersionText() {
-        return (currentChapter != null)? currentChapter.getBook().getVersion().getUniqueSlug() : "Select Version";
-    }
-
-    @Override
-    protected Version getVersion() {
-        if(currentChapter == null){
-            return null;
-        }
-        else{
-            return currentChapter.getBook().getVersion();
-        }
-    }
-
-    @Override
     protected void scrolled() {
         boolean isLoaded = loadData();
         if (isLoaded){
@@ -62,6 +47,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
         if(page != null){
                 currentChapter = page.getStoriesChapter();
+                this.version = currentChapter.getBook().getVersion();
                 return true;
         } else {
             currentChapter = null;

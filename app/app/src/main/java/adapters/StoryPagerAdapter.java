@@ -60,7 +60,9 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-
+        if(mainChapter == null){
+            return 0;
+        }
         if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
             return (mainChapter != null)? mainChapter.getStoryPages().size() : 0;
         }

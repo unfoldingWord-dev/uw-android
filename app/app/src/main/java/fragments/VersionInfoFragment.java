@@ -15,25 +15,25 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import model.daoModels.Version;
-import view.ViewHelper;
+import view.ViewDataHelper;
 
-public class CheckingLevelFragment extends DialogFragment {
+public class VersionInfoFragment extends DialogFragment {
 
     private static final String VERSION_PARAM = "VERSION_PARAM";
 
     private Version version;
 
-    public static CheckingLevelFragment createFragment(Version version){
+    public static VersionInfoFragment createFragment(Version version){
 
         Bundle args = new Bundle();
         args.putSerializable(VERSION_PARAM, version);
 
-        CheckingLevelFragment fragment = new CheckingLevelFragment();
+        VersionInfoFragment fragment = new VersionInfoFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public CheckingLevelFragment() {
+    public VersionInfoFragment() {
     }
 
     @Override
@@ -58,15 +58,15 @@ public class CheckingLevelFragment extends DialogFragment {
 
 
         checkingEntityTextView.setText(version.getStatusCheckingEntity());
-        checkingLevelImage.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelImage.setImageResource(ViewDataHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getStatusVersion());
         publishDateTextView.setText(version.getStatusPublishDate());
         verificationTextView.setText(version.getVerificationText());
-        checkingLevelExplanationTextView.setText(ViewHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelExplanationTextView.setText(ViewDataHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
         int verificationStatus = version.getVerificationStatus();
-        status.setBackgroundResource(ViewHelper.getColorForStatus(verificationStatus));
-        status.setText(ViewHelper.getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
+        status.setBackgroundResource(ViewDataHelper.getColorForStatus(verificationStatus));
+        status.setText(ViewDataHelper.getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
 
         return view;
     }

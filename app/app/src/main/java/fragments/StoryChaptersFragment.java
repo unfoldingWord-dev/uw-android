@@ -31,7 +31,7 @@ import utils.UWPreferenceManager;
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link fragments.StoryChaptersFragment.StoryChaptersFragmentListener} interface
+ * {@link fragments.ChapterSelectionFragmentListener} interface
  * to handle interaction events.
  * Use the {@link fragments.StoryChaptersFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -41,7 +41,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     public static String STORY_CHAPTERS_INDEX_STRING = "STORY_CHAPTERS_INDEX_STRING";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
 
-    private StoryChaptersFragmentListener mListener = null;
+    private ChapterSelectionFragmentListener mListener = null;
 
     protected ListView mListView = null;
     private boolean showTitle = false;
@@ -153,7 +153,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
         if(mListener == null) {
             try {
-                mListener = (StoryChaptersFragmentListener) activity;
+                mListener = (ChapterSelectionFragmentListener) activity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(activity.toString()
                         + " must implement OnFragmentInteractionListener");
@@ -178,19 +178,4 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         super.onDetach();
         mListener = null;
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface StoryChaptersFragmentListener {
-        public void chapterWasSelected();
-    }
-
 }

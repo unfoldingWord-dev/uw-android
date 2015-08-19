@@ -40,18 +40,21 @@
     </LinearLayout>
 
 
-    <TextView
-        android:layout_below="@+id/toolbar"
+    <Button
+        android:padding="20dp"
+        android:background="@drawable/gray_button_selector"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/light_brown"
         android:text="@string/no_selected_version_text"
         android:layout_gravity="center"
         android:textAlignment="center"
         android:id="@+id/reading_error_text_view"
-        android:layout_margin="20dp"
         android:visibility="gone"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:onClick="goToVersionSelection"/>
 
     <include
         android:id="@+id/toolbar"

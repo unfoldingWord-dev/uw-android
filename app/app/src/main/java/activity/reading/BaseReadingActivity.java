@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -23,20 +24,21 @@ import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
 import adapters.ReadingScrollNotifications;
 import fragments.ChapterSelectionFragment;
-import fragments.CheckingLevelFragment;
+import fragments.ChapterSelectionFragmentListener;
+import fragments.VersionInfoFragment;
 import fragments.ReadingFragmentListener;
+import fragments.StoryChaptersFragment;
 import fragments.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
-import view.ViewHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
  */
 public abstract class BaseReadingActivity extends UWBaseActivity implements
         VersionSelectionFragment.VersionSelectionFragmentListener,
-        ChapterSelectionFragment.ChapterSelectionListener,
+        ChapterSelectionFragmentListener,
         ReadingFragmentListener
 {
     private static final String TAG = "ReadingActivity";
@@ -48,17 +50,20 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected FrameLayout readingLayout;
     protected FrameLayout secondaryReadingLayout;
     protected TextView errorTextView;
+    protected Version version;
 
     abstract protected boolean loadData();
     abstract protected String getChapterLabelText();
-    abstract protected String getVersionText();
     abstract protected void updateReadingView();
-    abstract protected Version getVersion();
     abstract protected Project getProject();
     abstract protected void scrolled();
     abstract protected void toggleDiglot();
 
     private BroadcastReceiver receiver;
+
+    protected Version getVersion(){
+        return this.version;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,13 +209,22 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(isTablet()){
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-            ChapterSelectionFragment fragment = ChapterSelectionFragment.newInstance(true);
-            fragment.show(ft, CHAPTER_SELECTION_FRAGMENT_ID);
+            getChapterFragment().show(ft, CHAPTER_SELECTION_FRAGMENT_ID);
         }
         else {
             startActivity(new Intent(getApplicationContext(), BookSelectionActivity.class).putExtra(BookSelectionActivity.PROJECT_PARAM, getProject()));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
+        }
+    }
+
+    private DialogFragment getChapterFragment(){
+
+        boolean isStories = getProject().getUniqueSlug().contains("obs");
+        if(isStories){
+            return StoryChaptersFragment.newInstance(true);
+        }
+        else{
+            return ChapterSelectionFragment.newInstance(true);
         }
     }
 
@@ -247,12 +261,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void selectionFragmentChoseChapter() {
+    public void chapterWasSelected() {
         removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
         loadData();
         updateViews();
     }
-
 
 
     private void removeFragment(String fragmentId){
@@ -268,7 +281,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void goToCheckingLevelView(Version version){
-        CheckingLevelFragment fragment = CheckingLevelFragment.createFragment(version);
+        VersionInfoFragment fragment = VersionInfoFragment.createFragment(version);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
@@ -291,5 +304,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(!isSharing) {
             super.onBackPressed(isSharing);
         }
+    }
+
+    public void goToVersionSelection(View view) {
+
+        goToVersionSelection(false);
     }
 }

@@ -37,7 +37,7 @@
     <string name="old_pref_default_base_url">https://api.unfoldingword.org/ts/txt/2/catalog.json</string>
     <string name="languages_json_url">http://td.unfoldingword.org/exports/langnames.json</string>
 
-    <string name="no_selected_version_text">Please select a version to begin reading</string>
+    <string name="no_selected_version_text">Select Version</string>
 
     <string name="verified_button_char">✓</string>
     <string name="expired_button_char">!</string>

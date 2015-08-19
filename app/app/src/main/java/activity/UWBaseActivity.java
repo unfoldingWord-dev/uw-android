@@ -36,11 +36,10 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     private RelativeLayout loadingBox;
     private boolean isActive = false;
 
-
-
     abstract public AnimationParadigm getAnimationParadigm();
 
 
+    //region Parent Overrides
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
@@ -63,10 +62,38 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         isActive = false;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            handleBack();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        handleBack();
+    }
+
+    // Before 2.0
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            handleBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    //endregion
+
+    //region Accessors
+
     public boolean isActive() {
         return isActive;
     }
+    //endregion
 
+    //region Setup
     public void setupToolbar(boolean hasLogo, String titleText, boolean titleClickable, boolean rightButtonClickable){
 
         setupToolbar(hasLogo, titleText, titleClickable);
@@ -89,20 +116,20 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         this.toolbar.setBackgroundColor(color);
     }
 
-    @Override
-    public void centerButtonClicked() {
-
-    }
-    @Override
-    public void leftButtonClicked() {
-        handleBack();
-    }
-
-    @Override
-    public void rightButtonClicked() {
-
+    public int getBackResource(){
+        if(getAnimationParadigm() == AnimationParadigm.ANIMATION_VERTICAL ||
+                getAnimationParadigm() == AnimationParadigm.ANIMATION_FORWARD_RIGHT_BACK_DOWN){
+            return R.drawable.x_button;
+        }
+        else {
+            return R.drawable.back_button_light;
+        }
     }
 
+    //endregion
+
+
+    //region View changing in current activity
     protected void setLoadingBoxVisible(boolean visible, int viewGroupId){
 
         if(loadingBox == null){
@@ -114,107 +141,17 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         loadingBox.setVisibility((visible) ? View.VISIBLE : View.GONE);
     }
 
-    protected void rightToolbarButtonPressed(){}
-
-    public void goToNextActivity(Class nextClass){
-
-        int enterAnimation = getNextAnimationEnter(getAnimationParadigm());
-        int exitAnimation = getNextAnimationExit(getAnimationParadigm());
-
-        startActivity(new Intent(getApplicationContext(), nextClass));
-        overridePendingTransition(enterAnimation, exitAnimation);
-    }
-
-    public void goToNewActivity(Class nextClass){
-
-        int enterAnimation = getNextAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
-        int exitAnimation = getNextAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
-        startActivity(new Intent(getApplicationContext(), nextClass));
-        overridePendingTransition(enterAnimation, exitAnimation);
-    }
-
-    public void goToNewActivity(Intent intent){
-
-        int enterAnimation = getNextAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
-        int exitAnimation = getNextAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
-        startActivity(intent);
-        overridePendingTransition(enterAnimation, exitAnimation);
-    }
-
-    public void goToNextActivity(Intent intent){
-
-        int enterAnimation = getNextAnimationEnter(getAnimationParadigm());
-        int exitAnimation = getNextAnimationExit(getAnimationParadigm());
-
-        startActivity(intent);
-        overridePendingTransition(enterAnimation, exitAnimation);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            handleBack();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        handleBack();
-    }
-
-    public void onBackPressed(boolean isSharing) {
-        handleBack();
-    }
-
-    // Before 2.0
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            handleBack();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    protected void handleBack(){
-
-        int enterAnimation = getEndingAnimationEnter(getAnimationParadigm());
-        int exitAnimation = getEndingAnimationExit(getAnimationParadigm());
-        finish();
-        overridePendingTransition(enterAnimation, exitAnimation);
-    }
-
-    protected void goBackToActivity(Class activity){
-
-        int enterAnimation = getEndingAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
-        int exitAnimation = getEndingAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
-        startActivity(new Intent(getApplicationContext(), activity));
-        overridePendingTransition(enterAnimation, exitAnimation);
-        finish();
-    }
-
-    protected void goBackToActivity(Class activity, Bundle extras){
-
-        int enterAnimation = getEndingAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
-        int exitAnimation = getEndingAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
-        startActivity(new Intent(getApplicationContext(), activity).putExtras(extras));
-        overridePendingTransition(enterAnimation, exitAnimation);
-        finish();
-    }
-
     public void setLoadingViewVisibility(final boolean visible, final String loadingText, final boolean cancelable){
 
         runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            @Override
+            public void run() {
                 if (!visible) {
                     if (loadingFragment != null) {
                         loadingFragment.dismiss();
                     }
                     return;
-                }
-                else {
+                } else {
                     if (loadingFragment == null) {
                         loadingFragment = LoadingFragment.newInstance(loadingText);
 
@@ -230,7 +167,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
 
                         loadingFragment.show(getSupportFragmentManager(), LoadingFragment.TAG);
 
-                    } else if(!loadingFragment.isVisible()){
+                    } else if (!loadingFragment.isVisible()) {
                         loadingFragment.show(getSupportFragmentManager(), LoadingFragment.TAG);
                     }
                     loadingFragment.setLoadingText(loadingText);
@@ -238,66 +175,6 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
                 }
             }
         });
-    }
-
-    public int getNextAnimationEnter(AnimationParadigm paradigm){
-
-        switch (paradigm){
-            case ANIMATION_FORWARD_RIGHT_BACK_DOWN:
-            case ANIMATION_LEFT_RIGHT:{
-                return R.anim.enter_from_right;
-            }
-            case ANIMATION_FORWARD_UP_BACK_LEFT:
-            case ANIMATION_VERTICAL:
-            default: {
-                return R.anim.enter_from_bottom;
-            }
-        }
-    }
-
-    public int getNextAnimationExit(AnimationParadigm paradigm){
-
-        switch (paradigm){
-            case ANIMATION_FORWARD_RIGHT_BACK_DOWN:
-            case ANIMATION_LEFT_RIGHT:{
-                return R.anim.exit_on_left;
-            }
-            case ANIMATION_FORWARD_UP_BACK_LEFT:
-            case ANIMATION_VERTICAL:
-            default:{
-                return R.anim.enter_center;
-            }
-        }
-    }
-
-    public int getEndingAnimationEnter(AnimationParadigm paradigm){
-
-        switch (paradigm){
-            case ANIMATION_FORWARD_UP_BACK_LEFT:
-            case ANIMATION_LEFT_RIGHT:{
-                return R.anim.left_in;
-            }
-            case ANIMATION_FORWARD_RIGHT_BACK_DOWN:
-            case ANIMATION_VERTICAL:
-            default:{
-                return R.anim.enter_center;
-            }
-        }
-    }
-
-    public int getEndingAnimationExit(AnimationParadigm paradigm){
-
-        switch (paradigm){
-            case ANIMATION_FORWARD_UP_BACK_LEFT:
-            case ANIMATION_LEFT_RIGHT:{
-                return R.anim.right_out;
-            }
-            case ANIMATION_FORWARD_RIGHT_BACK_DOWN:
-            case ANIMATION_VERTICAL:
-            default:{
-                return R.anim.exit_on_bottom;
-            }
-        }
     }
 
     protected void rotate(){
@@ -327,17 +204,84 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
         thread.start();
     }
 
-    public int getBackResource(){
-        if(getAnimationParadigm() == AnimationParadigm.ANIMATION_VERTICAL ||
-                getAnimationParadigm() == AnimationParadigm.ANIMATION_FORWARD_RIGHT_BACK_DOWN){
-            return R.drawable.x_button;
-        }
-        else {
-            return R.drawable.back_button_light;
-        }
+    //endregion
+
+    //region Changing Activities
+
+    public void goToNewActivity(Class nextClass){
+        goToNewActivity(new Intent(getApplicationContext(), nextClass));
     }
 
+    public void goToNewActivity(Intent intent){
 
+        int enterAnimation = AnimationParadigm.getNextAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
+        int exitAnimation = AnimationParadigm.getNextAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
+        startActivity(intent);
+        overridePendingTransition(enterAnimation, exitAnimation);
+    }
+
+    public void goToNextActivity(Class nextClass){
+
+        goToNextActivity(new Intent(getApplicationContext(), nextClass));
+    }
+
+    public void goToNextActivity(Intent intent){
+
+        int enterAnimation = AnimationParadigm.getNextAnimationEnter(getAnimationParadigm());
+        int exitAnimation = AnimationParadigm.getNextAnimationExit(getAnimationParadigm());
+
+        startActivity(intent);
+        overridePendingTransition(enterAnimation, exitAnimation);
+    }
+
+    public void onBackPressed(boolean isSharing) {
+        handleBack();
+    }
+
+    protected void handleBack(){
+
+        int enterAnimation = AnimationParadigm.getEndingAnimationEnter(getAnimationParadigm());
+        int exitAnimation = AnimationParadigm.getEndingAnimationExit(getAnimationParadigm());
+        finish();
+        overridePendingTransition(enterAnimation, exitAnimation);
+    }
+
+    protected void goBackToActivity(Class activity){
+
+        goBackToActivity(activity, null);
+    }
+
+    protected void goBackToActivity(Class activity, Bundle extras){
+
+        int enterAnimation = AnimationParadigm.getEndingAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
+        int exitAnimation = AnimationParadigm.getEndingAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
+
+        Intent intent = new Intent(getApplicationContext(), activity);
+        if(extras != null){
+            intent.putExtras(extras);
+        }
+
+        startActivity(intent);
+        overridePendingTransition(enterAnimation, exitAnimation);
+        finish();
+    }
+    //endregion
+
+    //region Toolbar Listener
+    @Override
+    public void centerButtonClicked() {
+
+    }
+    @Override
+    public void leftButtonClicked() {
+        handleBack();
+    }
+
+    @Override
+    public void rightButtonClicked() {
+
+    }
+    //endregion
 }
 
 

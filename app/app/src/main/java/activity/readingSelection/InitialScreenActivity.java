@@ -1,7 +1,6 @@
 package activity.readingSelection;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,24 +8,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
-import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
@@ -43,6 +36,7 @@ import activity.sharing.ShareActivity;
 import adapters.ShareAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.UWGeneralListAdapter;
+import fragments.CheckingLevelInfoFragment;
 import model.DaoDBHelper;
 import model.daoModels.Language;
 import model.daoModels.Project;
@@ -72,12 +66,58 @@ public class InitialScreenActivity extends UWBaseActivity{
     private ListView listview;
     UWGeneralListAdapter adapter;
 
-
     /**
      * This broadcast for When the update is completed
      */
     private BroadcastReceiver receiver;
 
+    //region Activity Overrides
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.initial_list_activity);
+        setupViews();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        boolean firstLaunch = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(IS_FIRST_LAUNCH, true);
+        if(firstLaunch){
+            showCheckingLevelFragment();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+
+        unregisterReceiver();
+
+        super.onPause();
+    }
+
+    @Override
+    public int getBackResource() {
+        return -1;
+    }
+
+    @Override
+    public AnimationParadigm getAnimationParadigm() {
+        return AnimationParadigm.ANIMATION_LEFT_RIGHT;
+    }
+    //endregion
+
+
+    //region Interaction Handling
+    @Override
+    public void rightButtonClicked() {
+
+        startSharingActivity();
+    }
+    //endregion
+
+
+    //region Receiver Handling
     private BroadcastReceiver createReceiver() {
         return new BroadcastReceiver() {
             @Override
@@ -95,38 +135,16 @@ public class InitialScreenActivity extends UWBaseActivity{
         };
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.initial_list_activity);
-        setupViews();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        boolean firstLaunch = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(IS_FIRST_LAUNCH, true);
-        if(firstLaunch){
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-            CheckingLevelFragment fragment = new CheckingLevelFragment();
-            fragment.show(ft, GENERAL_CHECKING_LEVEL_FRAGMENT_ID);
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_LAUNCH, false).commit();
-        }
-    }
-
-    @Override
-    protected void onPause() {
+    private void unregisterReceiver(){
 
         if(receiver != null) {
             getApplicationContext().unregisterReceiver(receiver);
         }
         receiver = null;
-
-        super.onPause();
     }
+    //endregion
 
+    //region Setup
     private void setupViews(){
 
         setupToolbar(true, getString(R.string.app_name), false);
@@ -135,18 +153,7 @@ public class InitialScreenActivity extends UWBaseActivity{
         addSettingsFooter();
     }
 
-    private void reload(){
-
-        mProjects = null;
-        this.setupListView();
-    }
-
-    @Override
-    public int getBackResource() {
-        return -1;
-    }
-
-    protected void setupListView() {
+    private void setupListView() {
 
         List<GeneralRowInterface> data = this.getData();
 
@@ -155,7 +162,7 @@ public class InitialScreenActivity extends UWBaseActivity{
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    moveToNextActivity(mProjects.get(position - 1));
+                    startReadingActivity(mProjects.get(position - 1));
                 }
             });
             setupRefreshButton();
@@ -211,16 +218,6 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
     }
 
-    @Override
-    public AnimationParadigm getAnimationParadigm() {
-        return AnimationParadigm.ANIMATION_LEFT_RIGHT;
-    }
-
-    private void moveToSettings(){
-
-        goToNewActivity(SettingsActivity.class);
-    }
-
     protected List<GeneralRowInterface> getData(){
 
         if(mProjects == null){
@@ -239,23 +236,9 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         return dataList;
     }
+    //endregion
 
-    private void moveToNextActivity(Project project){
-
-        Class nextActivity = (project.getUniqueSlug().equalsIgnoreCase(STORIES_SLUG))?
-                StoryReadingActivity.class : ReadingActivity.class;
-
-        Intent newIntent = new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project);
-
-        goToNextActivity(newIntent);
-    }
-
-
-    private void updateProjects() {
-
-        mProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
-    }
-
+    //region Reloading
     private void update(){
 
         if (!NetWorkUtil.isConnected(this)) {
@@ -271,14 +254,50 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
     }
 
-    @Override
-    public void rightButtonClicked() {
+    private void reload(){
+
+        mProjects = null;
+        this.setupListView();
+    }
+
+    private void updateProjects() {
+
+        mProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+    }
+    //endregion
+
+    //region Handling actions
+    private void moveToSettings(){
+
+        goToNewActivity(SettingsActivity.class);
+    }
+
+    private void startReadingActivity(Project project){
+
+        Class nextActivity = (project.getUniqueSlug().equalsIgnoreCase(STORIES_SLUG))?
+                StoryReadingActivity.class : ReadingActivity.class;
+
+        Intent newIntent = new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project);
+
+        goToNextActivity(newIntent);
+    }
+
+    private void showCheckingLevelFragment(){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        CheckingLevelInfoFragment fragment = new CheckingLevelInfoFragment();
+        fragment.show(ft, GENERAL_CHECKING_LEVEL_FRAGMENT_ID);
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_LAUNCH, false).commit();
+    }
+
+    private void startSharingActivity(){
+
         View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
         ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Select Share Method");
 
         AlertDialog dialogue = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT)
                 .setCustomTitle(titleView)
-                .setAdapter(new ShareAdapter(getApplicationContext(), Arrays.asList(new String[]{"Send/Save Versions", "Receive/Load Versions"})),
+                .setAdapter(new ShareAdapter(getApplicationContext(), Arrays.asList("Send/Save Versions", "Receive/Load Versions")),
                         new DialogInterface.OnClickListener() {
 
                             @Override
@@ -307,37 +326,5 @@ public class InitialScreenActivity extends UWBaseActivity{
                 }).create();
         dialogue.show();
     }
-
-    static public class CheckingLevelFragment extends DialogFragment {
-
-        public CheckingLevelFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.verification_fragment, container, false);
-
-            TextView tView = (TextView) view.findViewById(R.id.textView);
-            String versionName = BuildConfig.VERSION_NAME;
-
-            tView.setText(versionName);
-            LinearLayout layout = (LinearLayout) view.findViewById(R.id.verification_fragment_layout);
-            layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getDialog().dismiss();
-                }
-            });
-            return view;
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Dialog dialog = super.onCreateDialog(savedInstanceState);
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            return dialog;
-        }
-    }
+    //endregion
 }

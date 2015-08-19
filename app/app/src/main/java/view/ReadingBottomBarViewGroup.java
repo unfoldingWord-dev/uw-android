@@ -11,7 +11,6 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import org.unfoldingword.mobile.R;
 
-import fragments.ReadingFragmentListener;
 import model.daoModels.Version;
 
 /**
@@ -71,7 +70,7 @@ public class ReadingBottomBarViewGroup {
     public void updateWithVersion(Version version){
         if(version != null) {
             this.checkingLevelButton.setVisibility(View.VISIBLE);
-            this.checkingLevelButton.setImageResource(ViewHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+            this.checkingLevelButton.setImageResource(ViewDataHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
             this.versionTextView.setText(version.getName());
         }
         else{
