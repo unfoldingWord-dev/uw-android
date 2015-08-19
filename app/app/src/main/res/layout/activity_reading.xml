@@ -54,7 +54,7 @@
         android:id="@+id/reading_error_text_view"
         android:visibility="gone"
         android:gravity="center"
-        android:onClick="goToVersionSelection"/>
+        android:onClick="versionSelectionButtonClicked"/>
 
     <include
         android:id="@+id/toolbar"

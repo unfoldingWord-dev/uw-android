@@ -195,7 +195,7 @@ public class SideSharer {
     }
 
     private void startSDCardShareAction(){
-        activity.setLoadingViewVisibility(true, "Saving", false);
+        activity.setLoadingFragmentVisibility(true, "Saving", false);
         FileUtil.saveFileToSdCard(activity.getApplicationContext(), getZippedBytes(), fileName);
         showSuccessAlert(true);
     }
@@ -203,7 +203,7 @@ public class SideSharer {
 
     private void showSuccessAlert(boolean success){
 
-        activity.setLoadingViewVisibility(false, "", false);
+        activity.setLoadingFragmentVisibility(false, "", false);
         View titleView = View.inflate(activity.getApplicationContext(), R.layout.alert_title, null);
         ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Share Status");
         new AlertDialog.Builder(activity)

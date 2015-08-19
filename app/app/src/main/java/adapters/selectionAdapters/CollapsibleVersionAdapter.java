@@ -49,59 +49,59 @@ import view.ViewDataHelper;
 public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
 
     private final static String TAG = "CollapseVersionAdapter";
-    static final String STORIES_SLUG = "obs";
+
     private Fragment parentFragment;
+
     private Project currentProject = null;
+    private VersionAdapterListener listener;
     private long selectedVersionId;
 
-    private VersionAdapterListener listener;
+    private BroadcastReceiver receiver
 
-    public interface VersionAdapterListener{
-        void versionWasSelected(Version version);
-    }
+    //region setup
 
     public CollapsibleVersionAdapter(Fragment fragment, Project currentProject, long selectedVersionId, VersionAdapterListener listener) {
         this.parentFragment = fragment;
         this.currentProject = currentProject;
         this.selectedVersionId = selectedVersionId;
         this.listener = listener;
+        setupIntentFilter();
+    }
+
+    private void setupIntentFilter(){
+        receiver = createBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_COMP);
         filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_ERROR);
         getContext().registerReceiver(receiver, filter);
     }
 
-    private Context getContext(){
-        return this.parentFragment.getActivity();
+    private BroadcastReceiver createBroadcastReceiver() {
+
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                Bundle extra = intent.getExtras();
+                if (extra != null) {
+                    String itemId = extra.getString(UWVersionDownloaderService.VERSION_ID);
+                    Log.d(TAG, itemId);
+                }
+                if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
+                    Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
+                    reload();
+                } else if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_STOPPED)) {
+                    Toast.makeText(context, "Download Stopped", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Download Error", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver(){
-        @Override
-        public void onReceive(Context context, Intent intent) {
+    //endregion
 
-            Bundle extra = intent.getExtras();
-            if (extra != null) {
-                String itemId = extra.getString(UWVersionDownloaderService.VERSION_ID);
-                Log.d(TAG, itemId);
-            }
-            if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
-                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
-                reload();
-            }
-            else if(intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_STOPPED)){
-                Toast.makeText(context, "Download Stopped", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(context, "Download Error", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    private void reload(){
-
-        currentProject = Project.getProjectForId(currentProject.getId(), DaoDBHelper.getDaoSession(getContext()));
-        notifyDataSetChanged();
-    }
+    //region adapter methods
 
     @Override
     public Version getChild(int groupPosition, int childPosition) {
@@ -113,7 +113,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return childPosition;
     }
 
-
     @Override
     public int getRealChildrenCount(int groupPosition) {
         int count = getGroup(groupPosition).getVersions().size();
@@ -122,7 +121,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     @Override
     public View getRealChildView(final int groupPosition, final int childPosition,
-                             boolean isLastChild, View convertView, ViewGroup parent) {
+                                 boolean isLastChild, View convertView, ViewGroup parent) {
 
         final Version version = getChild(groupPosition, childPosition);
         final ViewHolderForGroup holder;
@@ -174,6 +173,14 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return convertView;
     }
 
+    //endregion
+
+    //region helpers
+
+    private Context getContext(){
+        return this.parentFragment.getActivity();
+    }
+
     private int setRowState(ViewHolderForGroup holder, Version version, int selectionState){
 
         holder.versionInformationHolder.setRowState(version);
@@ -215,6 +222,24 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         }
     }
+
+    //endregion
+
+    //region reloading
+
+    private void reload(){
+
+        currentProject = Project.getProjectForId(currentProject.getId(), DaoDBHelper.getDaoSession(getContext()));
+        notifyDataSetChanged();
+    }
+
+    //endregion
+
+
+
+
+
+
 
     private View.OnClickListener getDeleteOnClickListener(final Version version, final ViewHolderForGroup finalHolder) {
 
@@ -349,8 +374,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             super.onPostExecute(aVoid);
             reload();
         }
-    }
 
+    }
     private View.OnClickListener getSelectionOnClickListener(final Version version) {
 
         return new View.OnClickListener() {
@@ -471,7 +496,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         holder.languageNameTextView.setTextColor(color);
     }
 
-
     private View.OnClickListener getInfoClickListener(final ViewHolderForGroup finalHolder, final Version version){
         return new View.OnClickListener() {
             @Override
@@ -488,6 +512,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         };
     }
 
+
     public void willDestroy(){
         if(receiver != null) {
             getContext().unregisterReceiver(receiver);
@@ -498,18 +523,22 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     private static class ViewHolderForGroup {
 
         VersionInformationViewHolder versionInformationHolder;
+
         TextView languageNameTextView;
         ImageView languageTypeImageView;
         LinearLayout versionInfoLayout;
         LinearLayout clickableLayout;
-
         FrameLayout infoFrame;
-        Button status;
 
+        Button status;
         ImageView downloadButton;
+
         FrameLayout downloadFrame;
         ProgressBar downloadProgressBar;
         Button deleteButton;
+    }
+    public interface VersionAdapterListener{
+        void versionWasSelected(Version version);
     }
 }
 

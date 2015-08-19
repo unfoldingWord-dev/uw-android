@@ -175,8 +175,19 @@ public class UWToolbarViewGroup {
 
     public interface UWToolbarListener{
 
+        /**
+         * Toolbar's left button was clicked
+         */
         void leftButtonClicked();
+
+        /**
+         * Toolbar's center button was clicked
+         */
         void centerButtonClicked();
+
+        /**
+         * Toolbar's right button was clicked
+         */
         void rightButtonClicked();
     }
 }

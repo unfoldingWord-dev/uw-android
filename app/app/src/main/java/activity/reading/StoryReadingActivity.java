@@ -15,7 +15,12 @@ import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
+/**
+ * Created by PJ Fechner
+ * Activity to handle reading Open Bible Story text
+ */
 public class StoryReadingActivity extends BaseReadingActivity {
+    static private final String TAG = "StoryReadingActivity";
 
     private StoryReadingFragment readingFragment;
     private StoriesChapter currentChapter;

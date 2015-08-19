@@ -5,7 +5,8 @@ import org.unfoldingword.mobile.R;
 import java.io.Serializable;
 
 /**
- * Created by Fechner on 5/28/15.
+ * Created by PJ Fechner on 5/28/15.
+ * Enum to define the desired animation to transition to and from activites
  */
 public enum AnimationParadigm implements Serializable {
     ANIMATION_STOCK(0), ANIMATION_LEFT_RIGHT(1), ANIMATION_VERTICAL(2), ANIMATION_FORWARD_RIGHT_BACK_DOWN(3), ANIMATION_FORWARD_UP_BACK_LEFT(4);

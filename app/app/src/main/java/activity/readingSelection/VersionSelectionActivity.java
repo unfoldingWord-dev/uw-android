@@ -18,7 +18,6 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
 
     public static final String PROJECT_PARAM = "PROJECT_PARAM";
     public static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
-    private Project chosenProject;
 
     private boolean isSecondVersion = false;
 
@@ -31,7 +30,7 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
 
-            chosenProject = (Project) extras.getSerializable(PROJECT_PARAM);
+            Project chosenProject = (Project) extras.getSerializable(PROJECT_PARAM);
             setupToolbar(false, chosenProject.getTitle(), false);
 
             if(extras.containsKey(IS_SECOND_VERSION_PARAM)){
@@ -41,7 +40,6 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.versions_frame, VersionSelectionFragment.newInstance(chosenProject, false, isSecondVersion))
                     .commit();
-
         }
     }
 

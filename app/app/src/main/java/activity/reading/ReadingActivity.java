@@ -17,7 +17,8 @@ import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
 
 /**
- * Created by Acts Media Inc on 5/12/14.
+ * Created by PJ Fechner on 5/12/14.
+ * Activity for reading Bible Chapters
  */
 public class ReadingActivity extends BaseReadingActivity {
     static private final String TAG = "ReadingActivity";

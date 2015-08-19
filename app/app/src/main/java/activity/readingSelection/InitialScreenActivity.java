@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +42,7 @@ import model.daoModels.Project;
 import services.UWUpdaterService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
+import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -50,28 +50,25 @@ import utils.URLUtils;
 public class InitialScreenActivity extends UWBaseActivity{
 
     static final public String PROJECT_PARAM = "PROJECT_PARAM";
-
-    static final String INDEX_STORAGE_STRING = "INDEX_STORAGE_STRING";
-
     static public final String GENERAL_CHECKING_LEVEL_FRAGMENT_ID = "GENERAL_CHECKING_LEVEL_FRAGMENT_ID";
-    static final String STORIES_SLUG = "obs";
-    public static final String IS_FIRST_LAUNCH = "IS_FIRST_LAUNCH";
-
-    private List<Project> mProjects = null;
 
     private FrameLayout visibleLayout = null;
+
     private Button mRefreshButton = null;
     private Button settingsButton = null;
-
     private ListView listview;
+
     UWGeneralListAdapter adapter;
+
+    private List<Project> mProjects = null;
 
     /**
      * This broadcast for When the update is completed
      */
-    private BroadcastReceiver receiver;
+    private BroadcastReceiver updateReceiver;
 
     //region Activity Overrides
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,8 +79,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        boolean firstLaunch = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(IS_FIRST_LAUNCH, true);
-        if(firstLaunch){
+        if(UWPreferenceManager.getIsFirstLaunch(getApplicationContext())){
             showCheckingLevelFragment();
         }
     }
@@ -105,19 +101,16 @@ public class InitialScreenActivity extends UWBaseActivity{
     public AnimationParadigm getAnimationParadigm() {
         return AnimationParadigm.ANIMATION_LEFT_RIGHT;
     }
-    //endregion
-
-
-    //region Interaction Handling
     @Override
     public void rightButtonClicked() {
 
         startSharingActivity();
     }
+
     //endregion
 
-
     //region Receiver Handling
+
     private BroadcastReceiver createReceiver() {
         return new BroadcastReceiver() {
             @Override
@@ -137,14 +130,16 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     private void unregisterReceiver(){
 
-        if(receiver != null) {
-            getApplicationContext().unregisterReceiver(receiver);
+        if(updateReceiver != null) {
+            getApplicationContext().unregisterReceiver(updateReceiver);
         }
-        receiver = null;
+        updateReceiver = null;
     }
+
     //endregion
 
     //region Setup
+
     private void setupViews(){
 
         setupToolbar(true, getString(R.string.app_name), false);
@@ -177,6 +172,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     }
 
     private void addSettingsFooter(){
+
         if(settingsButton == null) {
             LayoutInflater inflater = getLayoutInflater();
             View footerView = inflater.inflate(R.layout.settings_footer, null);
@@ -214,7 +210,7 @@ public class InitialScreenActivity extends UWBaseActivity{
             filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
             filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
             createReceiver();
-            registerReceiver(receiver, filter);
+            registerReceiver(updateReceiver, filter);
         }
     }
 
@@ -236,9 +232,11 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         return dataList;
     }
+
     //endregion
 
-    //region Reloading
+    //region updating
+
     private void update(){
 
         if (!NetWorkUtil.isConnected(this)) {
@@ -264,9 +262,11 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         mProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
     }
+
     //endregion
 
-    //region Handling actions
+    //region Navigation actions
+
     private void moveToSettings(){
 
         goToNewActivity(SettingsActivity.class);
@@ -274,7 +274,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     private void startReadingActivity(Project project){
 
-        Class nextActivity = (project.getUniqueSlug().equalsIgnoreCase(STORIES_SLUG))?
+        Class nextActivity = (project.getUniqueSlug().equalsIgnoreCase(getString(R.string.open_bible_stories_slug)))?
                 StoryReadingActivity.class : ReadingActivity.class;
 
         Intent newIntent = new Intent(this, nextActivity).putExtra(PROJECT_PARAM, project);
@@ -287,7 +287,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         CheckingLevelInfoFragment fragment = new CheckingLevelInfoFragment();
         fragment.show(ft, GENERAL_CHECKING_LEVEL_FRAGMENT_ID);
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_LAUNCH, false).commit();
+        UWPreferenceManager.setIsFirstLaunch(getApplicationContext(), false);
     }
 
     private void startSharingActivity(){

@@ -81,4 +81,6 @@
     <string name="share_keyboards_button_text">Share Keyboards</string>
 
     <string name="save_file_extension">.ufw</string>
+
+    <string name="open_bible_stories_slug">obs</string>
 </resources>

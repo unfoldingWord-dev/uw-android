@@ -164,7 +164,7 @@ public class SideLoader {
 
     private void showSuccessAlert(boolean success){
 
-        activity.setLoadingViewVisibility(false, "", false);
+        activity.setLoadingFragmentVisibility(false, "", false);
         View titleView = View.inflate(activity.getApplicationContext(), R.layout.alert_title, null);
         ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Load Status");
         new AlertDialog.Builder(activity)
@@ -205,7 +205,7 @@ public class SideLoader {
                 .setMessage(versionText + ":\n\n" + getNames(names))
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        activity.setLoadingViewVisibility(true, "Importing...", false);
+                        activity.setLoadingFragmentVisibility(true, "Importing...", false);
                         Uri tempUri = FileUtil.createTemporaryFile(activity.getApplicationContext(), json, "temp_version.ufwtmp");
                         saveVersion(tempUri);
                     }
