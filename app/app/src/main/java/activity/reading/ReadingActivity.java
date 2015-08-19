@@ -37,21 +37,6 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected String getVersionText() {
-        return (currentChapter != null)? currentChapter.getBook().getVersion().getUniqueSlug() : "Select Version";
-    }
-
-    @Override
-    protected Version getVersion() {
-        if(currentChapter == null){
-            return null;
-        }
-        else{
-            return currentChapter.getBook().getVersion();
-        }
-    }
-
-    @Override
     public boolean toggleNavBar() {
         boolean isHidden = super.toggleNavBar();
 
@@ -62,7 +47,6 @@ public class ReadingActivity extends BaseReadingActivity {
 
     @Override
     protected void scrolled() {
-
         updateChapters();
     }
 
@@ -70,7 +54,9 @@ public class ReadingActivity extends BaseReadingActivity {
 
         currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
 
+
         if (currentChapter != null) {
+            this.version = currentChapter.getBook().getVersion();
             updateToolbarTitle();
         }
         if(readingFragment != null) {
@@ -99,7 +85,10 @@ public class ReadingActivity extends BaseReadingActivity {
 
         currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
 
-        boolean isValid = (currentChapter != null);;
+        boolean isValid = (currentChapter != null);
+        if(isValid){
+            this.version = currentChapter.getBook().getVersion();
+        }
         return isValid;
     }
 

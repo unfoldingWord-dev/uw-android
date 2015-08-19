@@ -52,11 +52,11 @@ public class VersionInformationViewHolder {
     public void setInfoForVersion(Context context, Version version){
 
         checkingEntityTextView.setText(version.getStatusCheckingEntity());
-        checkingLevelImage.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelImage.setImageResource(ViewDataHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getStatusVersion());
         publishDateTextView.setText(version.getStatusPublishDate());
         verificationTextView.setText(version.getVerificationText());
-        checkingLevelTextView.setText(ViewHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelTextView.setText(ViewDataHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getName());
 
         int verificationStatus = version.getVerificationStatus();

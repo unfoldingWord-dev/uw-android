@@ -43,7 +43,7 @@ import utils.URLUtils;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 import view.VersionInformationViewHolder;
-import view.ViewHelper;
+import view.ViewDataHelper;
 
 
 public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
@@ -165,7 +165,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
         holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
         setColorChange(holder, RowStatusHelper.getColorForState(getContext(), state));
-        holder.languageTypeImageView.setImageResource(ViewHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        holder.languageTypeImageView.setImageResource(ViewDataHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         holder.languageNameTextView.setText(version.getName());
 
         int verificationStatus = version.getVerificationStatus();

@@ -25,14 +25,13 @@ import activity.readingSelection.VersionSelectionActivity;
 import adapters.ReadingScrollNotifications;
 import fragments.ChapterSelectionFragment;
 import fragments.ChapterSelectionFragmentListener;
-import fragments.CheckingLevelFragment;
+import fragments.VersionInfoFragment;
 import fragments.ReadingFragmentListener;
 import fragments.StoryChaptersFragment;
 import fragments.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceManager;
-import view.ViewHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -51,17 +50,20 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected FrameLayout readingLayout;
     protected FrameLayout secondaryReadingLayout;
     protected TextView errorTextView;
+    protected Version version;
 
     abstract protected boolean loadData();
     abstract protected String getChapterLabelText();
-    abstract protected String getVersionText();
     abstract protected void updateReadingView();
-    abstract protected Version getVersion();
     abstract protected Project getProject();
     abstract protected void scrolled();
     abstract protected void toggleDiglot();
 
     private BroadcastReceiver receiver;
+
+    protected Version getVersion(){
+        return this.version;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,7 +281,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void goToCheckingLevelView(Version version){
-        CheckingLevelFragment fragment = CheckingLevelFragment.createFragment(version);
+        VersionInfoFragment fragment = VersionInfoFragment.createFragment(version);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);

@@ -9,7 +9,7 @@ import model.daoModels.Version;
 /**
  * Created by Fechner on 7/6/15.
  */
-public class ViewHelper {
+public class ViewDataHelper {
 
     static public int getCheckingLevelText(int level){
 
@@ -39,40 +39,6 @@ public class ViewHelper {
             }
         }
     }
-
-//    static public String getVerificationText(Version version){
-//
-//        String text = "testing stuff";
-////        int status = version.getVerificationStatus(getContext());
-////        switch (status){
-////            case 0:{
-////                text = getContext().getResources().getString(R.string.verified_title_start);
-////                break;
-////            }
-////            case 1:{
-////                text = getContext().getResources().getString(R.string.expired_title_start) + "\n" + version.verificationText;
-////                break;
-////            }
-////            case 3:{
-////                text = getContext().getResources().getString(R.string.failed_title_start) + "\n" + version.verificationText;
-////                break;
-////            }
-////            default:{
-////                text = getContext().getResources().getString(R.string.error_title_start) + "\n" + version.verificationText;
-////            }
-////        }
-////
-////        ArrayList<String> organizations = version.getSigningOrganizations(getContext());
-//
-////        if(status == 0){
-////            for(String org : organizations){
-////                text += " " + org + ",";
-////            }
-////            text = text.substring(0, text.length() - 1);
-////        }
-//
-//        return text;
-//    }
 
     public static int getColorForStatus(int currentStatus){
 
