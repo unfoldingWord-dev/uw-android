@@ -16,8 +16,10 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import activity.UWBaseActivity;
 import adapters.selectionAdapters.CollapsibleVersionAdapter;
 import model.DaoDBHelper;
+import model.daoModels.BibleChapter;
 import model.daoModels.Language;
 import model.daoModels.Project;
 import model.daoModels.Version;
@@ -176,8 +178,7 @@ public class VersionSelectionFragment extends DialogFragment {
         else{
             long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
             if(chapterId > -1) {
-                version = DaoDBHelper.getDaoSession(getContext()).getBibleChapterDao()
-                        .load(chapterId)
+                version = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()))
                         .getBook().getVersion();
             }
         }
@@ -189,6 +190,11 @@ public class VersionSelectionFragment extends DialogFragment {
                     listener.versionWasSelected(version, isSecondVersion);
                 }
             }
+
+            @Override
+            public void isLoading(boolean visible) {
+                ((UWBaseActivity) getActivity()).setLoadingFragmentVisibility(visible, "Deleting...", false);
+            }
         });
         mListView.setAdapter(adapter);
 
@@ -199,7 +205,6 @@ public class VersionSelectionFragment extends DialogFragment {
                 mListView.expandGroup(expandedIndex);
             }
         }
-
     }
 
     private Context getContext(){

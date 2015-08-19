@@ -49,22 +49,15 @@ public class ReadingActivity extends BaseReadingActivity {
     @Override
     protected void scrolled() {
         updateChapters();
+        updateReadingView();
     }
 
     private void updateChapters(){
 
         currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
 
-
         if (currentChapter != null) {
             this.version = currentChapter.getBook().getVersion();
-            updateToolbarTitle();
-        }
-        if(readingFragment != null) {
-            readingFragment.scrollToCurrentPage();
-        }
-        if(secondaryReadingFragment != null) {
-            secondaryReadingFragment.scrollToCurrentPage();
         }
     }
 
@@ -84,19 +77,14 @@ public class ReadingActivity extends BaseReadingActivity {
     @Override
     protected boolean loadData() {
 
-        currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
+        updateChapters();
 
-        boolean isValid = (currentChapter != null);
-        if(isValid){
-            this.version = currentChapter.getBook().getVersion();
-        }
-        return isValid;
+        return (currentChapter != null);
     }
 
     @Override
     protected void updateReadingView() {
 
-        updateChapters();
         if(currentChapter != null) {
             if (this.readingFragment == null) {
                 this.readingFragment = createReadingFragment(readingLayout, false);

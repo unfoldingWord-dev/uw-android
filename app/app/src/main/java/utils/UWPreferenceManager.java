@@ -146,31 +146,42 @@ public class UWPreferenceManager {
     }
 
     public static void willDeleteVersion(Context context, Version version){
-        willDeleteStoryVersion(context, version);
-        willDeleteBibleVersion(context, version);
+        if(version.getLanguage().getProject().isBibleStories()) {
+            willDeleteStoryVersion(context, version);
+        }
+        else {
+            willDeleteBibleVersion(context, version);
+        }
     }
 
     private static void willDeleteStoryVersion(Context context, Version version){
 
-        long currentId = getSelectedStoryPage(context);
+        StoryPage currentPage = UWPreferenceDataManager.getCurrentStoryPage(context, false);
+        StoryPage secondaryPage = UWPreferenceDataManager.getCurrentStoryPage(context, true);
 
-        if(currentId > -1) {
-            StoryPage currentPage = DaoDBHelper.getDaoSession(context).getStoryPageDao().loadDeep(currentId);
-            if(currentPage.getStoriesChapter().getBook().getVersionId() == version.getId()){
-                setSelectedStoryPage(context, -1);
-            }
+        if(currentPage != null && currentPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
+            setSelectedStoryPage(context, -1);
+        }
+        if(secondaryPage != null && secondaryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
+            setSelectedStoryPageSecondary(context, -1);
         }
     }
 
     private static void willDeleteBibleVersion(Context context, Version version){
 
-        long currentId = getSelectedBibleChapter(context);
+        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(context, false);
+        BibleChapter secondaryChapter = UWPreferenceDataManager.getCurrentBibleChapter(context, true);
 
-        if(currentId > -1) {
-            BibleChapter currentChapter = BibleChapter.getModelForId(currentId, DaoDBHelper.getDaoSession(context));
-            if(currentChapter.getBook().getVersionId() == version.getId()){
-                setSelectedStoryPage(context, -1);
-            }
+        if(currentChapter == null || secondaryChapter == null){
+            return;
+        }
+        boolean sameChapter = currentChapter.getId().equals(secondaryChapter.getId());
+
+        if(currentChapter.getBook().getVersionId() == (version.getId())){
+            setSelectedBibleChapter(context, (sameChapter)? -1 : secondaryChapter.getId());
+        }
+        if(secondaryChapter.getBook().getVersionId() == (version.getId())){
+            setSelectedBibleChapterSecondary(context, (sameChapter)? -1 : currentChapter.getId());
         }
     }
 

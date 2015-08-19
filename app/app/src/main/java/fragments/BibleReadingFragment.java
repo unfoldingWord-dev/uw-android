@@ -80,16 +80,20 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
         View view = inflater.inflate(R.layout.fragment_bible_reading, container, false);
         updateBook();
-        setupViews(view);
-        updateVersionInfo();
+        if(currentBook != null){
+            setupViews(view);
+            updateVersionInfo();
+        }
 
         return view;
     }
 
     public void update(){
-        updateBook();
-        updateVersionInfo();
-        adapter.update(currentBook.getBibleChapters(true));
+
+        if(updateBook()) {
+            updateVersionInfo();
+            adapter.update(currentBook.getBibleChapters(true));
+        }
         scrollToCurrentPage();
     }
 
@@ -189,7 +193,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
         });
     }
 
-    private void updateBook(){
+    private boolean updateBook(){
 
         BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
         if(currentItem != null) {
@@ -199,7 +203,9 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
                 adapter.update(currentBook.getBibleChapters());
                 readingViewPager.setCurrentItem(0, false);
             }
+            return needsToUpdateBook;
         }
+        return false;
     }
 
     public void scrollToCurrentPage(){

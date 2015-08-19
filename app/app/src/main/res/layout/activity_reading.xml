@@ -39,22 +39,33 @@
         </FrameLayout>
     </LinearLayout>
 
-
-    <Button
-        android:padding="20dp"
-        android:background="@drawable/gray_button_selector"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/light_brown"
-        android:text="@string/no_selected_version_text"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:id="@+id/reading_error_text_view"
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/no_version_layout"
         android:visibility="gone"
-        android:gravity="center"
-        android:onClick="versionSelectionButtonClicked"/>
+        android:background="@color/gray"
+        >
+
+        <Button
+            android:padding="20dp"
+            android:background="@drawable/gray_button_selector"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/light_brown"
+            android:text="@string/no_selected_version_text"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:onClick="versionSelectionButtonClicked"/>
+
+    </RelativeLayout>
+
+
 
     <include
         android:id="@+id/toolbar"

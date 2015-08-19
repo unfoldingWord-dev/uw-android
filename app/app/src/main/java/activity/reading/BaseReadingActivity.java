@@ -34,7 +34,7 @@ import utils.UWPreferenceManager;
 
 /**
  * Created by PJ Fechner on 5/12/14.
- * abstract Activity class to handle most of the logic involved in the different reading activities
+ * abstract activity to handle most of the logic involved in the different reading activites.
  */
 public abstract class BaseReadingActivity extends UWBaseActivity implements
         VersionSelectionFragment.VersionSelectionFragmentListener,
@@ -49,7 +49,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     protected FrameLayout readingLayout;
     protected FrameLayout secondaryReadingLayout;
-    protected TextView errorTextView;
+    protected View errorView;
     protected Version version;
 
     private BroadcastReceiver receiver;
@@ -105,24 +105,21 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void onResume() {
+        super.onResume();
         setupToolbar(false);
-        getToolbar().setRightImageResource(R.drawable.diglot_icon);
         setupViews();
 
         boolean dataIsLoaded = loadData();
         setupReadingVisibility(dataIsLoaded);
+        if (dataIsLoaded){
+            getToolbar().setRightImageResource(R.drawable.diglot_icon);
+            updateViews();
+        }
+        else{
+            getToolbar().setRightImageVisible(false);
+        }
         registerReceivers();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setupToolbar(false);
-        updateViews();
-        getToolbar().setRightImageResource(R.drawable.diglot_icon);
     }
 
     @Override
@@ -204,7 +201,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected void setupViews(){
         readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
         secondaryReadingLayout = (FrameLayout) findViewById(R.id.secondary_reading_fragment_frame);
-        errorTextView = (TextView) findViewById(R.id.reading_error_text_view);
+        errorView = findViewById(R.id.no_version_layout);
     }
 
     private void registerReceivers(){
@@ -237,7 +234,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     protected void updateToolbar() {
-
         updateToolbarTitle();
     }
 
@@ -255,7 +251,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      * @param visible whether the view should be visible
      */
     private void setNoVersionSelectedVisibility(boolean visible){
-        findViewById(R.id.reading_error_text_view).setVisibility((visible) ? View.VISIBLE : View.GONE);
+        findViewById(R.id.no_version_layout).setVisibility((visible) ? View.VISIBLE : View.GONE);
     }
 
     //endregion

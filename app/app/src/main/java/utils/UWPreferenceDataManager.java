@@ -21,12 +21,12 @@ public class UWPreferenceDataManager {
     private StoryPage currentSecondPage;
 
     @Nullable
-    public static BibleChapter getCurrentBibleChapter(Context context, boolean second){
+    synchronized public static BibleChapter getCurrentBibleChapter(Context context, boolean second){
         return getInstance().getBibleChapter(context, second);
     }
 
     @Nullable
-    public static StoryPage getCurrentStoryPage(Context context, boolean second){
+    synchronized public static StoryPage getCurrentStoryPage(Context context, boolean second){
         return getInstance().getStoryPage(context, second);
     }
 
@@ -51,6 +51,9 @@ public class UWPreferenceDataManager {
         if(currentChapter == null || chapterId != currentChapter.getId()){
             currentChapter = loadChapterFromDB(context, chapterId);
         }
+        else if(chapterId < 0){
+            currentChapter = null;
+        }
         return currentChapter;
     }
 
@@ -60,6 +63,9 @@ public class UWPreferenceDataManager {
         long chapterId = UWPreferenceManager.getCurrentBibleChapter(context, true);
         if(currentSecondChapter == null || chapterId != currentSecondChapter.getId()){
             currentSecondChapter = loadChapterFromDB(context, chapterId);
+        }
+        else if(chapterId < 0){
+            currentSecondChapter = null;
         }
         return currentSecondChapter;
     }

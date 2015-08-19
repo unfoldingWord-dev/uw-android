@@ -1,6 +1,8 @@
 package model.daoModels;
 
 import java.util.List;
+
+import model.DownloadState;
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -476,10 +478,12 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         return session.getVersionDao().queryBuilder().list();
     }
 
-    public void deleteBooks(){
+    public void deleteContent(){
         for(Book book : getBooks()){
-            book.delete();
+            book.deleteBookContent();
         }
+        saveState = DownloadState.DOWNLOAD_STATE_NONE.ordinal();
+        update();
     }
     // KEEP METHODS END
 

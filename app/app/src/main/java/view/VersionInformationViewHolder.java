@@ -64,27 +64,10 @@ public class VersionInformationViewHolder {
         statusImageButton.setText(RowStatusHelper.getButtonTextForStatus(context, verificationStatus));
     }
 
-    public void setRowState(Version version){
+    public void setRowState(boolean downloaded){
 
-        switch (DownloadState.createState(version.getSaveState())){
-
-            case DOWNLOAD_STATE_DOWNLOADED:{
-                verificationTextView.setVisibility(View.VISIBLE);
-                checkingLevelTitle.setVisibility(View.VISIBLE);
-                break;
-            }
-            case DOWNLOAD_STATE_DOWNLOADING:{
-                verificationTextView.setVisibility(View.GONE);
-                checkingLevelTitle.setVisibility(View.GONE);
-                break;
-            }
-
-            default:{
-                verificationTextView.setVisibility(View.GONE);
-                checkingLevelTitle.setVisibility(View.GONE);
-                break;
-            }
-        }
+        verificationTextView.setVisibility((downloaded)? View.VISIBLE : View.GONE);
+        checkingLevelTitle.setVisibility((downloaded)? View.VISIBLE : View.GONE);
     }
 
     public TextView getCheckingEntityTextView() {

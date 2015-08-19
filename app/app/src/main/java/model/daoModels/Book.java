@@ -265,6 +265,21 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     // KEEP METHODS - put your custom methods here
 
+    public void deleteBookContent(){
+
+        if(getStoryChapters() != null){
+            for(StoriesChapter chapter : storyChapters){
+                chapter.delete();
+            }
+        }
+        if(getBibleChapters() !=null){
+            for(BibleChapter chapter : bibleChapters){
+                chapter.delete();
+            }
+        }
+
+    }
+
     @Nullable
     public Book getNextBook(){
         return this.getVersion().getNextBook(this);

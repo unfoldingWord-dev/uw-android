@@ -16,11 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,25 +23,19 @@ import org.unfoldingword.mobile.R;
 
 import model.DaoDBHelper;
 import model.DownloadState;
-import model.daoModels.BibleChapter;
-import model.daoModels.Book;
 import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
-import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
 import services.UWVersionDownloaderService;
-import utils.CustomSlideAnimationRelativeLayout;
 import utils.NetWorkUtil;
-import utils.RowStatusHelper;
 import utils.URLUtils;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
-import view.VersionInformationViewHolder;
-import view.ViewDataHelper;
+import view.VersionRowViewHolder;
 
 
-public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
+public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter implements VersionRowViewHolder.VersionRowViewHolderListener {
 
     private final static String TAG = "CollapseVersionAdapter";
 
@@ -56,7 +45,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     private VersionAdapterListener listener;
     private long selectedVersionId;
 
-    private BroadcastReceiver receiver
+    private BroadcastReceiver receiver;
 
     //region setup
 
@@ -124,52 +113,20 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
         final Version version = getChild(groupPosition, childPosition);
-        final ViewHolderForGroup holder;
+        final VersionRowViewHolder holder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.row_version_selector, parent, false);
-            holder = new ViewHolderForGroup();
-            holder.languageNameTextView = (TextView) convertView.findViewById(R.id.language_name_text_view);
-            holder.languageTypeImageView = (ImageView) convertView.findViewById(R.id.language_type_image_view);
-            holder.versionInfoLayout = (LinearLayout) convertView.findViewById(R.id.version_information_layout);
 
-            holder.clickableLayout = (LinearLayout) convertView.findViewById(R.id.clickableRow);
-
-            holder.infoFrame = (FrameLayout) convertView.findViewById(R.id.info_image_frame);
-            holder.status = (Button) convertView.findViewById(R.id.verification_status);
-
-            holder.downloadButton = (ImageView) convertView.findViewById(R.id.download_status_image);
-            holder.downloadFrame = (FrameLayout) convertView.findViewById(R.id.download_status_frame);
-            holder.downloadProgressBar = (ProgressBar) convertView.findViewById(R.id.download_progress_bar);
-            holder.deleteButton = (Button) convertView.findViewById(R.id.delete_button);
-            holder.versionInformationHolder = new VersionInformationViewHolder(convertView);
-            final ViewHolderForGroup finalHolder = holder;
-            holder.infoFrame.setOnClickListener(getInfoClickListener(finalHolder, version));
+            holder = new VersionRowViewHolder(getContext(), version, convertView, this);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolderForGroup) convertView.getTag();
+            holder = (VersionRowViewHolder) convertView.getTag();
         }
 
         // version-dependent settings
-
         boolean isSelected = (version.getId() == selectedVersionId);
-
-        int state = isSelected? 2 : 1;
-        holder.downloadProgressBar.setVisibility(View.INVISIBLE);
-        holder.downloadButton.setVisibility(View.VISIBLE);
-        holder.versionInformationHolder.setInfoForVersion(getContext(), version);
-
-        state = setRowState(holder, version, state);
-
-        holder.downloadFrame.setOnClickListener(getDownloadOnClickListener(version, holder));
-        holder.deleteButton.setOnClickListener(getDeleteOnClickListener(version, holder));
-        setColorChange(holder, RowStatusHelper.getColorForState(getContext(), state));
-        holder.languageTypeImageView.setImageResource(ViewDataHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
-        holder.languageNameTextView.setText(version.getName());
-
-        int verificationStatus = version.getVerificationStatus();
-        holder.status.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
-        holder.status.setText(RowStatusHelper.getButtonTextForStatus(getContext(), verificationStatus));
+        holder.setupViewForVersion(version, isSelected);
         return convertView;
     }
 
@@ -181,46 +138,11 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return this.parentFragment.getActivity();
     }
 
-    private int setRowState(ViewHolderForGroup holder, Version version, int selectionState){
-
-        holder.versionInformationHolder.setRowState(version);
-        switch (DownloadState.createState(version.getSaveState())){
-
-            case DOWNLOAD_STATE_DOWNLOADED:{
-                holder.status.setVisibility(View.VISIBLE);
-                holder.downloadButton.setVisibility(View.GONE);
-                holder.downloadProgressBar.setVisibility(View.GONE);
-                holder.deleteButton.setVisibility(View.VISIBLE);
-                holder.clickableLayout.setClickable(true);
-                holder.downloadFrame.setClickable(false);
-                holder.downloadFrame.setVisibility(View.GONE);
-                holder.clickableLayout.setOnClickListener(getSelectionOnClickListener(version));
-
-                return selectionState;
-            }
-            case DOWNLOAD_STATE_DOWNLOADING:{
-                holder.status.setVisibility(View.GONE);
-                holder.downloadButton.setVisibility(View.INVISIBLE);
-                holder.downloadProgressBar.setVisibility(View.VISIBLE);
-                holder.deleteButton.setVisibility(View.GONE);
-                holder.downloadFrame.setVisibility(View.VISIBLE);
-                holder.clickableLayout.setClickable(false);
-                holder.downloadFrame.setClickable(true);
-                return 3;
-            }
-
-            default:{
-                holder.status.setVisibility(View.GONE);
-                holder.downloadButton.setVisibility(View.VISIBLE);
-                holder.downloadProgressBar.setVisibility(View.GONE);
-                holder.deleteButton.setVisibility(View.GONE);
-                holder.downloadFrame.setVisibility(View.VISIBLE);
-                holder.clickableLayout.setClickable(false);
-                holder.downloadFrame.setClickable(true);
-                return 3;
-            }
-
+    public void willDestroy(){
+        if(receiver != null) {
+            getContext().unregisterReceiver(receiver);
         }
+        receiver = null;
     }
 
     //endregion
@@ -235,55 +157,42 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     //endregion
 
+    //region VersionRowViewHolderListener
 
-
-
-
-
-
-    private View.OnClickListener getDeleteOnClickListener(final Version version, final ViewHolderForGroup finalHolder) {
-
-        return new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                deleteVersion(version);
-            }
-        };
+    @Override
+    public void deletePressed(Version version) {
+        deleteVersion(version);
     }
 
-    private View.OnClickListener getDownloadOnClickListener(final Version version, final ViewHolderForGroup finalHolder) {
+    @Override
+    public void downloadWasPressed(VersionRowViewHolder holder, Version version) {
 
-        return new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                if (version instanceof Version) {
-                    finalHolder.clickableLayout.setClickable(false);
-                    finalHolder.downloadProgressBar.setVisibility(View.VISIBLE);
-                    finalHolder.downloadButton.setVisibility(View.INVISIBLE);
-                    finalHolder.deleteButton.setVisibility(View.INVISIBLE);
-
-                    if((version.getSaveState() == DownloadState.DOWNLOAD_STATE_NONE.ordinal())
-                    || (version.getSaveState() == DownloadState.DOWNLOAD_STATE_ERROR.ordinal())) {
-                        downloadRow(version, finalHolder);
-                    }
-                    else if(version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()){
-                        stopDownload(version, finalHolder);
-                    }
-                }
-            }
-        };
+        if(version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()) {
+            stopDownload(version);
+        }
+        else{
+            downloadRow(version);
+        }
     }
 
-    private void downloadRow(final Version version, final ViewHolderForGroup finalHolder){
+    @Override
+    public void versionWasSelected(Version version) {
+
+        listener.versionWasSelected(version);
+    }
+
+    //endregion
+
+    //region row actions
+
+    private void downloadRow(final Version version){
 
         if (!NetWorkUtil.isConnected(getContext())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Alert");
-            builder.setMessage("Failed connecting to the internet.");
-            builder.setPositiveButton("OK", null);
-            builder.create().show();
+            new AlertDialog.Builder(getContext())
+                .setTitle("Alert")
+                .setMessage("Failed connecting to the internet.")
+                .setPositiveButton("OK", null)
+                .create().show();
         } else {
             version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
             version.update();
@@ -305,14 +214,13 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                 builder.setMessage(getResources().getString(R.string.delete_warning_text))
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
+                                listener.isLoading(true);
                                 UWPreferenceManager.willDeleteVersion(getContext(), version);
                                 new DeleteVersionTask().execute(version);
                             }
                         })
                         .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
                                 reload();
                             }
                         });
@@ -322,7 +230,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }).show(parentFragment.getFragmentManager(), "confirmAlert");
     }
 
-    private void stopDownload(final Version version, final ViewHolderForGroup finalHolder){
+    private void stopDownload(final Version version){
 
         (new DialogFragment() {
 
@@ -354,18 +262,12 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }).show(parentFragment.getFragmentManager(), "confirmAlert");
     }
 
-    private void stopDownloadService(Version version){
-
-        getContext().sendBroadcast(new Intent(UWVersionDownloaderService.STOP_DOWNLOAD_VERSION_MESSAGE).
-                putExtra(UWVersionDownloaderService.VERSION_ID, Long.toString(version.getId())));
-    }
-
     private class DeleteVersionTask extends AsyncTask<Version, Void, Void> {
 
         @Override
         protected Void doInBackground(Version... params) {
             UWPreferenceManager.willDeleteVersion(getContext(), params[0]);
-            params[0].deleteBooks();
+            params[0].deleteContent();
             return null;
         }
 
@@ -373,73 +275,19 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             reload();
+            listener.isLoading(false);
         }
-
-    }
-    private View.OnClickListener getSelectionOnClickListener(final Version version) {
-
-        return new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                if(listener != null) {
-                    listener.versionWasSelected(version);
-                }
-            }
-        };
     }
 
-    private void refreshChapterSelection(Version version, boolean isStoryChapter){
+    private void stopDownloadService(Version version){
 
-        if(isStoryChapter){
-
-            long chapterId = UWPreferenceManager.getSelectedStoryPage(getContext());
-            if(chapterId < 0){
-
-                StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters(true).get(1);
-                UWPreferenceManager.setSelectedStoryPage(getContext(), newChapter.getId());
-            }
-            else {
-                StoriesChapter chapter = StoriesChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
-                if(chapter == null){
-                    StoriesChapter newChapter = version.getBooks().get(0).getStoryChapters(true).get(1);
-                    UWPreferenceManager.setSelectedStoryPage(getContext(), newChapter.getId());
-                    return;
-                }
-                Book newBook = chapter.getBook();
-
-                StoriesChapter newChapter = (newBook == null)? version.getBooks().get(0).getStoryChapters(true).get(1) :
-                        newBook.getStoryChapters(true).get(Integer.parseInt(chapter.getNumber()));
-
-                UWPreferenceManager.setSelectedStoryPage(getContext(), newChapter.getId());
-            }
-        }
-        else{
-            long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
-            if(chapterId < 0){
-                BibleChapter newChapter = version.getBooks().get(0).getBibleChapters(true).get(0);
-                UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
-            }
-            else {
-                BibleChapter chapter = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()));
-                if(chapter == null){
-                    BibleChapter newChapter = version.getBooks().get(0).getBibleChapters(true).get(1);
-                    UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
-                    return;
-                }
-                Book newBook = chapter.getBook();
-
-                BibleChapter newChapter = (newBook == null)? version.getBooks().get(0).getBibleChapters(true).get(1) :
-                        newBook.getBibleChapters(true).get(Integer.parseInt(chapter.getNumber().trim()));
-
-                if(newChapter == null){
-                    newChapter = version.getBooks().get(0).getBibleChapters(true).get(1);
-                }
-                UWPreferenceManager.setSelectedBibleChapter(getContext(), newChapter.getId());
-            }
-        }
-
+        getContext().sendBroadcast(new Intent(UWVersionDownloaderService.STOP_DOWNLOAD_VERSION_MESSAGE).
+                putExtra(UWVersionDownloaderService.VERSION_ID, Long.toString(version.getId())));
     }
+
+    //endregion
+
+    //region group methods
 
     @Override
     public Language getGroup(int groupPosition) {
@@ -484,61 +332,19 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         super.onGroupCollapsed(groupPosition);
     }
 
-    public boolean hasStableIds() {
-        return true;
-    }
-
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
 
-    public void setColorChange(ViewHolderForGroup holder, int color) {
-        holder.languageNameTextView.setTextColor(color);
+    public boolean hasStableIds() {
+        return true;
     }
 
-    private View.OnClickListener getInfoClickListener(final ViewHolderForGroup finalHolder, final Version version){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (finalHolder.versionInfoLayout.getVisibility() == View.GONE) {
+    //endregion
 
-                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
-                    finalHolder.versionInfoLayout.startAnimation(animationRelativeLayout);
-                } else {
-                    CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(finalHolder.versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.COLLAPSE);
-                    finalHolder.versionInfoLayout.startAnimation(animationRelativeLayout);
-                }
-            }
-        };
-    }
-
-
-    public void willDestroy(){
-        if(receiver != null) {
-            getContext().unregisterReceiver(receiver);
-        }
-        receiver = null;
-    }
-
-    private static class ViewHolderForGroup {
-
-        VersionInformationViewHolder versionInformationHolder;
-
-        TextView languageNameTextView;
-        ImageView languageTypeImageView;
-        LinearLayout versionInfoLayout;
-        LinearLayout clickableLayout;
-        FrameLayout infoFrame;
-
-        Button status;
-        ImageView downloadButton;
-
-        FrameLayout downloadFrame;
-        ProgressBar downloadProgressBar;
-        Button deleteButton;
-    }
     public interface VersionAdapterListener{
         void versionWasSelected(Version version);
+        void isLoading(boolean visible);
     }
 }
 
