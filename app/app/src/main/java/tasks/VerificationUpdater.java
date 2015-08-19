@@ -28,11 +28,13 @@ public class VerificationUpdater {
             byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
             String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
             UWSigning.updateVerification(context, book, bookText, sigText);
+            listener.verificationFinishedWithResult(bookText);
         }
         catch (IOException e){
             e.printStackTrace();
             listener.verificationFinishedWithResult(null);
         }
+
     }
 
         public interface VerificationTaskListener {

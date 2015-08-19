@@ -159,11 +159,17 @@ public class UWPreferenceManager {
         StoryPage currentPage = UWPreferenceDataManager.getCurrentStoryPage(context, false);
         StoryPage secondaryPage = UWPreferenceDataManager.getCurrentStoryPage(context, true);
 
-        if(currentPage != null && currentPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
-            setSelectedStoryPage(context, -1);
+        if(currentPage == null || secondaryPage == null){
+            return;
         }
-        if(secondaryPage != null && secondaryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
-            setSelectedStoryPageSecondary(context, -1);
+
+        boolean samePage = currentPage.getId().equals(secondaryPage.getId());
+
+        if(currentPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
+            setSelectedStoryPage(context, (samePage)?-1 : secondaryPage.getId());
+        }
+        if(secondaryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
+            setSelectedStoryPageSecondary(context, (samePage)? -1 : currentPage.getId());
         }
     }
 

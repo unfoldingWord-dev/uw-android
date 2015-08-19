@@ -49,7 +49,7 @@
             android:theme="@style/MainTheme" />
         <activity
             android:name="activity.readingSelection.VersionSelectionActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme" />
         <activity
             android:name="activity.reading.ReadingActivity"

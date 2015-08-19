@@ -87,6 +87,7 @@ public class UWToolbarViewGroup {
         if(text != null) {
             titleText.setText(text);
             if (clickable) {
+                titleLayout.setClickable(true);
                 titleLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -96,6 +97,7 @@ public class UWToolbarViewGroup {
                 titleButtonIndicator.setVisibility(View.VISIBLE);
             } else {
                 titleButtonIndicator.setVisibility(View.GONE);
+                titleLayout.setClickable(false);
             }
             titleLayout.setVisibility(View.VISIBLE);
         }

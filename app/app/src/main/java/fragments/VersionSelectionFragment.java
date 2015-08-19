@@ -224,10 +224,10 @@ public class VersionSelectionFragment extends DialogFragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         if(adapter != null) {
             adapter.willDestroy();
         }
+        super.onDetach();
     }
 
     /**

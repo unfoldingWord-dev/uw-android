@@ -27,6 +27,7 @@ import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import services.UWUpdaterService;
 import services.UWVersionDownloaderService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
@@ -60,8 +61,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     private void setupIntentFilter(){
         receiver = createBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_COMP);
-        filter.addAction(URLUtils.VERSION_BROADCAST_DOWN_ERROR);
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
         getContext().registerReceiver(receiver, filter);
     }
 
@@ -71,19 +71,21 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                Bundle extra = intent.getExtras();
-                if (extra != null) {
-                    String itemId = extra.getString(UWVersionDownloaderService.VERSION_ID);
-                    Log.d(TAG, itemId);
-                }
-                if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
-                    Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
-                    reload();
-                } else if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_STOPPED)) {
-                    Toast.makeText(context, "Download Stopped", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Download Error", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
+                reload();
+//                Bundle extra = intent.getExtras();
+//                if (extra != null) {
+//                    String itemId = extra.getString(UWVersionDownloaderService.VERSION_ID);
+//                    Log.d(TAG, itemId);
+//                }
+//                if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
+//                    Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
+//                    reload();
+//                } else if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_STOPPED)) {
+//                    Toast.makeText(context, "Download Stopped", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(context, "Download Error", Toast.LENGTH_SHORT).show();
+//                }
             }
         };
     }
@@ -194,6 +196,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                 .setPositiveButton("OK", null)
                 .create().show();
         } else {
+            setupIntentFilter();
             version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
             version.update();
             Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);

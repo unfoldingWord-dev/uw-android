@@ -27,7 +27,7 @@ public class UWUpdaterService extends Service {
     public static final String BROAD_CAST_DOWN_COMP = "org.unfoldingword.mobile.DOWNLOAD_COMPLETED";
     public static final String PROJECTS_JSON_KEY = "cat";
     public static final String MODIFIED_JSON_KEY = "mod";
-    private static final int MAX_NUMBER_THREADS = 20;
+    private static final int MAX_NUMBER_THREADS = 66;
 
     private Looper mServiceLooper;
 
