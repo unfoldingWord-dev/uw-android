@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import model.DownloadState;
 import model.daoModels.Version;
 import utils.RowStatusHelper;
 
@@ -52,11 +51,11 @@ public class VersionInformationViewHolder {
     public void setInfoForVersion(Context context, Version version){
 
         checkingEntityTextView.setText(version.getStatusCheckingEntity());
-        checkingLevelImage.setImageResource(ViewDataHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelImage.setImageResource(ViewGraphicsHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getStatusVersion());
         publishDateTextView.setText(version.getStatusPublishDate());
         verificationTextView.setText(version.getVerificationText());
-        checkingLevelTextView.setText(ViewDataHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelTextView.setText(ViewGraphicsHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getName());
 
         int verificationStatus = version.getVerificationStatus();

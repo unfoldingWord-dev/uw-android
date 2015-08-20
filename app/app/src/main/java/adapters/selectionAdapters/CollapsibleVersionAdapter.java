@@ -10,9 +10,9 @@ import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,15 +30,18 @@ import model.daoModels.Version;
 import services.UWUpdaterService;
 import services.UWVersionDownloaderService;
 import utils.NetWorkUtil;
-import utils.URLUtils;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 import view.VersionRowViewHolder;
 
 
+/**
+ * Created by PJ Fechner
+ * Adapter for Versions
+ */
 public class CollapsibleVersionAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter implements VersionRowViewHolder.VersionRowViewHolderListener {
 
-    private final static String TAG = "CollapseVersionAdapter";
+//    private final static String TAG = "CollapseVersionAdapter";
 
     private Fragment parentFragment;
 
@@ -106,8 +109,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     @Override
     public int getRealChildrenCount(int groupPosition) {
-        int count = getGroup(groupPosition).getVersions().size();
-        return count;
+        return getGroup(groupPosition).getVersions().size();
     }
 
     @Override
@@ -140,6 +142,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         return this.parentFragment.getActivity();
     }
 
+    /**
+     * Do anything that needs to happen when the adapter will be destroyed
+     */
     public void willDestroy(){
         if(receiver != null) {
             getContext().unregisterReceiver(receiver);
@@ -210,6 +215,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         (new DialogFragment() {
 
+            @NonNull
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 // Use the Builder class for convenient dialog construction
@@ -237,6 +243,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         (new DialogFragment() {
 
+
+            @NonNull
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 // Use the Builder class for convenient dialog construction
@@ -294,14 +302,12 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     @Override
     public Language getGroup(int groupPosition) {
-        Language model = currentProject.getLanguages().get(groupPosition);
-        return model;
+        return currentProject.getLanguages().get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        int groupCount = currentProject.getLanguages().size();
-        return groupCount;
+        return currentProject.getLanguages().size();
     }
 
     @Override
@@ -346,8 +352,17 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     //endregion
 
     public interface VersionAdapterListener{
+        /**
+         * User chose a version
+         * @param version Version that was chosen
+         */
         void versionWasSelected(Version version);
-        void isLoading(boolean visible);
+
+        /**
+         * The adapter is loading
+         * @param loading true if the adapter is loading
+         */
+        void isLoading(boolean loading);
     }
 }
 

@@ -34,11 +34,10 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     private ReadingPagerAdapterListener listener;
 
-    public List<BibleChapter> getChapters() {
-        return chapters;
-    }
+    //region Setup
 
-    public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener, ReadingPagerAdapterListener listener) {
+    public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener,
+                               ReadingPagerAdapterListener listener) {
         this.context = context;
         this.listener = listener;
         chapters = models;
@@ -49,6 +48,18 @@ public class ReadingPagerAdapter extends PagerAdapter {
         this.chapters = models;
         notifyDataSetChanged();
     }
+
+    //endregion
+
+    //region Accessors
+
+    public List<BibleChapter> getChapters() {
+        return chapters;
+    }
+
+    //endregion
+
+    //region pager methods
 
     @Override
     public int getCount() {
@@ -94,6 +105,28 @@ public class ReadingPagerAdapter extends PagerAdapter {
         return POSITION_NONE;
     }
 
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == ((RelativeLayout) object);
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        ((ViewPager) container).removeView((RelativeLayout) object);
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        super.setPrimaryItem(container, position, object);
+        if(position == (this.getCount() - 1)){
+            return;
+        }
+    }
+
+    //endregion
+
+    //region text creation
+
     private String getTextCss(){
 
         String css = "<style type=\"text/css\">\n" +
@@ -138,25 +171,12 @@ public class ReadingPagerAdapter extends PagerAdapter {
             directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC);
 
         return direction;
-}
-
-    @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return view == ((RelativeLayout) object);
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((RelativeLayout) object);
-    }
+    //endregion
 
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-        if(position == (this.getCount() - 1)){
-            return;
-        }
-    }
+
+    //region handling next book
 
     private View getNextBookView(LayoutInflater inflater){
 
@@ -185,19 +205,15 @@ public class ReadingPagerAdapter extends PagerAdapter {
         if(listener != null) {
             listener.goToNextBook();
         }
-
-//        this.chapters = nextBook.getBibleChapters(true);
-//        setNextBook();
-//
-//        UWPreferenceManager.setSelectedBibleChapter(context, chapters.get(0).getId());
-//
-//        String title = chapters.get(0).getTitle();
-//        notifyDataSetChanged();
-//
-//        ((ViewPager) this.container).setCurrentItem(0);
     }
 
+    //endregion
+
     public interface ReadingPagerAdapterListener{
+
+        /**
+         * User wants to go to the next book
+         */
         void goToNextBook();
     }
 }

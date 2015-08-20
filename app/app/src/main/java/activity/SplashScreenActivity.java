@@ -90,46 +90,4 @@ public class SplashScreenActivity extends Activity {
             goToInitialActivity();
         }
     };
-
-
-
-//    private class DatabaseUpdater extends AsyncTask<String, Void, String> {
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//            try {
-//                dbManager.createDataBase(false);
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            cancelValue = true;
-//            return TRUE;
-//        }
-//
-//        @Override
-//        protected void onCancelled() {
-//            super.onCancelled();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//            if (cancelValue) {
-//                if (result.equals(TRUE)) {
-//                    startActivity(new Intent(SplashScreenActivity.this, InitialPageActivity.class));
-//                    finish();
-//                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
-//                }
-//            } else {
-//                finish();
-//                startActivity(new Intent(SplashScreenActivity.this, SplashScreenActivity.class));
-//            }
-//
-//        }
-//    }
 }

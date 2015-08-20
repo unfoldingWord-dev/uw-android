@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +19,12 @@ import java.util.List;
 import model.daoModels.StoriesChapter;
 import utils.AsyncImageLoader;
 import view.ASyncImageView;
+import view.ViewGraphicsHelper;
 
 
 /**
- * Created by Acts Media Inc on 4/12/14.E
+ * Created by PJ Fechner
+ * Adapter for showing OBS Chapters
  */
 public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
 
@@ -40,7 +39,7 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -54,11 +53,10 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        // setting color to particular listview
-        setColorChange(holder, getColorForState(selectedPosition == position));
 
+        setColorChange(holder, ViewGraphicsHelper.getColorForSelection(selectedPosition == position));
 
-        StoriesChapter positionModel = (StoriesChapter) getItem(position);
+        StoriesChapter positionModel = getItem(position);
         String imgUrl = positionModel.getStoryPages().get(0).getImageUrl();
         String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
         String path = lastBitFromUrl.replaceAll("[{//:}]", "");
@@ -72,34 +70,19 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
     private Bitmap getBitmapFromAsset(String strName)
     {
         AssetManager assetManager = context.getAssets();
-        InputStream istr = null;
+        InputStream input = null;
         try {
-            istr = assetManager.open(strName);
+            input = assetManager.open(strName);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Bitmap bitmap = BitmapFactory.decodeStream(istr);
-        return bitmap;
-    }
 
-
-    protected int getColorForState(boolean selected){
-
-        if(!selected){
-            return context.getResources().getColor(R.color.black_light);
-        }
-        else {
-            return context.getResources().getColor(R.color.cyan);
-        }
+        return BitmapFactory.decodeStream(input);
     }
 
     public void setColorChange(ViewHolder holder, int color) {
         holder.chapterNameTextView.setTextColor(color);
         holder.referenceTextView.setTextColor(color);
-    }
-
-    public String getLastBitFromUrl(String url) {
-        return url.replaceFirst(".*/([^/?]+).*", "$1");
     }
 
     private static class ViewHolder {

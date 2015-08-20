@@ -2,9 +2,8 @@ package fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,35 +13,29 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LoadingFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LoadingFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment for showing a loading view.
  */
 public class LoadingFragment extends android.support.v4.app.DialogFragment {
 
-    public static final String TAG = "LoadingFragment";
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+//    private static final String TAG = "LoadingFragment";
+
     private static final String LOADING_TEXT_PARAM = "LOADING_TEXT_PARAM";
 
-    private String loadingText;
-    private boolean showCancel = true;
-
-    private LoadingFragmentInteractionListener mListener;
+    private LoadingFragmentInteractionListener listener;
 
     private TextView loadingTextView;
+
     private Button loadingCancelButton;
+    private String loadingText;
+
+    private boolean showCancel = true;
+
+    //region setup
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param loadingText Parameter 1.
-     * @return A new instance of fragment LoadingFragment.
+     * @param loadingText text to display to user
+     * @return a newly constructed LoadingFragment
      */
     public static LoadingFragment newInstance(String loadingText) {
         LoadingFragment fragment = new LoadingFragment();
@@ -57,6 +50,7 @@ public class LoadingFragment extends android.support.v4.app.DialogFragment {
     public LoadingFragment() {
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
@@ -75,10 +69,28 @@ public class LoadingFragment extends android.support.v4.app.DialogFragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if(listener == null) {
+            try {
+                listener = (LoadingFragmentInteractionListener) activity;
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_loading, container, false);
+        setupViews(view);
+        return view;
+    }
+
+    private void setupViews(View view){
+
         loadingTextView = (TextView) view.findViewById(R.id.progress_bar_fragment_text_view);
         loadingTextView.setText(loadingText);
         loadingCancelButton = (Button) view.findViewById(R.id.progress_bar_fragment_cancel_button);
@@ -89,38 +101,14 @@ public class LoadingFragment extends android.support.v4.app.DialogFragment {
             }
         });
         loadingCancelButton.setVisibility((showCancel) ? View.VISIBLE : View.GONE);
-        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void cancelLoading() {
-        if (mListener != null) {
-            mListener.loadingCanceled();
-        }
-    }
+    //endregion
 
-    public void setmListener(LoadingFragmentInteractionListener mListener) {
-        this.mListener = mListener;
-    }
+    //region accessors
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if(mListener == null) {
-            try {
-                mListener = (LoadingFragmentInteractionListener) activity;
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-//                throw new ClassCastException(activity.toString()
-//                        + " must implement OnFragmentInteractionListener");
-            }
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void setListener(LoadingFragmentInteractionListener listener) {
+        this.listener = listener;
     }
 
     public void setLoadingText(String text){
@@ -138,19 +126,29 @@ public class LoadingFragment extends android.support.v4.app.DialogFragment {
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    //endregion
+
+    //region ending
+
+    private void cancelLoading() {
+        if (listener != null) {
+            listener.loadingCanceled();
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+    //endregion
+
     public interface LoadingFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void loadingCanceled();
+        /**
+         * User pressed cancel
+         */
+        void loadingCanceled();
     }
 
 }

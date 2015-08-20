@@ -21,7 +21,6 @@ import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
-import adapters.ReadingScrollNotifications;
 import fragments.ChapterSelectionFragment;
 import fragments.ChapterSelectionFragmentListener;
 import fragments.VersionInfoFragment;
@@ -42,6 +41,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         ReadingFragmentListener
 {
     private static final String TAG = "ReadingActivity";
+
+    public static final String SCROLLED_PAGE = "SCROLLED_PAGE";
 
     private static final String VERSION_FRAGMENT_ID = "VERSION_FRAGMENT_ID";
     private static final String CHAPTER_SELECTION_FRAGMENT_ID = "CHAPTER_SELECTION_FRAGMENT_ID";
@@ -64,14 +65,14 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected boolean loadData();
 
     /**
-     * The label text for the chapter's label
+     * The text for the chapter's label
      * @return label text, or null if the text should not be shown
      */
     @Nullable
     abstract protected String getChapterLabelText();
 
     /**
-     * should update the reading view with the most current data
+     * should update the reading view with the current data
      */
     abstract protected void updateReadingView();
 
@@ -209,7 +210,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                if (intent.getAction().equals(ReadingScrollNotifications.SCROLLED_PAGE)) {
+                if (intent.getAction().equals(SCROLLED_PAGE)) {
 //                    if(intent.getExtras().containsKey(ReadingScrollNotifications.BIBLE_CHAPTER_PARAM)
 //                            || intent.getExtras().containsKey(ReadingScrollNotifications.STORY_PAGE_PARAM)) {
                         scrolled();
@@ -219,7 +220,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         };
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ReadingScrollNotifications.SCROLLED_PAGE);
+        filter.addAction(SCROLLED_PAGE);
         getApplicationContext().registerReceiver(receiver, filter);
     }
 

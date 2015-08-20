@@ -15,21 +15,32 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import model.daoModels.Version;
-import view.ViewDataHelper;
+import view.ViewGraphicsHelper;
 
+/**
+ * Created by PJ Fechner
+ * Fragment for showing the info of a Version
+ */
 public class VersionInfoFragment extends DialogFragment {
 
     private static final String VERSION_PARAM = "VERSION_PARAM";
 
     private Version version;
 
+    //region setup
+
+    /**
+     * @param version Version that's desired to show
+     * @return
+     */
     public static VersionInfoFragment createFragment(Version version){
+
+        VersionInfoFragment fragment = new VersionInfoFragment();
 
         Bundle args = new Bundle();
         args.putSerializable(VERSION_PARAM, version);
-
-        VersionInfoFragment fragment = new VersionInfoFragment();
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -48,27 +59,26 @@ public class VersionInfoFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.version_information_view, container, false);
-        TextView checkingEntityTextView = (TextView) view.findViewById(R.id.checking_entity_text_view);
-        ImageView checkingLevelImage = (ImageView) view.findViewById(R.id.checking_level_image);
-        TextView versionTextView = (TextView) view.findViewById(R.id.version_text_view);
-        TextView publishDateTextView = (TextView) view.findViewById(R.id.publish_date_text_view);
-        TextView verificationTextView = (TextView) view.findViewById(R.id.verification_text_view);
-        Button status = (Button) view.findViewById(R.id.verification_status);
-        TextView checkingLevelExplanationTextView = (TextView) view.findViewById(R.id.checking_level_explanation_text);
 
+        setupViews(view);
+        return view;
+    }
 
-        checkingEntityTextView.setText(version.getStatusCheckingEntity());
-        checkingLevelImage.setImageResource(ViewDataHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
-        versionTextView.setText(version.getStatusVersion());
-        publishDateTextView.setText(version.getStatusPublishDate());
-        verificationTextView.setText(version.getVerificationText());
-        checkingLevelExplanationTextView.setText(ViewDataHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+    private void setupViews(View view){
+
+        ((TextView) view.findViewById(R.id.checking_entity_text_view)).setText(version.getStatusCheckingEntity());
+        ((TextView) view.findViewById(R.id.version_text_view)).setText(version.getStatusVersion());;
+        ((TextView) view.findViewById(R.id.publish_date_text_view)).setText(version.getStatusPublishDate());
+        ((TextView) view.findViewById(R.id.verification_text_view)).setText(version.getVerificationText());
+        ((TextView) view.findViewById(R.id.checking_level_explanation_text)).setText(ViewGraphicsHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+
+        ((ImageView) view.findViewById(R.id.checking_level_image))
+                .setImageResource(ViewGraphicsHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
 
         int verificationStatus = version.getVerificationStatus();
-        status.setBackgroundResource(ViewDataHelper.getColorForStatus(verificationStatus));
-        status.setText(ViewDataHelper.getButtonTextForStatus(verificationStatus, getActivity().getApplicationContext()));
-
-        return view;
+        Button status = (Button) view.findViewById(R.id.verification_status);
+        status.setBackgroundResource(ViewGraphicsHelper.getDrawableForStatus(verificationStatus));
+        status.setText(ViewGraphicsHelper.getVerificationButtonTextForStatus(verificationStatus));
     }
 
     @NonNull
@@ -78,4 +88,6 @@ public class VersionInfoFragment extends DialogFragment {
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
+
+    //endregion
 }

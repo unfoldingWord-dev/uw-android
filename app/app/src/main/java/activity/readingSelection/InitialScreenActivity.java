@@ -34,7 +34,7 @@ import activity.sharing.LoadActivity;
 import activity.sharing.ShareActivity;
 import adapters.ShareAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import adapters.selectionAdapters.UWGeneralListAdapter;
+import adapters.selectionAdapters.InitialPageAdapter;
 import fragments.CheckingLevelInfoFragment;
 import model.DaoDBHelper;
 import model.daoModels.Language;
@@ -58,7 +58,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     private Button settingsButton = null;
     private ListView listview;
 
-    UWGeneralListAdapter adapter;
+    InitialPageAdapter adapter;
 
     private List<Project> mProjects = null;
 
@@ -164,7 +164,7 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
 
         if(adapter == null){
-            adapter = new UWGeneralListAdapter(this.getApplicationContext(), data, -1);
+            adapter = new InitialPageAdapter(this.getApplicationContext(), data, -1);
             listview.setAdapter(adapter);
         } else{
             adapter.updateWithData(data);

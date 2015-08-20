@@ -27,44 +27,43 @@ import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link fragments.VersionSelectionFragment.VersionSelectionFragmentListener} interface
- * to handle interaction events.
- * Use the {@link VersionSelectionFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment for users to select a new version
  */
 public class VersionSelectionFragment extends DialogFragment {
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
     private static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
 
-    protected AnimatedExpandableListView mListView = null;
-    private Project chosenProject = null;
-    private CollapsibleVersionAdapter adapter;
-    private boolean isSecondVersion;
-
-    private boolean showProjectTitle = false;
-    private TextView titleTextView;
-
     private VersionSelectionFragmentListener listener;
 
+    protected AnimatedExpandableListView mListView = null;
+    private CollapsibleVersionAdapter adapter;
+    private TextView titleTextView;
+
+    private boolean isSecondVersion;
+    private Project chosenProject = null;
+
+    private boolean showProjectTitle = false;
+
+    //region setup
+
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment VersionSelectionFragment.
+     * @param project project for which the version will be showing
+     * @param showTitle true if the title should be shown
+     * @param isSecondVersion true if this is for the second version in the diglot view
+     * @return a newly constructed VersionSelectionFragment
      */
     public static VersionSelectionFragment newInstance(Project project, boolean showTitle, boolean isSecondVersion) {
 
         VersionSelectionFragment fragment = new VersionSelectionFragment();
+
         Bundle args = new Bundle();
         args.putSerializable(CHOSEN_PROJECT, project);
         args.putBoolean(SHOW_TITLE_PARAM, showTitle);
         args.putBoolean(IS_SECOND_VERSION_PARAM, isSecondVersion);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -73,22 +72,36 @@ public class VersionSelectionFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            chosenProject = (Project) getArguments().getSerializable(CHOSEN_PROJECT);
-            chosenProject = Project.getProjectForId(chosenProject.getId(), DaoDBHelper.getDaoSession(getContext()));
-            showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
-            isSecondVersion = getArguments().getBoolean(IS_SECOND_VERSION_PARAM);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (VersionSelectionFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        chosenProject = (Project) getArguments().getSerializable(CHOSEN_PROJECT);
+        chosenProject = Project.getProjectForId(chosenProject.getId(), DaoDBHelper.getDaoSession(getContext()));
+        showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+        isSecondVersion = getArguments().getBoolean(IS_SECOND_VERSION_PARAM);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!showProjectTitle){
+            titleTextView.setVisibility(View.GONE);
+        }
+        else{
+            titleTextView.setText(chosenProject.getTitle());
+            titleTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     @NonNull
@@ -104,41 +117,68 @@ public class VersionSelectionFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_version_selection, container, false);
-        setupViews(view, inflater);
+        setupViews(view);
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(!showProjectTitle){
-            titleTextView.setVisibility(View.GONE);
-        }
-        else{
-            titleTextView.setText(chosenProject.getTitle());
-            titleTextView.setVisibility(View.VISIBLE);
-        }
-    }
+    private void setupViews(View view){
 
-    private void setupViews(View view, LayoutInflater inflater){
         titleTextView = (TextView) view.findViewById(R.id.version_selection_text_view);
-        if(!showProjectTitle){
-            titleTextView.setVisibility(View.GONE);
-        }
-        else{
-            titleTextView.setText(chosenProject.getTitle());
-            titleTextView.setVisibility(View.VISIBLE);
-        }
+
+        titleTextView.setText(chosenProject.getTitle());
+
+        titleTextView.setVisibility((showProjectTitle)? View.VISIBLE : View.GONE);
+
         prepareListView(view);
     }
 
-
     protected void prepareListView(View view){
 
-        //getting instance of ExpandableListView
         mListView = (AnimatedExpandableListView) view.findViewById(R.id.versions_list);
+        mListView.setOnGroupClickListener(getOnGroupClickListener());
 
-        mListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+        Version version = getVersion();
+
+        adapter = new CollapsibleVersionAdapter(this, this.chosenProject, (version != null)? version.getId() : -1, getAdapterListener());
+        mListView.setAdapter(adapter);
+
+        if(version != null) {
+            Language language = version.getLanguage();
+            int expandedIndex = language.getProject().getLanguages().indexOf(language);
+            if(expandedIndex > -1){
+                mListView.expandGroup(expandedIndex);
+            }
+        }
+    }
+
+    private Version getVersion(){
+
+        if(chosenProject.isBibleStories()){
+            long pageId = UWPreferenceManager.getSelectedStoryPage(getContext());
+            if(pageId > -1) {
+                return DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
+                        .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
+                        .getStoriesChapter().getBook().getVersion();
+            }
+        }
+        else{
+            long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
+            if(chapterId > -1) {
+                return BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()))
+                        .getBook().getVersion();
+            }
+        }
+
+        return null;
+    }
+
+    //endregion
+
+    //region listeners
+
+    private ExpandableListView.OnGroupClickListener getOnGroupClickListener(){
+
+        return new ExpandableListView.OnGroupClickListener() {
 
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, long id) {
@@ -162,28 +202,12 @@ public class VersionSelectionFragment extends DialogFragment {
                     return false;
                 }
             }
-        });
+        };
+    }
 
+    private CollapsibleVersionAdapter.VersionAdapterListener getAdapterListener(){
 
-        Version version = null;
-
-        if(chosenProject.isBibleStories()){
-            long pageId = UWPreferenceManager.getSelectedStoryPage(getContext());
-            if(pageId > -1) {
-                version = DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
-                        .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
-                        .getStoriesChapter().getBook().getVersion();
-            }
-        }
-        else{
-            long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
-            if(chapterId > -1) {
-                version = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()))
-                        .getBook().getVersion();
-            }
-        }
-
-        adapter = new CollapsibleVersionAdapter(this, this.chosenProject, (version != null)? version.getId() : -1, new CollapsibleVersionAdapter.VersionAdapterListener(){
+        return new CollapsibleVersionAdapter.VersionAdapterListener(){
             @Override
             public void versionWasSelected(Version version) {
                 if(listener != null){
@@ -192,35 +216,23 @@ public class VersionSelectionFragment extends DialogFragment {
             }
 
             @Override
-            public void isLoading(boolean visible) {
-                ((UWBaseActivity) getActivity()).setLoadingFragmentVisibility(visible, "Deleting...", false);
+            public void isLoading(boolean loading) {
+                ((UWBaseActivity) getActivity()).setLoadingFragmentVisibility(loading, "Deleting...", false);
             }
-        });
-        mListView.setAdapter(adapter);
-
-        if(version != null) {
-            Language language = version.getLanguage();
-            int expandedIndex = language.getProject().getLanguages().indexOf(language);
-            if(expandedIndex > -1){
-                mListView.expandGroup(expandedIndex);
-            }
-        }
+        };
     }
+
+    //endregion
+
+    //region accessors
 
     private Context getContext(){
         return getActivity().getApplicationContext();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            listener = (VersionSelectionFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+    //endregion
+
+    //region detach
 
     @Override
     public void onDetach() {
@@ -230,18 +242,15 @@ public class VersionSelectionFragment extends DialogFragment {
         super.onDetach();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    //endregion
+
     public interface VersionSelectionFragmentListener {
-        public void versionWasSelected(Version version, boolean isSecondVersion);
+        /**
+         * Called when the user selects a version
+         * @param version Version the was selected
+         * @param isSecondVersion true if this is for the second version in the diglot view
+         */
+        void versionWasSelected(Version version, boolean isSecondVersion);
     }
 
 }

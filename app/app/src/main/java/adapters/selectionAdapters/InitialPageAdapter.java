@@ -1,9 +1,6 @@
 package adapters.selectionAdapters;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +12,13 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
+import view.ViewGraphicsHelper;
+
 /**
  * Created by Fechner on 2/27/15.
+ * Basic adapter for initial screen
  */
-public class UWGeneralListAdapter extends ArrayAdapter<GeneralRowInterface> {
+public class InitialPageAdapter extends ArrayAdapter<GeneralRowInterface> {
 
     protected List<GeneralRowInterface> models;
     protected Context context;
@@ -26,7 +26,7 @@ public class UWGeneralListAdapter extends ArrayAdapter<GeneralRowInterface> {
     private int selectedPosition;
 
 
-    public UWGeneralListAdapter(Context context, List<GeneralRowInterface> models, int selectedPosition) {
+    public InitialPageAdapter(Context context, List<GeneralRowInterface> models, int selectedPosition) {
         super(context, R.layout.row_general, models);
         this.context = context;
         this.models = models;
@@ -60,30 +60,13 @@ public class UWGeneralListAdapter extends ArrayAdapter<GeneralRowInterface> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        setColorChange(holder, getColorForState(selectedPosition, pos));
+        holder.title.setTextColor(ViewGraphicsHelper.getColorForSelection(selectedPosition == pos));
         holder.title.setText(models.get(pos).getTitle());
 
         return view;
     }
 
-    protected int getColorForState(int selectionPosition, int itemPosition){
-
-        if(selectionPosition == -1 || itemPosition != selectionPosition){
-            return context.getResources().getColor(R.color.black_light);
-        }
-        else {
-            return context.getResources().getColor(R.color.cyan);
-        }
-    }
-
-
-    public void setColorChange(ViewHolderForGroup holder, int color) {
-
-        holder.title.setTextColor(color);
-    }
-
     private static class ViewHolderForGroup {
-
         TextView title;
         LinearLayout row;
     }

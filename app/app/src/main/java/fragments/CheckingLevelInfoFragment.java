@@ -16,6 +16,7 @@ import org.unfoldingword.mobile.R;
 
 /**
  * Created by Fechner on 8/18/15.
+ * Dialogue fragment for showing the checking level info
  */
 public class CheckingLevelInfoFragment extends DialogFragment {
 
@@ -27,10 +28,10 @@ public class CheckingLevelInfoFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.verification_fragment, container, false);
 
-        TextView tView = (TextView) view.findViewById(R.id.textView);
+        TextView textView = (TextView) view.findViewById(R.id.textView);
         String versionName = BuildConfig.VERSION_NAME;
 
-        tView.setText(versionName);
+        textView.setText(versionName);
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.verification_fragment_layout);
         layout.setOnClickListener(new View.OnClickListener() {
             @Override

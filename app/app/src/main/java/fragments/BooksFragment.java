@@ -1,9 +1,7 @@
 package fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,49 +14,37 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapters.selectionAdapters.GeneralAdapter;
+import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link BooksFragment.BooksFragmentListener} interface
- * to handle interaction events.
- * Use the {@link BooksFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Created by PJ Fechner
+ * Fragment for selecting a book from a list.
  */
 public class BooksFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    private BooksFragmentListener listener = null;
 
-    static String BOOK_FRAGMENT_INDEX_ID = "BOOK_FRAGMENT_INDEX_ID";
+    protected ListView listView = null;
 
-    private BooksFragmentListener mListener = null;
-    public void setmListener(BooksFragmentListener mListener) {
-        this.mListener = mListener;
-    }
-    protected ListView mListView = null;
     private List<Book> books;
     private int selectedRow = -1;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
+    //region setup
 
-     * @return A new instance of fragment BookSelectionFragment.
+    /**
+     * @param listener listener for when a book is selected
+     * @return newly constructed instance of a BooksFragment
      */
-    // TODO: Rename and change types and number of parameters
     public static BooksFragment newInstance(BooksFragmentListener listener) {
         BooksFragment fragment = new BooksFragment();
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
-        fragment.mListener = listener;
+        fragment.listener = listener;
         return fragment;
     }
 
@@ -91,63 +77,18 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
         List<GeneralRowInterface> data = this.getData();
 
-        if (mListView == null) {
-            mListView = (ListView) view.findViewById(R.id.generalList);
+        if (listView == null) {
+            listView = (ListView) view.findViewById(R.id.generalList);
         }
         if (data == null) {
             return;
         }
 
-        mListView.setOnItemClickListener(this);
-        int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getIndexStorageString(), -1);
-        GeneralAdapter adapter = new GeneralAdapter(getContext(), data, this, selectedRow);
-        mListView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
-
-        mListView.setSelection((scrollPosition > 1) ? scrollPosition - 1 : 0);
-    }
-
-    private Context getContext(){
-        return this.getActivity().getApplicationContext();
-    }
-
-//    protected ArrayList<GeneralRowInterface> getData(){
-//
-//        Context context = getContext();
-//
-//        long chapterId = UWPreferenceManager.getSelectedBibleChapter(context);
-//        if(chapterId < 0) {
-//            return null;
-//        }
-//        else {
-//            BibleChapter model = BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(context));
-//            List<Book> books = model.getBook().getVersion().getBooks();
-//
-//            long selectedId = model.getBookId();
-//            ArrayList<GeneralRowInterface> data = new ArrayList<GeneralRowInterface>();
-//            int i = 0;
-//            for (Book book : books) {
-//
-//                if(book.getBibleChapters() == null || book.getBibleChapters().size() == 0){
-//                    continue;
-//                }
-//                long uid = book.getId();
-//                if(selectedId == uid){
-//                    PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(getIndexStorageString(), i).commit();
-//                }
-//                data.add(new GeneralRowInterface.BasicGeneralRowInterface(Long.toString(book.getId()), book.getTitle()));
-//                i++;
-//            }
-//            return data;
-//        }
-//    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
-
-        if(mListener != null) {
-            mListener.bookWasSelected(books.get(position));
-        }
+        ChaptersAdapter adapter = new ChaptersAdapter(getContext(), data, this, selectedRow);
+        listView.setAdapter(adapter);
+//        listView.setSelection((scrollPosition > 1) ? scrollPosition - 1 : 0);
     }
 
     protected List<GeneralRowInterface> getData(){
@@ -169,43 +110,42 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
         return dataList;
     }
+    //endregion
 
+    //region accessors
+
+    public void setListener(BooksFragmentListener listener) {
+        this.listener = listener;
+    }
+
+    private Context getContext(){
+        return this.getActivity().getApplicationContext();
+    }
+
+    //endregion
+
+    //region OnItemClickListener
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        if(mListener == null) {
-//            try {
-//                mListener = (BooksFragmentListener) activity;
-//            } catch (ClassCastException e) {
-//                throw new ClassCastException(activity.toString()
-//                        + " must implement OnFragmentInteractionListener");
-//            }
+        if(listener != null) {
+            listener.bookWasSelected(books.get(position));
         }
     }
 
-    protected String getIndexStorageString() {
-        return BOOK_FRAGMENT_INDEX_ID;
-    }
+    //endregion
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface BooksFragmentListener {
+        /**
+         * User selected a book
+         * @param book book that was selected
+         */
         void bookWasSelected(Book book);
     }
-
 }

@@ -14,68 +14,49 @@ import android.widget.ListView;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import adapters.selectionAdapters.GeneralAdapter;
+import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
-import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link fragments.ChaptersFragment.ChaptersFragmentListener} interface
- * to handle interaction events.
- * Use the {@link fragments.ChaptersFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment used for a user to select a BibleChapter from a list
  */
 public class ChaptersFragment extends Fragment implements AdapterView.OnItemClickListener {
-    public static String BOOK_CHAPTERS_INDEX_STRING = "BOOK_CHAPTERS_INDEX_STRING";
 
+    private ChapterSelectionFragmentListener listener = null;
 
-    private ChaptersFragmentListener mListener = null;
-
-    public void setmListener(ChaptersFragmentListener mListener) {
-        this.mListener = mListener;
+    public void setListener(ChapterSelectionFragmentListener listener) {
+        this.listener = listener;
     }
 
     protected ListView mListView = null;
 
     private List<BibleChapter> chapters;
-    private GeneralAdapter adapter;
+    private ChaptersAdapter adapter;
 
     private int selectedRow = -1;
 
+    //region setup
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-
-     * @return A new instance of fragment BookSelectionFragment.
+     * @param listener Listener for when a chapter is selected
+     * @return a newly constructed ChaptersFragment
      */
-    // TODO: Rename and change types and number of parameters
-    public static ChaptersFragment newInstance(ChaptersFragmentListener listener) {
+    public static ChaptersFragment newInstance(ChapterSelectionFragmentListener listener) {
         ChaptersFragment fragment = new ChaptersFragment();
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
-        fragment.mListener = listener;
+        fragment.listener = listener;
         return fragment;
     }
 
     public ChaptersFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
     }
 
     @Override
@@ -96,6 +77,25 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
+    protected List<GeneralRowInterface> getData(){
+
+        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
+        List<GeneralRowInterface> dataList = new ArrayList<>();
+
+        if(currentChapter == null){
+            return dataList;
+        }
+
+        for(BibleChapter row : chapters) {
+            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getNumber()));
+            if(row.getId().equals(currentChapter.getId())){
+                selectedRow = chapters.indexOf(row);
+            }
+        }
+
+        return dataList;
+    }
+
     private void setupViews(View view){
         prepareListView(view);
     }
@@ -111,83 +111,50 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         }
 
         mListView.setOnItemClickListener(this);
-        adapter = new GeneralAdapter(getContext(), data, this, selectedRow);
+        adapter = new ChaptersAdapter(getContext(), data, this, selectedRow);
         mListView.setAdapter(adapter);
-
-        int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(getIndexStorageString(), -1);
-        mListView.setSelection((scrollPosition > 0) ? scrollPosition - 1 : 0);
     }
 
+    /**
+     * reloads list with new book
+     * @param newBook new book from which to display the chapters.
+     */
     protected void reload(Book newBook){
 
         this.chapters = newBook.getBibleChapters(true);
         adapter.update(getData());
     }
 
+    //endregion
+
+    //region accessors
+
     private Context getContext(){
         return this.getActivity().getApplicationContext();
     }
 
-    protected List<GeneralRowInterface> getData(){
+    //endregion
 
-        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
-        List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
-
-        for(BibleChapter row : chapters) {
-            dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getNumber()));
-            if(row.getId() == currentChapter.getId()){
-                selectedRow = chapters.indexOf(row);
-            }
-        }
-
-        return dataList;
-    }
+    //region OnItemClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
         UWPreferenceManager.changedToBibleChapter(getContext(), chapters.get(position).getId(), false);
-        if(mListener != null) {
-            mListener.chapterWasSelected();
+        if(listener != null) {
+            listener.chapterWasSelected();
         }
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    //endregion
 
-        if(mListener == null) {
-//            try {
-//                mListener = (ChaptersFragmentListener) activity;
-//            } catch (ClassCastException e) {
-//                throw new ClassCastException(activity.toString()
-//                        + " must implement OnFragmentInteractionListener");
-//            }
-        }
-    }
-
-    protected String getIndexStorageString() {
-        return BOOK_CHAPTERS_INDEX_STRING;
-    }
+    //region detach
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface ChaptersFragmentListener {
-        public void chapterWasSelected();
-    }
-
+    //endregion
 }

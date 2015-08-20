@@ -42,7 +42,7 @@ public class FilesListAdapter extends ArrayAdapter<File> {
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         final File currentRow = getItem(position);
-        ViewHolderForGroup holder = null;
+        ViewHolderForGroup holder;
         if (view == null) {
 
             holder = new ViewHolderForGroup();
@@ -51,7 +51,6 @@ public class FilesListAdapter extends ArrayAdapter<File> {
 
             holder.fileNameTextView = (TextView) view.findViewById(R.id.file_name_text_view);
             holder.fileLocationTextView = (TextView) view.findViewById(R.id.file_location_text_view);
-
 
             view.setTag(holder);
         } else {

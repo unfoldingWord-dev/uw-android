@@ -5,5 +5,8 @@ package fragments;
  */
 public interface ChapterSelectionFragmentListener {
 
+    /**
+     * Fragment selected a new chapter
+     */
     void chapterWasSelected();
 }

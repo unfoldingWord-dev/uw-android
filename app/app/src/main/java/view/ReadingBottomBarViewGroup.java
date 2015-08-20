@@ -70,7 +70,7 @@ public class ReadingBottomBarViewGroup {
     public void updateWithVersion(Version version){
         if(version != null) {
             this.checkingLevelButton.setVisibility(View.VISIBLE);
-            this.checkingLevelButton.setImageResource(ViewDataHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+            this.checkingLevelButton.setImageResource(ViewGraphicsHelper.getCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
             this.versionTextView.setText(version.getName());
         }
         else{

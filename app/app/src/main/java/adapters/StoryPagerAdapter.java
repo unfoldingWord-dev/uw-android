@@ -23,18 +23,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import activity.reading.BaseReadingActivity;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
+import view.ViewGraphicsHelper;
 import view.popover.ActionItem;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
+ * Adapter for OBS pages
  */
 public class StoryPagerAdapter extends PagerAdapter {
-
 
     private static final String TAG = "ViewPagerAdapter";
 
@@ -45,9 +47,9 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private int lastChapterNumber = -1;
     private boolean isDiglot;
-
     private boolean isLandscape = false;
 
+    //region setup
     public StoryPagerAdapter(Activity context, StoriesChapter mainChapter, StoriesChapter secondChapter) {
         this.mainChapter = mainChapter;
         this.secondChapter = secondChapter;
@@ -58,38 +60,7 @@ public class StoryPagerAdapter extends PagerAdapter {
         this.context = context;
     }
 
-    @Override
-    public int getCount() {
-        if(mainChapter == null){
-            return 0;
-        }
-        if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
-            return (mainChapter != null)? mainChapter.getStoryPages().size() : 0;
-        }
-        else {
-            return (mainChapter != null) ? mainChapter.getStoryPages().size() + 1 : 0;
-        }
-    }
-
-    public StoriesChapter getMainChapter() {
-        return mainChapter;
-    }
-
-    public void update(StoriesChapter mainChapter, StoriesChapter secondChapter){
-        this.mainChapter = mainChapter;
-        this.secondChapter = secondChapter;
-        notifyDataSetChanged();
-    }
-
-    public void setIsDiglot(boolean isDiglot){
-        this.isDiglot = isDiglot;
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public int getItemPosition(Object object) {
-        return POSITION_NONE;
-    }
+    //region data finding methods
 
     private StoryPage getMainModelForRow(int index){
         return mainChapter.getStoryPages().get(index);
@@ -98,6 +69,14 @@ public class StoryPagerAdapter extends PagerAdapter {
     private StoryPage getSecondModelForRow(int index){
         return secondChapter.getStoryPages().get(index);
     }
+
+    public StoriesChapter getMainChapter() {
+        return mainChapter;
+    }
+
+    //endregion
+
+    //region pager methods
 
     @Override
     public Object instantiateItem(final ViewGroup container, final int position) {
@@ -126,7 +105,7 @@ public class StoryPagerAdapter extends PagerAdapter {
             String imgUrl = mainChapter.getStoryPages().get(position).getImageUrl();
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
-            chapterImageView.setImageBitmap(getBitmapFromAsset("images/" + path));
+            chapterImageView.setImageBitmap(ViewGraphicsHelper.getBitmapFromAsset(context, "images/" + path));
 
             setupPageForDiglot(mainTextView, secondaryTextView);
         }
@@ -134,23 +113,62 @@ public class StoryPagerAdapter extends PagerAdapter {
         return view;
     }
 
-    private void setupPageForDiglot(TextView mainView, TextView secondView){
+    @Override
+    public int getCount() {
+        if(mainChapter == null){
+            return 0;
+        }
+        if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
+            return (mainChapter != null)? mainChapter.getStoryPages().size() : 0;
+        }
+        else {
+            return (mainChapter != null) ? mainChapter.getStoryPages().size() + 1 : 0;
+        }
+    }
 
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == ((RelativeLayout) object);
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        ((ViewPager) container).removeView((RelativeLayout) object);
+    }
+
+    private void setupPageForDiglot(TextView mainView, TextView secondView){
         secondView.setVisibility((isDiglot) ? View.VISIBLE : View.GONE);
     }
 
-    private Bitmap getBitmapFromAsset(String strName)
-    {
-        AssetManager assetManager = context.getAssets();
-        InputStream istr = null;
-        try {
-            istr = assetManager.open(strName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Bitmap bitmap = BitmapFactory.decodeStream(istr);
-        return bitmap;
+    //endregion
+
+    //region screen changing
+
+    public void update(StoriesChapter mainChapter, StoriesChapter secondChapter){
+        this.mainChapter = mainChapter;
+        this.secondChapter = secondChapter;
+        notifyDataSetChanged();
     }
+
+    /**
+     * Changes the layout based on whether the user wants the diglot view
+     * @param isDiglot true if the user currently wantds diglot
+     */
+    public void setIsDiglot(boolean isDiglot){
+        this.isDiglot = isDiglot;
+        notifyDataSetChanged();
+    }
+
+
+
+    //endregion
+
+    //region handling next chapter
 
     private View getNextChapterView(LayoutInflater inflater){
 
@@ -158,14 +176,6 @@ public class StoryPagerAdapter extends PagerAdapter {
         Button nextButton = (Button) view.findViewById(R.id.next_chapter_screen_button);
 
         if(Integer.parseInt(mainChapter.getNumber()) == lastChapterNumber){
-//            String nextButtonString = context.getResources().getString(R.string.chapters);
-//            nextButton.setText(nextButtonString);
-//            nextButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    context.onBackPressed();
-//                }
-//            });
             return null;
         }
         else {
@@ -183,45 +193,24 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     private void moveToNextChapter(){
 
-        int chapterNumber = Integer.parseInt(mainChapter.getNumber());
-//        String languageName = mainChapter.language;
-        String nextChapterNumber = Integer.toString(chapterNumber + 1);
-        if(nextChapterNumber.length() == 1){
-            nextChapterNumber = "0" + nextChapterNumber;
+        StoriesChapter nextChapter = mainChapter.getNextChapter();
+        if(nextChapter != null){
+            mainChapter = nextChapter;
+            getCount();
+
+            UWPreferenceManager.setSelectedStoryPage(context, mainChapter.getStoryPages().get(0).getId());
+            notifyDataSetChanged();
+            ((ViewPager) this.container).setCurrentItem(0);
+            context.getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));
         }
-
-        List<StoriesChapter> chapters = mainChapter.getBook().getStoryChapters();
-
-        StoriesChapter nextChapter = null;
-        int newChapterNumber = Integer.parseInt(this.mainChapter.getNumber());
-        for(StoriesChapter chapter : chapters){
-            if(Integer.parseInt(chapter.getNumber()) == newChapterNumber + 1){
-                nextChapter = chapter;
-                break;
-            }
-        }
-
-        this.mainChapter = nextChapter;
-        getCount();
-
-//        int current_value = Integer.parseInt(mainChapter.getNumber());
-        UWPreferenceManager.setSelectedStoryPage(context, nextChapter.getStoryPages().get(0).getId());
-        notifyDataSetChanged();
-        ((ViewPager) this.container).setCurrentItem(0);
-        context.getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
-
     }
 
-    @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return view == ((RelativeLayout) object);
-    }
+    //endregion
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((RelativeLayout) object);
-    }
-
+    /**
+     * Lays the views out based on the change to/from landscape
+     * @param isLandscape true if the view will now be landscape
+     */
     public void setIsLandscape(boolean isLandscape){
         this.isLandscape = isLandscape;
         notifyDataSetChanged();

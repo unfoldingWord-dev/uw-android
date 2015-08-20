@@ -29,36 +29,33 @@ import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link fragments.ChapterSelectionFragmentListener} interface
- * to handle interaction events.
- * Use the {@link fragments.StoryChaptersFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment for displaying a list of OBS chapters
  */
 public class StoryChaptersFragment extends DialogFragment implements AdapterView.OnItemClickListener {
 
-    public static String STORY_CHAPTERS_INDEX_STRING = "STORY_CHAPTERS_INDEX_STRING";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
 
     private ChapterSelectionFragmentListener mListener = null;
 
     protected ListView mListView = null;
-    private boolean showTitle = false;
     private TextView titleTextView;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
+    private boolean showTitle = false;
 
-     * @return A new instance of fragment BookSelectionFragment.
+    //region setup
+
+    /**
+     * @param showTitle whether the Fragment should display a title
+     * @return a newly constructed StoryChaptersFragment
      */
     public static StoryChaptersFragment newInstance(boolean showTitle) {
+
         StoryChaptersFragment fragment = new StoryChaptersFragment();
+
         Bundle args = new Bundle();
         args.putBoolean(SHOW_TITLE_PARAM, showTitle);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -66,18 +63,38 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         // Required empty public constructor
     }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            showTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+        showTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if(mListener == null) {
+            try {
+                mListener = (ChapterSelectionFragmentListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.general_list, container, false);
         setupViews(view);
         return view;
@@ -97,7 +114,6 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     protected void prepareListView(View view) {
 
         List<StoriesChapter> chapterModels = this.getData();
-//        BookModel book = this.chosenVersion.getChildModels(getApplicationContext()).get(0);
 
         if (chapterModels != null) {
 
@@ -105,22 +121,24 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
             mListView.setOnItemClickListener(this);
 
             StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
-            int selectedIndex = Integer.parseInt(page.getStoriesChapter().getNumber()) - 1;
-            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
 
-            int scrollPosition = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(STORY_CHAPTERS_INDEX_STRING, -1);
-            mListView.setSelection((scrollPosition > 0)? scrollPosition - 1 : 0);
+            int selectedIndex = (page != null)? Integer.parseInt(page.getStoriesChapter().getNumber()) - 1 : -1;
+            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
         }
     }
 
-    protected void reload(){
+    //endregion
 
-        List<StoriesChapter> data = this.getData();
-        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
-        int index = data.indexOf(page);
-        StoriesChapterAdapter adapter = new StoriesChapterAdapter(getContext(), data, 2);
-        mListView.setAdapter(adapter);
-    }
+//    protected void reload(){
+//
+//        List<StoriesChapter> data = this.getData();
+//        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
+//        int index = (page != null)? data.indexOf(page.getStoriesChapter()) : -1;
+//        StoriesChapterAdapter adapter = new StoriesChapterAdapter(getContext(), data, index);
+//        mListView.setAdapter(adapter);
+//    }
+
+    //region accessors
 
     private Context getContext(){
         return this.getActivity().getApplicationContext();
@@ -129,11 +147,17 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     protected List<StoriesChapter> getData(){
 
         StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
-
-        List<StoriesChapter> chapters = page.getStoriesChapter().getBook().getStoryChapters();
-
-        return chapters;
+        if(page != null) {
+            return page.getStoriesChapter().getBook().getStoryChapters();
+        }
+        else{
+            return null;
+        }
     }
+
+    //endregion
+
+    //region OnItemClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
@@ -147,35 +171,15 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         }
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    //endregion
 
-        if(mListener == null) {
-            try {
-                mListener = (ChapterSelectionFragmentListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString()
-                        + " must implement OnFragmentInteractionListener");
-            }
-        }
-    }
-
-    protected String getIndexStorageString() {
-        return STORY_CHAPTERS_INDEX_STRING;
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        return dialog;
-    }
+    //region detach
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
+
+    //endregion
 }

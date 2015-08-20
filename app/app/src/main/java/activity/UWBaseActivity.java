@@ -206,7 +206,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
                         loadingFragment = LoadingFragment.newInstance(loadingText);
 
                         loadingFragment.setCancelable(cancelable);
-                        loadingFragment.setmListener(new LoadingFragment.LoadingFragmentInteractionListener() {
+                        loadingFragment.setListener(new LoadingFragment.LoadingFragmentInteractionListener() {
                             @Override
                             public void loadingCanceled() {
                                 loadingFragment.dismiss();
