@@ -76,7 +76,7 @@ public class VersionRowViewHolder {
 
         versionInformationHolder.setInfoForVersion(context, version);
         languageNameTextView.setTextColor(RowStatusHelper.getColorForState(context, state));
-        languageTypeImageView.setImageResource(ViewGraphicsHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        languageTypeImageView.setImageResource(ViewContentHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
         languageNameTextView.setText(version.getName());
 
         int verificationStatus = version.getVerificationStatus();

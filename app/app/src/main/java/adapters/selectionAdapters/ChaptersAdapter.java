@@ -13,7 +13,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import view.ViewGraphicsHelper;
+import view.ViewContentHelper;
 
 /**
  * Created by PJ Fechner on 2/27/15.
@@ -68,7 +68,7 @@ public class ChaptersAdapter extends ArrayAdapter<GeneralRowInterface> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        setColorChange(holder, ViewGraphicsHelper.getColorForSelection(selectedRow == pos));
+        setColorChange(holder, ViewContentHelper.getColorForSelection(selectedRow == pos));
         holder.title.setText(row.getTitle());
 
         return view;

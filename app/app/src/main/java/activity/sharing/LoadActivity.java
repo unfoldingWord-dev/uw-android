@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ListView;
 
-
 import org.unfoldingword.mobile.R;
 
 import java.io.File;

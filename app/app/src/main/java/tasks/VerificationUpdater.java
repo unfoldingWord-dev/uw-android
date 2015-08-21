@@ -1,7 +1,6 @@
 package tasks;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import java.io.IOException;
 

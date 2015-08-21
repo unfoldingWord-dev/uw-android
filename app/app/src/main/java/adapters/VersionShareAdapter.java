@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.daoModels.Version;

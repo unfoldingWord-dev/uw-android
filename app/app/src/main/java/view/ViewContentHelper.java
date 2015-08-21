@@ -11,12 +11,12 @@ import org.unfoldingword.mobile.R;
 import java.io.IOException;
 import java.io.InputStream;
 
-import model.daoModels.Version;
+import signing.Status;
 
 /**
  * Created by Fechner on 7/6/15.
  */
-public class ViewGraphicsHelper {
+public class ViewContentHelper {
 
     //region images
     /**
@@ -107,6 +107,31 @@ public class ViewGraphicsHelper {
             }
             default:{
                 return R.string.level_one;
+            }
+        }
+    }
+
+    /**
+     *
+     * @param status status for which you want text
+     * @param title title you want to use in the text
+     * @return text based ont he status
+     */
+    public static String getTextForStatus(Status status, String title) {
+
+        switch (status) {
+
+            case VERIFIED: {
+                return "";
+            }
+            case EXPIRED: {
+                return "Verification for " + title + " has Expired\n";
+            }
+            case ERROR: {
+                return "Error Verifying " + title + "\n";
+            }
+            default: {
+                return "Failed to Verify " + title + "\n";
             }
         }
     }

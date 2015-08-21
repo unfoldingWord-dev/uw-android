@@ -2,14 +2,10 @@ package fragments;
 
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -21,7 +17,6 @@ import java.util.List;
 import activity.UWBaseActivity;
 import activity.reading.BaseReadingActivity;
 import adapters.ReadingPagerAdapter;
-import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;

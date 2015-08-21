@@ -3,10 +3,6 @@ package adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -19,8 +15,6 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import activity.reading.BaseReadingActivity;
@@ -29,8 +23,7 @@ import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
-import view.ViewGraphicsHelper;
-import view.popover.ActionItem;
+import view.ViewContentHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -105,7 +98,7 @@ public class StoryPagerAdapter extends PagerAdapter {
             String imgUrl = mainChapter.getStoryPages().get(position).getImageUrl();
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
-            chapterImageView.setImageBitmap(ViewGraphicsHelper.getBitmapFromAsset(context, "images/" + path));
+            chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
 
             setupPageForDiglot(mainTextView, secondaryTextView);
         }

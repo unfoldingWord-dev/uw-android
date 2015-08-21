@@ -11,9 +11,7 @@ import model.DaoDBHelper;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
-import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 
 /**
  * Created by PJ Fechner

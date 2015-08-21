@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
 import java.util.Arrays;
-import java.util.List;
 
 import adapters.VersionShareAdapter;
 import model.daoModels.Version;

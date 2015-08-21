@@ -1,14 +1,11 @@
 package activity.sharing;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 
 import org.unfoldingword.mobile.R;
 

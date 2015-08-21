@@ -12,7 +12,7 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import view.ViewGraphicsHelper;
+import view.ViewContentHelper;
 
 /**
  * Created by Fechner on 2/27/15.
@@ -60,7 +60,7 @@ public class InitialPageAdapter extends ArrayAdapter<GeneralRowInterface> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        holder.title.setTextColor(ViewGraphicsHelper.getColorForSelection(selectedPosition == pos));
+        holder.title.setTextColor(ViewContentHelper.getColorForSelection(selectedPosition == pos));
         holder.title.setText(models.get(pos).getTitle());
 
         return view;

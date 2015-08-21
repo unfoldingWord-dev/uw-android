@@ -1,9 +1,6 @@
 package tasks;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-
-import java.io.IOException;
 
 import utils.URLDownloadUtil;
 

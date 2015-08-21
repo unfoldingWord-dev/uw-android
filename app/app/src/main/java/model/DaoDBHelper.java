@@ -1,12 +1,12 @@
 package model;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import org.unfoldingword.mobile.R;
 
 import model.daoModels.DaoMaster;
 import model.daoModels.DaoSession;
+import model.daoModels.Project;
 
 /**
  * Created by Fechner on 4/28/15.
@@ -16,7 +16,7 @@ public class DaoDBHelper {
     static private DaoMaster daoMaster;
 
     /**
-     * @param context
+     * @param context context of the application
      * @return a new DaoSession attached to the passed context
      */
     static public DaoSession getDaoSession(Context context){
@@ -26,10 +26,13 @@ public class DaoDBHelper {
                     context.getResources().getString(R.string.database_name), null);
             daoMaster = new DaoMaster(helper.getWritableDatabase());
         }
-        DaoSession session = daoMaster.newSession();
-        return session;
+        return daoMaster.newSession();
     }
 
+    /**
+     * Will save the database to external Storage
+     * @param context context of the application
+     */
     static public void saveDatabase(Context context){
 
         DatabaseOpenHelper helper = new DatabaseOpenHelper(context,

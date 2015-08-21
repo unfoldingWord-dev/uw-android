@@ -19,7 +19,7 @@ import java.util.List;
 import model.daoModels.StoriesChapter;
 import utils.AsyncImageLoader;
 import view.ASyncImageView;
-import view.ViewGraphicsHelper;
+import view.ViewContentHelper;
 
 
 /**
@@ -54,7 +54,7 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
             holder = (ViewHolder) convertView.getTag();
         }
 
-        setColorChange(holder, ViewGraphicsHelper.getColorForSelection(selectedPosition == position));
+        setColorChange(holder, ViewContentHelper.getColorForSelection(selectedPosition == position));
 
         StoriesChapter positionModel = getItem(position);
         String imgUrl = positionModel.getStoryPages().get(0).getImageUrl();

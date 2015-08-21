@@ -1,6 +1,5 @@
 package tasks;
 
-import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.DaoDBHelper;
-import model.UWDatabaseModel;
-import model.daoModels.DaoSession;
 import model.daoModels.LanguageLocale;
 import services.UWUpdaterService;
 

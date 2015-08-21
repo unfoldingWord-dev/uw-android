@@ -52,7 +52,7 @@ public class UWPreferenceManager {
         BibleChapter newChapter;
         if(changingChapter != null) {
             Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
-            newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber(), session);
+            newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber());
         }
         else{
             newChapter = activeChapter;
@@ -82,9 +82,9 @@ public class UWPreferenceManager {
         BibleChapter requestedChapter = null;
         if(currentId > -1){
             BibleChapter currentChapter = BibleChapter.getModelForId(currentId, DaoDBHelper.getDaoSession(context));
-            Book newBook = version.getBookForBookSlug(currentChapter.getBook().getSlugIdentifier(), DaoDBHelper.getDaoSession(context));
+            Book newBook = version.getBookForBookSlug(currentChapter.getBook().getSlug(), DaoDBHelper.getDaoSession(context));
             if(newBook != null){
-                requestedChapter = newBook.getBibleChapterForNumber(currentChapter.getNumber(), DaoDBHelper.getDaoSession(context));
+                requestedChapter = newBook.getBibleChapterForNumber(currentChapter.getNumber());
             }
         }
         if(requestedChapter == null){
@@ -115,8 +115,8 @@ public class UWPreferenceManager {
 
         DaoSession session = DaoDBHelper.getDaoSession(context);
         Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
-        StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber(), session);
-        StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber(), session);
+        StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber());
+        StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
         changedToStoryPage(context, newPage.getId(), isSecond);
     }
 
@@ -129,8 +129,8 @@ public class UWPreferenceManager {
             Version version = otherPage.getStoriesChapter().getBook().getVersion();
             DaoSession session = DaoDBHelper.getDaoSession(context);
             Book book = version.getBookForBookSlug(newPage.getStoriesChapter().getBook().getSlug(), session);
-            StoriesChapter newChapter = book.getStoriesChapterForNumber(newPage.getStoriesChapter().getNumber(), session);
-            StoryPage newOtherPage = newChapter.getStoryPageForNumber(newPage.getNumber(), session);
+            StoriesChapter newChapter = book.getStoriesChapterForNumber(newPage.getStoriesChapter().getNumber());
+            StoryPage newOtherPage = newChapter.getStoryPageForNumber(newPage.getNumber());
             changedToStoryPage(context, newOtherPage.getId(), !isSecond);
         }
     }

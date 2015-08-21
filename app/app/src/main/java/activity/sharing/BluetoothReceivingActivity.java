@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
-
 import org.unfoldingword.mobile.R;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;

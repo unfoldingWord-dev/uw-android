@@ -21,9 +21,9 @@ import model.DaoDBHelper;
 import model.DownloadState;
 import model.daoModels.Book;
 import model.daoModels.Version;
+import tasks.UpdateAndVerifyBookRunnable;
 import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
-import tasks.UpdateAndVerifyBookRunnable;
 import utils.FileNameHelper;
 import utils.UWPreferenceManager;
 

@@ -15,7 +15,7 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import model.daoModels.Version;
-import view.ViewGraphicsHelper;
+import view.ViewContentHelper;
 
 /**
  * Created by PJ Fechner
@@ -70,15 +70,15 @@ public class VersionInfoFragment extends DialogFragment {
         ((TextView) view.findViewById(R.id.version_text_view)).setText(version.getStatusVersion());;
         ((TextView) view.findViewById(R.id.publish_date_text_view)).setText(version.getStatusPublishDate());
         ((TextView) view.findViewById(R.id.verification_text_view)).setText(version.getVerificationText());
-        ((TextView) view.findViewById(R.id.checking_level_explanation_text)).setText(ViewGraphicsHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+        ((TextView) view.findViewById(R.id.checking_level_explanation_text)).setText(ViewContentHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
         ((ImageView) view.findViewById(R.id.checking_level_image))
-                .setImageResource(ViewGraphicsHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+                .setImageResource(ViewContentHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
 
         int verificationStatus = version.getVerificationStatus();
         Button status = (Button) view.findViewById(R.id.verification_status);
-        status.setBackgroundResource(ViewGraphicsHelper.getDrawableForStatus(verificationStatus));
-        status.setText(ViewGraphicsHelper.getVerificationButtonTextForStatus(verificationStatus));
+        status.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
+        status.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));
     }
 
     @NonNull

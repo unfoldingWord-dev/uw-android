@@ -1,8 +1,8 @@
 package activity.reading;
 
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -13,7 +13,6 @@ import fragments.BibleReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
-import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
 
 /**

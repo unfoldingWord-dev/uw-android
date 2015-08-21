@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -19,12 +18,9 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.StoriesChapterAdapter;
-import model.DaoDBHelper;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
-import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 

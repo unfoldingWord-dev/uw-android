@@ -1,7 +1,5 @@
 package tasks;
 
-import android.content.Context;
-
 import org.json.JSONException;
 
 import java.nio.charset.CharacterCodingException;
@@ -10,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import model.DaoDBHelper;
-import model.UWDatabaseModel;
 import model.daoModels.BibleChapter;
 import model.daoModels.BibleChapterDao;
 import model.daoModels.Book;
-import model.daoModels.DaoSession;
 import model.parsers.BibleChapterParser;
 import model.parsers.USFMParser;
 import services.UWUpdaterService;

@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
@@ -23,9 +22,9 @@ import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
 import fragments.ChapterSelectionFragment;
 import fragments.ChapterSelectionFragmentListener;
-import fragments.VersionInfoFragment;
 import fragments.ReadingFragmentListener;
 import fragments.StoryChaptersFragment;
+import fragments.VersionInfoFragment;
 import fragments.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;

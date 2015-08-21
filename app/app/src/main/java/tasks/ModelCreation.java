@@ -1,8 +1,6 @@
 package tasks;
 
 
-import android.os.AsyncTask;
-
 import org.json.JSONObject;
 
 import model.UWDatabaseModel;

@@ -26,8 +26,8 @@ import model.parsers.LanguageParser;
 import model.parsers.ProjectParser;
 import model.parsers.VersionParser;
 import tasks.UpdateAndVerifyBookRunnable;
-import utils.FileUtil;
 import utils.FileNameHelper;
+import utils.FileUtil;
 
 /**
  * Created by Acts Media Inc on 11/12/14.

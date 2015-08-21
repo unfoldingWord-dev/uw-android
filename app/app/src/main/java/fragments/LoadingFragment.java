@@ -18,7 +18,7 @@ import org.unfoldingword.mobile.R;
  */
 public class LoadingFragment extends android.support.v4.app.DialogFragment {
 
-//    private static final String TAG = "LoadingFragment";
+    public static final String TAG = "LoadingFragment";
 
     private static final String LOADING_TEXT_PARAM = "LOADING_TEXT_PARAM";
 

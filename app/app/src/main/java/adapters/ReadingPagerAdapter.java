@@ -1,7 +1,6 @@
 package adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import java.util.List;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.parsers.USFMParser;
-import utils.UWPreferenceManager;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
