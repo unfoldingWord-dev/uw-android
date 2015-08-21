@@ -30,6 +30,7 @@ import model.daoModels.Version;
 import services.UWUpdaterService;
 import services.UWVersionDownloaderService;
 import utils.NetWorkUtil;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.AnimatedExpandableListView;
 import view.VersionRowViewHolder;
@@ -224,7 +225,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 listener.isLoading(true);
-                                UWPreferenceManager.willDeleteVersion(getContext(), version);
+                                UWPreferenceDataManager.willDeleteVersion(getContext(), version);
                                 new DeleteVersionTask().execute(version);
                             }
                         })
@@ -277,7 +278,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
         @Override
         protected Void doInBackground(Version... params) {
-            UWPreferenceManager.willDeleteVersion(getContext(), params[0]);
+            UWPreferenceDataManager.willDeleteVersion(getContext(), params[0]);
             params[0].deleteContent();
             return null;
         }

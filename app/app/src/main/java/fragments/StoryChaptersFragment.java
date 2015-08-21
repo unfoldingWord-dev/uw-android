@@ -21,6 +21,7 @@ import java.util.List;
 import adapters.selectionAdapters.StoriesChapterAdapter;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
+import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
@@ -116,7 +117,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
             mListView = (ListView) view.findViewById(R.id.generalList);
             mListView.setOnItemClickListener(this);
 
-            StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
+            StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getContext(), false);
 
             int selectedIndex = (page != null)? Integer.parseInt(page.getStoriesChapter().getNumber()) - 1 : -1;
             mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
@@ -142,7 +143,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected List<StoriesChapter> getData(){
 
-        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getContext(), false);
         if(page != null) {
             return page.getStoriesChapter().getBook().getStoryChapters();
         }
@@ -162,7 +163,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         if (itemAtPosition instanceof StoriesChapter) {
             StoriesChapter model = (StoriesChapter) itemAtPosition;
 
-            UWPreferenceManager.setNewStoriesPage(getContext(), model.getStoryPages().get(0), false);
+            UWPreferenceDataManager.setNewStoriesPage(getContext(), model.getStoryPages().get(0), false);
             mListener.chapterWasSelected();
         }
     }

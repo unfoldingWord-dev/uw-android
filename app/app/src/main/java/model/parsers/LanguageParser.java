@@ -9,7 +9,8 @@ import model.daoModels.Language;
 import model.daoModels.Project;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing Language JSON
  */
 public class LanguageParser extends UWDataParser{
 

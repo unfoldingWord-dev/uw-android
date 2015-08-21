@@ -1,18 +1,31 @@
 package model.parsers;
 
+import android.content.Context;
+import android.util.Log;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import model.DownloadState;
 import model.UWDatabaseModel;
+import model.daoModels.Book;
 import model.daoModels.Language;
 import model.daoModels.Version;
+import utils.FileNameHelper;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing Version JSON
  */
 public class VersionParser extends UWDataParser{
+
+    private static final String TAG = "VersionParser";
 
     public static final String BOOKS_JSON_KEY = "toc";
     private static final String MODIFIED_JSON_KEY = "mod";
@@ -28,6 +41,8 @@ public class VersionParser extends UWDataParser{
     private static final String STATUS_SOURCE_TEXT_JSON_KEY = "source_text";
     private static final String STATUS_VERSION_SOURCE_TEXT_JSON_KEY = "source_text_version";
     private static final String STATUS_VERSION_JSON_KEY = "version";
+
+    //region basic Parsing
 
     public static Version parseVersion(JSONObject jsonObject, UWDatabaseModel parent) throws JSONException{
 
@@ -94,4 +109,88 @@ public class VersionParser extends UWDataParser{
         jsonModel.put(STATUS_VERSION_JSON_KEY, model.getStatusVersion());
         return jsonModel;
     }
+
+    //endregion
+
+    //region Side Loading Handling
+
+    /**
+     * Creates SideLoaded JSON for the passed Version
+     * @param context Context to use
+     * @param version Version with which JSON will be created
+     * @return JSONObject for SideLoading the passd Version
+     */
+    public static JSONObject getAsSideLoadJson(Context context, Version version){
+
+        try {
+            JSONObject languageJson = LanguageParser.getLanguageAsJson(version.getLanguage(), true);
+            languageJson.put(LanguageParser.VERSION_JSON_KEY, new JSONArray().put(VersionParser.getVersionAsJson(version)));
+
+            JSONObject projectJson = ProjectParser.getProjectAsJson(version.getLanguage().getProject(), true);
+            projectJson.put(ProjectParser.LANGUAGES_JSON_KEY, new JSONArray().put(languageJson));
+
+            JSONObject sideLoadJson = new JSONObject();
+            sideLoadJson.put("top", projectJson);
+            sideLoadJson.put("sources", getSourcesAsJson(context, version));
+            return sideLoadJson;
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * @param context Context to use
+     * @param version Version of which you want the sources JSON
+     * @return JSON of all the passed Version's sources (USFM or JSON)
+     */
+    private static JSONObject getSourcesAsJson(Context context, Version version){
+
+        JSONObject sourcesObject = new JSONObject();
+
+        for(Book book : version.getBooks()){
+            try {
+                sourcesObject.put(book.getSourceUrl(), loadSource(book.getSourceUrl(), context));
+                sourcesObject.put(book.getSignatureUrl(), loadSource(book.getSignatureUrl(), context));
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return sourcesObject;
+    }
+
+    /**
+     * @param url URL of the desired source
+     * @param context Context ot use
+     * @return The desired Source file as a String.
+     */
+    private static String loadSource(String url, Context context){
+
+        try{
+            FileInputStream fos = context.openFileInput(FileNameHelper.getSaveFileNameFromUrl(url));
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fos.read(b)) != -1) {
+                bos.write(b, 0, bytesRead);
+            }
+            byte[] bytes = bos.toByteArray();
+
+            return new String(bytes, "UTF-8");
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            Log.e(TAG, "Error when saving USFM");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            Log.e(TAG, "Error when saving USFM");
+        }
+        return null;
+    }
+
+    //endregion
 }

@@ -19,13 +19,14 @@ import model.daoModels.SigningOrganization;
 import model.daoModels.Verification;
 
 /**
- * Created by Fechner on 3/13/15.
+ * Created by PJ Fechner on 3/13/15.
+ * Class to deal with the signing for UW
  */
 public class UWSigning {
     private static final String TAG = "UWSigning";
 
-    private static final String signatureJsonKey = "sig";
-    private static final String signingEntityUrl = "https://pki.unfoldingword.org/uW-vk.pem";
+//    private static final String signatureJsonKey = "sig";
+//    private static final String signingEntityUrl = "https://pki.unfoldingword.org/uW-vk.pem";
     private static final String stockCert = "certs/uW_vk_2.pem";
     private static final String stockCertPub = "certs/ca.pub";
 
@@ -35,7 +36,7 @@ public class UWSigning {
         try {
 //            String sigData = URLDownloadUtil.downloadString(book.getSignatureUrl());
 
-            ArrayList<Verification> verifications = new ArrayList<Verification>();
+            ArrayList<Verification> verifications = new ArrayList<>();
 
             if(sigData.contains("404")){
                 Verification errorModel = new Verification();
@@ -103,8 +104,9 @@ public class UWSigning {
         InputStream signingStream = context.getAssets().open(stockCert);
         SigningEntity entity = SigningEntity.generateFromIdentity(uwPublicKey, signingStream);
 
-        updateOrganization(context, entity.organization);
-
+        if(entity != null) {
+            updateOrganization(context, entity.organization);
+        }
 
         return entity;
     }
@@ -115,7 +117,7 @@ public class UWSigning {
 
         if(oldOrg == null){
             SigningOrganization signingOrg = new SigningOrganization();
-            signingOrg.createWithOrganization(org, DaoDBHelper.getDaoSession(context));
+            signingOrg.updateWithOrganization(org, DaoDBHelper.getDaoSession(context));
         }
         else{
             oldOrg.updateWithOrganization(org, DaoDBHelper.getDaoSession(context));

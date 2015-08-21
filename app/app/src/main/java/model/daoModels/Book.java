@@ -51,7 +51,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     private List<StoriesChapter> storyChapters;
 
     // KEEP FIELDS - put your custom fields here
-    static private final String TAG = "Version";
+//    static private final String TAG = "Version";
     // KEEP FIELDS END
 
     public Book() {
@@ -289,13 +289,8 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         this.versionId = newBook.versionId;
 
         boolean wasUpdated = (newBook.modified.compareTo(this.modified) > 0);
-        if (wasUpdated) {
-            this.modified = newBook.modified;
-            return true;
-        } else {
-            this.modified = newBook.modified;
-            return false;
-        }
+        this.modified = newBook.modified;
+        return wasUpdated;
     }
 
     @Override
@@ -385,21 +380,20 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         }
     }
 
-    /**
-     * @param sorted true if the chapters should be sorted
-     * @return this book's StoryChapters with the option of being sorted
-     */
-    public List<StoriesChapter> getStoryChapters(boolean sorted){
-        if(!sorted){
-            return getStoryChapters();
-        }
-        else{
-            StoriesChapterDao targetDao = daoSession.getStoriesChapterDao();
-            List<StoriesChapter> storiesChaptersNew = getStoryChapters();
-            Collections.sort(storiesChaptersNew);
-            return storiesChaptersNew;
-        }
-    }
+//    /**
+//     * @param sorted true if the chapters should be sorted
+//     * @return this book's StoryChapters with the option of being sorted
+//     */
+//    public List<StoriesChapter> getStoryChapters(boolean sorted){
+//        if(!sorted){
+//            return getStoryChapters();
+//        }
+//        else{
+//            List<StoriesChapter> storiesChaptersNew = getStoryChapters();
+//            Collections.sort(storiesChaptersNew);
+//            return storiesChaptersNew;
+//        }
+//    }
 
     /**
      * @param uniqueSlug Slug that is unique to only one model
@@ -409,11 +403,9 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     static public Book getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         BookDao dao = session.getBookDao();
-        Book model = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(BookDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
-
-        return (model == null)? null : model;
     }
 
     /**
@@ -422,26 +414,21 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
      */
     public BibleChapter getBibleChapterForNumber(String number){
         BibleChapterDao dao = daoSession.getBibleChapterDao();
-        BibleChapter model = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(BibleChapterDao.Properties.BookId.eq(getId()), BibleChapterDao.Properties.Slug.eq(number))
                 .unique();
-
-        return model;
     }
 
     /**
-     *
      * @param number number of the chapter you want
      * @return chapter of this book with the passed number
      */
     public StoriesChapter getStoriesChapterForNumber(String number){
 
         StoriesChapterDao dao = daoSession.getStoriesChapterDao();
-        StoriesChapter model = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(StoriesChapterDao.Properties.BookId.eq(getId()), StoriesChapterDao.Properties.Slug.eq(number))
                 .unique();
-
-        return model;
     }
 
     //region UWDatabaseModel

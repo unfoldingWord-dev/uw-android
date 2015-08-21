@@ -9,6 +9,7 @@ import activity.UWBaseActivity;
 import fragments.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
@@ -51,7 +52,7 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
 
     @Override
     public void versionWasSelected(Version version, boolean secondVersion) {
-        UWPreferenceManager.selectedVersion(getApplicationContext(), version, secondVersion);
+        UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, secondVersion);
         handleBack();
     }
 }

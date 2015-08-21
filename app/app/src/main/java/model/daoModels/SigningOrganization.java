@@ -116,29 +116,36 @@ public class SigningOrganization implements java.io.Serializable {
 
     // KEEP METHODS - put your custom methods here
 
+    //region setup methods
 
+    /**
+     * @param uniqueSlug Slug unique to only one model
+     * @param session Session to use
+     * @return Unique Model with passed slug
+     */
     static public SigningOrganization getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         SigningOrganizationDao dao = session.getSigningOrganizationDao();
-        SigningOrganization model = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(SigningOrganizationDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
-
-        return (model == null)? null : model;
     }
 
-    public void createWithOrganization(Organization org, DaoSession session){
-
-        setToOrganization(org);
-        session.getSigningOrganizationDao().insert(this);
-    }
-
+    /**
+     * Sets this model's values to that of the passed Organization and saves it to the database
+     * @param org Organization with which to set the values of this model
+     * @param session Session to use
+     */
     public void updateWithOrganization(Organization org, DaoSession session){
 
         setToOrganization(org);
         session.getSigningOrganizationDao().update(this);
     }
 
+    /**
+     * Sets this model's values to that of the passed organization
+     * @param org Organization to use for this model's data
+     */
     private void setToOrganization(Organization org){
         this.email = org.email;
         this.name = org.name;
@@ -148,6 +155,9 @@ public class SigningOrganization implements java.io.Serializable {
         this.expiresAt = org.expiresAt;
         this.modifiedAt = org.modifiedAt;
     }
+
+    //endregion
+
     // KEEP METHODS END
 
 }

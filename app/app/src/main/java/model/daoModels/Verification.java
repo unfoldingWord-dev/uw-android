@@ -150,7 +150,7 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
 
     // KEEP METHODS - put your custom methods here
 
-
+    //region UWDatabaseModel
     @Override
     public String getUniqueSlug() {
         return null;
@@ -164,7 +164,7 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
             this.signature = json.getString("sig");
         }
         catch (JSONException e){
-            e.toString();
+            e.printStackTrace();
             return null;
         }
         return this;
@@ -175,6 +175,7 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
         return false;
     }
 
+    @Override
     public Verification setupModelFromJson(JSONObject json, UWDatabaseModel parent) {
 
         try{
@@ -189,30 +190,26 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
         return this;
     }
 
-    public boolean updateWithModel(Verification newModel) {
-
-
-        this.signingInstitution = newModel.signingInstitution;
-        this.signature = newModel.signature;
-        this.bookId = newModel.getBookId();
-
-        return false;
-    }
-
+    @Override
     public void insertModel(DaoSession session) {
 
         session.getVerificationDao().insert(this);
         refresh();
     }
 
+    //endregion
+
+    /**
+     * @param bookId ID of the book for which you're requesting Verifications
+     * @param session Session to use
+     * @return List of verifications for the passed book id
+     */
     static public List<Verification> getModelForBookId(long bookId, DaoSession session){
 
         VerificationDao dao = session.getVerificationDao();
-        List<Verification> models = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(VerificationDao.Properties.BookId.eq(bookId))
                 .list();
-
-        return (models == null)? null : models;
     }
 
     @Override

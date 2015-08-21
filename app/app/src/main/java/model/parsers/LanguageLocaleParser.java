@@ -7,7 +7,8 @@ import org.json.JSONObject;
 import model.daoModels.LanguageLocale;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing JSON of LanguageLocales
  */
 public class LanguageLocaleParser extends UWDataParser{
 
@@ -40,11 +41,11 @@ public class LanguageLocaleParser extends UWDataParser{
         String finalText = "";
         JSONArray ccObj = jsonObject.getJSONArray(CC_JSON_KEY);
 
-        for(int i = 0; i < ccObj.length(); i++){
+        for(int i = 0; i < ccObj.length(); i++) {
 
             String ccText = ccObj.getString(i);
 
-            finalText += ((String) ccText) + ",";
+            finalText += ccText + ",";
         }
 
         if(finalText.length() > 0){

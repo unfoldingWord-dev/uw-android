@@ -9,7 +9,8 @@ import model.daoModels.Book;
 import model.daoModels.Version;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class to parse JSON for Books
  */
 public class BookParser extends UWDataParser{
 
@@ -19,8 +20,6 @@ public class BookParser extends UWDataParser{
     private static final String SOURCE_URL_JSON_KEY = "src";
     private static final String SIGNATURE_URL_JSON_KEY = "src_sig";
     private static final String TITLE_JSON_KEY = "title";
-
-
 
     public static Book parseBook(JSONObject jsonObject, UWDatabaseModel parent) throws JSONException{
 

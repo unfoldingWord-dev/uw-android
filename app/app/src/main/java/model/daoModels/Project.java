@@ -134,23 +134,7 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP METHODS - put your custom methods here
 
-    public boolean isBibleStories(){
-        return getUniqueSlug().equalsIgnoreCase("obs");
-    }
-
-    static public List<Project> getAllModels(DaoSession session){
-
-        return session.getProjectDao().queryBuilder().list();
-    }
-
-    static public Project getModelForUniqueSlug(String uniqueSlug, DaoSession session){
-        ProjectDao dao = session.getProjectDao();
-        Project model = dao.queryBuilder()
-                .where(ProjectDao.Properties.UniqueSlug.eq(uniqueSlug))
-                .unique();
-
-        return (model == null)? null : model;
-    }
+    //region UWDatabaseModel
 
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
@@ -187,15 +171,52 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
         return true;
     }
 
+    //endregion
+
+    //region convenience methods
+    /**
+     * @return true if this project is for OBS
+     */
+    public boolean isBibleStories(){
+        return getUniqueSlug().equalsIgnoreCase("obs");
+    }
+
+    /**
+     * @param session Session to use
+     * @return List of all projects in the DB
+     */
+    static public List<Project> getAllModels(DaoSession session){
+        return session.getProjectDao().queryBuilder().list();
+    }
+
+    /**
+     * @param uniqueSlug Slug unique to only one model
+     * @param session Session to use
+     * @return Unique model with the passed slug
+     */
+    static public Project getModelForUniqueSlug(String uniqueSlug, DaoSession session){
+        ProjectDao dao = session.getProjectDao();
+        return dao.queryBuilder()
+                .where(ProjectDao.Properties.UniqueSlug.eq(uniqueSlug))
+                .unique();
+    }
+
+
+    /**
+     * @param id unique to only one model
+     * @param session Session to use
+     * @return Unique Project with passed ID
+     */
     public static Project getProjectForId(long id, DaoSession session){
 
         ProjectDao dao = session.getProjectDao();
-        Project model = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(ProjectDao.Properties.Id.eq(id))
                 .unique();
-
-        return (model == null)? null : model;
     }
+
+    //endregion
+
     // KEEP METHODS END
 
 }

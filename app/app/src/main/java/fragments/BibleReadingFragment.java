@@ -22,6 +22,7 @@ import model.daoModels.Book;
 import model.daoModels.Version;
 import sideloading.SideLoadType;
 import sideloading.SideSharer;
+import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
@@ -154,8 +155,8 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
         BibleChapter model = adapter.getChapters().get(position);
 
-        BibleChapter currentModel = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        BibleChapter otherModel = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), !isSecondary);
+        BibleChapter currentModel = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        BibleChapter otherModel = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), !isSecondary);
 
         if (currentModel == null || otherModel == null) {
             return;
@@ -163,14 +164,14 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
         boolean needsUpdate = (!currentModel.getId().equals(model.getId()) && currentModel.getNumber().equals(otherModel.getNumber()));
 
         if (needsUpdate) {
-            UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
+            UWPreferenceDataManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
             getActivity().getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));
         }
     }
 
     private boolean updateBook(){
 
-        BibleChapter currentItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        BibleChapter currentItem = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
         if(currentItem != null) {
             boolean needsToUpdateBook = (this.currentBook != null && !currentBook.getId().equals(currentItem.getBookId()));
             this.currentBook = currentItem.getBook();
@@ -188,7 +189,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
      */
     public void scrollToCurrentPage(){
         updateBook();
-        BibleChapter correctItem = UWPreferenceDataManager.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        BibleChapter correctItem = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
         BibleChapter currentItem = currentBook.getBibleChapters(true).get(readingViewPager.getCurrentItem());
 
         boolean shouldUpdate = (correctItem != null && currentItem != null && !correctItem.getId().equals(currentItem.getId()));
@@ -221,7 +222,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
         Book nextBook = currentBook.getNextBook();
         if(nextBook != null){
             BibleChapter nextChapter = nextBook.getBibleChapters(true).get(0);
-            UWPreferenceManager.changedToBibleChapter(getActivity().getApplicationContext(), nextChapter.getId(), isSecondary);
+            UWPreferenceDataManager.changedToBibleChapter(getActivity().getApplicationContext(), nextChapter.getId(), isSecondary);
             getActivity().getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));
         }
     }

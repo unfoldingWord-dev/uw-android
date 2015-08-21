@@ -18,7 +18,7 @@ import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import utils.UWPreferenceDataManager;
+import utils.UWPreferenceDataAccessor;
 
 /**
  * Created by PJ Fechner
@@ -93,7 +93,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
     protected List<GeneralRowInterface> getData(){
 
-        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
+        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
         if(currentChapter == null){
             return null;
         }

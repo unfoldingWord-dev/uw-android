@@ -3,7 +3,8 @@ package model.parsers;
 import java.util.Date;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing ubiquitous Data
  */
 public class UWDataParser {
 

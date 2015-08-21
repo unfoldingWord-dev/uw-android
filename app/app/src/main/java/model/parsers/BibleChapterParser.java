@@ -6,13 +6,10 @@ import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class to parse Text of BibleChapters
  */
 public class BibleChapterParser extends UWDataParser{
-
-    private static final String ID_JSON_KEY = "id";
-    private static final String IMAGE_JSON_KEY = "img";
-    private static final String TEXT_JSON_KEY = "text";
 
     public static BibleChapter parseBibleChapter(Book parent, String number, String text) throws JSONException{
 

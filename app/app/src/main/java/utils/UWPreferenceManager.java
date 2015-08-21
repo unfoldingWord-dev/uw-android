@@ -2,17 +2,8 @@ package utils;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import org.unfoldingword.mobile.R;
-
-import model.DaoDBHelper;
-import model.daoModels.BibleChapter;
-import model.daoModels.Book;
-import model.daoModels.DaoSession;
-import model.daoModels.StoriesChapter;
-import model.daoModels.StoryPage;
-import model.daoModels.Version;
 
 /**
  * Created by Fechner on 3/25/15.
@@ -21,186 +12,33 @@ public class UWPreferenceManager {
 
     private static final String TAG = "UWPreferenceManager";
 
+    /**
+     * @param context Context to use
+     * @param isSecond true if the desired id is for the second Version in the diglot view
+     * @return ID of currently chosen page
+     */
     public static long getCurrentStoryPage(Context context, boolean isSecond){
-
         return (isSecond)? getSelectedStoryPageSecondary(context) : getSelectedStoryPage(context);
     }
 
+    /**
+     * @param context Context to use
+     * @param isSecond true if the desired id is for the second Version in the diglot view
+     * @return ID of currently chosen chapter
+     */
     public static long getCurrentBibleChapter(Context context, boolean isSecond){
-
         return (isSecond)? getSelectedBibleChapterSecondary(context) : getSelectedBibleChapter(context);
     }
 
-    public static void changedToBibleChapter(Context context, long chapterId, boolean isSecond){
-        if(isSecond){
-            setSelectedBibleChapterSecondary(context, chapterId);
-        }
-        else{
-            setSelectedBibleChapter(context, chapterId);
-        }
-
-        updateChapterSelection(context, chapterId, isSecond);
-    }
-
-    private static void updateChapterSelection(Context context, long activeChapterId, boolean isSecond){
-
-        DaoSession session = DaoDBHelper.getDaoSession(context);
-        long changingId = (isSecond)? getSelectedBibleChapter(context) : getSelectedBibleChapterSecondary(context);
-        BibleChapter activeChapter = BibleChapter.getModelForId(activeChapterId, session);
-        BibleChapter changingChapter = BibleChapter.getModelForId(changingId, session);
-
-        BibleChapter newChapter;
-        if(changingChapter != null) {
-            Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
-            newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber());
-        }
-        else{
-            newChapter = activeChapter;
-        }
-
-        if(isSecond){
-            setSelectedBibleChapter(context, newChapter.getId());
-        }
-        else{
-            setSelectedBibleChapterSecondary(context, newChapter.getId());
-        }
-    }
-
-    public static void selectedVersion(Context context, Version version, boolean isSecond){
-
-        if(version.getLanguage().getProject().isBibleStories()){
-            UWPreferenceManager.setNewStoriesVersion(context, version, isSecond);
-        }
-        else{
-            UWPreferenceManager.setNewBibleVersion(context, version, isSecond);
-        }
-    }
-
-    public static void setNewBibleVersion(Context context, Version version, boolean isSecond){
-
-        long currentId = getCurrentBibleChapter(context, isSecond);
-        BibleChapter requestedChapter = null;
-        if(currentId > -1){
-            BibleChapter currentChapter = BibleChapter.getModelForId(currentId, DaoDBHelper.getDaoSession(context));
-            Book newBook = version.getBookForBookSlug(currentChapter.getBook().getSlug(), DaoDBHelper.getDaoSession(context));
-            if(newBook != null){
-                requestedChapter = newBook.getBibleChapterForNumber(currentChapter.getNumber());
-            }
-        }
-        if(requestedChapter == null){
-            requestedChapter = version.getBooks().get(0).getBibleChapters(true).get(0);
-        }
-
-        changedToBibleChapter(context, requestedChapter.getId(), isSecond);
-
-//        if(isSecond) {
-//            setSelectedBibleChapterSecondary(context, requestedChapter.getId());
-//        }
-//        else{
-//            setSelectedBibleChapter(context, requestedChapter.getId());
-//        }
-    }
-
-    public static void setNewStoriesVersion(Context context, Version newVersion, boolean isSecond) {
-
-        StoryPage currentPage = UWPreferenceDataManager.getCurrentStoryPage(context, isSecond);
-
-        if(currentPage == null){
-            StoryPage page = newVersion.getBooks().get(0).getStoryChapters().get(0).getStoryPages().get(0);
-            long newPageId = page.getId();
-            changedToStoryPage(context, newPageId, isSecond);
-            changedToStoryPage(context, newPageId, !isSecond);
-            return;
-        }
-
-        DaoSession session = DaoDBHelper.getDaoSession(context);
-        Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
-        StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber());
-        StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
-        changedToStoryPage(context, newPage.getId(), isSecond);
-    }
-
-    public static void setNewStoriesPage(Context context, StoryPage newPage, boolean isSecond) {
-
-        changedToStoryPage(context, newPage.getId(), isSecond);
-
-        StoryPage otherPage = UWPreferenceDataManager.getCurrentStoryPage(context, !isSecond);
-        if(otherPage != null) {
-            Version version = otherPage.getStoriesChapter().getBook().getVersion();
-            DaoSession session = DaoDBHelper.getDaoSession(context);
-            Book book = version.getBookForBookSlug(newPage.getStoriesChapter().getBook().getSlug(), session);
-            StoriesChapter newChapter = book.getStoriesChapterForNumber(newPage.getStoriesChapter().getNumber());
-            StoryPage newOtherPage = newChapter.getStoryPageForNumber(newPage.getNumber());
-            changedToStoryPage(context, newOtherPage.getId(), !isSecond);
-        }
-    }
-
-    private static void changedToStoryPage(Context context, long id, boolean isSecond){
-
-        if(isSecond){
-            setSelectedStoryPageSecondary(context, id);
-        }
-        else{
-            setSelectedStoryPage(context, id);
-        }
-    }
-
-    public static void willDeleteVersion(Context context, Version version){
-        if(version.getLanguage().getProject().isBibleStories()) {
-            willDeleteStoryVersion(context, version);
-        }
-        else {
-            willDeleteBibleVersion(context, version);
-        }
-    }
-
-    private static void willDeleteStoryVersion(Context context, Version version){
-
-        StoryPage currentPage = UWPreferenceDataManager.getCurrentStoryPage(context, false);
-        StoryPage secondaryPage = UWPreferenceDataManager.getCurrentStoryPage(context, true);
-
-        if(currentPage == null || secondaryPage == null){
-            return;
-        }
-
-        boolean samePage = currentPage.getId().equals(secondaryPage.getId());
-
-        if(currentPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
-            setSelectedStoryPage(context, (samePage)?-1 : secondaryPage.getId());
-        }
-        if(secondaryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
-            setSelectedStoryPageSecondary(context, (samePage)? -1 : currentPage.getId());
-        }
-    }
-
-    private static void willDeleteBibleVersion(Context context, Version version){
-
-        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(context, false);
-        BibleChapter secondaryChapter = UWPreferenceDataManager.getCurrentBibleChapter(context, true);
-
-        if(currentChapter == null || secondaryChapter == null){
-            return;
-        }
-        boolean sameChapter = currentChapter.getId().equals(secondaryChapter.getId());
-
-        if(currentChapter.getBook().getVersionId() == (version.getId())){
-            setSelectedBibleChapter(context, (sameChapter)? -1 : secondaryChapter.getId());
-        }
-        if(secondaryChapter.getBook().getVersionId() == (version.getId())){
-            setSelectedBibleChapterSecondary(context, (sameChapter)? -1 : currentChapter.getId());
-        }
-    }
-
-    private static final String BIBLE_CHAPTER_ID = "selected_normal_bible_chapter_id";
+    private static final String BIBLE_CHAPTER_ID = "currently_selected_bible_chapter_id";
     public static long getSelectedBibleChapter(Context context){
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_CHAPTER_ID, -1);
     }
-
     public static void setSelectedBibleChapter(Context context, long newValue){
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(BIBLE_CHAPTER_ID, newValue).commit();
     }
 
-    private static final String BIBLE_CHAPTER_ID_SECONDARY = "selected_normal_bible_chapter_id_secondary";
+    private static final String BIBLE_CHAPTER_ID_SECONDARY = "currently_selected_bible_chapter_id_secondary";
     public static long getSelectedBibleChapterSecondary(Context context){
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(BIBLE_CHAPTER_ID_SECONDARY, -1);
     }
@@ -213,21 +51,15 @@ public class UWPreferenceManager {
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_PAGE, -1);
     }
     public static void setSelectedStoryPage(Context context, long newValue){
-
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_PAGE, newValue).commit();
-        Log.i(TAG, "set main story page: " + newValue);
     }
 
     private static final String STORY_PAGE_SECONDARY = "selected_secondary_story_page_id";
     public static long getSelectedStoryPageSecondary(Context context){
-
-        long id = android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_PAGE_SECONDARY, -1);
-        return id;
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getLong(STORY_PAGE_SECONDARY, -1);
     }
     public static void setSelectedStoryPageSecondary(Context context, long newValue){
-
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(STORY_PAGE_SECONDARY, newValue).commit();
-        Log.i(TAG, "set secondary story page: " + newValue);
     }
 
     private static final String LAST_UPDATED_ID = "last_updated_date";
@@ -246,20 +78,18 @@ public class UWPreferenceManager {
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_FIRST_LAUNCH, newValue).commit();
     }
 
-
-    private static final String HAS_DOWNLOADED_LOCALES_ID = "LAST_LOCALE_UPDATED_ID";
+    private static final String HAS_DOWNLOADED_LOCALES = "LAST_LOCALE_UPDATED_ID";
     public static boolean getHasDownloadedLocales(Context context){
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getBoolean(HAS_DOWNLOADED_LOCALES_ID, false);
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getBoolean(HAS_DOWNLOADED_LOCALES, false);
+    }
+    public static void setHasDownloadedLocales(Context context, boolean newValue){
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(HAS_DOWNLOADED_LOCALES, newValue).commit();
     }
 
-    public static void setHasDownloadedLocales(Context context, boolean newValue){
-        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(HAS_DOWNLOADED_LOCALES_ID, newValue).commit();
-    }
     private static final String DATA_DOWNLOAD_URL_KEY = "base_url";
     public static String getDataDownloadUrl(Context context){
        return PreferenceManager.getDefaultSharedPreferences(context).getString(DATA_DOWNLOAD_URL_KEY, context.getResources().getString(R.string.pref_default_base_url));
     }
-
     public static void setDataDownloadUrl(Context context, String newValue){
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putString(DATA_DOWNLOAD_URL_KEY, newValue).commit();
     }

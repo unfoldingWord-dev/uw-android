@@ -11,7 +11,7 @@ import model.DaoDBHelper;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
-import utils.UWPreferenceDataManager;
+import utils.UWPreferenceDataAccessor;
 
 /**
  * Created by PJ Fechner
@@ -46,7 +46,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
     @Override
     protected boolean loadData() {
 
-        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getApplicationContext(), false);
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
 
         if(page != null){
                 currentChapter = page.getStoriesChapter();

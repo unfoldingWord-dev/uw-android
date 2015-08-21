@@ -14,7 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Fechner on 2/26/15.
+ * Created by PJ Fechner on 2/26/15.
+ * Class for parsing USFM
  */
 public class USFMParser {
 
@@ -28,8 +29,6 @@ public class USFMParser {
     private static final Pattern FOOTNOTE_VERSE_REGEX = Pattern.compile("\\\\fqa.*\\\\f[*]");
 
     private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
-
-    private static USFMParser instance = null;
 
     private int footnoteNumber = 1;
 

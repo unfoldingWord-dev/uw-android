@@ -218,11 +218,9 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
     static public StoryPage getModelForUniqueSlug(String uniqueSlug, DaoSession session){
 
         StoryPageDao dao = session.getStoryPageDao();
-        StoryPage model = dao.queryBuilder()
+        return dao.queryBuilder()
                 .where(StoryPageDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
-
-        return (model == null)? null : model;
     }
     // KEEP METHODS END
 

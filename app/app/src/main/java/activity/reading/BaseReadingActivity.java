@@ -28,6 +28,7 @@ import fragments.VersionInfoFragment;
 import fragments.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
@@ -390,7 +391,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public void versionWasSelected(Version version, boolean isSecondVersion) {
-        UWPreferenceManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
+        UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
         removeFragment(VERSION_FRAGMENT_ID);
     }
 

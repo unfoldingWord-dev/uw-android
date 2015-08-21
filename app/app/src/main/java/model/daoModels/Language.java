@@ -36,7 +36,7 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
     private List<Version> versions;
 
     // KEEP FIELDS - put your custom fields here
-    static private final String TAG = "Language";
+//    static private final String TAG = "Language";
     // KEEP FIELDS END
 
     public Language() {
@@ -185,6 +185,8 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
 
     // KEEP METHODS - put your custom methods here
 
+    //region UWDatabaseModel
+
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
         return null;
@@ -199,15 +201,6 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
             e.printStackTrace();
             return null;
         }
-    }
-
-    static public Language getModelForUniqueSlug(String uniqueSlug, DaoSession session){
-        LanguageDao dao = session.getLanguageDao();
-        Language model = dao.queryBuilder()
-                .where(LanguageDao.Properties.UniqueSlug.eq(uniqueSlug))
-                .unique();
-
-        return (model == null)? null : model;
     }
 
     @Override
@@ -226,14 +219,24 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
         this.projectId = newLanguage.projectId;
 
         boolean wasUpdated = (newLanguage.modified.compareTo(this.modified) > 0);
-        if(wasUpdated){
-            this.modified = newLanguage.modified;
-            return true;
-        }
-        else{
-            return false;
-        }
+        this.modified = newLanguage.modified;
+        return wasUpdated;
     }
+
+    //endregion
+
+    /**
+     * @param uniqueSlug Slug that is unique to one model
+     * @param session Session to use
+     * @return Unique Language model
+     */
+    static public Language getModelForUniqueSlug(String uniqueSlug, DaoSession session){
+        LanguageDao dao = session.getLanguageDao();
+        return dao.queryBuilder()
+                .where(LanguageDao.Properties.UniqueSlug.eq(uniqueSlug))
+                .unique();
+    }
+
     // KEEP METHODS END
 
 }

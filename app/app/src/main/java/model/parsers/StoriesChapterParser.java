@@ -8,7 +8,8 @@ import model.daoModels.Book;
 import model.daoModels.StoriesChapter;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing StoriesChapter JSON
  */
 public class StoriesChapterParser extends UWDataParser{
 

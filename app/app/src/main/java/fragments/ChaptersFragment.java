@@ -18,6 +18,7 @@ import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
@@ -68,7 +69,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     private void setupData(){
-        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
+        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
 
         if(currentChapter != null) {
             chapters = currentChapter.getBook().getBibleChapters(true);
@@ -77,7 +78,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
 
     protected List<GeneralRowInterface> getData(){
 
-        BibleChapter currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getContext(), false);
+        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
         List<GeneralRowInterface> dataList = new ArrayList<>();
 
         if(currentChapter == null){
@@ -138,7 +139,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        UWPreferenceManager.changedToBibleChapter(getContext(), chapters.get(position).getId(), false);
+        UWPreferenceDataManager.changedToBibleChapter(getContext(), chapters.get(position).getId(), false);
         if(listener != null) {
             listener.chapterWasSelected();
         }

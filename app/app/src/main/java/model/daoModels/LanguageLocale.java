@@ -110,6 +110,8 @@ public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Se
 
     // KEEP METHODS - put your custom methods here
 
+    //region UWDatabaseModel
+
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
 
@@ -154,12 +156,22 @@ public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Se
         session.getLanguageLocaleDao().insert(this);
     }
 
+    //endregion
+
+    /**
+     * @param key Unique Language key belonging to only one model
+     * @param session session to use
+     * @return Unique LanguageLocale with the passed key
+     */
     public static LanguageLocale getLocalForKey(String key, DaoSession session){
 
         return session.getLanguageLocaleDao().queryBuilder()
                 .where(LanguageLocaleDao.Properties.LanguageKey.eq(key))
                 .unique();
     }
+
+
+
     // KEEP METHODS END
 
 }

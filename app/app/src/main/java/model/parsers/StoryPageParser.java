@@ -8,7 +8,8 @@ import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing StoryPage JSON
  */
 public class StoryPageParser extends UWDataParser{
 

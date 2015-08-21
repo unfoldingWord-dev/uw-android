@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import model.daoModels.Project;
 
 /**
- * Created by Fechner on 6/22/15.
+ * Created by PJ Fechner on 6/22/15.
+ * Class for parsing Project JSON
  */
 public class ProjectParser extends UWDataParser{
 

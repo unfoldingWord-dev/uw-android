@@ -13,7 +13,7 @@ import fragments.BibleReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
-import utils.UWPreferenceDataManager;
+import utils.UWPreferenceDataAccessor;
 
 /**
  * Created by PJ Fechner on 5/12/14.
@@ -53,7 +53,7 @@ public class ReadingActivity extends BaseReadingActivity {
 
     private void updateChapters(){
 
-        currentChapter = UWPreferenceDataManager.getCurrentBibleChapter(getApplicationContext(), false);
+        currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
 
         if (currentChapter != null) {
             this.version = currentChapter.getBook().getVersion();

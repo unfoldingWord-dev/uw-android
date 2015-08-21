@@ -22,6 +22,7 @@ import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import sideloading.SideLoadType;
 import sideloading.SideSharer;
+import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
@@ -81,8 +82,8 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     }
 
     private void updateData(){
-        StoryPage mainPage = UWPreferenceDataManager.getCurrentStoryPage(getActivity().getApplicationContext(), false);
-        StoryPage secondaryPage = UWPreferenceDataManager.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+        StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
 
         if(mainPage != null){
             mainChapter = mainPage.getStoriesChapter();
@@ -97,7 +98,7 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
         updateData();
         updateVersionInfo();
         adapter.update(mainChapter, secondChapter);
-        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
         if(page != null) {
             int currentIndex = page.getStoriesChapter().getStoryPages().indexOf(page);
             readingViewPager.setCurrentItem(currentIndex);
@@ -192,7 +193,7 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
 
                     if (position < pages.size()) {
                         StoryPage model = pages.get(position);
-                        UWPreferenceManager.setNewStoriesPage(getActivity().getApplicationContext(), model, false);
+                        UWPreferenceDataManager.setNewStoriesPage(getActivity().getApplicationContext(), model, false);
 //                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
                     }
                 }
