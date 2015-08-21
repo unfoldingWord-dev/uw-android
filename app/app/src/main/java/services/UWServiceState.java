@@ -1,7 +1,8 @@
 package services;
 
 /**
- * Created by Fechner on 6/7/15.
+ * Created by PJ Fechner on 6/7/15.
+ * Enum for keeping track of a service's state
  */
 public enum UWServiceState {
 

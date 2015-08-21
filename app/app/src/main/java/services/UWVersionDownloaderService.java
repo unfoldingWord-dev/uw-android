@@ -10,7 +10,8 @@ import model.daoModels.Version;
 import tasks.UpdateBookContentRunnable;
 
 /**
- * Created by Acts Media Inc on 11/12/14.
+ * Created by PJ fechner
+ * Service to download and add a Version to the DB
  */
 public class UWVersionDownloaderService extends UWUpdaterService {
 
@@ -34,7 +35,7 @@ public class UWVersionDownloaderService extends UWUpdaterService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if(intent.getExtras() != null) {
+        if(intent != null && intent.getExtras() != null) {
             long versionId = intent.getExtras().getLong(VERSION_PARAM);
             Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getApplicationContext()));
 
@@ -42,8 +43,6 @@ public class UWVersionDownloaderService extends UWUpdaterService {
             for (Book book : version.getBooks()) {
                 addRunnable(new UpdateBookContentRunnable(book, this), i++);
             }
-            version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-            version.update();
         }
 
         return START_STICKY;

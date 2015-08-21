@@ -5,7 +5,8 @@ import android.os.AsyncTask;
 import utils.URLDownloadUtil;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * AsyncTask for downloading JSON
  */
 public class JsonDownloadTask extends AsyncTask<String,Void, String> {
 
@@ -19,8 +20,7 @@ public class JsonDownloadTask extends AsyncTask<String,Void, String> {
     protected String doInBackground(String... params) {
 
         String url = params[0];
-        String json = URLDownloadUtil.downloadString(url);
-        return json;
+        return URLDownloadUtil.downloadString(url);
     }
 
     @Override

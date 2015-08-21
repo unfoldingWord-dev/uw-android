@@ -8,7 +8,8 @@ import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * abstract Class for saving or updating a UWDatabaseModel
  */
 public abstract class ModelSaveOrUpdater {
 
@@ -24,11 +25,10 @@ public abstract class ModelSaveOrUpdater {
     public UWDatabaseModel start(UWDatabaseModel model) {
 
         DaoSession session = DaoDBHelper.getDaoSession(context);
-        UWDatabaseModel newModel = model;
-        UWDatabaseModel existingModel = getExistingModel(newModel.getUniqueSlug(), session);
+        UWDatabaseModel existingModel = getExistingModel(model.getUniqueSlug(), session);
 
         if(existingModel != null){
-            if(existingModel.updateWithModel(newModel)){
+            if(existingModel.updateWithModel(model)){
 //                Log.d(TAG, "Model updated and will update");
                 return existingModel;
             }
@@ -38,9 +38,9 @@ public abstract class ModelSaveOrUpdater {
             }
         }
         else{
-            newModel.insertModel(session);
+            model.insertModel(session);
 //            Log.d(TAG, "Model created");
-            return newModel;
+            return model;
         }
     }
 }

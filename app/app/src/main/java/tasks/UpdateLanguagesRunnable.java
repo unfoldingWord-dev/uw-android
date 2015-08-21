@@ -14,7 +14,8 @@ import model.daoModels.Project;
 import services.UWUpdaterService;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * runnable for updating Languages
  */
 public class UpdateLanguagesRunnable implements Runnable{
 

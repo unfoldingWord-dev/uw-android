@@ -30,7 +30,8 @@ import utils.FileNameHelper;
 import utils.FileUtil;
 
 /**
- * Created by Acts Media Inc on 11/12/14.
+ * Created by PJ Fechner
+ * Service for adding a version through SideLoading
  */
 public class UWSideLoaderService extends UWUpdaterService {
 

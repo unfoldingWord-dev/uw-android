@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import model.UWDatabaseModel;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Class for creating a UWDatabaseModel
  */
 public class ModelCreator{
 
@@ -36,7 +37,16 @@ public class ModelCreator{
         }
     }
 
+    public UWDatabaseModel run(JSONObject obj){
+
+        return (parentOrNull != null)? dbModel.setupModelFromJson(obj, parentOrNull) : dbModel.setupModelFromJson(obj);
+    }
+
     interface ModelCreationListener {
+        /**
+         * Called when the model is finished being created
+         * @param model model that was created
+         */
         void modelWasCreated(UWDatabaseModel model);
     }
 }

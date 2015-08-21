@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.DaoDBHelper;
+import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
@@ -15,7 +16,8 @@ import model.daoModels.StoryPageDao;
 import services.UWUpdaterService;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Runnable for updating OBS Pages
  */
 public class UpdateStoryPagesRunnable implements Runnable{
 
@@ -37,9 +39,10 @@ public class UpdateStoryPagesRunnable implements Runnable{
         parseModels(jsonModels);
 
     }
+
     private void parseModels(JSONArray models){
 
-        List<StoryPage> pages = new ArrayList<StoryPage>();
+        List<StoryPage> pages = new ArrayList<>();
 
         for(int i = 0; i < models.length(); i++){
 
@@ -51,12 +54,14 @@ public class UpdateStoryPagesRunnable implements Runnable{
             }
         }
         updatePages(pages);
+        parent.getBook().getVersion().setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+        parent.getBook().getVersion().update();
         updater.runnableFinished();
     }
 
     private StoryPage updateModel(final JSONObject jsonObject){
 
-        UWDatabaseModel model = new ModelCreation(new StoryPage(), parent).start(jsonObject);
+        UWDatabaseModel model = new ModelCreator(new StoryPage(), parent, null).run(jsonObject);
 
         if(model instanceof StoryPage) {
             return (StoryPage) model;
@@ -65,7 +70,6 @@ public class UpdateStoryPagesRunnable implements Runnable{
             return null;
         }
     }
-
     private void updatePages(List<StoryPage> pages){
         StoryPageDao dao = DaoDBHelper.getDaoSession(updater.getApplicationContext()).getStoryPageDao();
         dao.queryBuilder()

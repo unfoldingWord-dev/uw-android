@@ -16,11 +16,12 @@ import utils.FileNameHelper;
 import utils.URLDownloadUtil;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Runnable for updating the content of a book
  */
 public class UpdateBookContentRunnable implements Runnable{
 
-    private static final String TAG = "UpdateBookConttRunnable";
+    private static final String TAG = "UpdateBookCntntRunnable";
     public static final String CHAPTERS_JSON_KEY = "chapters";
     private UWUpdaterService updater;
     private Book book;

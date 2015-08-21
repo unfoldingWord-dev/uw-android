@@ -14,7 +14,8 @@ import model.daoModels.Version;
 import services.UWUpdaterService;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Runnable for updating Versions
  */
 public class UpdateVersionsRunnable implements Runnable{
 

@@ -28,7 +28,8 @@ import utils.FileNameHelper;
 import utils.UWPreferenceManager;
 
 /**
- * Created by Acts Media Inc on 11/12/14.
+ * Created by PJ Fechner
+ * Service for adding the preloaded content to DB
  */
 public class UWPreLoaderService extends UWUpdaterService {
 
@@ -126,7 +127,7 @@ public class UWPreLoaderService extends UWUpdaterService {
 
             ListIterator li = books.listIterator(books.size());
 
-// Iterate in reverse to start with the stories.
+            // Iterate in reverse to start with the stories.
             while(li.hasPrevious()) {
 
                 Book book = (Book) li.previous();

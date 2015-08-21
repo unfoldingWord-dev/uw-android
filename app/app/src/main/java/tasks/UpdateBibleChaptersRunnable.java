@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.DaoDBHelper;
+import model.DownloadState;
 import model.daoModels.BibleChapter;
 import model.daoModels.BibleChapterDao;
 import model.daoModels.Book;
@@ -16,7 +17,8 @@ import model.parsers.USFMParser;
 import services.UWUpdaterService;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ *  Runnable which updates a BibleChapter
  */
 public class UpdateBibleChaptersRunnable implements Runnable{
 
@@ -66,6 +68,8 @@ public class UpdateBibleChaptersRunnable implements Runnable{
             i++;
         }
         updateModels(chapters);
+        parent.getVersion().setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+        parent.getVersion().update();
         updater.runnableFinished();
     }
 

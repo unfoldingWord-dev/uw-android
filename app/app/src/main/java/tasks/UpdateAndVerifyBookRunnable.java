@@ -10,7 +10,8 @@ import services.UWUpdaterService;
 import signing.UWSigning;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Runnable which updates a Book
  */
 public class UpdateAndVerifyBookRunnable implements Runnable{
 

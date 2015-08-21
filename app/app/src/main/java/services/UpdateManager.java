@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by PJ Fechner on 8/21/15.
+ * Class to manage a thread pool in order to make full use of all cores during a data update.
  */
 public class UpdateManager {
 
@@ -44,6 +45,11 @@ public class UpdateManager {
 
     private static UpdateManager ourInstance = new UpdateManager();
 
+    /**
+     * Will add the passed runnable to the thread pool
+     * @param runnable runnable to add
+     * @param index as-yet unimplemented possible multi-pool management param.
+     */
     static public void addRunnable(Runnable runnable, int index){
 //        Log.d(TAG, "Runnable will be added to index: " + index);
         getInstance().getPoolAtIndex(0).execute(runnable);

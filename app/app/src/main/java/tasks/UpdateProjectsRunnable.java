@@ -13,7 +13,8 @@ import model.daoModels.Project;
 import services.UWUpdaterService;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Runnable for updating Projects
  */
 public class UpdateProjectsRunnable implements Runnable{
 

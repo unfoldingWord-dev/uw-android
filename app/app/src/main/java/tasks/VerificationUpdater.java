@@ -3,13 +3,13 @@ package tasks;
 import android.content.Context;
 
 import java.io.IOException;
-
 import model.daoModels.Book;
 import signing.UWSigning;
 import utils.URLDownloadUtil;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * Class for updating the verification of a book.
  */
 public class VerificationUpdater {
 
@@ -33,10 +33,13 @@ public class VerificationUpdater {
             e.printStackTrace();
             listener.verificationFinishedWithResult(null);
         }
-
     }
 
-        public interface VerificationTaskListener {
+    public interface VerificationTaskListener {
+        /**
+         * Called when the Verification process is finished.
+         * @param text byte array of the  text of the book that was verified
+         */
         void verificationFinishedWithResult(byte[] text);
     }
 }

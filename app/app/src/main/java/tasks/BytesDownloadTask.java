@@ -5,7 +5,8 @@ import android.os.AsyncTask;
 import utils.URLDownloadUtil;
 
 /**
- * Created by Fechner on 6/17/15.
+ * Created by PJ Fechner on 6/17/15.
+ * AsyncTask for downloading bytes
  */
 public class BytesDownloadTask extends AsyncTask<String,Void, byte[]> {
 
