@@ -19,7 +19,7 @@ import java.io.IOException;
 public class URLDownloadUtil {
 
     private static String TAG = "URLDownloadUtil";
-    static int connectionTimeout = 20000;
+    static int connectionTimeout = 200000;
     static int socketTimeout = 10000;
 
     static public HttpResponse downloadUrl(String url) throws IOException {

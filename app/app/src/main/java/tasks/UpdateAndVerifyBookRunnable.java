@@ -57,7 +57,7 @@ public class UpdateAndVerifyBookRunnable implements Runnable{
                 try {
                     UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
                             new JSONObject(new String(text)).getJSONArray(UpdateBookContentRunnable.CHAPTERS_JSON_KEY), updater, book);
-                    updater.addRunnable(runnable, 0);
+                    updater.addRunnable(runnable, 7);
                     updater.runnableFinished();
                 }
                 catch (JSONException e){

@@ -215,11 +215,14 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
     @Override
     public String toString() {
         return "Verification{" +
-                "signature='" + signature + '\'' +
+                "bookId=" + bookId +
+                ", id=" + id +
+                ", signature='" + signature + '\'' +
                 ", signingInstitution='" + signingInstitution + '\'' +
                 ", status=" + status +
-                "} " + super.toString();
+                '}';
     }
+
     // KEEP METHODS END
 
 }

@@ -170,7 +170,19 @@ public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Se
                 .unique();
     }
 
-
+    @Override
+    public String toString() {
+        return "LanguageLocale{" +
+                "cc='" + cc + '\'' +
+                ", gw=" + gw +
+                ", languageDirection='" + languageDirection + '\'' +
+                ", id=" + id +
+                ", languageKey='" + languageKey + '\'' +
+                ", languageName='" + languageName + '\'' +
+                ", LanguageRegion='" + LanguageRegion + '\'' +
+                ", pk=" + pk +
+                '}';
+    }
 
     // KEEP METHODS END
 

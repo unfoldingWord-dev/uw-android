@@ -433,6 +433,22 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     //region UWDatabaseModel
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "description='" + description + '\'' +
+                ", id=" + id +
+                ", modified=" + modified +
+                ", signatureUrl='" + signatureUrl + '\'' +
+                ", sourceUrl='" + sourceUrl + '\'' +
+                ", slug='" + slug + '\'' +
+                ", title='" + title + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                ", versionId=" + versionId +
+                ", version__resolvedKey=" + version__resolvedKey +
+                '}';
+    }
+
 
     // KEEP METHODS END
 

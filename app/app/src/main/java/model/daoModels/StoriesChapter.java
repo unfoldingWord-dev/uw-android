@@ -305,6 +305,21 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
 
     //endregion
 
+    @Override
+    public String toString() {
+        return "StoriesChapter{" +
+                "book__resolvedKey=" + book__resolvedKey +
+                ", bookId=" + bookId +
+                ", id=" + id +
+                ", number='" + number + '\'' +
+                ", ref='" + ref + '\'' +
+                ", slug='" + slug + '\'' +
+                ", title='" + title + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                '}';
+    }
+
+
     // KEEP METHODS END
 
 }

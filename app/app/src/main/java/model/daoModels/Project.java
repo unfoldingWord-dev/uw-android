@@ -217,6 +217,17 @@ public class Project extends model.UWDatabaseModel  implements java.io.Serializa
 
     //endregion
 
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", slug='" + slug + '\'' +
+                ", title='" + title + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                '}';
+    }
+
+
     // KEEP METHODS END
 
 }

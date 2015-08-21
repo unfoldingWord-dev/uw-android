@@ -52,16 +52,17 @@ public class UpdateBookContentRunnable implements Runnable{
         byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
         String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
 
-        saveFile(bookText, book.getSourceUrl());
-        try {
-            saveFile(sigText.getBytes("UTF-8"), book.getSignatureUrl());
-        }
-        catch (UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
+        if(sigText != null && sigText.length() > 0) {
+            saveFile(bookText, book.getSourceUrl());
+            try {
+                saveFile(sigText.getBytes("UTF-8"), book.getSignatureUrl());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
-        UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(parent, updater, bookText, sigText);
-        updater.addRunnable(runnable, 1);
+            UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(parent, updater, bookText, sigText);
+            updater.addRunnable(runnable, 4);
+        }
         updater.runnableFinished();
     }
 
@@ -91,7 +92,7 @@ public class UpdateBookContentRunnable implements Runnable{
                     try {
                         UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
                                 new JSONObject(new String(text)).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
-                        updater.addRunnable(runnable);
+                        updater.addRunnable(runnable, 5);
                         updater.runnableFinished();
 
                     } catch (JSONException e) {

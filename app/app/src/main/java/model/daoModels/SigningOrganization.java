@@ -139,7 +139,12 @@ public class SigningOrganization implements java.io.Serializable {
     public void updateWithOrganization(Organization org, DaoSession session){
 
         setToOrganization(org);
-        session.getSigningOrganizationDao().update(this);
+        if(id != null && id > -1) {
+            session.getSigningOrganizationDao().update(this);
+        }
+        else{
+            session.getSigningOrganizationDao().insert(this);
+        }
     }
 
     /**
@@ -157,6 +162,22 @@ public class SigningOrganization implements java.io.Serializable {
     }
 
     //endregion
+
+    @Override
+    public String toString() {
+        return "SigningOrganization{" +
+                "createdAt=" + createdAt +
+                ", email='" + email + '\'' +
+                ", expiresAt=" + expiresAt +
+                ", id=" + id +
+                ", modifiedAt=" + modifiedAt +
+                ", name='" + name + '\'' +
+                ", slug='" + slug + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                ", url='" + url + '\'' +
+                '}';
+    }
+
 
     // KEEP METHODS END
 

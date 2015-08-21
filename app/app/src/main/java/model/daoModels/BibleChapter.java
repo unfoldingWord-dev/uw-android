@@ -232,6 +232,20 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
     }
 
     //endregion
+
+    @Override
+    public String toString() {
+        return "BibleChapter{" +
+                "bookId=" + bookId +
+                ", id=" + id +
+                ", number='" + number + '\'' +
+                ", slug='" + slug + '\'' +
+                ", text='" + text + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                '}';
+    }
+
+
     // KEEP METHODS END
 
 }

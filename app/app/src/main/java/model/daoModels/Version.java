@@ -453,6 +453,27 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     //endregion
 
+    @Override
+    public String toString() {
+        return "Version{" +
+                "uniqueSlug='" + uniqueSlug + '\'' +
+                ", name='" + name + '\'' +
+                ", saveState=" + saveState +
+                ", slug='" + slug + '\'' +
+                ", statusCheckingEntity='" + statusCheckingEntity + '\'' +
+                ", statusCheckingLevel='" + statusCheckingLevel + '\'' +
+                ", statusComments='" + statusComments + '\'' +
+                ", statusContributors='" + statusContributors + '\'' +
+                ", statusPublishDate='" + statusPublishDate + '\'' +
+                ", statusSourceText='" + statusSourceText + '\'' +
+                ", statusSourceTextVersion='" + statusSourceTextVersion + '\'' +
+                ", statusVersion='" + statusVersion + '\'' +
+                ", modified=" + modified +
+                ", id=" + id +
+                '}';
+    }
+
+
     // KEEP METHODS END
 
 }

@@ -222,6 +222,20 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
                 .where(StoryPageDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
     }
+
+    @Override
+    public String toString() {
+        return "StoryPage{" +
+                "imageUrl='" + imageUrl + '\'' +
+                ", number='" + number + '\'' +
+                ", slug='" + slug + '\'' +
+                ", storiesChapter__resolvedKey=" + storiesChapter__resolvedKey +
+                ", storyChapterId=" + storyChapterId +
+                ", text='" + text + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                '}';
+    }
+
     // KEEP METHODS END
 
 }

@@ -237,6 +237,18 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
                 .unique();
     }
 
+    @Override
+    public String toString() {
+        return "Language{" +
+                "id=" + id +
+                ", modified=" + modified +
+                ", project__resolvedKey=" + project__resolvedKey +
+                ", projectId=" + projectId +
+                ", slug='" + slug + '\'' +
+                ", uniqueSlug='" + uniqueSlug + '\'' +
+                '}';
+    }
+
     // KEEP METHODS END
 
 }
