@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">SideLoading</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="choose_file_title">Choose File</string>
+    <string name="external_storage_title">External Storage</string>
+
+
+
+
+    <string name="bluetooth_direction_text">"Now on the device to which you're sharing:\n\nSwipe down from the top of the device to open notifications,\nTap the notification \"Bluetooth Share: Incoming File\",\nAccept the transfer,\nOpen notifications and tap the notification \"Bluetooth Share: Received Files\",\nSelect the transferred file\nOpen with translationKeyboard"</string>
+    <string name="title_activity_side_share">SideShareActivity</string>
+
+
+    <string name="nfc_load_title">NFC</string>
+    <string name="qr_code_load_title">QR Code</string>
+    <string name="bluetooth_load_title">Bluetooth</string>
+    <string name="choose_directory_load_title">Choose Directory</string>
+    <string name="wi_fi_direct_load_title">WiFi-Direct</string>
+    <string name="sd_card_load_title">SD Card</string>
+    <string name="auto_find_load_title">Auto-Find</string>
+    <string name="other_load_title">Other</string>
+    <string name="choose_file_load_title">Choose File</string>
+</resources>

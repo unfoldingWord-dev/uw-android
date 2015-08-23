@@ -1,2 +1,2 @@
-include ':app', ':MyDaoGenerator', ':FileDialog'
+include ':app', ':MyDaoGenerator', ':FileDialog', ':sideloading'
 project(':FileDialog').projectDir = new File('app/libs/aFileDialog/FileDialog')

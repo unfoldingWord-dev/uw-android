@@ -72,13 +72,7 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateChapters(JSONObject book, Book parent){
 
-        boolean isSideLoaded = (book.has("saved_content"));
-
-        // TODO: sideloaded info
-        if(isSideLoaded){
-
-        }
-        else if( (parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0)
+        if( (parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0)
                 && (parent.getStoryChapters() != null && parent.getStoryChapters().size() > 0) ) {
 
             updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
