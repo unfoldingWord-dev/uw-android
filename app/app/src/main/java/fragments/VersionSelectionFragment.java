@@ -223,14 +223,6 @@ public class VersionSelectionFragment extends DialogFragment {
 
     //endregion
 
-    //region accessors
-
-    private Context getContext(){
-        return getActivity().getApplicationContext();
-    }
-
-    //endregion
-
     //region detach
 
     @Override

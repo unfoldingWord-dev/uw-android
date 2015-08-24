@@ -69,7 +69,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/app_bar"
+        layout="@layout/side_loading_app_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"

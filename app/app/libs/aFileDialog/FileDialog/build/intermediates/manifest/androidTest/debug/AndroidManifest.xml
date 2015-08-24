@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ar.com.daidalos.afiledialog.test" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="22" />
+
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:functionalTest="false"
+        android:handleProfiling="false"
+        android:label="Tests for ar.com.daidalos.afiledialog.test"
+        android:targetPackage="ar.com.daidalos.afiledialog.test" />
+
+    <application>
+        <uses-library android:name="android.test.runner" />
+
+        <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity" />
+    </application>
+
+</manifest>

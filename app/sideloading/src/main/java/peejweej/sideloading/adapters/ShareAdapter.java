@@ -11,21 +11,27 @@ import android.widget.TextView;
 import java.util.List;
 
 import peejweej.sideloading.R;
+import peejweej.sideloading.model.SideLoadType;
 
 /**
  * Created by PJ Fechner on 7/8/15.
  *
  */
-public class ShareAdapter extends ArrayAdapter<String> {
+public class ShareAdapter extends ArrayAdapter<SideLoadType> {
 
-    public ShareAdapter(Context context, List<String> objects) {
+    public ShareAdapter(Context context, List<SideLoadType> objects) {
         super(context, R.layout.row_share, objects);
     }
 
     @Override
+    public SideLoadType getItem(int position) {
+        return super.getItem(position);
+    }
+
+    @Override
     public View getView(int position, View view, ViewGroup parent) {
-        final String currentRow = getItem(position);
-        ViewHolderForGroup holder = null;
+        final SideLoadType currentRow = getItem(position);
+        ViewHolderForGroup holder;
         if (view == null) {
 
             holder = new ViewHolderForGroup();
@@ -40,11 +46,11 @@ public class ShareAdapter extends ArrayAdapter<String> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        holder.labelTextView.setText(currentRow);
+        holder.labelTextView.setText(SideLoadType.getSideLoadName(currentRow));
 
-        int icon = getResourceForText(currentRow);
+        int icon = SideLoadType.getResourceForType(currentRow);
         if(icon > -1){
-            holder.iconView.setImageResource(getResourceForText(currentRow));
+            holder.iconView.setImageResource(icon);
             holder.iconView.setVisibility(View.VISIBLE);
         }
         else{
@@ -53,30 +59,6 @@ public class ShareAdapter extends ArrayAdapter<String> {
 
         return view;
     }
-
-    private int getResourceForText(String text){
-
-        if(text.contains(getContext().getString(R.string.wi_fi_direct_load_title))){
-            return R.drawable.wifi;
-        }
-        else if(text.contains(getContext().getString(R.string.choose_directory_load_title)) || text.contains(getContext().getString(R.string.choose_file_title))){
-            return R.drawable.folder_o;
-        }
-        else if(text.contains(getContext().getString(R.string.auto_find_load_title))){
-            return R.drawable.search;
-        }
-       if(text.equalsIgnoreCase(getContext().getString(R.string.bluetooth_load_title))){
-            return R.drawable.bluetooth;
-        }
-        else if(text.contains(getContext().getString(R.string.external_storage_title))){
-            return R.drawable.sd_card;
-        }
-
-        else{
-            return -1;
-        }
-    }
-
 
     private class ViewHolderForGroup {
 

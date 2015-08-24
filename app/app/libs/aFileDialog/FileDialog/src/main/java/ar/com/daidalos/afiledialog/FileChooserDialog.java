@@ -34,7 +34,7 @@ import android.widget.LinearLayout;
 /**
  * A file chooser implemented in a Dialog. 
  */
-public class FileChooserDialog extends Dialog implements FileChooser {
+public class  FileChooserDialog extends Dialog implements FileChooser {
 
 	// ----- Attributes ----- //
 	

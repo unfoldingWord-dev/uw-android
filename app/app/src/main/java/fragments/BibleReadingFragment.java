@@ -20,6 +20,8 @@ import adapters.ReadingPagerAdapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;
+import peejweej.sideloading.activities.SideShareActivity;
+import peejweej.sideloading.model.SideLoadInformation;
 import sideloading.SideLoadType;
 import sideloading.SideSharer;
 import utils.UWPreferenceDataAccessor;
@@ -254,21 +256,25 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     @Override
     public void shareButtonClicked() {
-        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
-            @Override
-            public void sideLoadingSucceeded(String response) {
-            }
-            @Override
-            public void sideLoadingFailed(String errorMessage) {
-            }
-            @Override
-            public boolean confirmSideLoadingType(SideLoadType type) {
-                return true;
-            }
-        });
-        Version currentVersion = currentBook.getVersion();
-        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
-                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
+
+        getActivity().startActivity(new Intent(getContext(), SideShareActivity.class).putExtra(SideShareActivity.SIDE_LOAD_INFORMATION_PARAM,
+                new SideLoadInformation("test", ".test", null, null )));
+//
+//        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
+//            @Override
+//            public void sideLoadingSucceeded(String response) {
+//            }
+//            @Override
+//            public void sideLoadingFailed(String errorMessage) {
+//            }
+//            @Override
+//            public boolean confirmSideLoadingType(SideLoadType type) {
+//                return true;
+//            }
+//        });
+//        Version currentVersion = currentBook.getVersion();
+//        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
+//                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
     }
 
     @Override

@@ -137,10 +137,6 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     //region accessors
 
-    private Context getContext(){
-        return this.getActivity().getApplicationContext();
-    }
-
     protected List<StoriesChapter> getData(){
 
         StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getContext(), false);

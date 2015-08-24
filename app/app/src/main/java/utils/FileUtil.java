@@ -48,7 +48,6 @@ public class FileUtil {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(fileString);
             bw.close();
-
 //            FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 //            outputStream.write(fileString.getBytes());
 //            outputStream.close();
@@ -278,7 +277,6 @@ public class FileUtil {
 
         try{
             FileInputStream fileStream = new FileInputStream(file);
-
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             byte[] b = new byte[1024];

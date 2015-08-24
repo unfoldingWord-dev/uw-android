@@ -118,10 +118,6 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
         this.listener = listener;
     }
 
-    private Context getContext(){
-        return this.getActivity().getApplicationContext();
-    }
-
     //endregion
 
     //region OnItemClickListener

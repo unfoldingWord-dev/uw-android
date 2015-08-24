@@ -126,14 +126,6 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
 
     //endregion
 
-    //region accessors
-
-    private Context getContext(){
-        return this.getActivity().getApplicationContext();
-    }
-
-    //endregion
-
     //region OnItemClickListener
 
     @Override
