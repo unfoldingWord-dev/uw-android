@@ -32,8 +32,6 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_only_fragment);
 
-        Bundle extras = getIntent().getExtras();
-
         sideLoadInformation = (SideLoadInformation) getIntent().getSerializableExtra(SIDE_LOAD_INFORMATION_PARAM);
 
         getSupportFragmentManager().beginTransaction()
@@ -73,8 +71,8 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
 
     private Uri getFileUri(){
 
-        if(sideLoadInformation.fileUri != null){
-            return sideLoadInformation.fileUri;
+        if(sideLoadInformation.getUri() != null){
+            return sideLoadInformation.getUri();
         }
         else{
             try {
@@ -199,7 +197,7 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
             }
         }
         else{
-            return FileUtilities.getBytesFromFile(new File(sideLoadInformation.fileUri.getPath()));
+            return FileUtilities.getBytesFromFile(new File(sideLoadInformation.getUri().getPath()));
         }
     }
 

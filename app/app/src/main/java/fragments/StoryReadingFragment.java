@@ -17,6 +17,7 @@ import java.util.List;
 
 import activity.UWBaseActivity;
 import adapters.StoryPagerAdapter;
+import model.SharingHelper;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
@@ -174,12 +175,10 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
             readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
                 }
 
                 @Override
                 public void onPageSelected(int position) {
-
                 }
 
                 @Override
@@ -214,20 +213,22 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
 
     public void shareVersion(Version version) {
 
-        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
-            @Override
-            public void sideLoadingSucceeded(String response) {
-            }
-            @Override
-            public void sideLoadingFailed(String errorMessage) {
-            }
-            @Override
-            public boolean confirmSideLoadingType(SideLoadType type) {
-                return true;
-            }
-        });
-        sharer.startSharing(version.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
-                version.getName() + getActivity().getString(R.string.save_file_extension));
+        ((UWBaseActivity)getActivity()).goToNewActivity(SharingHelper.getIntentForSharing(getContext(), mainChapter.getBook().getVersion()));
+
+//        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
+//            @Override
+//            public void sideLoadingSucceeded(String response) {
+//            }
+//            @Override
+//            public void sideLoadingFailed(String errorMessage) {
+//            }
+//            @Override
+//            public boolean confirmSideLoadingType(SideLoadType type) {
+//                return true;
+//            }
+//        });
+//        sharer.startSharing(version.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
+//                version.getName() + getActivity().getString(R.string.save_file_extension));
     }
 
     public void setDiglotShowing(boolean showing){

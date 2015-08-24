@@ -37,6 +37,7 @@ import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.InitialPageAdapter;
 import fragments.CheckingLevelInfoFragment;
 import model.DaoDBHelper;
+import model.SharingHelper;
 import model.daoModels.Language;
 import model.daoModels.Project;
 import services.UWUpdaterService;
@@ -309,7 +310,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                                         break;
                                     }
                                     case 1: {
-                                        goToNewActivity(new Intent(getApplicationContext(), LoadActivity.class));
+                                        goToNewActivity(SharingHelper.getIntentForLoading(getApplicationContext()));
                                         break;
                                     }
                                     default: {

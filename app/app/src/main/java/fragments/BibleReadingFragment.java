@@ -17,6 +17,7 @@ import java.util.List;
 import activity.UWBaseActivity;
 import activity.reading.BaseReadingActivity;
 import adapters.ReadingPagerAdapter;
+import model.SharingHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;
@@ -257,9 +258,8 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     @Override
     public void shareButtonClicked() {
 
-        getActivity().startActivity(new Intent(getContext(), SideShareActivity.class).putExtra(SideShareActivity.SIDE_LOAD_INFORMATION_PARAM,
-                new SideLoadInformation("test", ".test", null, null )));
-//
+        ((UWBaseActivity)getActivity()).goToNewActivity(SharingHelper.getIntentForSharing(getContext(), currentBook.getVersion()));
+
 //        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
 //            @Override
 //            public void sideLoadingSucceeded(String response) {

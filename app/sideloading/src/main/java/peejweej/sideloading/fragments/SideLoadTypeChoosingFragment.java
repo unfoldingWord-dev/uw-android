@@ -67,11 +67,10 @@ public class SideLoadTypeChoosingFragment extends Fragment {
         boolean isSharing = (info == null || info.fileName != null);
         boolean canUseQrCode = (isSharing && info != null && info.file != null && info.file.length() < 1024);
         adapter = new ShareAdapter(getActivity().getApplicationContext(),
-                SideLoadType.getListOfSideLoadTypes(getActivity().getApplicationContext(), isSharing, canUseQrCode));
+                SideLoadType.getListOfSideLoadTypes(getActivity().getApplicationContext(), !isSharing, canUseQrCode));
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedType(adapter.getItem(position));
             }
@@ -79,7 +78,7 @@ public class SideLoadTypeChoosingFragment extends Fragment {
     }
 
     private void selectedType(SideLoadType type){
-
+        listener.typeWasChosen(type);
     }
 
     public interface SideLoadTypeFragmentListener{

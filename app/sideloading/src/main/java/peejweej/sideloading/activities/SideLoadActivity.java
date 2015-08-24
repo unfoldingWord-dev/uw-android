@@ -72,7 +72,8 @@ public class SideLoadActivity extends BaseActivity implements SideLoadTypeChoosi
     }
 
     private void startAutoFindAction(){
-        startActivityForResult(new Intent(getApplicationContext(), FileFinderActivity.class), 0);
+        startActivityForResult(new Intent(getApplicationContext(), FileFinderActivity.class)
+                .putExtra(FileFinderActivity.LOAD_INFO_PARAM, sideLoadInformation), 0);
         onBackPressed();
     }
 
@@ -95,19 +96,30 @@ public class SideLoadActivity extends BaseActivity implements SideLoadTypeChoosi
         dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
 
             public void onFileSelected(Dialog source, File file) {
-                finishWithFile(file);
+                finishWithFile(Uri.fromFile(file));
                 source.dismiss();
             }
 
             public void onFileSelected(Dialog source, File folder, String name) {
-                finishWithFile(new File(folder.getAbsolutePath() + name));
+                finishWithFile(Uri.fromFile(new File(folder.getAbsolutePath() + name)));
                 source.dismiss();
             }
         });
         dialog.show();
     }
 
-    private void finishWithFile(File file){
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == resultCode && data != null && data.getData() != null){
+            finishWithFile(data.getData());
+        }
+    }
+
+    private void finishWithFile(Uri fileUri){
+
+        File file = new File(fileUri.getPath());
 
         if(sideLoadInformation.fileVerifier != null && sideLoadInformation.fileVerifier.fileIsValid(FileUtilities.getBytesFromFile(file))){
             showFailureAlert();

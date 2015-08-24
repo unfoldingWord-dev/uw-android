@@ -357,6 +357,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     //endregion
 
     //region Toolbar Listener
+
     @Override
     public void centerButtonClicked() {
 
@@ -370,6 +371,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     public void rightButtonClicked() {
 
     }
+
     //endregion
 }
 
