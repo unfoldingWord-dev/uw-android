@@ -68,6 +68,12 @@ public class FileUtil {
         saveFile(bytes, fileDir, fileName);
     }
 
+    public static void saveFileToApplicationFiles(Context context, byte[] bytes, String fileName){
+        String fileDir = context.getFilesDir().getAbsolutePath() + "/"
+                + context.getString(R.string.app_name);
+        saveFile(bytes, fileDir, fileName);
+    }
+
     public static Uri saveFile(byte[] bytes, String dirName, String fileName){
 
         try{

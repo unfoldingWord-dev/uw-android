@@ -84,7 +84,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
         findDevicesButton = (Button) mContentView.findViewById(R.id.btn_find_devices);
         findDevicesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 findDevices();
             }
@@ -92,7 +91,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
         activateWifiButton = (Button) mContentView.findViewById(R.id.btn_activate_wifi);
         activateWifiButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 openWifi();
             }
@@ -104,7 +102,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         connectButton = (Button) mContentView.findViewById(R.id.btn_connect);
         connectButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override
             public void onClick(View v) {
                 connect();
             }
@@ -114,7 +111,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         disconnectButton.setOnClickListener(
                 new View.OnClickListener() {
 
-                    @Override
                     public void onClick(View v) {
                         disconnect();
                     }
@@ -124,7 +120,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         startTransferButton.setOnClickListener(
                 new View.OnClickListener() {
 
-                    @Override
                     public void onClick(View v) {
                         startTransfer();
                     }
@@ -194,7 +189,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         getActivity().startService(serviceIntent);
     }
 
-    @Override
     public void onConnectionInfoAvailable(final WifiP2pInfo info) {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();

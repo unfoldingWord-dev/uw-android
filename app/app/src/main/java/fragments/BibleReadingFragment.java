@@ -20,14 +20,8 @@ import adapters.ReadingPagerAdapter;
 import model.SharingHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import model.daoModels.Version;
-import peejweej.sideloading.activities.SideShareActivity;
-import peejweej.sideloading.model.SideLoadInformation;
-import sideloading.SideLoadType;
-import sideloading.SideSharer;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
 import view.ReadingDoubleTapHandler;
 

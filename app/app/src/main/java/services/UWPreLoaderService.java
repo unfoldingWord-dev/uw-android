@@ -186,19 +186,6 @@ public class UWPreLoaderService extends UWUpdaterService {
         InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
         String file = IOUtils.toString(inputStream);
         return file;
-
-//        InputStreamReader reader = new InputStreamReader(inputStream);
-//        StringBuilder builder = new StringBuilder();
-//        BufferedReader bufferReader = new BufferedReader(reader);
-//        String read = bufferReader.readLine();
-//
-//        while(read != null) {
-//            //System.out.println(read);
-//            builder.append(read);
-//            read =bufferReader.readLine();
-//        }
-//
-//        return builder.toString();
     }
 
 

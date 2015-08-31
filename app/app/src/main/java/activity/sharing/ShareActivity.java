@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
+
 import java.util.List;
 
 import activity.AnimationParadigm;
@@ -14,7 +16,6 @@ import adapters.VersionShareAdapter;
 import model.DaoDBHelper;
 import model.SharingHelper;
 import model.daoModels.Version;
-import sideloading.SideSharer;
 
 public class ShareActivity extends UWBaseActivity implements VersionShareAdapter.VersionAdapterListener {
 
@@ -52,29 +53,52 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
     public void shareClicked(View view) {
 
+//        SideSharer sharer = new SideSharer(this, new SideSharer.SideLoaderListener() {
+//            @Override
+//            public void sideLoadingSucceeded(String response) {
+//
+//            }
+//            @Override
+//            public void sideLoadingFailed(String errorMessage) {
+//
+//            }
+//            @Override
+//            public boolean confirmSideLoadingType(SideLoadType type) {
+//
+////                if(type == SideLoadType.SIDE_LOAD_TYPE_QR_CODE && selectionFragment.getSelectedVersion().size() > 1){
+////                    showAmountAlert();
+////                    return false;
+////                }
+////                else{
+//                    return true;
+////                }
+//            }
+//        });
+
         Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
-            goToNewActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
+            goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
+        }
+
+    }
+
+    private String getData(Version version) {
+
+        JSONObject requestedKeyboardData = version.getAsPreloadJson(getApplicationContext());
+
+        if (requestedKeyboardData != null){
+            return requestedKeyboardData.toString();
+        }
+        else
+        {
+            return null;
         }
     }
 
-//    private String getData(Version version) {
-//
-//        JSONObject requestedKeyboardData = version.getAsPreloadJson(getApplicationContext());
-//
-//        if (requestedKeyboardData != null){
-//            return requestedKeyboardData.toString();
-//        }
-//        else
-//        {
-//            return null;
-//        }
-//    }
-//
-//    private String getFileName(Version version){
-//
-//        return version.getName() + getString(R.string.save_file_extension);
-//    }
+    private String getFileName(Version version){
+
+        return version.getName() + getString(R.string.save_file_extension);
+    }
 
 //    private void showAmountAlert(){
 //
@@ -94,8 +118,8 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        new SideSharer(this, null).showBluetoothDirectionsDialog();
-        Log.i(TAG, "activity result");
+//        new SideSharer(this, null).showBluetoothDirectionsDialog();
+//        Log.i(TAG, "activity result");
     }
 
     @Override

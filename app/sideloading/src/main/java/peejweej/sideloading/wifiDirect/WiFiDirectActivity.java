@@ -206,13 +206,11 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
         fragmentList.onInitiateDiscovery();
         manager.discoverPeers(channel, new ActionListener() {
 
-            @Override
             public void onSuccess() {
                 Toast.makeText(WiFiDirectActivity.this, "Discovery Initiated",
                         Toast.LENGTH_SHORT).show();
             }
 
-            @Override
             public void onFailure(int reasonCode) {
                 Toast.makeText(WiFiDirectActivity.this, "Discovery Failed : " + reasonCode,
                         Toast.LENGTH_SHORT).show();
@@ -221,22 +219,17 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
         });
     }
 
-    @Override
     public void showDetails(WifiP2pDevice device) {
         fragmentDetails.showDetails(device);
-
     }
 
-    @Override
     public void connect(WifiP2pConfig config) {
         manager.connect(channel, config, new ActionListener() {
 
-            @Override
             public void onSuccess() {
                 Log.i(TAG, "connected successfully");
             }
 
-            @Override
             public void onFailure(int reason) {
                 Toast.makeText(WiFiDirectActivity.this, "Connect failed. Retry.",
                         Toast.LENGTH_SHORT).show();
@@ -248,19 +241,15 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
         fragmentDetails.transferFile(selectedUri);
     }
 
-    @Override
     public void disconnect() {
 
         fragmentDetails.resetViews();
         manager.removeGroup(channel, new ActionListener() {
 
-            @Override
             public void onFailure(int reasonCode) {
                 Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
-
             }
 
-            @Override
             public void onSuccess() {
                 fragmentDetails.resetData();
                 fragmentDetails.resetViews();
@@ -269,7 +258,6 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    @Override
     public void onChannelDisconnected() {
         // we will try once more
         if (manager != null && !retryChannel) {
@@ -285,7 +273,6 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    @Override
     public void cancelDisconnect() {
 
         /*
@@ -302,13 +289,11 @@ public class WiFiDirectActivity extends ActionBarActivity implements ChannelList
 
                 manager.cancelConnect(channel, new ActionListener() {
 
-                    @Override
                     public void onSuccess() {
                         Toast.makeText(WiFiDirectActivity.this, "Aborting connection",
                                 Toast.LENGTH_SHORT).show();
                     }
 
-                    @Override
                     public void onFailure(int reasonCode) {
                         Toast.makeText(WiFiDirectActivity.this,
                                 "Connect abort request failed. Reason Code: " + reasonCode,

@@ -30,7 +30,6 @@ import activity.SettingsActivity;
 import activity.UWBaseActivity;
 import activity.reading.ReadingActivity;
 import activity.reading.StoryReadingActivity;
-import activity.sharing.LoadActivity;
 import activity.sharing.ShareActivity;
 import adapters.ShareAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;

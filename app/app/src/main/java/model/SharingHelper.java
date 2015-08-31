@@ -38,7 +38,10 @@ public class SharingHelper {
     }
 
     private static SideLoadInformation getShareInformation(Context context, Version version){
-        return getShareInformation(getFileForVersion(context, version), getFileNameForVersion(version));
+
+        Uri fileUri = getFileForVersion(context, version);
+
+        return getShareInformation(fileUri, getFileNameForVersion(version));
     }
 
     private static Uri getFileForVersion(Context context, Version version){

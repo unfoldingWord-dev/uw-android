@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
+import android.util.Log;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,11 +14,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.ListIterator;
 
+import model.daoModels.Book;
 import model.daoModels.DaoMaster;
+import model.daoModels.Version;
+import tasks.UpdateAndVerifyBookRunnable;
+import utils.FileNameHelper;
 import utils.FileUtil;
 
 public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
+
+    private static final String TAG = "DatabaseOpenHelper";
 
     private Context context;
 
@@ -46,7 +57,6 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -83,6 +93,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             sqliteDatabase.close();
 
             copyDataBase();
+            saveSourceFiles();
         }
     }
 
@@ -139,6 +150,58 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void saveSourceFiles(){
+
+        List<Book> books = DaoDBHelper.getDaoSession(context)
+                .getBookDao().queryBuilder().list();
+
+        ListIterator li = books.listIterator(books.size());
+
+        // Iterate in reverse to start with the stories.
+        while(li.hasPrevious()) {
+
+            Book book = (Book) li.previous();
+            try {
+                String signature = loadDbFile(FileNameHelper.getSaveFileNameFromUrl(book.getSignatureUrl()));
+                byte[] text = loadDbFileBytes(FileNameHelper.getSaveFileNameFromUrl(book.getSourceUrl()));
+                saveFile(text, book.getSourceUrl());
+                saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
+//                Log.i(TAG, "Saved book: " + book.getTitle());
+            }
+            catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveFile(byte[] bytes, String url){
+
+        try{
+            FileOutputStream fos = context.openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
+            fos.write(bytes);
+            fos.close();
+            Log.i(TAG, "File Saved");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            Log.e(TAG, "Error when saving file");
+        }
+    }
+
+    private byte[] loadDbFileBytes(String fileName) throws IOException{
+
+        // Open your local model.db as the input stream
+        InputStream inputStream = context.getAssets().open("preloaded_content/" + fileName);
+
+        return IOUtils.toByteArray(inputStream);
+    }
+
+    private String loadDbFile(String fileName) throws IOException{
+
+        // Open your local model.db as the input stream
+        InputStream inputStream = context.getAssets().open("preloaded_content/" + fileName);
+        return IOUtils.toString(inputStream);
     }
 }

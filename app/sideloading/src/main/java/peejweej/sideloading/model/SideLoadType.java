@@ -72,14 +72,14 @@ public enum SideLoadType {
         }
     }
 
-    public static List<SideLoadType> getListOfSideLoadTypes(Context context, boolean loading, boolean isFile){
+    public static List<SideLoadType> getListOfSideLoadTypes(Context context, boolean loading, boolean canUseQRCode){
 
         List<SideLoadType> sideLoadList = new ArrayList<SideLoadType>();
 
         sideLoadList.add((loading)? SIDE_LOAD_TYPE_AUTO_FIND : SIDE_LOAD_TYPE_SD_CARD);
         sideLoadList.add((loading)? SIDE_LOAD_TYPE_FILE : SIDE_LOAD_TYPE_STORAGE);
 
-        if(isFile){
+        if(canUseQRCode){
             sideLoadList.add(SIDE_LOAD_TYPE_QR_CODE);
         }
 

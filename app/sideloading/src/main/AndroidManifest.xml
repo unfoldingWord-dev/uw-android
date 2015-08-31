@@ -24,6 +24,12 @@
             android:label="@string/title_activity_side_share" >
         </activity>
 
+        <activity
+            android:name=".wifiDirect.WiFiDirectActivity"
+            android:theme="@style/MainTheme"
+            android:label="@string/title_activity_side_share" >
+        </activity>
+
     </application>
 
 </manifest>

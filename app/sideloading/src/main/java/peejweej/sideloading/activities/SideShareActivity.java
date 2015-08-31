@@ -49,20 +49,27 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
 
         switch (type){
             case SIDE_LOAD_TYPE_BLUETOOTH:
+                startBluetoothShareAction();
                 break;
             case SIDE_LOAD_TYPE_NFC:
                 break;
             case SIDE_LOAD_TYPE_WIFI:
+                startWIFIShareAction();
                 break;
             case SIDE_LOAD_TYPE_STORAGE:
+                startStorageShareAction();
                 break;
             case SIDE_LOAD_TYPE_QR_CODE:
                 break;
             case SIDE_LOAD_TYPE_SD_CARD:
+                startSDCardShareAction();
                 break;
             case SIDE_LOAD_TYPE_AUTO_FIND:
                 break;
             case SIDE_LOAD_TYPE_FILE:
+                break;
+            case SIDE_LOAD_TYPE_OTHER:
+                startShareOtherAction();
                 break;
             default:
                 break;

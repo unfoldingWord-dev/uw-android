@@ -21,11 +21,8 @@ import model.SharingHelper;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
-import sideloading.SideLoadType;
-import sideloading.SideSharer;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 import view.ReadingBottomBarViewGroup;
 import view.ReadingDoubleTapHandler;
 
