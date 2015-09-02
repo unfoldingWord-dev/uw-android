@@ -50,7 +50,7 @@ public class SharingHelper {
     }
 
     private static String getFileNameForVersion(Version version){
-        return version.getName() + FILE_EXTENSION;
+        return version.getName() + " (" + version.getLanguage().getLanguageAbbreviation() + ")" + FILE_EXTENSION;
     }
 
     public static Intent getIntentForLoading(Context context){

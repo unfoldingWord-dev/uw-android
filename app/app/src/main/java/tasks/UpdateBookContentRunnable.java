@@ -53,7 +53,12 @@ public class UpdateBookContentRunnable implements Runnable{
         byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
         String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
 
-        if(sigText != null && sigText.length() > 0) {
+        if(bookText == null || bookText.length < 1){
+            bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
+        }
+
+
+        if(bookText != null && bookText.length > 0 && sigText != null && sigText.length() > 0) {
             saveFile(bookText, book.getSourceUrl());
             try {
                 saveFile(sigText.getBytes("UTF-8"), book.getSignatureUrl());

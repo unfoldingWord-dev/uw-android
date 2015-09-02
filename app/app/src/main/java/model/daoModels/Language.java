@@ -220,6 +220,7 @@ public class Language extends model.UWDatabaseModel  implements java.io.Serializ
 
         boolean wasUpdated = (newLanguage.modified.compareTo(this.modified) > 0);
         this.modified = newLanguage.modified;
+        update();
         return wasUpdated;
     }
 

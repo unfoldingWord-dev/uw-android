@@ -317,14 +317,9 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         this.saveState = newVersion.saveState;
 
         boolean wasUpdated = (newVersion.modified.compareTo(this.modified) > 0);
-        if(wasUpdated){
-            this.modified = newVersion.modified;
-            return true;
-        }
-        else{
-            this.modified = newVersion.modified;
-            return true;
-        }
+        this.modified = newVersion.modified;
+        update();
+        return wasUpdated;
     }
 
     @Override

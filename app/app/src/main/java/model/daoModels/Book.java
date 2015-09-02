@@ -290,6 +290,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
         boolean wasUpdated = (newBook.modified.compareTo(this.modified) > 0);
         this.modified = newBook.modified;
+        update();
         return wasUpdated;
     }
 

@@ -60,7 +60,7 @@ public class UpdateBooksRunnable implements Runnable{
                     UWDatabaseModel shouldContinueUpdate = new BookSaveOrUpdater(updater.getApplicationContext()).start(model);
 //                            Log.d(TAG, "Book created");
                     if(shouldContinueUpdate != null){
-                        updateChapters (jsonObject, (Book) shouldContinueUpdate);
+                        updateChapters ((Book) shouldContinueUpdate);
                     }
                     if(isLast){
                         updater.runnableFinished();
@@ -70,13 +70,9 @@ public class UpdateBooksRunnable implements Runnable{
         }).execute(jsonObject);
     }
 
-    private void updateChapters(JSONObject book, Book parent){
+    private void updateChapters(Book parent){
 
-        if( (parent.getBibleChapters() != null && parent.getBibleChapters().size() > 0)
-                && (parent.getStoryChapters() != null && parent.getStoryChapters().size() > 0) ) {
-
-            updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
-        }
+        updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
     }
 
     private class BookSaveOrUpdater extends ModelSaveOrUpdater{

@@ -110,7 +110,7 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
 
         AlertDialog dialogue = new AlertDialog.Builder(this)
                 .setCustomTitle(titleView)
-                .setMessage("Before starting, make sure the device you're sharing with has bluetooth available by going to it's Settings app, selecting bluetooth and confirming it is on and available to pair.")
+                .setMessage("Before starting, Turn on Bluetooth on both devices and ensure the other device is discoverable.")
                 .setPositiveButton("Start", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         openBluetoothSharing();

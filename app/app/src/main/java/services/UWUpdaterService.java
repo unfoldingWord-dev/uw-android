@@ -105,39 +105,39 @@ public class UWUpdaterService extends Service {
                 @Override
                 public void downloadFinishedWithJson(String jsonString) {
 
-                    try{
-                        JSONObject json = new JSONObject(jsonString);
-                        long lastModified = json.getLong(MODIFIED_JSON_KEY);
+                try{
+                    JSONObject json = new JSONObject(jsonString);
+                    long lastModified = json.getLong(MODIFIED_JSON_KEY);
 
-                        long currentUpdated = UWPreferenceManager.getLastUpdatedDate(getApplicationContext());
-                        if(lastModified > currentUpdated) {
-                            UWPreferenceManager.setLastUpdatedDate(getApplicationContext(), lastModified);
-                            addRunnable(new UpdateProjectsRunnable(json.getJSONArray(PROJECTS_JSON_KEY), getThis()));
-                        }
-                        runnableFinished();
-                    } catch (JSONException e){
-                        e.printStackTrace();
-                        runnableFinished();
-                    }
+                    long currentUpdated = UWPreferenceManager.getLastUpdatedDate(getApplicationContext());
+//                    if(lastModified > currentUpdated) {
+                        UWPreferenceManager.setLastUpdatedDate(getApplicationContext(), lastModified);
+                        addRunnable(new UpdateProjectsRunnable(json.getJSONArray(PROJECTS_JSON_KEY), getThis()));
+//                    }
+                    runnableFinished();
+                } catch (JSONException e){
+                    e.printStackTrace();
+                    runnableFinished();
+                }
                 }
             }).execute(UWPreferenceManager.getDataDownloadUrl(getApplicationContext()));
 
-            new JsonDownloadTask(new JsonDownloadTask.DownloadTaskListener() {
-                @Override
-                public void downloadFinishedWithJson(String jsonString) {
-
-                    try{
-                        JSONArray locales = new JSONArray(jsonString);
-                        addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
-                        runnableFinished();
-
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        runnableFinished();
-                    }
-
-                }
-            }).execute(UWPreferenceManager.getLanguagesDownloadUrl(getApplicationContext()));
+//            new JsonDownloadTask(new JsonDownloadTask.DownloadTaskListener() {
+//                @Override
+//                public void downloadFinishedWithJson(String jsonString) {
+//
+//                try{
+//                    JSONArray locales = new JSONArray(jsonString);
+//                    addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
+//                    runnableFinished();
+//
+//                }catch (JSONException e){
+//                    e.printStackTrace();
+//                    runnableFinished();
+//                }
+//
+//                }
+//            }).execute(UWPreferenceManager.getLanguagesDownloadUrl(getApplicationContext()));
         }
     }
 

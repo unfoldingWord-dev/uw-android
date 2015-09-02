@@ -53,28 +53,6 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
     public void shareClicked(View view) {
 
-//        SideSharer sharer = new SideSharer(this, new SideSharer.SideLoaderListener() {
-//            @Override
-//            public void sideLoadingSucceeded(String response) {
-//
-//            }
-//            @Override
-//            public void sideLoadingFailed(String errorMessage) {
-//
-//            }
-//            @Override
-//            public boolean confirmSideLoadingType(SideLoadType type) {
-//
-////                if(type == SideLoadType.SIDE_LOAD_TYPE_QR_CODE && selectionFragment.getSelectedVersion().size() > 1){
-////                    showAmountAlert();
-////                    return false;
-////                }
-////                else{
-//                    return true;
-////                }
-//            }
-//        });
-
         Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
             goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
@@ -82,44 +60,9 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
     }
 
-    private String getData(Version version) {
-
-        JSONObject requestedKeyboardData = version.getAsPreloadJson(getApplicationContext());
-
-        if (requestedKeyboardData != null){
-            return requestedKeyboardData.toString();
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private String getFileName(Version version){
-
-        return version.getName() + getString(R.string.save_file_extension);
-    }
-
-//    private void showAmountAlert(){
-//
-//        new AlertDialog.Builder(this)
-//                .setTitle("Keyboard Selection")
-//                .setMessage("Please select only 1 keyboard for QR sharing")
-//                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                })
-//                .show();
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-//        new SideSharer(this, null).showBluetoothDirectionsDialog();
-//        Log.i(TAG, "activity result");
     }
 
     @Override

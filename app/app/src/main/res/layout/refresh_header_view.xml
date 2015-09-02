@@ -5,20 +5,6 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/refreshView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true" />
-    </FrameLayout>
-
-    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="@dimen/refresh_button_size"
         android:background="@color/greenyellow">
@@ -30,5 +16,23 @@
             android:layout_gravity="center"
             android:background="@drawable/refresh_button_click" />
     </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/refreshView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@color/white"
+        style="@style/drop_shadow">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+
+    </LinearLayout>
 
 </LinearLayout>

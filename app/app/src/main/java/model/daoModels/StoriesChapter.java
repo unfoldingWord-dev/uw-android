@@ -246,7 +246,7 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
         this.title = newStoriesChapter.title;
         this.ref = newStoriesChapter.ref;
         this.bookId = newStoriesChapter.bookId;
-
+        update();
         return true;
     }
 

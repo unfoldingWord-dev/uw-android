@@ -204,6 +204,7 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
         this.text = newPage.text;
         this.imageUrl = newPage.imageUrl;
         this.storyChapterId = newPage.storyChapterId;
+        update();
 
         return false;
     }

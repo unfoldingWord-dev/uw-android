@@ -57,8 +57,10 @@ public class USFMParser {
             }
 
             int chapterStartIndex = chapter.indexOf("\\");
-            chapter = chapter.substring(chapterStartIndex);
-            chapters.put(chapterNumber, chapter);
+            if(chapterStartIndex > -1) {
+                chapter = chapter.substring(chapterStartIndex);
+                chapters.put(chapterNumber, chapter);
+            }
         }
 
         return chapters;

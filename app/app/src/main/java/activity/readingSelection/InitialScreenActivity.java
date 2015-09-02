@@ -12,9 +12,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +39,6 @@ import adapters.selectionAdapters.InitialPageAdapter;
 import fragments.CheckingLevelInfoFragment;
 import model.DaoDBHelper;
 import model.SharingHelper;
-import model.daoModels.Language;
 import model.daoModels.Project;
 import services.UWSideLoaderService;
 import services.UWUpdaterService;
@@ -48,7 +47,8 @@ import utils.URLUtils;
 import utils.UWPreferenceManager;
 
 /**
- * Created by Fechner on 2/27/15.
+ * Created by PJ Fechner on 2/27/15.
+ *
  */
 public class InitialScreenActivity extends UWBaseActivity{
 
@@ -57,7 +57,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     static final public String PROJECT_PARAM = "PROJECT_PARAM";
     static public final String GENERAL_CHECKING_LEVEL_FRAGMENT_ID = "GENERAL_CHECKING_LEVEL_FRAGMENT_ID";
 
-    private FrameLayout visibleLayout = null;
+    private ViewGroup updateLayout = null;
 
     private Button mRefreshButton = null;
     private Button settingsButton = null;
@@ -92,7 +92,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     @Override
     protected void onPause() {
 
-        unregisterReceiver();
+        unregisterUpdateReceiver();
 
         super.onPause();
     }
@@ -122,23 +122,40 @@ public class InitialScreenActivity extends UWBaseActivity{
             public void onReceive(Context context, Intent intent) {
 
                 if (intent.getAction().equals(URLUtils.BROAD_CAST_DOWN_COMP)) {
-                    Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(context, "Update complete", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, "Download error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Update error", Toast.LENGTH_SHORT).show();
                 }
-                visibleLayout.setVisibility(View.GONE);
+                updateLayout.setVisibility(View.GONE);
                 reload();
             }
         };
     }
 
-    private void unregisterReceiver(){
+    private void unregisterUpdateReceiver(){
 
         if(updateReceiver != null) {
-            getApplicationContext().unregisterReceiver(updateReceiver);
+            try {
+                getApplicationContext().unregisterReceiver(updateReceiver);
+            }
+            catch (IllegalArgumentException e){
+                e.printStackTrace();
+            }
         }
         updateReceiver = null;
+    }
+
+    private void registerUpdateReceiver(){
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
+        filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
+
+        if(updateReceiver == null) {
+            updateReceiver = createReceiver();
+        }
+
+        registerReceiver(updateReceiver, filter);
     }
 
     //endregion
@@ -199,8 +216,8 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         if(mRefreshButton == null) {
             LayoutInflater inflater = getLayoutInflater();
-            View mview1 = inflater.inflate(R.layout.header_view, null);
-            visibleLayout = (FrameLayout) mview1.findViewById(R.id.refreshView);
+            View mview1 = inflater.inflate(R.layout.refresh_header_view, null);
+            updateLayout = (ViewGroup) mview1.findViewById(R.id.refreshView);
             mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
             mRefreshButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -211,11 +228,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
             listview.addHeaderView(mview1);
 
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
-            filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
-            createReceiver();
-            registerReceiver(updateReceiver, filter);
+            registerUpdateReceiver();
         }
     }
 
@@ -226,13 +239,13 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
 
         if(mProjects == null || mProjects.size() < 1){
-            return new ArrayList<GeneralRowInterface>();
+            return new ArrayList<>();
         }
 
-        List<GeneralRowInterface> dataList = new ArrayList<GeneralRowInterface>();
+        List<GeneralRowInterface> dataList = new ArrayList<>();
         for(Project row : mProjects) {
             dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getTitle()));
-            List<Language> langs = row.getLanguages();
+//            List<Language> langs = row.getLanguages();
         }
 
         return dataList;
@@ -251,7 +264,7 @@ public class InitialScreenActivity extends UWBaseActivity{
             builder.setPositiveButton("OK", null);
             builder.create().show();
         } else {
-            visibleLayout.setVisibility(View.VISIBLE);
+            updateLayout.setVisibility(View.VISIBLE);
             // to handle new data from network
             startService(new Intent(getApplicationContext(), UWUpdaterService.class));
         }

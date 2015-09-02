@@ -28,4 +28,11 @@
         <item name="android:indeterminate">true</item>
     </style>
 
+    <style name="drop_shadow">
+        <item name="android:shadowColor">#a222</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+
 </resources>
