@@ -174,11 +174,13 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
             public void onFileSelected(Dialog source, File file) {
                 saveToFile(file);
                 dialog.dismiss();
+                showSuccessAlert(true, file.getAbsolutePath());
             }
 
             public void onFileSelected(Dialog source, File folder, String name) {
                 saveToFile(new File(folder.getAbsolutePath() + "/" + name));
                 dialog.dismiss();
+                showSuccessAlert(true, folder.getAbsolutePath());
             }
         });
         dialog.setFolderMode(true);
@@ -188,7 +190,7 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
 
     private void saveToFile(File folder){
 
-        FileUtilities.saveFile(getFileBytes(), folder.getAbsolutePath(), sideLoadInformation.fileName);
+        FileUtilities.saveFile(getFileBytes(), folder.getPath(), sideLoadInformation.fileName);
     }
 
     private byte[] getFileBytes(){
@@ -212,21 +214,24 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
 
         setLoadingFragmentVisibility(true, "Saving", false);
         FileUtilities.saveFileToSdCard(getApplicationContext(), getFileBytes(), sideLoadInformation.fileName);
-        showSuccessAlert(true);
+
+        String fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+                + getApplicationContext().getString(R.string.app_name);
+        showSuccessAlert(true, fileDir);
     }
 
-    private void showSuccessAlert(boolean success){
+    private void showSuccessAlert(boolean success, String filePath){
 
         setLoadingFragmentVisibility(false, "", false);
         View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
         ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Share Status");
         new AlertDialog.Builder(this)
                 .setCustomTitle(titleView)
-                .setMessage((success)? "Sharing was successful" : "Sharing failed")
+                .setMessage((success)? "Sharing was successful to directory:\n" + filePath : "Sharing failed")
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        onBackPressed(true);
+                        handleBack();
                     }
                 })
                 .show();

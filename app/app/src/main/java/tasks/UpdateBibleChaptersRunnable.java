@@ -60,7 +60,6 @@ public class UpdateBibleChaptersRunnable implements Runnable{
 
             try {
                 chapters.add(BibleChapterParser.parseBibleChapter(parent, entry.getKey(), entry.getValue()));
-
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -73,12 +72,13 @@ public class UpdateBibleChaptersRunnable implements Runnable{
         updater.runnableFinished();
     }
 
-    private void updateModels(List<BibleChapter> chapters){
+    private List<BibleChapter> updateModels(List<BibleChapter> chapters){
 
         BibleChapterDao dao = DaoDBHelper.getDaoSession(updater.getApplicationContext()).getBibleChapterDao();
         dao.queryBuilder()
                 .where(BibleChapterDao.Properties.BookId.eq(parent.getId()))
                 .buildDelete().executeDeleteWithoutDetachingEntities();
         dao.insertOrReplaceInTx(chapters);
+        return chapters;
     }
 }

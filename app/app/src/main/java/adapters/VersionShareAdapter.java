@@ -61,7 +61,7 @@ public class VersionShareAdapter extends ArrayAdapter<Version> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        holder.titleTextView.setText(currentItem.getName());
+        holder.titleTextView.setText(currentItem.getTitle());
         holder.position = pos;
 
         view.setOnClickListener(new KeyboardsAdapterRowClickListener(pos, holder));

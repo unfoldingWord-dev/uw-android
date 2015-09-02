@@ -27,7 +27,7 @@ public class SharingHelper {
             }
 
             @Override
-            public boolean fileIsValid(byte[] file) {
+            public boolean fileIsValid(Uri file) {
                 return true;
             }
         });

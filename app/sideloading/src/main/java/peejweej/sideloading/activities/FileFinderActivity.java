@@ -73,11 +73,16 @@ public class FileFinderActivity extends BaseActivity {
     private void choseFile(File file){
 
         setResult(0, this.getIntent().setData(Uri.fromFile(file)));
+        goBack();
     }
 
     @Override
     protected void handleBack() {
         setResult(1);
+        super.handleBack();
+    }
+
+    protected void goBack(){
         super.handleBack();
     }
 

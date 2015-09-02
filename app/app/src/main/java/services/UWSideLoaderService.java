@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +26,11 @@ import model.daoModels.Version;
 import model.parsers.LanguageParser;
 import model.parsers.ProjectParser;
 import model.parsers.VersionParser;
+import peejweej.sideloading.utilities.FileUtilities;
 import tasks.UpdateAndVerifyBookRunnable;
 import utils.FileNameHelper;
 import utils.FileUtil;
+import utils.UWPreferenceDataManager;
 
 /**
  * Created by PJ Fechner
@@ -57,17 +60,24 @@ public class UWSideLoaderService extends UWUpdaterService {
 
         Uri fileUri = intent.getData();
         File file = new File(fileUri.getPath());
-        sideLoadText = FileUtil.getStringFromFile(file);
+        byte[] decompressedBytes = FileUtilities.getDecompressedBytes(FileUtil.getbytesFromFile(file));
 
-        addRunnable(new SideVersionsRunnable());
+        if(decompressedBytes != null) {
+            try {
+                sideLoadText = new String(decompressedBytes, "UTF-8");
+                addRunnable(new SideVersionsRunnable());
+                return START_STICKY;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                stopService();
 
-        return START_STICKY;
+            }
+        }
+        return START_FLAG_RETRY;
     }
 
     @Override
     protected void stopService() {
-        // This is to cause the book text to only be added after all other content
-
         getApplicationContext().sendBroadcast(new Intent(BROAD_CAST_SIDE_LOAD_SUCCESSFUL));
         this.stopSelf();
     }
@@ -168,7 +178,18 @@ public class UWSideLoaderService extends UWUpdaterService {
         Version model = new Version();
         model = (Version) model.setupModelFromJson(json, parent);
         model.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-        model.insertModel(DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        Version oldModel = Version.getModelForUniqueSlug(model.getUniqueSlug(),
+                DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        if(oldModel != null){
+            oldModel.updateWithModel(model);
+            UWPreferenceDataManager.willDeleteVersion(getApplicationContext(), oldModel);
+            model = oldModel;
+        }
+        else {
+            model.insertModel(DaoDBHelper.getDaoSession(getApplicationContext()));
+        }
 
         List<Book> books = new ArrayList<Book>();
         try {
@@ -188,7 +209,18 @@ public class UWSideLoaderService extends UWUpdaterService {
 
         Book model = new Book();
         model = (Book) model.setupModelFromJson(json, parent);
-        model.insertModel(DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        Book oldModel = Book.getModelForUniqueSlug(model.getUniqueSlug(),
+                DaoDBHelper.getDaoSession(getApplicationContext()));
+
+        if(oldModel != null){
+            oldModel.updateWithModel(model);
+            oldModel.deleteBookContent();
+            model = oldModel;
+        }
+        else {
+            model.insertModel(DaoDBHelper.getDaoSession(getApplicationContext()));
+        }
         return model;
     }
 

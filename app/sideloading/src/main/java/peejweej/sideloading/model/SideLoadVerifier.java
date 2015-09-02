@@ -1,5 +1,7 @@
 package peejweej.sideloading.model;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
 /**
@@ -8,5 +10,5 @@ import java.io.Serializable;
 public abstract class SideLoadVerifier implements Serializable{
 
     abstract public boolean fileIsValid(String file);
-    abstract public boolean fileIsValid(byte[] file);
+    abstract public boolean fileIsValid(Uri file);
 }

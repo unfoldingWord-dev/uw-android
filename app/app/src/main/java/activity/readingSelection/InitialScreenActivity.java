@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,6 +41,7 @@ import model.DaoDBHelper;
 import model.SharingHelper;
 import model.daoModels.Language;
 import model.daoModels.Project;
+import services.UWSideLoaderService;
 import services.UWUpdaterService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
@@ -48,6 +51,8 @@ import utils.UWPreferenceManager;
  * Created by Fechner on 2/27/15.
  */
 public class InitialScreenActivity extends UWBaseActivity{
+
+    static final private String TAG = "InitialScreenActivity";
 
     static final public String PROJECT_PARAM = "PROJECT_PARAM";
     static public final String GENERAL_CHECKING_LEVEL_FRAGMENT_ID = "GENERAL_CHECKING_LEVEL_FRAGMENT_ID";
@@ -309,7 +314,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                                         break;
                                     }
                                     case 1: {
-                                        goToNewActivity(SharingHelper.getIntentForLoading(getApplicationContext()));
+                                        startSideLoadActivity();
                                         break;
                                     }
                                     default: {
@@ -326,5 +331,78 @@ public class InitialScreenActivity extends UWBaseActivity{
                 }).create();
         dialogue.show();
     }
+
+    private void startSideLoadActivity(){
+
+        int enterAnimation = AnimationParadigm.getNextAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
+        int exitAnimation = AnimationParadigm.getNextAnimationExit(AnimationParadigm.ANIMATION_VERTICAL);
+        startActivityForResult(SharingHelper.getIntentForLoading(getApplicationContext()), 0);
+
+        overridePendingTransition(enterAnimation, exitAnimation);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(data != null){
+
+            Uri file = data.getData();
+            if(file != null){
+                loadVersion(file);
+            }
+        }
+    }
+
+    private void loadVersion(Uri file){
+
+        setLoadingFragmentVisibility(true, "Loading Version File: " + file.getLastPathSegment(), false);
+        registerPreloadReceiver();
+        Intent intent = new Intent(getApplicationContext(), UWSideLoaderService.class)
+                .setData(file);
+        startService(intent);
+        Log.i(TAG, "Version Loading Started");
+
+    }
+
+    private void registerPreloadReceiver(){
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UWSideLoaderService.BROAD_CAST_SIDE_LOAD_SUCCESSFUL);
+        registerReceiver(SideLoadReceiever, filter);
+    }
+
+    private void unRegisterPreloadReceiver(){
+
+        unregisterReceiver(SideLoadReceiever);
+    }
+
+    private BroadcastReceiver SideLoadReceiever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            unRegisterPreloadReceiver();
+            setLoadingFragmentVisibility(false, "", false);
+            showSuccessAlert(true);
+        }
+    };
+
+    private void showSuccessAlert(boolean success){
+
+        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Load Status");
+        new AlertDialog.Builder(this)
+                .setCustomTitle(titleView)
+                .setMessage((success) ? "Loading was successful" : "Loading failed")
+                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+
+
     //endregion
 }

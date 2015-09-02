@@ -179,8 +179,7 @@ public class FileUtilities {
             while ((bytesRead = fileStream.read(b)) != -1) {
                 bos.write(b, 0, bytesRead);
             }
-            byte[] bytes = bos.toByteArray();
-            return bytes;
+            return bos.toByteArray();
         }
         catch (IOException e){
             Log.e(TAG, "initializeKeyboards IOException: " + e.toString());

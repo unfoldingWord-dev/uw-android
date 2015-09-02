@@ -51,6 +51,7 @@ public class SideLoadActivity extends BaseActivity implements SideLoadTypeChoosi
             case SIDE_LOAD_TYPE_WIFI:
                 startWIFILoadAction();
                 break;
+            case SIDE_LOAD_TYPE_FILE:
             case SIDE_LOAD_TYPE_STORAGE:
                 startStorageLoadAction();
                 break;
@@ -72,9 +73,12 @@ public class SideLoadActivity extends BaseActivity implements SideLoadTypeChoosi
     }
 
     private void startAutoFindAction(){
+        int enterAnimation = AnimationParadigm.getNextAnimationEnter(getAnimationParadigm());
+        int closeAnimation = AnimationParadigm.getNextAnimationExit(getAnimationParadigm());
+
         startActivityForResult(new Intent(getApplicationContext(), FileFinderActivity.class)
                 .putExtra(FileFinderActivity.LOAD_INFO_PARAM, sideLoadInformation), 0);
-        onBackPressed();
+        overridePendingTransition(enterAnimation, closeAnimation);
     }
 
     private void startStorageLoadAction(){
@@ -119,14 +123,12 @@ public class SideLoadActivity extends BaseActivity implements SideLoadTypeChoosi
 
     private void finishWithFile(Uri fileUri){
 
-        File file = new File(fileUri.getPath());
-
-        if(sideLoadInformation.fileVerifier != null && sideLoadInformation.fileVerifier.fileIsValid(FileUtilities.getBytesFromFile(file))){
-            showFailureAlert();
+        if(sideLoadInformation.fileVerifier != null && sideLoadInformation.fileVerifier.fileIsValid(fileUri)){
+            setResult(0, new Intent(getApplicationContext(), SideLoadActivity.class).setData(fileUri));
+            handleBack();
         }
         else {
-            setResult(0, new Intent(getApplicationContext(), SideLoadActivity.class).setData(Uri.fromFile(file)));
-            handleBack();
+            showFailureAlert();
         }
     }
 
