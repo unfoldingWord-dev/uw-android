@@ -332,7 +332,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         TextView item = (TextView) convertView.findViewById(R.id.group_title);
         item.setTypeface(null, Typeface.BOLD);
         LanguageLocale languageLocale = LanguageLocale.getLocalForKey(language.getLanguageAbbreviation(), DaoDBHelper.getDaoSession(getContext()));
-        item.setText(languageLocale.getLanguageName());
+        item.setText((languageLocale != null)? languageLocale.getLanguageName() : "");
 
         return convertView;
     }
