@@ -7,22 +7,21 @@
         android:layout_alignParentTop="true"
         android:id="@+id/myViewPager"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_bar_layout">
+        android:layout_height="match_parent">
 
     </android.support.v4.view.ViewPager>
 
 
-    <include
-        android:id="@+id/bottom_bar_layout"
-        layout="@layout/reading_bottom_bar"
-        />
+    <!--<include-->
+        <!--android:id="@+id/bottom_bar_layout"-->
+        <!--layout="@layout/tab_bar"-->
+        <!--/>-->
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:id="@+id/bottom_marker_layout"
-        android:layout_alignParentBottom="true"
-        android:background="#0000">
-    </FrameLayout>
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1px"-->
+        <!--android:id="@+id/bottom_marker_layout"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="#0000">-->
+    <!--</FrameLayout>-->
 </RelativeLayout>

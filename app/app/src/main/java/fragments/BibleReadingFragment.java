@@ -8,34 +8,29 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import activity.UWBaseActivity;
 import activity.reading.BaseReadingActivity;
 import adapters.ReadingPagerAdapter;
-import model.SharingHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
-import view.ReadingBottomBarViewGroup;
 import view.ReadingDoubleTapHandler;
 
 /**
  * Created by PJ Fechner
  * Fragment to handle the display of the text
  */
-public class BibleReadingFragment extends Fragment implements ReadingBottomBarViewGroup.BottomBarListener,
+public class BibleReadingFragment extends Fragment implements
         ReadingPagerAdapter.ReadingPagerAdapterListener, ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener {
 
 //    private static final String TAG = "BibleReadingFragment";
     private static final String IS_SECONDARY_PARAM = "IS_SECONDARY_PARAM";
 
-    private ReadingBottomBarViewGroup bottomBar;
     private ReadingPagerAdapter adapter;
     private ViewPager readingViewPager;
 
@@ -100,8 +95,8 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     }
 
     private void setupViews(View view){
-        bottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout),
-                currentBook.getVersion(), this);
+//        bottomBar = new TabBar(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout),
+//                currentBook.getVersion(), this);
         setupPager(view);
     }
 
@@ -145,7 +140,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
     //region updating
 
     private void updateVersionInfo(){
-        this.bottomBar.updateWithVersion(currentBook.getVersion());
+//        this.bottomBar.updateWithVersion(currentBook.getVersion());
     }
 
     private void scrolled(int position){
@@ -207,7 +202,7 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
      * @param hide true if the bar should be hidden
      */
     public void setBottomBarHidden(boolean hide){
-        bottomBar.setHidden(hide);
+//        bottomBar.setHidden(hide);
     }
 
     //endregion
@@ -244,37 +239,37 @@ public class BibleReadingFragment extends Fragment implements ReadingBottomBarVi
 
     //region BottomBarListener
 
-    @Override
-    public void checkingLevelPressed() {
-        listener.showCheckingLevel(currentBook.getVersion());
-    }
-
-    @Override
-    public void shareButtonClicked() {
-
-        ((UWBaseActivity)getActivity()).goToNewActivity(SharingHelper.getIntentForSharing(getContext(), currentBook.getVersion()));
-
-//        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
-//            @Override
-//            public void sideLoadingSucceeded(String response) {
-//            }
-//            @Override
-//            public void sideLoadingFailed(String errorMessage) {
-//            }
-//            @Override
-//            public boolean confirmSideLoadingType(SideLoadType type) {
-//                return true;
-//            }
-//        });
-//        Version currentVersion = currentBook.getVersion();
-//        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
-//                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
-    }
-
-    @Override
-    public void versionButtonClicked() {
-        listener.clickedChooseVersion(isSecondary);
-    }
+//    @Override
+//    public void checkingLevelPressed() {
+//        listener.showCheckingLevel(currentBook.getVersion());
+//    }
+//
+//    @Override
+//    public void shareButtonClicked() {
+//
+//        ((UWBaseActivity)getActivity()).goToNewActivity(SharingHelper.getIntentForSharing(getContext(), currentBook.getVersion()));
+//
+////        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
+////            @Override
+////            public void sideLoadingSucceeded(String response) {
+////            }
+////            @Override
+////            public void sideLoadingFailed(String errorMessage) {
+////            }
+////            @Override
+////            public boolean confirmSideLoadingType(SideLoadType type) {
+////                return true;
+////            }
+////        });
+////        Version currentVersion = currentBook.getVersion();
+////        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
+////                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
+//    }
+//
+//    @Override
+//    public void versionButtonClicked() {
+//        listener.clickedChooseVersion(isSecondary);
+//    }
 
     //endregion
 }

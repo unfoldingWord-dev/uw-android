@@ -23,7 +23,6 @@ import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
-import view.ReadingBottomBarViewGroup;
 import view.ReadingDoubleTapHandler;
 
 /**
@@ -39,8 +38,8 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
 
     private ReadingFragmentListener listener;
     private StoryPagerAdapter adapter;
-    private ReadingBottomBarViewGroup mainBottomBar;
-    private ReadingBottomBarViewGroup secondBottomBar;
+//    private TabBar mainBottomBar;
+//    private TabBar secondBottomBar;
 
     private RelativeLayout baseLayout;
 
@@ -106,59 +105,59 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     private void setupViews(View view){
         setupBottomBars(view);
         setupPager(view);
-        secondBarView = view.findViewById(R.id.story_bottom_bar_second_layout);
+//        secondBarView = view.findViewById(R.id.story_bottom_bar_second_layout);
         setBottomBarsDiglot(false);
         adapter.setIsLandscape(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
     private void updateVersionInfo(){
 
-        if(mainChapter != null && secondChapter != null){
-            this.mainBottomBar.updateWithVersion(mainChapter.getBook().getVersion());
-            this.secondBottomBar.updateWithVersion(secondChapter.getBook().getVersion());
-        }
+//        if(mainChapter != null && secondChapter != null){
+//            this.mainBottomBar.updateWithVersion(mainChapter.getBook().getVersion());
+//            this.secondBottomBar.updateWithVersion(secondChapter.getBook().getVersion());
+//        }
     }
 
     private void setupBottomBars(View view){
 
         Version mainVersion = (mainChapter != null)? mainChapter.getBook().getVersion() : null;
 
-        mainBottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_main_layout),
-                mainVersion, new ReadingBottomBarViewGroup.BottomBarListener() {
-            @Override
-            public void checkingLevelPressed() {
-                listener.showCheckingLevel(mainChapter.getBook().getVersion());
-            }
-
-            @Override
-            public void versionButtonClicked() {
-                listener.clickedChooseVersion(false);
-            }
-
-            @Override
-            public void shareButtonClicked() {
-                shareVersion(mainChapter.getBook().getVersion());
-            }
-        });
+//        mainBottomBar = new TabBar(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_main_layout),
+//                mainVersion, new TabBar.BottomBarListener() {
+//            @Override
+//            public void checkingLevelPressed() {
+//                listener.showCheckingLevel(mainChapter.getBook().getVersion());
+//            }
+//
+//            @Override
+//            public void versionButtonClicked() {
+//                listener.clickedChooseVersion(false);
+//            }
+//
+//            @Override
+//            public void shareButtonClicked() {
+//                shareVersion(mainChapter.getBook().getVersion());
+//            }
+//        });
 
         Version secondVersion = (secondChapter != null)? secondChapter.getBook().getVersion() : null;
-        secondBottomBar = new ReadingBottomBarViewGroup(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_second_layout),
-                secondVersion, new ReadingBottomBarViewGroup.BottomBarListener() {
-            @Override
-            public void checkingLevelPressed() {
-                listener.showCheckingLevel(secondChapter.getBook().getVersion());
-            }
-
-            @Override
-            public void versionButtonClicked() {
-                listener.clickedChooseVersion(true);
-            }
-
-            @Override
-            public void shareButtonClicked() {
-                shareVersion(secondChapter.getBook().getVersion());
-            }
-        });
+//        secondBottomBar = new TabBar(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_second_layout),
+//                secondVersion, new TabBar.BottomBarListener() {
+//            @Override
+//            public void checkingLevelPressed() {
+//                listener.showCheckingLevel(secondChapter.getBook().getVersion());
+//            }
+//
+//            @Override
+//            public void versionButtonClicked() {
+//                listener.clickedChooseVersion(true);
+//            }
+//
+//            @Override
+//            public void shareButtonClicked() {
+//                shareVersion(secondChapter.getBook().getVersion());
+//            }
+//        });
     }
 
     private void setupPager(View view){
@@ -237,21 +236,21 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     }
 
     public void setBottomBarsDiglot(boolean showing){
-        secondBarView.findViewById(R.id.story_bottom_bar_second_layout).setVisibility((showing) ? View.VISIBLE : View.GONE);
+//        secondBarView.findViewById(R.id.story_bottom_bar_second_layout).setVisibility((showing) ? View.VISIBLE : View.GONE);
     }
 
     public void setBottomBarHidden(boolean hide){
 
-        LinearLayout layout = (LinearLayout) baseLayout.findViewById(R.id.stories_bottom_bar_layout);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
-        if(hide){
-            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
-        }
-        else{
-            params.removeRule(RelativeLayout.BELOW);
-        }
-
-        layout.setLayoutParams(params);
+//        LinearLayout layout = (LinearLayout) baseLayout.findViewById(R.id.stories_bottom_bar_layout);
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
+//        if(hide){
+//            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
+//        }
+//        else{
+//            params.removeRule(RelativeLayout.BELOW);
+//        }
+//
+//        layout.setLayoutParams(params);
     }
 
     public void setOrientationAsLandscape(boolean isLandscape){

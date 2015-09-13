@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.unfoldingword.mobile.R;
@@ -29,7 +30,7 @@ import fragments.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
+import view.UWTabBar;
 
 /**
  * Created by PJ Fechner on 5/12/14.
@@ -52,6 +53,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected FrameLayout secondaryReadingLayout;
     protected View errorView;
     protected Version version;
+    private UWTabBar UWTabBar;
 
     private BroadcastReceiver receiver;
 
@@ -103,6 +105,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(!loadData()){
             versionSelectionButtonClicked(false);
         }
+        setupTabBar();
     }
 
     @Override
@@ -186,18 +189,21 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
-//    private void setAnimated(){
-//        if(android.os.Build.VERSION.SDK_INT > 15) {
-//            LayoutTransition transition = new LayoutTransition();
-//            transition.enableTransitionType(LayoutTransition.CHANGING);
-//            transition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
-//            transition.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
-//            transition.enableTransitionType(LayoutTransition.APPEARING);
-//            transition.enableTransitionType(LayoutTransition.DISAPPEARING);
-//            transition.setDuration(300);
-//            ((LinearLayout) findViewById(R.id.reading_layout)).setLayoutTransition(transition);
-//        }
-//    }
+    private void setupTabBar(){
+
+        int[] images = {R.drawable.audio_normal, R.drawable.video_normal, R.drawable.font_normal, R.drawable.diglot_normal, R.drawable.share_normal};
+
+        UWTabBar = new UWTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.tab_bar_view), new UWTabBar.BottomBarListener() {
+            @Override
+            public void buttonPressedAtIndex(int index) {
+                tabBarPressed(index);
+            }
+        });
+    }
+
+    private void tabBarPressed(int index){
+
+    }
 
     protected void setupViews(){
         readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
