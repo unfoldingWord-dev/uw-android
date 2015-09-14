@@ -85,10 +85,10 @@ public class UWTabBar {
         setHidden(!hidden);
     }
 
-    public void setHidden(boolean hide){
+    public void setHidden(boolean isHidden){
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) parentLayout.getLayoutParams();
-        if(hide){
+        if(isHidden){
             params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
         }
         else{

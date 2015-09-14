@@ -27,9 +27,11 @@ import fragments.ReadingFragmentListener;
 import fragments.StoryChaptersFragment;
 import fragments.VersionInfoFragment;
 import fragments.VersionSelectionFragment;
+import model.SharingHelper;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
+import view.ReadingTabBar;
 import view.UWTabBar;
 
 /**
@@ -53,7 +55,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected FrameLayout secondaryReadingLayout;
     protected View errorView;
     protected Version version;
-    private UWTabBar UWTabBar;
+    private ReadingTabBar tabBar;
 
     private BroadcastReceiver receiver;
 
@@ -93,6 +95,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      */
     abstract protected void toggleDiglot();
 
+    /**
+     * @return Version to be shared
+     */
+    abstract protected Version getSharingVersion();
     //endregion
 
     //region Activity Override Methods
@@ -117,7 +123,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         boolean dataIsLoaded = loadData();
         setupReadingVisibility(dataIsLoaded);
         if (dataIsLoaded){
-            getToolbar().setRightImageResource(R.drawable.diglot_icon);
+//            getToolbar().setRightImageResource(R.drawable.diglot_icon);
             updateViews();
         }
         else{
@@ -193,7 +199,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
         int[] images = {R.drawable.audio_normal, R.drawable.video_normal, R.drawable.font_normal, R.drawable.diglot_normal, R.drawable.share_normal};
 
-        UWTabBar = new UWTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.tab_bar_view), new UWTabBar.BottomBarListener() {
+        tabBar = new ReadingTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.tab_bar_view), new UWTabBar.BottomBarListener() {
             @Override
             public void buttonPressedAtIndex(int index) {
                 tabBarPressed(index);
@@ -203,6 +209,36 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void tabBarPressed(int index){
 
+        switch (index){
+            case 0:{
+                tabBar.showAudioPlayer();
+                break;
+            }
+            case 1:{
+                //video
+                break;
+            }
+            case 2:{
+                tabBar.showTextSizeChooser();
+                break;
+            }
+            case 3:{
+                toggleDiglot();
+                break;
+            }
+            case 4:{
+                shareVersion();
+                break;
+            }
+        }
+    }
+
+    private void shareVersion(){
+
+        Version sharingVersion = getSharingVersion();
+        if(sharingVersion != null) {
+            goToNewActivity(SharingHelper.getIntentForSharing(getApplicationContext(), sharingVersion));
+        }
     }
 
     protected void setupViews(){
@@ -212,6 +248,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void registerReceivers(){
+
         receiver = new BroadcastReceiver(){
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -376,18 +413,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     //region ReadingFragmentListener
 
     @Override
-    public void clickedChooseVersion(boolean isSecondReadingView) {
-        versionSelectionButtonClicked(isSecondReadingView);
-    }
-
-    @Override
-    public void showCheckingLevel(Version version) {
-        goToCheckingLevelView(version);
-    }
-
-    @Override
-    public boolean toggleNavBar() {
+    public boolean toggleHidden() {
         boolean isHidden = getToolbar().toggleHidden();
+        tabBar.setHidden(isHidden);
         return isHidden;
     }
 

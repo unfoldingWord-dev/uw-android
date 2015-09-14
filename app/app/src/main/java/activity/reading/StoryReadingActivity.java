@@ -11,6 +11,7 @@ import model.DaoDBHelper;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
+import model.daoModels.Version;
 import utils.UWPreferenceDataAccessor;
 
 /**
@@ -33,6 +34,11 @@ public class StoryReadingActivity extends BaseReadingActivity {
     @Override
     protected String getChapterLabelText() {
         return (currentChapter != null) ? currentChapter.getTitle() : null;
+    }
+
+    @Override
+    protected Version getSharingVersion() {
+        return (currentChapter == null)? null : currentChapter.getBook().getVersion();
     }
 
     @Override
@@ -98,8 +104,8 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    public boolean toggleNavBar() {
-        boolean isHidden = super.toggleNavBar();
+    public boolean toggleHidden() {
+        boolean isHidden = super.toggleHidden();
         readingFragment.setBottomBarHidden(isHidden);
         return isHidden;
     }

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/primary"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="50dp"
     android:padding="0dp"
     android:layout_margin="0dp"
     android:contentInsetStart="0dp"
@@ -30,7 +30,8 @@
             android:layout_alignParentStart="true"
             android:scaleType="centerInside"
             android:src="@drawable/back_button_light"
-            android:background="@drawable/basic_button_selector"/>
+            android:background="@drawable/basic_button_selector"
+            />
 
         <LinearLayout
             android:id="@+id/toolbar_middle_button_layout"
@@ -46,16 +47,6 @@
             android:layout_toRightOf="@+id/toolbar_left_button"
             android:layout_toEndOf="@+id/toolbar_left_button"
             >
-
-            <ImageView
-                android:id="@+id/toolbar_logo_image"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/uw_transparent"
-                android:visibility="visible"
-                />
 
             <TextView
                 android:gravity="center"
@@ -74,39 +65,13 @@
                 />
 
             <ImageView
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginStart="3dp"
                 android:id="@+id/toolbar_title_button_image"
-                android:layout_width="20dp"
-                android:layout_height="15dp"
+                android:layout_width="16dp"
+                android:layout_height="12dp"
                 android:src="@drawable/quickaction_arrow_down"
                 android:layout_gravity="center_vertical"
-                android:visibility="visible"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/toolbar_right_button_layout"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:clickable="true"
-            android:background="@drawable/language_button_click"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:paddingRight="5dp"
-            android:paddingEnd="5dp"
-            android:paddingLeft="5dp"
-            android:paddingStart="5dp">
-
-            <ImageView
-                android:layout_gravity="center_vertical"
-                android:id="@+id/toolbar_right_image_button"
-                android:paddingRight="@dimen/download_icon_padding"
-                android:paddingLeft="@dimen/download_icon_padding"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:scaleType="centerInside"
-                android:src="@drawable/download_icon"
                 android:visibility="visible"/>
         </LinearLayout>
     </RelativeLayout>

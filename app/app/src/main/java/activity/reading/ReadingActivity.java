@@ -13,6 +13,7 @@ import fragments.BibleReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
+import model.daoModels.Version;
 import utils.UWPreferenceDataAccessor;
 
 /**
@@ -37,12 +38,17 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    public boolean toggleNavBar() {
-        boolean isHidden = super.toggleNavBar();
+    public boolean toggleHidden() {
+        boolean isHidden = super.toggleHidden();
 
         readingFragment.setBottomBarHidden(isHidden);
         secondaryReadingFragment.setBottomBarHidden(isHidden);
         return isHidden;
+    }
+
+    @Override
+    protected Version getSharingVersion() {
+        return (currentChapter == null)? null : currentChapter.getBook().getVersion();
     }
 
     @Override

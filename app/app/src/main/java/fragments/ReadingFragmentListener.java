@@ -7,7 +7,5 @@ import model.daoModels.Version;
  */
 public interface ReadingFragmentListener {
 
-    boolean toggleNavBar();
-    void showCheckingLevel(Version version);
-    void clickedChooseVersion(boolean isSecondReadingView);
+    boolean toggleHidden();
 }

@@ -227,7 +227,7 @@ public class BibleReadingFragment extends Fragment implements
     public boolean doubleTapWasRegistered() {
 
         if (listener != null) {
-            listener.toggleNavBar();
+            listener.toggleHidden();
             return true;
         }
         else{
