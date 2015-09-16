@@ -16,6 +16,7 @@
         android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/tab_bar_view"
         android:orientation="horizontal"
         android:id="@+id/reading_layout">
 
@@ -66,6 +67,7 @@
     </RelativeLayout>
 
     <FrameLayout
+        android:background="#ddd"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:id="@+id/tab_bar_view"
@@ -84,7 +86,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/app_bar"
+        layout="@layout/app_bar_reading"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"

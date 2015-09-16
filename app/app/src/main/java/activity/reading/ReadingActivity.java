@@ -38,6 +38,19 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
+    protected String getMainVersionText() {
+        updateChapters();
+        return (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
+    }
+
+    @Override
+    protected String getSecondaryVersionText() {
+
+        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), true);
+        return (secondaryChapter != null)? secondaryChapter.getBook().getVersion().getTitle() : "";
+    }
+
+    @Override
     public boolean toggleHidden() {
         boolean isHidden = super.toggleHidden();
 
@@ -122,7 +135,7 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected void toggleDiglot(){
+    protected boolean toggleDiglot(){
 
         LinearLayout.LayoutParams mainReadingParams = (LinearLayout.LayoutParams) readingLayout.getLayoutParams();
         LinearLayout.LayoutParams secondaryReadingParams = (LinearLayout.LayoutParams) secondaryReadingLayout.getLayoutParams();
@@ -134,6 +147,7 @@ public class ReadingActivity extends BaseReadingActivity {
         readingLayout.setLayoutParams(mainReadingParams);
         secondaryReadingLayout.setLayoutParams(secondaryReadingParams);
         secondaryReadingLayout.setVisibility((isDiglot)? View.GONE : View.VISIBLE);
+        return !isDiglot;
     }
 }
 

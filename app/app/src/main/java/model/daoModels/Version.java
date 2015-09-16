@@ -334,7 +334,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
     // region convenience methods
 
     public String getTitle(){
-        return getName() + " (" + getLanguage().getLanguageAbbreviation() + ")";
+        return getSlug().substring(0, 3).toUpperCase() + " (" + getLanguage().getLanguageAbbreviation() + ")";
     }
 
     /**

@@ -45,8 +45,20 @@ public class StoryReadingActivity extends BaseReadingActivity {
     protected void scrolled() {
         boolean isLoaded = loadData();
         if (isLoaded){
-            updateToolbarTitle();
+            updateToolbar();
         }
+    }
+
+    @Override
+    protected String getMainVersionText() {
+        loadData();
+        return  (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
+    }
+
+    @Override
+    protected String getSecondaryVersionText() {
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), true);
+        return (page != null)? page.getStoriesChapter().getBook().getVersion().getTitle() : "";
     }
 
     @Override
@@ -98,9 +110,10 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected void toggleDiglot() {
+    protected boolean toggleDiglot() {
         isDiglot = !isDiglot;
         readingFragment.setDiglotShowing(isDiglot);
+        return isDiglot;
     }
 
     @Override

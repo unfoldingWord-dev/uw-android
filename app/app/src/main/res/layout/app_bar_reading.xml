@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/primary"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     android:padding="0dp"
     android:layout_margin="0dp"
     android:contentInsetStart="0dp"
@@ -15,42 +15,44 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="wrap_content"
+        android:visibility="visible">
 
         <ImageButton
             android:contentDescription="@string/content_description_back_button"
-            android:id="@+id/toolbar_left_button"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:padding="@dimen/app_bar_button_padding"
+            android:id="@+id/reading_bar_back_button"
+            android:paddingLeft="@dimen/app_bar_button_padding"
+            android:paddingRight="@dimen/app_bar_button_padding"
             android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
+            android:layout_height="50dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:scaleType="centerInside"
             android:src="@drawable/back_button_light"
             android:background="@drawable/basic_button_selector"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
             />
 
         <LinearLayout
-            android:id="@+id/toolbar_middle_button_layout"
+            android:id="@+id/reading_toolbar_chapter_button"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="25dp"
             android:clickable="true"
             android:background="@drawable/language_button_click"
-            android:layout_centerInParent="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:layout_toLeftOf="@+id/toolbar_right_button_layout"
-            android:layout_toStartOf="@+id/toolbar_right_button_layout"
-            android:layout_toRightOf="@+id/toolbar_left_button"
-            android:layout_toEndOf="@+id/toolbar_left_button"
+            android:paddingLeft="3dp"
+            android:paddingStart="3dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
             >
 
             <TextView
                 android:gravity="center"
-                android:id="@+id/toolbar_title"
+                android:id="@+id/reading_toolbar_chapter_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
@@ -65,15 +67,131 @@
                 />
 
             <ImageView
-                android:layout_marginLeft="3dp"
-                android:layout_marginStart="3dp"
-                android:id="@+id/toolbar_title_button_image"
-                android:layout_width="16dp"
-                android:layout_height="12dp"
+                android:paddingLeft="0dp"
+                android:paddingStart="0dp"
+                android:paddingRight="5dp"
+                android:paddingEnd="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_width="12dp"
+                android:layout_height="9dp"
                 android:src="@drawable/quickaction_arrow_down"
-                android:layout_gravity="center_vertical"
-                android:visibility="visible"/>
+                android:layout_gravity="center_vertical"/>
         </LinearLayout>
+
+        <LinearLayout
+
+            android:id="@+id/reading_toolbar_main_version_button"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:clickable="true"
+            android:background="@drawable/language_button_click"
+            android:gravity="center"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="3dp"
+            android:paddingStart="3dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp">
+
+            <TextView
+                android:gravity="center"
+                android:id="@+id/reading_toolbar_main_version_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="UWB"
+                android:textStyle="normal"
+                android:textAllCaps="false"
+                android:textSize="@dimen/actionbar_title_font_size"
+                android:textColor="#fff"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                />
+
+            <ImageView
+                android:paddingLeft="0dp"
+                android:paddingStart="0dp"
+                android:paddingRight="5dp"
+                android:paddingEnd="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_width="12dp"
+                android:layout_height="9dp"
+                android:src="@drawable/quickaction_arrow_down"
+                android:layout_gravity="center_vertical"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/center_marker"
+            android:background="#0000">
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:id="@+id/reading_toolbar_secondary_version_button"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:clickable="true"
+            android:background="@drawable/language_button_click"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:layout_below="@+id/reading_toolbar_chapter_button"
+            android:layout_toLeftOf="@+id/reading_toolbar_right_button_placeholder"
+            android:layout_toStartOf="@+id/reading_toolbar_right_button_placeholder"
+            android:layout_toRightOf="@+id/center_marker"
+            android:layout_toEndOf="@+id/center_marker"
+            >
+
+            <TextView
+                android:gravity="center"
+                android:id="@+id/reading_toolbar_secondary_version_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="Galations 3"
+                android:textStyle="normal"
+                android:textAllCaps="false"
+                android:textSize="@dimen/actionbar_title_font_size"
+                android:textColor="#fff"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                />
+
+            <ImageView
+                android:paddingLeft="0dp"
+                android:paddingStart="0dp"
+                android:paddingRight="5dp"
+                android:paddingEnd="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_width="12dp"
+                android:layout_height="9dp"
+                android:src="@drawable/quickaction_arrow_down"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:visibility="invisible"
+            android:id="@+id/reading_toolbar_right_button_placeholder"
+            android:padding="@dimen/app_bar_button_padding"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/basic_button_selector"
+            />
     </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>

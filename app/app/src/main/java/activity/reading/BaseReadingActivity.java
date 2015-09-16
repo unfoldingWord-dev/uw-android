@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -32,7 +33,9 @@ import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
 import view.ReadingTabBar;
+import view.UWReadingToolbarViewGroup;
 import view.UWTabBar;
+import view.UWToolbarViewGroup;
 
 /**
  * Created by PJ Fechner on 5/12/14.
@@ -41,7 +44,8 @@ import view.UWTabBar;
 public abstract class BaseReadingActivity extends UWBaseActivity implements
         VersionSelectionFragment.VersionSelectionFragmentListener,
         ChapterSelectionFragmentListener,
-        ReadingFragmentListener
+        ReadingFragmentListener,
+        UWReadingToolbarViewGroup.UWReadingToolbarListener
 {
     private static final String TAG = "ReadingActivity";
 
@@ -57,8 +61,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected Version version;
     private ReadingTabBar tabBar;
 
+    private UWReadingToolbarViewGroup readingToolbar;
     private BroadcastReceiver receiver;
-
 
     //region Abstract Methods
 
@@ -93,12 +97,23 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     /**
      * Toggle the diglot interface
      */
-    abstract protected void toggleDiglot();
+    abstract protected boolean toggleDiglot();
 
     /**
      * @return Version to be shared
      */
     abstract protected Version getSharingVersion();
+
+    /**
+     * @return Text for main version label
+     */
+    abstract protected String getMainVersionText();
+
+    /**
+     * Text for secondary version label
+     * @return
+     */
+    abstract protected String getSecondaryVersionText();
     //endregion
 
     //region Activity Override Methods
@@ -112,12 +127,38 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             versionSelectionButtonClicked(false);
         }
         setupTabBar();
+        setupToolbar();
+    }
+
+    public void setupToolbar(){
+        readingToolbar = new UWReadingToolbarViewGroup((Toolbar) findViewById(R.id.toolbar), this, this);
+        updateToolbar();
+    }
+
+    @Override
+    public void backButtonClicked() {
+        handleBack();
+    }
+
+    @Override
+    public void chaptersButtonClicked() {
+        goToChapterActivity();
+    }
+
+    @Override
+    public void mainVersionButtonClicked() {
+        versionSelectionButtonClicked(false);
+    }
+
+    @Override
+    public void secondaryVersionButtonClicked() {
+        versionSelectionButtonClicked(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setupToolbar(false);
+        setupToolbar();
         setupViews();
 
         boolean dataIsLoaded = loadData();
@@ -127,7 +168,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             updateViews();
         }
         else{
-            getToolbar().setRightImageVisible(false);
+//            getToolbar().setRightImageVisible(false);
         }
         registerReceivers();
     }
@@ -223,7 +264,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 break;
             }
             case 3:{
-                toggleDiglot();
+                readingToolbar.setHasTwoVersions(toggleDiglot());
+                updateToolbar();
                 break;
             }
             case 4:{
@@ -256,7 +298,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 if (intent.getAction().equals(SCROLLED_PAGE)) {
 //                    if(intent.getExtras().containsKey(ReadingScrollNotifications.BIBLE_CHAPTER_PARAM)
 //                            || intent.getExtras().containsKey(ReadingScrollNotifications.STORY_PAGE_PARAM)) {
-                        scrolled();
+                    scrolled();
+                    updateToolbar();
 //                    }
                 }
             }
@@ -278,12 +321,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     protected void updateToolbar() {
-        updateToolbarTitle();
-    }
-
-    protected void updateToolbarTitle(){
-        String title = getChapterLabelText();
-        getToolbar().setTitle(title, true);
+        readingToolbar.setChapterText(getChapterLabelText());
+        readingToolbar.setMainVersionText(getMainVersionText());
+        readingToolbar.setSecondaryVersionText(getSecondaryVersionText());
     }
 
     //endregion
@@ -414,9 +454,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public boolean toggleHidden() {
-        boolean isHidden = getToolbar().toggleHidden();
-        tabBar.setHidden(isHidden);
-        return isHidden;
+        boolean isMini = readingToolbar.toggleIsMinni();
+        tabBar.setHidden(isMini);
+        return isMini;
     }
 
     //endregion
