@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="50dp"
+    android:background="#fff">
+
+
+
+    <ImageButton
+        android:id="@+id/audio_player_play_pause_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/play"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"/>
+
+    <SeekBar
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:thumb="@drawable/audiohandle"
+        android:progress="0"
+        android:progressTint="@color/progress_color"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_centerVertical="true"
+        android:id="@+id/audio_player_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_toRightOf="@+id/audio_player_play_pause_button"
+        android:layout_toEndOf="@+id/audio_player_play_pause_button"
+        />
+
+    <TextView
+        android:gravity="start"
+        android:textColor="#000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="1:22"
+        android:id="@+id/audio_player_current_time_text_view"
+        android:layout_above="@+id/audio_player_progress"
+        android:layout_alignLeft="@+id/audio_player_progress"
+        android:layout_alignStart="@+id/audio_player_progress" />
+
+    <TextView
+        android:gravity="end"
+        android:textColor="#000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="2:22"
+        android:id="@+id/audio_player_end_time_text_view"
+        android:layout_above="@+id/audio_player_progress"
+        android:layout_alignRight="@+id/audio_player_progress"
+        android:layout_alignEnd="@+id/audio_player_progress" />
+
+</RelativeLayout>

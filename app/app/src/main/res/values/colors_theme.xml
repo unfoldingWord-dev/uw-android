@@ -9,4 +9,6 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
+    <color name="progress_color">#00C3FF</color>
+
 </resources>

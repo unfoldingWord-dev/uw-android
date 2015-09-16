@@ -43,6 +43,18 @@ public class UWTabBar {
         setupViews(buttonImages);
     }
 
+    public Context getContext() {
+        return context;
+    }
+
+    public ViewGroup getParentLayout() {
+        return parentLayout;
+    }
+
+    public LinearLayout getBaseLayout() {
+        return baseLayout;
+    }
+
     private void setupViews(int[] buttons){
 
         setupBaseLayout();

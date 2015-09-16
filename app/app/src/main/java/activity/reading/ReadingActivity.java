@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2015 unfoldingWord
+ * http://creativecommons.org/licenses/MIT/
+ * See LICENSE file for details.
+ * Contributors:
+ * PJ Fechner <pj@actsmedia.com>
+ */
+
 package activity.reading;
 
 
@@ -16,10 +24,6 @@ import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataAccessor;
 
-/**
- * Created by PJ Fechner on 5/12/14.
- * Activity for reading Bible Chapters
- */
 public class ReadingActivity extends BaseReadingActivity {
     static private final String TAG = "ReadingActivity";
 
