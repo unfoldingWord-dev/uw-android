@@ -209,18 +209,18 @@ public class UWReadingToolbarViewGroup {
         }
         else if(!isMinni){
 
-            RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(50));
+            RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
             chapterParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             chapterLayout.setLayoutParams(chapterParams);
 
-            RelativeLayout.LayoutParams mainVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(50));
+            RelativeLayout.LayoutParams mainVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
             mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, rightButtonPlaceholder.getId());
             mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, centerMarker.getId());
             mainVersionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
             mainVersionLayout.setLayoutParams(mainVersionParams);
 
-            RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(50));
+            RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
             secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, leftButton.getId());
             secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, centerMarker.getId());
             secondaryVersionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
@@ -238,29 +238,29 @@ public class UWReadingToolbarViewGroup {
         }
         else{
 
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            layoutParams.height = getSizeForDp(25);
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            chapterLayout.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());
+            chapterParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            chapterParams.height = getSizeForDp(25);
+            chapterParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            chapterLayout.setLayoutParams(chapterParams);
 
-            layoutParams = new RelativeLayout.LayoutParams(mainVersionLayout.getLayoutParams());
-            layoutParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.ALIGN_PARENT_RIGHT);
-            layoutParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, chapterLayout.getId());
-            layoutParams.height = getSizeForDp(25);
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            mainVersionLayout.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams mainVersionParams = new RelativeLayout.LayoutParams(mainVersionLayout.getLayoutParams());
+            mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.ALIGN_PARENT_RIGHT);
+            mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, chapterLayout.getId());
+            mainVersionParams.height = getSizeForDp(25);
+            mainVersionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            mainVersionLayout.setLayoutParams(mainVersionParams);
 
-            layoutParams = new RelativeLayout.LayoutParams(secondaryVersionLayout.getLayoutParams());
-            layoutParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_START : RelativeLayout.ALIGN_PARENT_LEFT, leftButton.getId());
-            layoutParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, chapterLayout.getId());
-            layoutParams.height = getSizeForDp(25);
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            secondaryVersionLayout.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(secondaryVersionLayout.getLayoutParams());
+            secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_START : RelativeLayout.ALIGN_PARENT_LEFT, leftButton.getId());
+            secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, chapterLayout.getId());
+            secondaryVersionParams.height = getSizeForDp(25);
+            secondaryVersionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            secondaryVersionLayout.setLayoutParams(secondaryVersionParams);
 
             ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
-            toolbarParams.height = getSizeForDp(50);
+            toolbarParams.height = getSizeForDp(25);
             toolbar.setLayoutParams(toolbarParams);
 
             secondaryVersionLayout.setVisibility(View.VISIBLE);
