@@ -51,15 +51,6 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    public boolean toggleHidden() {
-        boolean isHidden = super.toggleHidden();
-
-        readingFragment.setBottomBarHidden(isHidden);
-        secondaryReadingFragment.setBottomBarHidden(isHidden);
-        return isHidden;
-    }
-
-    @Override
     protected Version getSharingVersion() {
         return (currentChapter == null)? null : currentChapter.getBook().getVersion();
     }
@@ -137,17 +128,18 @@ public class ReadingActivity extends BaseReadingActivity {
     @Override
     protected boolean toggleDiglot(){
 
+        boolean shouldBeDiglot = super.toggleDiglot();
+
         LinearLayout.LayoutParams mainReadingParams = (LinearLayout.LayoutParams) readingLayout.getLayoutParams();
         LinearLayout.LayoutParams secondaryReadingParams = (LinearLayout.LayoutParams) secondaryReadingLayout.getLayoutParams();
-        boolean isDiglot = (secondaryReadingParams.weight > .1f);
 
-        mainReadingParams.weight = (isDiglot)? 1.0f : 0.4f;
-        secondaryReadingParams.weight = (isDiglot)? 0.0f : 0.4f;
+        mainReadingParams.weight = (shouldBeDiglot)? 0.4f : 1.0f;
+        secondaryReadingParams.weight = (shouldBeDiglot)? 0.4f : 0.0f;
 
         readingLayout.setLayoutParams(mainReadingParams);
         secondaryReadingLayout.setLayoutParams(secondaryReadingParams);
-        secondaryReadingLayout.setVisibility((isDiglot)? View.GONE : View.VISIBLE);
-        return !isDiglot;
+        secondaryReadingLayout.setVisibility((shouldBeDiglot)? View.VISIBLE : View.GONE);
+        return shouldBeDiglot;
     }
 }
 

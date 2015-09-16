@@ -20,22 +20,6 @@
         android:layout_alignParentBottom="true">
 
         <TextView
-            android:id="@+id/story_main_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="bottom"
-            android:layout_gravity="bottom"
-            android:paddingBottom="2dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textColor="@color/off_white"
-            android:textSize="@dimen/story_reading_text_size"
-            android:textStyle="normal"
-            android:background="@color/clear_black"
-            android:layout_weight="1"
-            />
-
-        <TextView
             android:layout_marginLeft="2dp"
             android:layout_marginStart="2dp"
             android:id="@+id/story_secondary_text_view"
@@ -52,5 +36,22 @@
             android:background="@color/clear_black"
             android:layout_weight="1"
             />
+
+        <TextView
+            android:id="@+id/story_main_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:layout_gravity="bottom"
+            android:paddingBottom="2dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@color/off_white"
+            android:textSize="@dimen/story_reading_text_size"
+            android:textStyle="normal"
+            android:background="@color/clear_black"
+            android:layout_weight="1"
+            />
+
     </LinearLayout>
 </RelativeLayout>

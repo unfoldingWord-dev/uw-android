@@ -24,8 +24,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
     private StoryReadingFragment readingFragment;
     private StoriesChapter currentChapter;
 
-    private boolean isDiglot = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +109,8 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
     @Override
     protected boolean toggleDiglot() {
-        isDiglot = !isDiglot;
+
+        boolean isDiglot = super.toggleDiglot();
         readingFragment.setDiglotShowing(isDiglot);
         return isDiglot;
     }

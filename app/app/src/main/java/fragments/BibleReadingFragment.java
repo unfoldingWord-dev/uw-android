@@ -197,14 +197,6 @@ public class BibleReadingFragment extends Fragment implements
         }
     }
 
-    /**
-     * hides the bottom bar of the reading view
-     * @param hide true if the bar should be hidden
-     */
-    public void setBottomBarHidden(boolean hide){
-//        bottomBar.setHidden(hide);
-    }
-
     //endregion
 
     //region ReadingPagerAdapterListener

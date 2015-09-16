@@ -21,6 +21,17 @@
         android:id="@+id/reading_layout">
 
         <FrameLayout
+            android:layout_marginStart="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/secondary_reading_fragment_frame"
+            android:background="#fff"
+            android:layout_weight="0"
+            android:visibility="gone">
+        </FrameLayout>
+
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/reading_fragment_frame"
@@ -28,16 +39,6 @@
             android:layout_weight="1">
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_marginStart="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/secondary_reading_fragment_frame"
-            android:background="#000"
-            android:layout_weight="0"
-            android:visibility="gone">
-        </FrameLayout>
     </LinearLayout>
 
     <RelativeLayout

@@ -35,7 +35,6 @@ import utils.UWPreferenceDataManager;
 import view.ReadingTabBar;
 import view.UWReadingToolbarViewGroup;
 import view.UWTabBar;
-import view.UWToolbarViewGroup;
 
 /**
  * Created by PJ Fechner on 5/12/14.
@@ -49,11 +48,15 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 {
     private static final String TAG = "ReadingActivity";
 
-    public static final String SCROLLED_PAGE = "SCROLLED_PAGE";
+    private static final String IS_HIDDEN_PARAM = "IS_HIDDEN_PARAM";
+    private static final String IS_DIGLOT_PARAM = "IS_DIGLOT_PARAM";
+
+    public static final String SCROLLED_PAGE = "SCROLLED_PAGE"    ;
 
     private static final String VERSION_FRAGMENT_ID = "VERSION_FRAGMENT_ID";
     private static final String CHAPTER_SELECTION_FRAGMENT_ID = "CHAPTER_SELECTION_FRAGMENT_ID";
     protected static final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
+
 
     protected FrameLayout readingLayout;
     protected FrameLayout secondaryReadingLayout;
@@ -63,6 +66,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private UWReadingToolbarViewGroup readingToolbar;
     private BroadcastReceiver receiver;
+
+    private boolean isMini = false;
+    private boolean isDiglot = false;
 
     //region Abstract Methods
 
@@ -93,11 +99,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      * do any action required when the user scrolls
      */
     abstract protected void scrolled();
-
-    /**
-     * Toggle the diglot interface
-     */
-    abstract protected boolean toggleDiglot();
 
     /**
      * @return Version to be shared
@@ -133,6 +134,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     public void setupToolbar(){
         readingToolbar = new UWReadingToolbarViewGroup((Toolbar) findViewById(R.id.toolbar), this, this);
         updateToolbar();
+    }
+
+    protected boolean toggleDiglot(){
+        isDiglot = !isDiglot;
+        return isDiglot;
     }
 
     @Override
@@ -324,6 +330,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         readingToolbar.setChapterText(getChapterLabelText());
         readingToolbar.setMainVersionText(getMainVersionText());
         readingToolbar.setSecondaryVersionText(getSecondaryVersionText());
+        readingToolbar.setViewState(isMini, isDiglot);
     }
 
     //endregion
@@ -454,7 +461,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public boolean toggleHidden() {
-        boolean isMini = readingToolbar.toggleIsMinni();
+        isMini =  readingToolbar.toggleIsMinni();
         tabBar.setHidden(isMini);
         return isMini;
     }
