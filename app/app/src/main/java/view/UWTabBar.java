@@ -70,7 +70,7 @@ public class UWTabBar {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(baseLayout.getLayoutParams());
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.height = getSizeForDp(40);
         baseLayout.setLayoutParams(params);
 
     }
@@ -129,5 +129,9 @@ public class UWTabBar {
         public void onClick(View v) {
             listener.buttonPressedAtIndex(index);
         }
+    }
+
+    private int getSizeForDp(int sizeInDP){
+        return (int) (sizeInDP * getContext().getResources().getDisplayMetrics().density + 0.5f) ;
     }
 }

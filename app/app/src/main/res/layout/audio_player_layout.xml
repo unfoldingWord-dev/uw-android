@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="50dp"
-    android:background="#aaa">
+    android:background="#fff"
+    android:id="@+id/base_audio_player_layout"
+    android:visibility="gone">
 
 
 
@@ -15,8 +17,8 @@
         android:layout_centerVertical="true"/>
 
     <SeekBar
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:thumb="@drawable/audiohandle"
         android:progress="0"
         android:progressTint="@color/progress_color"
@@ -32,6 +34,8 @@
         />
 
     <TextView
+        android:paddingLeft="5dp"
+        android:paddingRight="0dp"
         android:gravity="start"
         android:textColor="#000"
         android:layout_width="wrap_content"
@@ -44,6 +48,8 @@
         android:layout_alignStart="@+id/audio_player_progress" />
 
     <TextView
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
         android:gravity="end"
         android:textColor="#000"
         android:layout_width="wrap_content"

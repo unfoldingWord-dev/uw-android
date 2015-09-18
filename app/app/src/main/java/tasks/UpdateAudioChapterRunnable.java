@@ -7,26 +7,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import model.UWDatabaseModel;
+import model.daoModels.AudioBook;
+import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
-import model.daoModels.Version;
 import services.UWUpdaterService;
 
 /**
  * Created by PJ Fechner on 6/17/15.
  * Runnable for updating a list of books
  */
-public class UpdateBooksRunnable implements Runnable{
+public class UpdateAudioChapterRunnable implements Runnable{
 
     private static final String TAG = "UpdateBooksRunnable";
     public static final String CHAPTERS_JSON_KEY = "chapters";
-    public static final String MEDIA_JSON_KEY = "media";
-    public static final String AUDIO_JSON_KEY = "audio";
     private JSONArray jsonModels;
     private UWUpdaterService updater;
-    private Version parent;
+    private AudioBook parent;
 
-    public UpdateBooksRunnable(JSONArray jsonModels, UWUpdaterService updater, Version parent) {
+    public UpdateAudioChapterRunnable(JSONArray jsonModels, UWUpdaterService updater, AudioBook parent) {
         this.jsonModels = jsonModels;
         this.updater = updater;
         this.parent = parent;
@@ -53,18 +52,17 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateModel(final JSONObject jsonObject, final boolean isLast){
 
-        new ModelCreator(new Book(), parent, new ModelCreator.ModelCreationListener() {
+        new ModelCreator(new AudioChapter(), parent, new ModelCreator.ModelCreationListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
-                if(model instanceof Book) {
+                if(model instanceof AudioChapter) {
 
-                    UWDatabaseModel shouldContinueUpdate = new BookSaveOrUpdater(updater.getApplicationContext()).start(model);
-//                            Log.d(TAG, "Book created");
-                    if(shouldContinueUpdate != null){
-                        updateChapters((Book) shouldContinueUpdate);
-                        updateMedia(jsonObject, (Book) shouldContinueUpdate);
-                    }
+                    UWDatabaseModel shouldContinueUpdate = new AudioChapterSaveOrUpdater(updater.getApplicationContext()).start(model);
+
+//                    if(shouldContinueUpdate != null){
+//                        updateAudioChapters((AudioBook) shouldContinueUpdate);
+//                    }
                     if(isLast){
                         updater.runnableFinished();
                     }
@@ -73,30 +71,15 @@ public class UpdateBooksRunnable implements Runnable{
         }).execute(jsonObject);
     }
 
-    private void updateChapters(Book parent){
+    private class AudioChapterSaveOrUpdater extends ModelSaveOrUpdater{
 
-        updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
-    }
-
-    private void updateMedia(JSONObject bookJson, Book book){
-
-        try {
-            updater.addRunnable(new UpdateAudioBookRunnable(bookJson.getJSONObject(MEDIA_JSON_KEY).getJSONObject(AUDIO_JSON_KEY), updater, book));
-        }
-        catch (JSONException e ){
-            e.printStackTrace();
-        }
-    }
-
-    private class BookSaveOrUpdater extends ModelSaveOrUpdater{
-
-        public BookSaveOrUpdater(Context context) {
+        public AudioChapterSaveOrUpdater(Context context) {
             super(context);
         }
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return Book.getModelForUniqueSlug(slug, session);
+            return AudioChapter.getModelForUniqueSlug(slug, session);
         }
     }
 

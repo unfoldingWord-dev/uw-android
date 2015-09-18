@@ -20,6 +20,9 @@ public class BookParser extends UWDataParser{
     private static final String SOURCE_URL_JSON_KEY = "src";
     private static final String SIGNATURE_URL_JSON_KEY = "src_sig";
     private static final String TITLE_JSON_KEY = "title";
+    private static final String MEDIA_JSON_KEY = "media";
+    private static final String AUDIO_JSON_KEY = "audio";
+    private static final String VIDEO_JSON_KEY = "video";
 
     public static Book parseBook(JSONObject jsonObject, UWDatabaseModel parent) throws JSONException{
 
@@ -58,7 +61,16 @@ public class BookParser extends UWDataParser{
         jsonModel.put(SOURCE_URL_JSON_KEY, model.getSourceUrl());
         jsonModel.put(SIGNATURE_URL_JSON_KEY, model.getSignatureUrl());
         jsonModel.put(TITLE_JSON_KEY, model.getTitle());
+        jsonModel.put(MEDIA_JSON_KEY, getMediaJson(model));
 
+        return jsonModel;
+    }
+
+    private static JSONObject getMediaJson(Book model) throws JSONException{
+
+        JSONObject jsonModel = new JSONObject();
+        jsonModel.put(AUDIO_JSON_KEY, AudioBookParser.getAudioBookAsJson(model.getAudioBook()));
+        jsonModel.put(VIDEO_JSON_KEY, new JSONObject());
         return jsonModel;
     }
 }

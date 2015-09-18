@@ -9,8 +9,11 @@ import java.util.Date;
 public class UWDataParser {
 
     public static Date getDateFromSecondString(String seconds){
-        long modifiedDate = Long.parseLong(seconds);
-        modifiedDate *= 1000;
-        return new Date(modifiedDate);
+        return getDate(Long.parseLong(seconds));
+    }
+
+    public static Date getDate(long seconds){
+        seconds *= 1000;
+        return new Date(seconds);
     }
 }

@@ -37,6 +37,7 @@ public class BookDao extends AbstractDao<Book, Long> {
         public final static Property SignatureUrl = new Property(6, String.class, "signatureUrl", false, "SIGNATURE_URL");
         public final static Property Modified = new Property(7, java.util.Date.class, "modified", false, "MODIFIED");
         public final static Property VersionId = new Property(8, long.class, "versionId", false, "VERSION_ID");
+        public final static Property AudioBookId = new Property(9, long.class, "audioBookId", false, "AUDIO_BOOK_ID");
     };
 
     private DaoSession daoSession;
@@ -64,7 +65,8 @@ public class BookDao extends AbstractDao<Book, Long> {
                 "\"SOURCE_URL\" TEXT," + // 5: sourceUrl
                 "\"SIGNATURE_URL\" TEXT," + // 6: signatureUrl
                 "\"MODIFIED\" INTEGER," + // 7: modified
-                "\"VERSION_ID\" INTEGER NOT NULL );"); // 8: versionId
+                "\"VERSION_ID\" INTEGER NOT NULL ," + // 8: versionId
+                "\"AUDIO_BOOK_ID\" INTEGER NOT NULL );"); // 9: audioBookId
     }
 
     /** Drops the underlying database table. */
@@ -118,6 +120,7 @@ public class BookDao extends AbstractDao<Book, Long> {
             stmt.bindLong(8, modified.getTime());
         }
         stmt.bindLong(9, entity.getVersionId());
+        stmt.bindLong(10, entity.getAudioBookId());
     }
 
     @Override
@@ -144,7 +147,8 @@ public class BookDao extends AbstractDao<Book, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // sourceUrl
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // signatureUrl
             cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)), // modified
-            cursor.getLong(offset + 8) // versionId
+            cursor.getLong(offset + 8), // versionId
+            cursor.getLong(offset + 9) // audioBookId
         );
         return entity;
     }
@@ -161,6 +165,7 @@ public class BookDao extends AbstractDao<Book, Long> {
         entity.setSignatureUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setModified(cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)));
         entity.setVersionId(cursor.getLong(offset + 8));
+        entity.setAudioBookId(cursor.getLong(offset + 9));
      }
     
     /** @inheritdoc */
@@ -208,8 +213,11 @@ public class BookDao extends AbstractDao<Book, Long> {
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
             SqlUtils.appendColumns(builder, "T0", daoSession.getVersionDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T1", daoSession.getAudioBookDao().getAllColumns());
             builder.append(" FROM BOOK T");
             builder.append(" LEFT JOIN VERSION T0 ON T.\"VERSION_ID\"=T0.\"_id\"");
+            builder.append(" LEFT JOIN AUDIO_BOOK T1 ON T.\"AUDIO_BOOK_ID\"=T1.\"_id\"");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -223,6 +231,12 @@ public class BookDao extends AbstractDao<Book, Long> {
         Version version = loadCurrentOther(daoSession.getVersionDao(), cursor, offset);
          if(version != null) {
             entity.setVersion(version);
+        }
+        offset += daoSession.getVersionDao().getAllColumns().length;
+
+        AudioBook audioBook = loadCurrentOther(daoSession.getAudioBookDao(), cursor, offset);
+         if(audioBook != null) {
+            entity.setAudioBook(audioBook);
         }
 
         return entity;    

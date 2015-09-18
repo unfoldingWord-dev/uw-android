@@ -30,7 +30,7 @@ public class ModelNames {
     static public final String BOOK_VERIFICATIONS_ATTRIBUTE = "verifications";
     static public final String BOOK_BIBLE_CHAPTERS_ATTRIBUTE = "bibleChapters";
     static public final String BOOK_STORY_CHAPTERS_ATTRIBUTE = "storyChapters";
-    static public final String BOOK_AUDIO_BOOK_ATTRIBUTE = "audioBooks";
+    static public final String BOOK_AUDIO_BOOK_ATTRIBUTE = "audioBookId";
 
     static public final String VERIFICATION = "Verification";
     static public final String[] VERIFICATION_STRING_ATTRIBUTES = { "signingInstitution","signature" };

@@ -34,6 +34,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     private String signatureUrl;
     private java.util.Date modified;
     private long versionId;
+    private long audioBookId;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -44,10 +45,12 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     private Version version;
     private Long version__resolvedKey;
 
+    private AudioBook audioBook;
+    private Long audioBook__resolvedKey;
+
     private List<Verification> verifications;
     private List<BibleChapter> bibleChapters;
     private List<StoriesChapter> storyChapters;
-    private List<AudioBook> audioBooks;
 
     // KEEP FIELDS - put your custom fields here
 //    static private final String TAG = "Version";
@@ -60,7 +63,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         this.id = id;
     }
 
-    public Book(Long id, String uniqueSlug, String slug, String title, String description, String sourceUrl, String signatureUrl, java.util.Date modified, long versionId) {
+    public Book(Long id, String uniqueSlug, String slug, String title, String description, String sourceUrl, String signatureUrl, java.util.Date modified, long versionId, long audioBookId) {
         this.id = id;
         this.uniqueSlug = uniqueSlug;
         this.slug = slug;
@@ -70,6 +73,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         this.signatureUrl = signatureUrl;
         this.modified = modified;
         this.versionId = versionId;
+        this.audioBookId = audioBookId;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -150,6 +154,14 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         this.versionId = versionId;
     }
 
+    public long getAudioBookId() {
+        return audioBookId;
+    }
+
+    public void setAudioBookId(long audioBookId) {
+        this.audioBookId = audioBookId;
+    }
+
     /** To-one relationship, resolved on first access. */
     public Version getVersion() {
         long __key = this.versionId;
@@ -175,6 +187,34 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
             this.version = version;
             versionId = version.getId();
             version__resolvedKey = versionId;
+        }
+    }
+
+    /** To-one relationship, resolved on first access. */
+    public AudioBook getAudioBook() {
+        long __key = this.audioBookId;
+        if (audioBook__resolvedKey == null || !audioBook__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            AudioBookDao targetDao = daoSession.getAudioBookDao();
+            AudioBook audioBookNew = targetDao.load(__key);
+            synchronized (this) {
+                audioBook = audioBookNew;
+            	audioBook__resolvedKey = __key;
+            }
+        }
+        return audioBook;
+    }
+
+    public void setAudioBook(AudioBook audioBook) {
+        if (audioBook == null) {
+            throw new DaoException("To-one property 'audioBookId' has not-null constraint; cannot set to-one to null");
+        }
+        synchronized (this) {
+            this.audioBook = audioBook;
+            audioBookId = audioBook.getId();
+            audioBook__resolvedKey = audioBookId;
         }
     }
 
@@ -242,28 +282,6 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     public synchronized void resetStoryChapters() {
         storyChapters = null;
-    }
-
-    /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<AudioBook> getAudioBooks() {
-        if (audioBooks == null) {
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            AudioBookDao targetDao = daoSession.getAudioBookDao();
-            List<AudioBook> audioBooksNew = targetDao._queryBook_AudioBooks(id);
-            synchronized (this) {
-                if(audioBooks == null) {
-                    audioBooks = audioBooksNew;
-                }
-            }
-        }
-        return audioBooks;
-    }
-
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    public synchronized void resetAudioBooks() {
-        audioBooks = null;
     }
 
     /** Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context. */

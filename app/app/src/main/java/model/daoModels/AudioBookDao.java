@@ -10,8 +10,6 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import de.greenrobot.dao.internal.SqlUtils;
 import de.greenrobot.dao.internal.DaoConfig;
-import de.greenrobot.dao.query.Query;
-import de.greenrobot.dao.query.QueryBuilder;
 
 import model.daoModels.AudioBook;
 
@@ -38,7 +36,6 @@ public class AudioBookDao extends AbstractDao<AudioBook, Long> {
 
     private DaoSession daoSession;
 
-    private Query<AudioBook> book_AudioBooksQuery;
 
     public AudioBookDao(DaoConfig config) {
         super(config);
@@ -159,20 +156,6 @@ public class AudioBookDao extends AbstractDao<AudioBook, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "audioBooks" to-many relationship of Book. */
-    public List<AudioBook> _queryBook_AudioBooks(long bookId) {
-        synchronized (this) {
-            if (book_AudioBooksQuery == null) {
-                QueryBuilder<AudioBook> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.BookId.eq(null));
-                book_AudioBooksQuery = queryBuilder.build();
-            }
-        }
-        Query<AudioBook> query = book_AudioBooksQuery.forCurrentThread();
-        query.setParameter(0, bookId);
-        return query.list();
-    }
-
     private String selectDeep;
 
     protected String getSelectDeep() {

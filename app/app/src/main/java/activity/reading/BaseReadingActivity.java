@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import org.unfoldingword.mobile.R;
 
@@ -244,9 +245,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void setupTabBar(){
 
+        ViewGroup baseAudioPlayerLayout = (RelativeLayout) findViewById(R.id.audio_player);
+        baseAudioPlayerLayout.setVisibility(View.GONE);
+
         int[] images = {R.drawable.audio_normal, R.drawable.video_normal, R.drawable.font_normal, R.drawable.diglot_normal, R.drawable.share_normal};
 
-        tabBar = new ReadingTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.tab_bar_view), new UWTabBar.BottomBarListener() {
+        tabBar = new ReadingTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.tab_bar_view), baseAudioPlayerLayout, new UWTabBar.BottomBarListener() {
             @Override
             public void buttonPressedAtIndex(int index) {
                 tabBarPressed(index);
@@ -259,6 +263,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         switch (index){
             case 0:{
                 tabBar.showAudioPlayer();
+                View view = findViewById(R.id.bottom_menu_layout);
+                view.setVisibility(View.GONE);
+                view.setVisibility(View.VISIBLE);
                 break;
             }
             case 1:{

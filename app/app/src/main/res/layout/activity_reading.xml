@@ -16,7 +16,7 @@
         android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/tab_bar_view"
+        android:layout_above="@+id/bottom_menu_layout"
         android:orientation="horizontal"
         android:id="@+id/reading_layout">
 
@@ -67,14 +67,29 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:background="#ddd"
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="#0f0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tab_bar_view"
+        android:id="@+id/bottom_menu_layout"
         android:layout_alignBottom="@+id/bottom_marker_layout">
 
-    </RelativeLayout>
+        <include
+            android:id="@+id/audio_player"
+            layout="@layout/audio_player_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/tab_bar_view">
+        </RelativeLayout>
+
+
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -122,22 +122,22 @@ public class UWUpdaterService extends Service {
                 }
             }).execute(UWPreferenceManager.getDataDownloadUrl(getApplicationContext()));
 
-//            new JsonDownloadTask(new JsonDownloadTask.DownloadTaskListener() {
-//                @Override
-//                public void downloadFinishedWithJson(String jsonString) {
-//
-//                try{
-//                    JSONArray locales = new JSONArray(jsonString);
-//                    addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
-//                    runnableFinished();
-//
-//                }catch (JSONException e){
-//                    e.printStackTrace();
-//                    runnableFinished();
-//                }
-//
-//                }
-//            }).execute(UWPreferenceManager.getLanguagesDownloadUrl(getApplicationContext()));
+            new JsonDownloadTask(new JsonDownloadTask.DownloadTaskListener() {
+                @Override
+                public void downloadFinishedWithJson(String jsonString) {
+
+                try{
+                    JSONArray locales = new JSONArray(jsonString);
+                    addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
+                    runnableFinished();
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    runnableFinished();
+                }
+
+                }
+            }).execute(UWPreferenceManager.getLanguagesDownloadUrl(getApplicationContext()));
         }
     }
 

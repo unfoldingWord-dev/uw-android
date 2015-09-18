@@ -2,13 +2,15 @@ package unfoldingword;
 
 import de.greenrobot.daogenerator.DaoGenerator;
 import de.greenrobot.daogenerator.Entity;
+import de.greenrobot.daogenerator.Property;
 import de.greenrobot.daogenerator.Schema;
 
 public class MyDaoGenerator {
 
     private static final String UW_DATABASE_MODEL_PROTOCOL = "model.UWDatabaseModel";
-    private static final String BIBLE_CHAPTER_COMPARABLE_INTERFACE = "Comparable<" + ModelNames.BIBLE_CHAPTER + ">";
-    private static final String STORY_CHAPTER_COMPARABLE_INTERFACE = "Comparable<" + ModelNames.STORY_CHAPTER + ">";
+
+    private static final String COMPARABLE_INTERFACE_BEGINNING = "Comparable<";
+    private static final String COMPARABLE_INTERFACE_END = ">";
 
     public static void main(String[] args) throws Exception {
         Schema schema = new Schema(100, "model.daoModels");
@@ -107,7 +109,7 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.BIBLE_CHAPTER, ModelNames.BIBLE_CHAPTER_STRING_ATTRIBUTES);
         Entity bibleChapter =  DaoHelperMethods.createEntity(schema, bibleChapterInfo);
         bibleChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
-        bibleChapter.implementsInterface(BIBLE_CHAPTER_COMPARABLE_INTERFACE);
+        bibleChapter.implementsInterface(getComparableInterfaceForClassName(ModelNames.BIBLE_CHAPTER));
 
         DaoHelperMethods.createParentChildRelationship(
                 book, ModelNames.BOOK_BIBLE_CHAPTERS_ATTRIBUTE,
@@ -120,7 +122,7 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.STORY_CHAPTER, ModelNames.STORY_CHAPTER_STRING_ATTRIBUTES);
         Entity storyChapter = DaoHelperMethods.createEntity(schema, storyChapterInfo);
         storyChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
-        storyChapter.implementsInterface(STORY_CHAPTER_COMPARABLE_INTERFACE);
+        storyChapter.implementsInterface(getComparableInterfaceForClassName(ModelNames.STORY_CHAPTER));
 
         DaoHelperMethods.createParentChildRelationship(
                 book, ModelNames.BOOK_STORY_CHAPTERS_ATTRIBUTE,
@@ -166,9 +168,8 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.AUDIO_BOOK, ModelNames.AUDIO_BOOK_STRING_ATTRIBUTES);
         Entity audioBook = DaoHelperMethods.createEntity(schema, audioBookInfo);
         audioBook.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
-        audioBook.implementsInterface(STORY_CHAPTER_COMPARABLE_INTERFACE);
 
-        DaoHelperMethods.createParentChildRelationship(
+        DaoHelperMethods.createOneToOneRelationship(
                 book, ModelNames.BOOK_AUDIO_BOOK_ATTRIBUTE,
                 audioBook, ModelNames.AUDIO_BOOK_BOOK_ATTRIBUTE);
 
@@ -181,12 +182,17 @@ public class MyDaoGenerator {
                 new DaoHelperMethods.EntityInformation(ModelNames.AUDIO_CHAPTER, ModelNames.AUDIO_CHAPTER_STRING_ATTRIBUTES, ModelNames.AUDIO_CHAPTER_DATE_ATTRIBUTES,  ModelNames.AUDIO_CHAPTER_INT_ATTRIBUTES);
         Entity audioChapter = DaoHelperMethods.createEntity(schema, audioChapterInfo);
         audioChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
-        audioChapter.implementsInterface(STORY_CHAPTER_COMPARABLE_INTERFACE);
+        audioChapter.implementsInterface(getComparableInterfaceForClassName(ModelNames.AUDIO_CHAPTER));
 
         DaoHelperMethods.createParentChildRelationship(
                 audioBook, ModelNames.AUDIO_BOOK_AUDIO_CHAPTER_ATTRIBUTE,
                 audioChapter, ModelNames.AUDIO_CHAPTER_AUDIO_BOOK_ATTRIBUTE);
 
         return audioChapter;
+    }
+
+    private static String getComparableInterfaceForClassName(String className){
+
+        return COMPARABLE_INTERFACE_BEGINNING + className + COMPARABLE_INTERFACE_END;
     }
 }

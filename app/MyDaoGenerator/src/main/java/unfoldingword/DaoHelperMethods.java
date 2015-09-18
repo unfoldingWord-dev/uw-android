@@ -22,11 +22,22 @@ public class DaoHelperMethods {
         return entity;
     }
 
-    public static void createParentChildRelationship(Entity parent, String childAttributeName, Entity child, String parentAttributeName) throws NullPointerException{
+    public static void createParentChildRelationship(Entity parent, String childAttributeName, Entity child,
+                                                     String parentAttributeName) throws NullPointerException{
 
         Property parentOfChildProperty = child.addLongProperty(parentAttributeName).notNull().getProperty();
         child.addToOne(parent, parentOfChildProperty);
         parent.addToMany(child, parentOfChildProperty, childAttributeName);
+    }
+
+    public static void createOneToOneRelationship(Entity firstEntity, String secondEntityAttributeName,
+                                                  Entity secondEntity, String firstEntityAttributeName) throws NullPointerException{
+
+        Property firstEntityOfSecondEntityProperty = secondEntity.addLongProperty(firstEntityAttributeName).notNull().getProperty();
+        secondEntity.addToOne(firstEntity, firstEntityOfSecondEntityProperty);
+
+        Property secondEntityOfFirstEntityProperty = firstEntity.addLongProperty(secondEntityAttributeName).notNull().getProperty();
+        firstEntity.addToOne(secondEntity, secondEntityOfFirstEntityProperty);
     }
 
     private static void addStringAttributesToEntity(Entity entity, String[] stringAttributes){
