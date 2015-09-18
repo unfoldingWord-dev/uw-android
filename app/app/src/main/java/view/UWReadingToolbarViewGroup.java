@@ -158,6 +158,9 @@ public class UWReadingToolbarViewGroup {
 
     private void layoutViews(){
 
+        leftButton.setVisibility((isMinni)? View.GONE :View.VISIBLE);
+
+
         if(!isMinni && !hasTwoVersions){
 
             RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());

@@ -177,8 +177,6 @@ public class SigningOrganization implements java.io.Serializable {
                 ", url='" + url + '\'' +
                 '}';
     }
-
-
     // KEEP METHODS END
 
 }

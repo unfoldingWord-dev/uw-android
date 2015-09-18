@@ -114,6 +114,4 @@ public class DaoHelperMethods {
             this.booleanAttributes = booleanAttributes;
         }
     }
-
-
 }

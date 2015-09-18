@@ -22,7 +22,7 @@ import java.util.zip.Inflater;
 public class ReadingTabBar extends UWTabBar{
 
     private MediaPlayer mediaPlayer;
-    private RelativeLayout playerLayout;
+    private ViewGroup playerLayout;
     private AudioPlayerViewGroup audioPlayer;
 
     public ReadingTabBar(Context context, int[] buttonImages, ViewGroup layout, BottomBarListener listener) {
@@ -38,10 +38,14 @@ public class ReadingTabBar extends UWTabBar{
 
     private void addAudioPlayer(){
 
-        playerLayout = (RelativeLayout) View.inflate(getContext(), R.layout.audio_player_layout, (ViewGroup) getParentLayout());
+        playerLayout = (ViewGroup) View.inflate(getContext(), R.layout.audio_player_layout, getParentLayout());
         audioPlayer = new AudioPlayerViewGroup(playerLayout);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(playerLayout.getLayoutParams());
-        params.addRule(RelativeLayout.ABOVE, getParentLayout().getId());
+        params.addRule(RelativeLayout.ABOVE, getBaseLayout().getId());
+
+        ViewGroup.LayoutParams parentParams = getParentLayout().getLayoutParams();
+        parentParams.height = getSizeForDp(90);
+        getParentLayout().setLayoutParams(parentParams);
     }
 
     public void showTextSizeChooser(){
@@ -126,7 +130,12 @@ public class ReadingTabBar extends UWTabBar{
             else{
                 mediaPlayer.start();
                 playPauseButton.setImageResource(R.drawable.pause);
+                startPlayProgressUpdater();
             }
         }
+    }
+
+    private int getSizeForDp(int sizeInDP){
+        return (int) (sizeInDP * getContext().getResources().getDisplayMetrics().density + 0.5f) ;
     }
 }

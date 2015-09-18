@@ -183,7 +183,6 @@ public class LanguageLocale extends model.UWDatabaseModel  implements java.io.Se
                 ", pk=" + pk +
                 '}';
     }
-
     // KEEP METHODS END
 
 }

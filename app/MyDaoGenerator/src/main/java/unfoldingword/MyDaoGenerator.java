@@ -32,6 +32,9 @@ public class MyDaoGenerator {
         Entity storyChapter = createStoryChapter(schema, book);
         createStoryPage(schema, storyChapter);
         createSigningOrganization(schema);
+
+        Entity audioBook = createAudioBook(schema, book);
+        createAudioChapter(schema, audioBook);
     }
 
     private static Entity createProject(Schema schema) {
@@ -155,5 +158,35 @@ public class MyDaoGenerator {
                         ModelNames.SIGNING_ORGANIZATION_DATE_ATTRIBUTES);
 
         Entity verificationEntity = DaoHelperMethods.createEntity(schema, verification);
+    }
+
+    private static Entity createAudioBook(Schema schema, Entity book) {
+
+        DaoHelperMethods.EntityInformation audioBookInfo =
+                new DaoHelperMethods.EntityInformation(ModelNames.AUDIO_BOOK, ModelNames.AUDIO_BOOK_STRING_ATTRIBUTES);
+        Entity audioBook = DaoHelperMethods.createEntity(schema, audioBookInfo);
+        audioBook.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
+        audioBook.implementsInterface(STORY_CHAPTER_COMPARABLE_INTERFACE);
+
+        DaoHelperMethods.createParentChildRelationship(
+                book, ModelNames.BOOK_AUDIO_BOOK_ATTRIBUTE,
+                audioBook, ModelNames.AUDIO_BOOK_BOOK_ATTRIBUTE);
+
+        return audioBook;
+    }
+
+    private static Entity createAudioChapter(Schema schema, Entity audioBook) {
+
+        DaoHelperMethods.EntityInformation audioChapterInfo =
+                new DaoHelperMethods.EntityInformation(ModelNames.AUDIO_CHAPTER, ModelNames.AUDIO_CHAPTER_STRING_ATTRIBUTES, ModelNames.AUDIO_CHAPTER_DATE_ATTRIBUTES,  ModelNames.AUDIO_CHAPTER_INT_ATTRIBUTES);
+        Entity audioChapter = DaoHelperMethods.createEntity(schema, audioChapterInfo);
+        audioChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
+        audioChapter.implementsInterface(STORY_CHAPTER_COMPARABLE_INTERFACE);
+
+        DaoHelperMethods.createParentChildRelationship(
+                audioBook, ModelNames.AUDIO_BOOK_AUDIO_CHAPTER_ATTRIBUTE,
+                audioChapter, ModelNames.AUDIO_CHAPTER_AUDIO_BOOK_ATTRIBUTE);
+
+        return audioChapter;
     }
 }

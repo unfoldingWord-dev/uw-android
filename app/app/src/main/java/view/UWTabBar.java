@@ -67,6 +67,12 @@ public class UWTabBar {
         baseLayout.setBackgroundResource(R.color.primary);
         baseLayout.setWeightSum((float) 1.0);
         parentLayout.addView(baseLayout);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(baseLayout.getLayoutParams());
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        baseLayout.setLayoutParams(params);
+
     }
 
     private void setupButtons(int[] buttonImageRes){

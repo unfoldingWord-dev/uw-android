@@ -9,7 +9,6 @@ public class ModelNames {
     static public final String[] PROJECT_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "title" };
     static public final String PROJECT_LANGUAGES_ATTRIBUTE = "languages";
 
-
     static public final String LANGUAGE = "Language";
     static public final String[] LANGUAGE_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "languageAbbreviation" };
     static public final String[] LANGUAGE_DATE_ATTRIBUTES = { "modified" };
@@ -31,6 +30,7 @@ public class ModelNames {
     static public final String BOOK_VERIFICATIONS_ATTRIBUTE = "verifications";
     static public final String BOOK_BIBLE_CHAPTERS_ATTRIBUTE = "bibleChapters";
     static public final String BOOK_STORY_CHAPTERS_ATTRIBUTE = "storyChapters";
+    static public final String BOOK_AUDIO_BOOK_ATTRIBUTE = "audioBooks";
 
     static public final String VERIFICATION = "Verification";
     static public final String[] VERIFICATION_STRING_ATTRIBUTES = { "signingInstitution","signature" };
@@ -59,4 +59,15 @@ public class ModelNames {
     static public final String[] SIGNING_ORGANIZATION_DATE_ATTRIBUTES = { "createdAt", "expiresAt", "modifiedAt" };
     static public final String[] SIGNING_ORGANIZATION_STRING_ATTRIBUTES = { "email","name", "url", "uniqueSlug", "slug" };
 
+
+    static public final String AUDIO_BOOK = "AudioBook";
+    static public final String[] AUDIO_BOOK_STRING_ATTRIBUTES = { "uniqueSlug", "contributors","revision", "textVersion" };
+    static public final String AUDIO_BOOK_AUDIO_CHAPTER_ATTRIBUTE = "audioChapters";
+    static public final String AUDIO_BOOK_BOOK_ATTRIBUTE = "bookId";
+
+    static public final String AUDIO_CHAPTER = "AudioChapter";
+    static public final String[] AUDIO_CHAPTER_DATE_ATTRIBUTES = { "modified" };
+    static public final String[] AUDIO_CHAPTER_STRING_ATTRIBUTES = { "uniqueSlug", "source","sourceSignature"};
+    static public final String[] AUDIO_CHAPTER_INT_ATTRIBUTES = { "chapter", "bitRate", "length", "size"};
+    static public final String AUDIO_CHAPTER_AUDIO_BOOK_ATTRIBUTE = "audioBookId";
 }
