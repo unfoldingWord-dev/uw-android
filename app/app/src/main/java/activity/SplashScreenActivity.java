@@ -62,6 +62,7 @@ public class SplashScreenActivity extends Activity {
     private void initializeDB(){
 
         List<Project> existingProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+//        DaoDBHelper.saveDatabase(getApplicationContext());
 //        boolean dataIsLoaded = (existingProjects != null && existingProjects.size() > 0);
 
 //        if(false){

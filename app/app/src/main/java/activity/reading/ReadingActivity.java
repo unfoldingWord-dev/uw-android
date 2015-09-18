@@ -10,6 +10,7 @@ package activity.reading;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -19,6 +20,8 @@ import java.util.List;
 
 import fragments.BibleReadingFragment;
 import model.DaoDBHelper;
+import model.daoModels.AudioBook;
+import model.daoModels.AudioChapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
@@ -30,6 +33,7 @@ public class ReadingActivity extends BaseReadingActivity {
     private BibleChapter currentChapter;
     private BibleReadingFragment readingFragment;
     private BibleReadingFragment secondaryReadingFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,22 @@ public class ReadingActivity extends BaseReadingActivity {
         return (currentChapter == null)? null : currentChapter.getBook().getVersion();
     }
 
+    @Nullable
+    @Override
+    protected String getAudioUrl() {
+        updateChapters();
+        AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
+
+        if(audioBook != null){
+            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
+            if(audioChapter != null){
+                return audioChapter.getSource();
+            }
+        }
+
+        return null;
+    }
+
     @Override
     protected void scrolled() {
         updateChapters();
@@ -70,7 +90,7 @@ public class ReadingActivity extends BaseReadingActivity {
         currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
 
         if (currentChapter != null) {
-            this.version = currentChapter.getBook().getVersion();
+            this.book = currentChapter.getBook();
         }
     }
 

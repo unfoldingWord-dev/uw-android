@@ -18,18 +18,6 @@ public class ReadingTabBar extends UWTabBar{
         this.audioPlayerLayout = audioPlayerLayout;
     }
 
-    public void showAudioPlayer(){
-        if(audioPlayer == null){
-            setupAudioPlayer();
-        }
-        audioPlayerLayout.setVisibility((audioPlayerLayout.getVisibility() == View.VISIBLE)? View.GONE : View.VISIBLE);
-    }
-
-    private void setupAudioPlayer(){
-
-        audioPlayer = new AudioPlayerViewGroup(getContext(), audioPlayerLayout);
-    }
-
     public void showTextSizeChooser(){
 
     }

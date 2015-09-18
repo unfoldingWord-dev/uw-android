@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="50dp"
-    android:background="#fff"
+    android:background="#f6f6f6"
     android:id="@+id/base_audio_player_layout"
     android:visibility="gone">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#aaa"/>
 
 
     <ImageButton
+        android:background="@drawable/basic_button_selector"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:id="@+id/audio_player_play_pause_button"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -17,8 +24,8 @@
         android:layout_centerVertical="true"/>
 
     <SeekBar
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:thumb="@drawable/audiohandle"
         android:progress="0"
         android:progressTint="@color/progress_color"
@@ -34,7 +41,7 @@
         />
 
     <TextView
-        android:paddingLeft="5dp"
+        android:paddingLeft="15dp"
         android:paddingRight="0dp"
         android:gravity="start"
         android:textColor="#000"
@@ -48,8 +55,8 @@
         android:layout_alignStart="@+id/audio_player_progress" />
 
     <TextView
-        android:paddingRight="5dp"
-        android:paddingEnd="5dp"
+        android:paddingRight="15dp"
+        android:paddingEnd="15dp"
         android:gravity="end"
         android:textColor="#000"
         android:layout_width="wrap_content"

@@ -39,6 +39,12 @@
             android:name="activity.readingSelection.InitialScreenActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
+
+        <activity
+            android:name="activity.SimpleVideoPlayerActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Light"/>
+
         <activity
             android:name="activity.readingSelection.BookSelectionActivity"
             android:configChanges="orientation|keyboardHidden"

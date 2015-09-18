@@ -29,7 +29,6 @@ public class UWTabBar {
     }
 
     private Context context;
-    private boolean hidden = false;
 
     private ViewGroup parentLayout;
     private LinearLayout baseLayout;
@@ -98,24 +97,24 @@ public class UWTabBar {
         return button;
     }
 
-    public void toggleHidden(){
+//    public void toggleHidden(){
+//
+//        setHidden(!hidden);
+//    }
 
-        setHidden(!hidden);
-    }
-
-    public void setHidden(boolean isHidden){
-
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) parentLayout.getLayoutParams();
-        if(isHidden){
-            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
-        }
-        else{
-            params.removeRule(RelativeLayout.BELOW);
-        }
-
-        parentLayout.setLayoutParams(params);
-        hidden = !hidden;
-    }
+//    public void setHidden(boolean isHidden){
+//
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) parentLayout.getLayoutParams();
+//        if(isHidden){
+//            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
+//        }
+//        else{
+//            params.removeRule(RelativeLayout.BELOW);
+//        }
+//
+//        parentLayout.setLayoutParams(params);
+//        hidden = !hidden;
+//    }
 
     private class TabButtonListener implements View.OnClickListener{
 
@@ -133,5 +132,14 @@ public class UWTabBar {
 
     private int getSizeForDp(int sizeInDP){
         return (int) (sizeInDP * getContext().getResources().getDisplayMetrics().density + 0.5f) ;
+    }
+
+    public void setImageAtIndex(int imageResource, int index){
+
+        buttons.get(index).setImageResource(imageResource);
+    }
+
+    public ImageButton getButton(int index){
+        return buttons.get(index);
     }
 }

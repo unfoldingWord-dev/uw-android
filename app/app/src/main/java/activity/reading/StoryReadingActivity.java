@@ -2,12 +2,15 @@ package activity.reading;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import java.util.List;
 
 import fragments.StoryReadingFragment;
 import model.DaoDBHelper;
+import model.daoModels.AudioBook;
+import model.daoModels.AudioChapter;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
@@ -66,7 +69,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
         if(page != null){
                 currentChapter = page.getStoriesChapter();
-                this.version = currentChapter.getBook().getVersion();
+                this.book = currentChapter.getBook();
                 return true;
         } else {
             currentChapter = null;
@@ -126,5 +129,21 @@ public class StoryReadingActivity extends BaseReadingActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         readingFragment.setOrientationAsLandscape((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE));
+    }
+
+    @Nullable
+    @Override
+    protected String getAudioUrl() {
+        loadData();
+        AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
+
+        if(audioBook != null){
+            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
+            if(audioChapter != null){
+                return audioChapter.getSource();
+            }
+        }
+
+        return null;
     }
 }

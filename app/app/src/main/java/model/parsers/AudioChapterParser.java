@@ -41,8 +41,8 @@ public class AudioChapterParser extends UWDataParser{
         newModel.setSize(jsonObject.getInt(SIZE_JSON_KEY));
         newModel.setSource(jsonObject.getString(SOURCE_JSON_KEY));
         newModel.setSourceSignature(jsonObject.getString(SOURCE_SIGNATURE_JSON_KEY));
-
         newModel.setUniqueSlug(parent.getUniqueSlug() + Integer.toString(chapter));
+        newModel.setAudioBookId(parent.getId());
 
         return newModel;
     }

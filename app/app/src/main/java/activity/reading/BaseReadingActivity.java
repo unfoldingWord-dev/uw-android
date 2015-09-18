@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -19,7 +21,10 @@ import android.widget.RelativeLayout;
 
 import org.unfoldingword.mobile.R;
 
+import java.io.IOException;
+
 import activity.AnimationParadigm;
+import activity.SimpleVideoPlayerActivity;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
@@ -30,9 +35,11 @@ import fragments.StoryChaptersFragment;
 import fragments.VersionInfoFragment;
 import fragments.VersionSelectionFragment;
 import model.SharingHelper;
+import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
+import view.AudioPlayerViewGroup;
 import view.ReadingTabBar;
 import view.UWReadingToolbarViewGroup;
 import view.UWTabBar;
@@ -62,11 +69,15 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected FrameLayout readingLayout;
     protected FrameLayout secondaryReadingLayout;
     protected View errorView;
-    protected Version version;
+    protected Book book;
     private ReadingTabBar tabBar;
 
     private UWReadingToolbarViewGroup readingToolbar;
     private BroadcastReceiver receiver;
+    private ViewGroup audioPlayerLayout;
+    private AudioPlayerViewGroup playerViewGroup;
+
+    private MediaPlayer mediaPlayer;
 
     private boolean isMini = false;
     private boolean isDiglot = false;
@@ -116,6 +127,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      * @return
      */
     abstract protected String getSecondaryVersionText();
+
+    /**
+     * @return url to use for audio, else null
+     */
+    abstract protected @Nullable String getAudioUrl();
     //endregion
 
     //region Activity Override Methods
@@ -129,7 +145,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             versionSelectionButtonClicked(false);
         }
         setupTabBar();
+        updateTabBar();
         setupToolbar();
+        audioPlayerLayout = (ViewGroup) (findViewById(R.id.audio_player));
     }
 
     public void setupToolbar(){
@@ -169,6 +187,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         setupViews();
 
         boolean dataIsLoaded = loadData();
+        updateTabBar();
         setupReadingVisibility(dataIsLoaded);
         if (dataIsLoaded){
 //            getToolbar().setRightImageResource(R.drawable.diglot_icon);
@@ -182,6 +201,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     protected void onPause() {
+
+        if(mediaPlayer != null) {
+            mediaPlayer.pause();
+        }
 
         if(receiver != null) {
             getApplicationContext().unregisterReceiver(receiver);
@@ -214,8 +237,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     /**
      * @return the current version being used
      */
-    protected Version getVersion(){
-        return this.version;
+    protected Book getBook(){
+        return this.book;
     }
 
     //endregion
@@ -258,18 +281,65 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         });
     }
 
+    private void updateTabBar(){
+
+        boolean hasAudioBook = (getBook() != null && getBook().getAudioBook() != null);
+        tabBar.getButton(0).setEnabled(hasAudioBook);
+        tabBar.getButton(0).setClickable(hasAudioBook);
+        tabBar.setImageAtIndex((hasAudioBook)? R.drawable.audio_normal : R.drawable.audio_disabled, 0);
+
+        boolean hasVideo = false;
+        tabBar.getButton(1).setEnabled(hasVideo);
+        tabBar.getButton(1).setClickable(hasVideo);
+        tabBar.setImageAtIndex((hasVideo)? R.drawable.video_normal : R.drawable.video_disabled, 1);
+    }
+
+    private void setupAudioPlayer(){
+
+        String url = getAudioUrl();
+
+        if(url == null){
+            return;
+        }
+
+        if(mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(url));
+        }
+        else{
+            try {
+                mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url));
+            }
+            catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        playerViewGroup = new AudioPlayerViewGroup(getApplicationContext(), mediaPlayer, audioPlayerLayout, new AudioPlayerViewGroup.AudioPlayerViewGroupListener() {
+            @Override
+            public void audioPlayerStateChanged(boolean isPlaying) {
+                setAudioButtonState(isPlaying);
+            }
+        });
+    }
+
+    private void setAudioButtonState(boolean isPlaying){
+
+        tabBar.setImageAtIndex((isPlaying)? R.drawable.audio_active : R.drawable.audio_normal, 0);
+    }
+
     private void tabBarPressed(int index){
 
         switch (index){
             case 0:{
-                tabBar.showAudioPlayer();
-                View view = findViewById(R.id.bottom_menu_layout);
-                view.setVisibility(View.GONE);
-                view.setVisibility(View.VISIBLE);
+                if(playerViewGroup == null){
+                    setupAudioPlayer();
+                }
+                audioPlayerLayout.setVisibility((audioPlayerLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
                 break;
             }
             case 1:{
-                //video
+                Intent intent = new Intent((android.content.Intent.ACTION_VIEW));
+                intent.setDataAndType(Uri.parse("https://api.unfoldingword.org/uw/video/beta/01-GEN-br256-640x432.mp4"), "video/avi");
+                startActivity(intent);
                 break;
             }
             case 2:{
@@ -469,8 +539,21 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @Override
     public boolean toggleHidden() {
         isMini =  readingToolbar.toggleIsMinni();
-        tabBar.setHidden(isMini);
+        hideTabs(isMini);
         return isMini;
+    }
+
+    private void hideTabs(boolean isHidden){
+        ViewGroup bottomBar = (ViewGroup) findViewById(R.id.bottom_menu_layout);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(bottomBar.getLayoutParams());
+        if(isHidden){
+            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
+        }
+        else{
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        }
+
+        bottomBar.setLayoutParams(params);
     }
 
     //endregion

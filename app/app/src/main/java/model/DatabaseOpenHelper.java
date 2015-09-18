@@ -92,9 +92,13 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             sqliteDatabase = this.getReadableDatabase();
             sqliteDatabase.close();
 
-            copyDataBase();
-            saveSourceFiles();
+            populateWithPreload();
         }
+    }
+
+    private void populateWithPreload(){
+        copyDataBase();
+        saveSourceFiles();
     }
 
     public void saveDatabase(){

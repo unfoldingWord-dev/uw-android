@@ -51,9 +51,13 @@ public class UpdateAudioBookRunnable implements Runnable{
                 if(model instanceof AudioBook) {
 
                     UWDatabaseModel shouldContinueUpdate = new AudioBookSaveOrUpdater(updater.getApplicationContext()).start(model);
-//                            Log.d(TAG, "Book created");
+
                     if(shouldContinueUpdate != null){
-                        updateAudioChapters(jsonObject, (AudioBook) shouldContinueUpdate);
+                        AudioBook audioBook = (AudioBook) shouldContinueUpdate;
+                        parent.setAudioBookId(audioBook.getId());
+                        parent.update();
+                        parent.getAudioBook();
+                        updateAudioChapters(jsonObject, audioBook);
                     }
                     updater.runnableFinished();
                 }

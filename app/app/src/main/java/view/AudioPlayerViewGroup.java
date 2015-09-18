@@ -23,11 +23,14 @@ public class AudioPlayerViewGroup {
     private Context context;
 
     private SeekBar seekBar;
+    private AudioPlayerViewGroupListener listener;
 
     private final Handler handler = new Handler();
 
-    public AudioPlayerViewGroup(Context context, View containingView) {
+    public AudioPlayerViewGroup(Context context, MediaPlayer mediaPlayer, View containingView, AudioPlayerViewGroupListener listener) {
         this.context = context;
+        this.mediaPlayer = mediaPlayer;
+        this.listener = listener;
         getViews(containingView);
         setupListeners();
     }
@@ -49,7 +52,6 @@ public class AudioPlayerViewGroup {
             }
         });
 
-        mediaPlayer = MediaPlayer.create(context, R.raw.test_audio);
         seekBar.setMax(mediaPlayer.getDuration());
         seekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -59,8 +61,7 @@ public class AudioPlayerViewGroup {
             }
         });
 
-        endTimeTextView.setText(Long.toString(mediaPlayer.getDuration()));
-        currentTimeTextView.setText("0");
+        updateLabelsForTimes();
     }
 
     public void startPlayProgressUpdater() {
@@ -77,8 +78,10 @@ public class AudioPlayerViewGroup {
         }else{
             mediaPlayer.pause();
             playPauseButton.setImageResource(R.drawable.play);
-            seekBar.setProgress(0);
+            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            this.listener.audioPlayerStateChanged(false);
         }
+        updateLabelsForTimes();
     }
 
     // This is event handler thumb moving event
@@ -87,17 +90,54 @@ public class AudioPlayerViewGroup {
             SeekBar sb = (SeekBar)v;
             mediaPlayer.seekTo(sb.getProgress());
         }
+        updateLabelsForTimes();
     }
 
     private void playPauseClicked(){
         if(mediaPlayer.isPlaying()){
             mediaPlayer.pause();
             playPauseButton.setImageResource(R.drawable.play);
+            this.listener.audioPlayerStateChanged(false);
         }
         else{
             mediaPlayer.start();
             playPauseButton.setImageResource(R.drawable.pause);
             startPlayProgressUpdater();
+            this.listener.audioPlayerStateChanged(true);
         }
+        updateLabelsForTimes();
+    }
+
+    private void updateLabelsForTimes() {
+        if(mediaPlayer != null){
+            updateLabelsForTimes(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration());
+        }
+    }
+
+    private void updateLabelsForTimes(long elapsedInMilli, long totalInMilli){
+
+        long elapsed = elapsedInMilli / 1000;
+        long total = totalInMilli / 1000;
+
+        currentTimeTextView.setText(getTimeStringFromSeconds(elapsed));
+        endTimeTextView.setText(getTimeStringFromSeconds(total));
+    }
+
+    private String getTimeStringFromSeconds(long seconds){
+        long numOfSeconds = seconds % 60;
+        String secondsText = (numOfSeconds < 10)? "0" + Long.toString(numOfSeconds) : Long.toString(numOfSeconds);
+        return Long.toString((long) Math.floor(seconds / 60.0)) + ":" + secondsText;
+    }
+
+    public void pausePlayback(){
+
+        if(mediaPlayer != null) {
+            mediaPlayer.pause();
+        }
+    }
+
+    public interface AudioPlayerViewGroupListener{
+
+        void audioPlayerStateChanged(boolean isPlaying);
     }
 }

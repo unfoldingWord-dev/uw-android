@@ -184,6 +184,20 @@ public class AudioBook extends model.UWDatabaseModel  implements java.io.Seriali
 
     // KEEP METHODS - put your custom methods here
 
+    public AudioChapter getChapter(int chapterNumber){
+
+        if(getAudioChapters() != null) {
+
+            AudioChapterDao dao = daoSession.getAudioChapterDao();
+            return dao.queryBuilder()
+                    .where(AudioChapterDao.Properties.AudioBookId.eq(this.getId()), AudioChapterDao.Properties.Chapter.eq(chapterNumber))
+                    .unique();
+        }
+        else{
+            return null;
+        }
+    }
+
     @Override
     public UWDatabaseModel setupModelFromJson(JSONObject json) {
         return null;
