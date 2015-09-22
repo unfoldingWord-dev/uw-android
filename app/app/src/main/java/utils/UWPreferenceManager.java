@@ -100,4 +100,20 @@ public class UWPreferenceManager {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(LANGUAGES_DOWNLOAD_URL_KEY,  context.getResources().getString(R.string.languages_json_url));
     }
 
+    private static final String BIBLE_TEXT_SIZE = "BIBLE_TEXT_SIZE";
+    public static int getBibleTextSize(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE, 14);
+    }
+    public static void setBibleTextSize(Context context, int newValue){
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(BIBLE_TEXT_SIZE, newValue).commit();
+    }
+
+    private static final String STORIES_TEXT_SIZE = "STORIES_TEXT_SIZE";
+    public static int getStoriesTextSize(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(STORIES_TEXT_SIZE, 20);
+    }
+    public static void setStoriesTextSize(Context context, int newValue){
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(STORIES_TEXT_SIZE, newValue).commit();
+    }
+
 }

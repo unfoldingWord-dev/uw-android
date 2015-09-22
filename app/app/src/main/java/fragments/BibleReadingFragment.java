@@ -30,6 +30,7 @@ public class BibleReadingFragment extends Fragment implements
 
 //    private static final String TAG = "BibleReadingFragment";
     private static final String IS_SECONDARY_PARAM = "IS_SECONDARY_PARAM";
+    private static final String TEXT_SIZE_PARAM = "TEXT_SIZE_PARAM";
 
     private ReadingPagerAdapter adapter;
     private ViewPager readingViewPager;
@@ -39,16 +40,19 @@ public class BibleReadingFragment extends Fragment implements
     private Book currentBook;
     private boolean isSecondary;
 
+    private int textSize;
+
     //region setup
 
     /**
      * @param isSecondary true if this fragment is for display as the second fragment in the diglot view.
      * @return Constructs a new Bible Reading fragment.
      */
-    public static BibleReadingFragment newInstance(boolean isSecondary) {
+    public static BibleReadingFragment newInstance(boolean isSecondary, int textSize) {
         BibleReadingFragment fragment = new BibleReadingFragment();
         Bundle args = new Bundle();
         args.putBoolean(IS_SECONDARY_PARAM, isSecondary);
+        args.putInt(TEXT_SIZE_PARAM, textSize);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +65,7 @@ public class BibleReadingFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isSecondary = getArguments().getBoolean(IS_SECONDARY_PARAM);
+        textSize = getArguments().getInt(TEXT_SIZE_PARAM);
         updateBook();
 
         if(getActivity() instanceof ReadingFragmentListener){
@@ -80,6 +85,11 @@ public class BibleReadingFragment extends Fragment implements
         }
 
         return view;
+    }
+
+    public void setTextSize(int textSize){
+        this.textSize = textSize;
+        adapter.updateTextSize(this.textSize);
     }
 
     /**
@@ -105,7 +115,8 @@ public class BibleReadingFragment extends Fragment implements
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
 
         List<BibleChapter> chapters = currentBook.getBibleChapters(true);
-        adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters, new ReadingDoubleTapHandler(getResources(), this), this);
+        adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters,
+                new ReadingDoubleTapHandler(getResources(), this), textSize, this);
 
         readingViewPager.setAdapter(adapter);
         readingViewPager.setOnTouchListener(new ReadingDoubleTapHandler(getResources(), this));

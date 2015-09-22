@@ -26,9 +26,14 @@ import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataAccessor;
+import utils.UWPreferenceDataManager;
+import utils.UWPreferenceManager;
 
 public class ReadingActivity extends BaseReadingActivity {
     static private final String TAG = "ReadingActivity";
+
+    static private final int HIGH_TEXT_SIZE_LIMIT = 20;
+    static private final int LOW_TEXT_SIZE_LIMIT = 10;
 
     private BibleChapter currentChapter;
     private BibleReadingFragment readingFragment;
@@ -75,7 +80,6 @@ public class ReadingActivity extends BaseReadingActivity {
                 return audioChapter.getSource();
             }
         }
-
         return null;
     }
 
@@ -134,6 +138,33 @@ public class ReadingActivity extends BaseReadingActivity {
         }
     }
 
+    @Override
+    protected void makeTextLarger() {
+
+        updateTextSize(UWPreferenceManager.getBibleTextSize(getApplicationContext()) + 1);
+    }
+
+    @Override
+    protected void makeTextSmaller() {
+
+        updateTextSize(UWPreferenceManager.getBibleTextSize(getApplicationContext()) - 1);
+
+    }
+
+    private void updateTextSize(int textSize){
+
+        UWPreferenceManager.setBibleTextSize(getApplicationContext(), textSize);
+        if(readingFragment != null){
+            readingFragment.setTextSize(textSize);
+        }
+        if(secondaryReadingFragment != null){
+            secondaryReadingFragment.setTextSize(textSize);
+        }
+
+        setTextLargerDisabled((textSize >= HIGH_TEXT_SIZE_LIMIT));
+        setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
+    }
+
     private BibleReadingFragment createReadingFragment(FrameLayout layout, boolean secondLayout){
 
         Fragment cachedFragment = getSupportFragmentManager().findFragmentByTag("BibleReadingFragment" + layout.getId());
@@ -143,7 +174,7 @@ public class ReadingActivity extends BaseReadingActivity {
             return fragment;
         }
         else {
-            BibleReadingFragment fragment = BibleReadingFragment.newInstance(secondLayout);
+            BibleReadingFragment fragment = BibleReadingFragment.newInstance(secondLayout, UWPreferenceManager.getBibleTextSize(getApplicationContext()));
             getSupportFragmentManager().beginTransaction().add(layout.getId(), fragment, "BibleReadingFragment" + layout.getId()).commit();
             return fragment;
         }

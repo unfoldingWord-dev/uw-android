@@ -29,6 +29,8 @@ import view.ReadingDoubleTapHandler;
  */
 public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener{
 
+    private static final String TEXT_SIZE_PARAM = "TEXT_SIZE_PARAM";
+
     private ViewPager readingViewPager;
     private StoriesChapter  mainChapter;
     private StoriesChapter secondChapter;
@@ -40,11 +42,13 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
 
     private RelativeLayout baseLayout;
 
+    private int textSize;
     private View secondBarView;
 
-    public static StoryReadingFragment newInstance() {
+    public static StoryReadingFragment newInstance(int textSize) {
         StoryReadingFragment fragment = new StoryReadingFragment();
         Bundle args = new Bundle();
+        args.putInt(TEXT_SIZE_PARAM, textSize);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,9 +60,15 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        textSize = getArguments().getInt(TEXT_SIZE_PARAM);
         if(getActivity() instanceof ReadingFragmentListener){
             this.listener = (ReadingFragmentListener) getActivity();
         }
+    }
+
+    public void setTextSize(int textSize){
+        this.textSize = textSize;
+        adapter.setTextSize(this.textSize);
     }
 
     @Override
@@ -160,7 +170,7 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     private void setupPager(View view){
 
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
-        adapter = new StoryPagerAdapter(getActivity(), mainChapter, secondChapter);
+        adapter = new StoryPagerAdapter(getActivity(), mainChapter, secondChapter, textSize);
 
             readingViewPager.setAdapter(adapter);
             readingViewPager.setOnTouchListener(new ReadingDoubleTapHandler(getResources(), this));

@@ -29,14 +29,16 @@ public class ReadingPagerAdapter extends PagerAdapter {
     private ViewGroup container;
     private List<BibleChapter> chapters;
     private View.OnTouchListener pagerOnTouchListener;
+    private int textSize;
 
     private ReadingPagerAdapterListener listener;
 
     //region Setup
 
     public ReadingPagerAdapter(Context context, List<BibleChapter> models, View.OnTouchListener pagerOnTouchListener,
-                               ReadingPagerAdapterListener listener) {
+                               int textSize, ReadingPagerAdapterListener listener) {
         this.context = context;
+        this.textSize = textSize;
         this.listener = listener;
         chapters = models;
         this.pagerOnTouchListener = pagerOnTouchListener;
@@ -44,6 +46,11 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     public void update(List<BibleChapter> models){
         this.chapters = models;
+        notifyDataSetChanged();
+    }
+
+    public void updateTextSize(int textSize){
+        this.textSize = textSize;
         notifyDataSetChanged();
     }
 
@@ -88,12 +95,12 @@ public class ReadingPagerAdapter extends PagerAdapter {
             WebView textWebView = (WebView) view.findViewById(R.id.chapterWebView);
             textWebView.getSettings().setJavaScriptEnabled(true);
 
-            String pageText = getTextCss() + new USFMParser().parseUsfmChapter(chapters.get(position).getText());
-            textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
             textWebView.setOnTouchListener(this.pagerOnTouchListener);
-
-
         }
+
+        WebView textWebView = (WebView) view.findViewById(R.id.chapterWebView);
+        String pageText = getTextCss() + new USFMParser().parseUsfmChapter(chapters.get(position).getText());
+        textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
         ((ViewPager) container).addView(view);
         return view;
     }
@@ -133,7 +140,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
                 ".q, .q1, .q2 { margin:0; display: block; padding:0;}\n" +
                 ".q, .q1 { margin-left: 1em; }\n" +
                 ".q2 { margin-left: 1em; }\n" +
-                "p { width:96%; font-size: 13pt; text-align: justify; line-height: 1.3; padding:5px; unicode-bidi:bidi-override; direction:" +
+                "p { width:96%; font-size: " + Integer.toString(textSize) + "pt; text-align: justify; line-height: 1.3; padding:5px; unicode-bidi:bidi-override; direction:" +
                 getTextDirection() + " ;}\n" +
                 "-->\n" +
                 ".footnote {font-size: 11pt;}" +

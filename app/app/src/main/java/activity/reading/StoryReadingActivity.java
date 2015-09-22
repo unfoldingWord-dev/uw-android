@@ -16,6 +16,7 @@ import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import utils.UWPreferenceDataAccessor;
+import utils.UWPreferenceManager;
 
 /**
  * Created by PJ Fechner
@@ -23,6 +24,9 @@ import utils.UWPreferenceDataAccessor;
  */
 public class StoryReadingActivity extends BaseReadingActivity {
     static private final String TAG = "StoryReadingActivity";
+
+    static private final int HIGH_TEXT_SIZE_LIMIT = 25;
+    static private final int LOW_TEXT_SIZE_LIMIT = 15;
 
     private StoryReadingFragment readingFragment;
     private StoriesChapter currentChapter;
@@ -91,6 +95,30 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
+    protected void makeTextLarger() {
+
+        updateTextSize(UWPreferenceManager.getStoriesTextSize(getApplicationContext()) + 1);
+    }
+
+    @Override
+    protected void makeTextSmaller() {
+
+        updateTextSize(UWPreferenceManager.getStoriesTextSize(getApplicationContext()) - 1);
+    }
+
+    private void updateTextSize(int textSize){
+
+        UWPreferenceManager.setStoriesTextSize(getApplicationContext(), textSize);
+        if(readingFragment != null){
+            readingFragment.setTextSize(textSize);
+        }
+        setTextLargerDisabled((textSize >= HIGH_TEXT_SIZE_LIMIT));
+        setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
+    }
+
+
+
+    @Override
     protected void updateReadingView() {
 
         if (this.readingFragment == null) {
@@ -101,7 +129,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
                 readingFragment.update();
             }
             else {
-                this.readingFragment = StoryReadingFragment.newInstance();
+                this.readingFragment = StoryReadingFragment.newInstance(UWPreferenceManager.getStoriesTextSize(getApplicationContext()));
                 getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "StoryReadingFragment").commit();
             }
         }

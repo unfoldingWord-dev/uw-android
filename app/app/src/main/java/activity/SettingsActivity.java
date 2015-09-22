@@ -220,4 +220,9 @@ public class SettingsActivity extends PreferenceActivity {
             // guidelines.
         }
     }
+
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return super.isValidFragment(fragmentName);
+    }
 }

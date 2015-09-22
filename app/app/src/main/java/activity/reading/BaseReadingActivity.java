@@ -132,6 +132,19 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      * @return url to use for audio, else null
      */
     abstract protected @Nullable String getAudioUrl();
+
+    /**
+     * signal to make the reading text larger
+     * @return true if the text size is at it's largest
+     */
+    abstract protected void makeTextLarger();
+
+    /**
+     * signal to make the reading text smaller
+     * @return true if the text size is at it's smallest
+     */
+    abstract protected void makeTextSmaller();
+
     //endregion
 
     //region Activity Override Methods
@@ -266,6 +279,19 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
+    protected void setTextLargerDisabled(boolean disabled){
+
+        findViewById(R.id.larger_text_button).setClickable(!disabled);
+        findViewById(R.id.larger_text_button).setEnabled(!disabled);
+
+    }
+
+    protected void setTextSmallerDisabled(boolean disabled){
+
+        findViewById(R.id.smaller_text_button).setClickable(!disabled);
+        findViewById(R.id.smaller_text_button).setEnabled(!disabled);
+    }
+
     private void setupTabBar(){
 
         ViewGroup baseAudioPlayerLayout = (RelativeLayout) findViewById(R.id.audio_player);
@@ -343,7 +369,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 break;
             }
             case 2:{
-                tabBar.showTextSizeChooser();
+                toggleTextSizeVisibility();
                 break;
             }
             case 3:{
@@ -366,10 +392,30 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
+    private void toggleTextSizeVisibility(){
+        View view = findViewById(R.id.reading_text_options);
+        view.setVisibility((view.getVisibility() == View.VISIBLE)? View.GONE : View.VISIBLE);
+    }
+
     protected void setupViews(){
         readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
         secondaryReadingLayout = (FrameLayout) findViewById(R.id.secondary_reading_fragment_frame);
         errorView = findViewById(R.id.no_version_layout);
+
+        findViewById(R.id.larger_text_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeTextLarger();
+            }
+        });
+
+        findViewById(R.id.smaller_text_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeTextSmaller();
+            }
+        });
+        findViewById(R.id.reading_text_options).setVisibility(View.GONE);
     }
 
     private void registerReceivers(){

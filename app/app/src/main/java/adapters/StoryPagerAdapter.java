@@ -41,11 +41,13 @@ public class StoryPagerAdapter extends PagerAdapter {
     private int lastChapterNumber = -1;
     private boolean isDiglot;
     private boolean isLandscape = false;
+    private int textSize;
 
     //region setup
-    public StoryPagerAdapter(Activity context, StoriesChapter mainChapter, StoriesChapter secondChapter) {
+    public StoryPagerAdapter(Activity context, StoriesChapter mainChapter, StoriesChapter secondChapter, int textSize) {
         this.mainChapter = mainChapter;
         this.secondChapter = secondChapter;
+        this.textSize = textSize;
         if(mainChapter != null) {
             List<StoriesChapter> chapters = mainChapter.getBook().getStoryChapters();
             lastChapterNumber = Integer.parseInt(chapters.get(chapters.size() -1 ).getNumber());
@@ -67,6 +69,10 @@ public class StoryPagerAdapter extends PagerAdapter {
         return mainChapter;
     }
 
+    public void setTextSize(int textSize){
+        this.textSize = textSize;
+        notifyDataSetChanged();
+    }
     //endregion
 
     //region pager methods
@@ -92,6 +98,8 @@ public class StoryPagerAdapter extends PagerAdapter {
 
             TextView mainTextView = (TextView) view.findViewById(R.id.story_main_text_view);
             TextView secondaryTextView = (TextView) view.findViewById(R.id.story_secondary_text_view);
+            mainTextView.setTextSize((float) textSize);
+            secondaryTextView.setTextSize((float) textSize);
 
             mainTextView.setText(currentMainPage.getText());
             secondaryTextView.setText(currentSecondPage.getText());

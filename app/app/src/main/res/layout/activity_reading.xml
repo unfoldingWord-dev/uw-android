@@ -76,6 +76,12 @@
         android:id="@+id/bottom_menu_layout"
         android:layout_alignBottom="@+id/bottom_marker_layout">
 
+        <include android:id="@+id/reading_text_options"
+            layout="@layout/text_options_view"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
+
         <include
             android:id="@+id/audio_player"
             layout="@layout/audio_player_layout"
