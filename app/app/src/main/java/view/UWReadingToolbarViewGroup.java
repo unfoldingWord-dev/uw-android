@@ -1,6 +1,5 @@
 package view;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Build;
 import android.support.v7.widget.Toolbar;
@@ -158,123 +157,78 @@ public class UWReadingToolbarViewGroup {
 
     private void layoutViews(){
 
-        leftButton.setVisibility((isMinni)? View.GONE :View.VISIBLE);
+        layoutChapterView();
+        layoutMainVersionView();
+        layoutSecondaryVersionView();
+        layoutToolbar();
+        setViewVisibilities();
+    }
 
+    private void setViewVisibilities(){
 
-        if(!isMinni && !hasTwoVersions){
+        chapterLayout.setVisibility(View.VISIBLE);
+        mainVersionLayout.setVisibility(View.VISIBLE);
 
-            RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());
-            chapterParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-            chapterParams.height = getSizeForDp(50);
-            chapterParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            chapterLayout.setLayoutParams(chapterParams);
+        leftButton.setVisibility((isMinni) ? View.GONE : View.VISIBLE);
+        secondaryVersionLayout.setVisibility((hasTwoVersions) ? View.VISIBLE : View.GONE);
+        rightButtonPlaceholder.setVisibility((!isMinni && hasTwoVersions) ? View.INVISIBLE : View.GONE);
 
-            RelativeLayout.LayoutParams versionParams = new RelativeLayout.LayoutParams(mainVersionLayout.getLayoutParams());
-            versionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.ALIGN_PARENT_RIGHT);
-            versionParams.height = getSizeForDp(50);
-            versionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            mainVersionLayout.setLayoutParams(versionParams);
-
-            ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
-            toolbarParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            toolbar.setLayoutParams(toolbarParams);
-
-            chapterLayout.setVisibility(View.VISIBLE);
-            mainVersionLayout.setVisibility(View.VISIBLE);
-            secondaryVersionLayout.setVisibility(View.GONE);
-            leftButton.setVisibility(View.VISIBLE);
-            rightButtonPlaceholder.setVisibility(View.INVISIBLE);
-        }
-        else if(isMinni && !hasTwoVersions){
-
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            layoutParams.height = getSizeForDp(25);
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            chapterLayout.setLayoutParams(layoutParams);
-
-            layoutParams = new RelativeLayout.LayoutParams(mainVersionLayout.getLayoutParams());
-            layoutParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.ALIGN_PARENT_RIGHT);
-            layoutParams.height = getSizeForDp(25);
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            mainVersionLayout.setLayoutParams(layoutParams);
-
-            ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
-            toolbarParams.height = getSizeForDp(25);
-            toolbar.setLayoutParams(toolbarParams);
-
-            chapterLayout.setVisibility(View.VISIBLE);
-            mainVersionLayout.setVisibility(View.VISIBLE);
-            secondaryVersionLayout.setVisibility(View.GONE);
-            leftButton.setVisibility(View.GONE);
-            rightButtonPlaceholder.setVisibility(View.GONE);
-        }
-        else if(!isMinni){
-
-            RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
-            chapterParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            chapterLayout.setLayoutParams(chapterParams);
-
-            RelativeLayout.LayoutParams mainVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
-            mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, rightButtonPlaceholder.getId());
-            mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, centerMarker.getId());
-            mainVersionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
-            mainVersionLayout.setLayoutParams(mainVersionParams);
-
-            RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
-            secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, leftButton.getId());
-            secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, centerMarker.getId());
-            secondaryVersionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
-            secondaryVersionLayout.setLayoutParams(secondaryVersionParams);
-
-            ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
-            toolbarParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            toolbar.setLayoutParams(toolbarParams);
-
-            secondaryVersionLayout.setVisibility(View.VISIBLE);
-            leftButton.setVisibility(View.VISIBLE);
-            rightButtonPlaceholder.setVisibility(View.INVISIBLE);
-            chapterLayout.setVisibility(View.VISIBLE);
-            mainVersionLayout.setVisibility(View.VISIBLE);
-        }
-        else{
-
-            RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());
-            chapterParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            chapterParams.height = getSizeForDp(25);
-            chapterParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            chapterLayout.setLayoutParams(chapterParams);
-
-            RelativeLayout.LayoutParams mainVersionParams = new RelativeLayout.LayoutParams(mainVersionLayout.getLayoutParams());
-            mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.ALIGN_PARENT_RIGHT);
-            mainVersionParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF, chapterLayout.getId());
-            mainVersionParams.height = getSizeForDp(25);
-            mainVersionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            mainVersionLayout.setLayoutParams(mainVersionParams);
-
-            RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(secondaryVersionLayout.getLayoutParams());
-            secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_START : RelativeLayout.ALIGN_PARENT_LEFT, leftButton.getId());
-            secondaryVersionParams.addRule((Build.VERSION.SDK_INT >= 17)? RelativeLayout.START_OF : RelativeLayout.LEFT_OF, chapterLayout.getId());
-            secondaryVersionParams.height = getSizeForDp(25);
-            secondaryVersionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            secondaryVersionLayout.setLayoutParams(secondaryVersionParams);
-
-            ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
-            toolbarParams.height = getSizeForDp(25);
-            toolbar.setLayoutParams(toolbarParams);
-
-            secondaryVersionLayout.setVisibility(View.VISIBLE);
-            leftButton.setVisibility(View.GONE);
-            rightButtonPlaceholder.setVisibility(View.GONE);
-            chapterLayout.setVisibility(View.VISIBLE);
-            mainVersionLayout.setVisibility(View.VISIBLE);
-        }
-
-        if(chapterText == null || chapterText.length() < 1){
+        if(chapterText == null || chapterText.length() < 1) {
             chapterLayout.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void layoutToolbar(){
+        ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
+        toolbarParams.height = (isMinni)? getSizeForDp(30) : ViewGroup.LayoutParams.WRAP_CONTENT;
+        toolbar.setLayoutParams(toolbarParams);
+    }
+
+    private void layoutChapterView(){
+
+        RelativeLayout.LayoutParams chapterParams = new RelativeLayout.LayoutParams(chapterLayout.getLayoutParams());
+        chapterParams.addRule((!isMinni && !hasTwoVersions) ? RelativeLayout.CENTER_IN_PARENT : RelativeLayout.CENTER_HORIZONTAL);
+        chapterParams.height = getSizeForDp((!isMinni && !hasTwoVersions)? 50 : 25);
+        chapterParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        if(isMinni || hasTwoVersions){
+            chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        }
+        chapterLayout.setLayoutParams(chapterParams);
+    }
+
+    private void layoutMainVersionView(){
+
+        RelativeLayout.LayoutParams versionParams = new RelativeLayout.LayoutParams(mainVersionLayout.getLayoutParams());
+        versionParams.height = getSizeForDp((!isMinni && !hasTwoVersions)? 50 : 25);
+        versionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+        if(!hasTwoVersions || isMinni){
+            versionParams.addRule(getSDKSafeAlignParentRight());
+        }
+        if(hasTwoVersions && !isMinni){
+            versionParams.addRule(getSDKSafeLeftOf(), rightButtonPlaceholder.getId());
+            versionParams.addRule(getSDKSafeRightOf(), centerMarker.getId());
+            versionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
+        }
+        if(hasTwoVersions && isMinni){
+            versionParams.addRule(getSDKSafeRightOf(), chapterLayout.getId());
+        }
+        mainVersionLayout.setLayoutParams(versionParams);
+    }
+
+    private void layoutSecondaryVersionView(){
+
+        if(hasTwoVersions) {
+            RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
+            secondaryVersionParams.addRule((isMinni) ? getSDKSafeLeftOf() : RelativeLayout.BELOW, chapterLayout.getId());
+            secondaryVersionLayout.setLayoutParams(secondaryVersionParams);
+            if(isMinni){
+                secondaryVersionParams.addRule(getSDKSafeAlignParentLeft());
+            }
+            else{
+                secondaryVersionParams.addRule(getSDKSafeRightOf(), leftButton.getId());
+                secondaryVersionParams.addRule(getSDKSafeLeftOf(), centerMarker.getId());
+            }
         }
     }
 
@@ -309,4 +263,20 @@ public class UWReadingToolbarViewGroup {
     private int getSizeForDp(int sizeInDP){
         return (int) (sizeInDP * activity.getResources().getDisplayMetrics().density + 0.5f) ;
     }
+
+    private static int getSDKSafeAlignParentRight(){
+        return (Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.ALIGN_PARENT_RIGHT;
+    }
+
+    private static int getSDKSafeAlignParentLeft(){
+        return (Build.VERSION.SDK_INT >= 17) ? RelativeLayout.ALIGN_PARENT_START : RelativeLayout.ALIGN_PARENT_LEFT;
+    }
+
+    private static int getSDKSafeLeftOf(){
+        return (Build.VERSION.SDK_INT >= 17) ? RelativeLayout.START_OF : RelativeLayout.LEFT_OF;
+    }
+    private static int getSDKSafeRightOf(){
+        return (Build.VERSION.SDK_INT >= 17) ? RelativeLayout.END_OF : RelativeLayout.RIGHT_OF;
+    }
+
 }
