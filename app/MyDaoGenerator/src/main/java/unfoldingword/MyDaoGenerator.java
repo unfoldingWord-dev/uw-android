@@ -13,7 +13,7 @@ public class MyDaoGenerator {
     private static final String COMPARABLE_INTERFACE_END = ">";
 
     public static void main(String[] args) throws Exception {
-        Schema schema = new Schema(100, "model.daoModels");
+        Schema schema = new Schema(ModelNames.DB_VERSION_ID, "model.daoModels");
 
         schema.enableKeepSectionsByDefault();
         setupData(schema);
@@ -29,14 +29,13 @@ public class MyDaoGenerator {
         Entity language = createLanguage(schema, project);
         Entity version = createVersion(schema, language);
         Entity book = createBook(schema, version);
-        createVerification(schema, book);
         createBibleChapter(schema, book);
         Entity storyChapter = createStoryChapter(schema, book);
         createStoryPage(schema, storyChapter);
         createSigningOrganization(schema);
-
         Entity audioBook = createAudioBook(schema, book);
-        createAudioChapter(schema, audioBook);
+        Entity audioChapter = createAudioChapter(schema, audioBook);
+        createVerification(schema, book, audioChapter);
     }
 
     private static Entity createProject(Schema schema) {
@@ -90,7 +89,7 @@ public class MyDaoGenerator {
         return book;
     }
 
-    private static void createVerification(Schema schema, Entity book) {
+    private static void createVerification(Schema schema, Entity book, Entity audioChapter) {
 
         DaoHelperMethods.EntityInformation verificationInfo =
                 new DaoHelperMethods.EntityInformation(ModelNames.VERIFICATION, ModelNames.VERIFICATION_STRING_ATTRIBUTES);
@@ -101,6 +100,10 @@ public class MyDaoGenerator {
         DaoHelperMethods.createParentChildRelationship(
                 book, ModelNames.BOOK_VERIFICATIONS_ATTRIBUTE,
                 verification, ModelNames.VERIFICATION_BOOK_ATTRIBUTE);
+
+        DaoHelperMethods.createParentChildRelationship(
+                audioChapter, ModelNames.AUDIO_CHAPTER_VERIFICATIONS_ATTRIBUTE,
+                verification, ModelNames.VERIFICATION_AUDIO_CHAPTER_ATTRIBUTE);
     }
 
     private static void createBibleChapter(Schema schema, Entity book) {

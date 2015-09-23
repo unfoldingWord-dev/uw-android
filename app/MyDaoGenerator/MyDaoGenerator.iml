@@ -13,7 +13,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/classes/main" />
     <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
@@ -29,5 +29,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="greendao-generator-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="freemarker-2.3.22" level="project" />
+    <orderEntry type="library" exported="" name="MyDaoGenerator.MyDaoGenerator" level="project" />
   </component>
 </module>

@@ -1,7 +1,6 @@
 package model.daoModels;
 
 import java.util.List;
-
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -50,9 +49,9 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     private AudioBook audioBook;
     private Long audioBook__resolvedKey;
 
-    private List<Verification> verifications;
     private List<BibleChapter> bibleChapters;
     private List<StoriesChapter> storyChapters;
+    private List<Verification> verifications;
 
     // KEEP FIELDS - put your custom fields here
 //    static private final String TAG = "Version";
@@ -221,28 +220,6 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<Verification> getVerifications() {
-        if (verifications == null) {
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            VerificationDao targetDao = daoSession.getVerificationDao();
-            List<Verification> verificationsNew = targetDao._queryBook_Verifications(id);
-            synchronized (this) {
-                if(verifications == null) {
-                    verifications = verificationsNew;
-                }
-            }
-        }
-        return verifications;
-    }
-
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    public synchronized void resetVerifications() {
-        verifications = null;
-    }
-
-    /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
     public List<BibleChapter> getBibleChapters() {
         if (bibleChapters == null) {
             if (daoSession == null) {
@@ -284,6 +261,28 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     public synchronized void resetStoryChapters() {
         storyChapters = null;
+    }
+
+    /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
+    public List<Verification> getVerifications() {
+        if (verifications == null) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            VerificationDao targetDao = daoSession.getVerificationDao();
+            List<Verification> verificationsNew = targetDao._queryBook_Verifications(id);
+            synchronized (this) {
+                if(verifications == null) {
+                    verifications = verificationsNew;
+                }
+            }
+        }
+        return verifications;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    public synchronized void resetVerifications() {
+        verifications = null;
     }
 
     /** Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context. */

@@ -5,6 +5,8 @@ package unfoldingword;
  */
 public class ModelNames {
 
+    static public final int DB_VERSION_ID = 101;
+
     static public final String PROJECT = "Project";
     static public final String[] PROJECT_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "title" };
     static public final String PROJECT_LANGUAGES_ATTRIBUTE = "languages";
@@ -36,6 +38,7 @@ public class ModelNames {
     static public final String[] VERIFICATION_STRING_ATTRIBUTES = { "signingInstitution","signature" };
     static public final String[] VERIFICATION_INT_ATTRIBUTES = { "status"};
     static public final String VERIFICATION_BOOK_ATTRIBUTE = "bookId";
+    static public final String VERIFICATION_AUDIO_CHAPTER_ATTRIBUTE = "audioChapterId";
 
     static public final String BIBLE_CHAPTER = "BibleChapter";
     static public final String[] BIBLE_CHAPTER_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "number", "text" };
@@ -59,7 +62,6 @@ public class ModelNames {
     static public final String[] SIGNING_ORGANIZATION_DATE_ATTRIBUTES = { "createdAt", "expiresAt", "modifiedAt" };
     static public final String[] SIGNING_ORGANIZATION_STRING_ATTRIBUTES = { "email","name", "url", "uniqueSlug", "slug" };
 
-
     static public final String AUDIO_BOOK = "AudioBook";
     static public final String[] AUDIO_BOOK_STRING_ATTRIBUTES = { "uniqueSlug", "contributors","revision", "textVersion" };
     static public final String AUDIO_BOOK_AUDIO_CHAPTER_ATTRIBUTE = "audioChapters";
@@ -70,4 +72,5 @@ public class ModelNames {
     static public final String[] AUDIO_CHAPTER_STRING_ATTRIBUTES = { "uniqueSlug", "source","sourceSignature"};
     static public final String[] AUDIO_CHAPTER_INT_ATTRIBUTES = { "chapter", "bitRate", "length", "size"};
     static public final String AUDIO_CHAPTER_AUDIO_BOOK_ATTRIBUTE = "audioBookId";
+    static public final String AUDIO_CHAPTER_VERIFICATIONS_ATTRIBUTE = "verifications";
 }

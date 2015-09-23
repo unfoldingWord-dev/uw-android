@@ -21,6 +21,7 @@ import model.daoModels.Book;
 import model.daoModels.DaoMaster;
 import model.daoModels.Version;
 import tasks.UpdateAndVerifyBookRunnable;
+import unfoldingword.ModelNames;
 import utils.FileNameHelper;
 import utils.FileUtil;
 
@@ -29,11 +30,9 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     private static final String TAG = "DatabaseOpenHelper";
 
     private Context context;
-
     private SQLiteDatabase sqliteDatabase;
 
     private static String DB_PATH;
-
     private static String DB_NAME;
 
     public DatabaseOpenHelper(Context context, String name, CursorFactory factory) {
@@ -51,6 +50,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         try {
             createDataBase();
         } catch (Exception ioe) {
+            ioe.printStackTrace();
             throw new Error("Unable to create database");
         }
     }
@@ -58,6 +58,11 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        if(oldVersion == 100 && newVersion == 101){
+            db.execSQL("ALTER TABLE '" + ModelNames.VERIFICATION + "' ADD '" + "AUDIO_CHAPTER_ID" + "' INTEGER");
+            db.setVersion(101);
+        }
+        Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
     }
 
     /** Open Database for Use */
@@ -83,16 +88,24 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
     /** Create new database if not present */
     public void createDataBase() {
-        SQLiteDatabase sqliteDatabase = null;
 
-        if (databaseExists()) {
-            /* Check for Upgrade */
-        } else {
+        if (!databaseExists()) {
+
+            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             /* Database does not exists create blank database */
-            sqliteDatabase = this.getReadableDatabase();
             sqliteDatabase.close();
-
             populateWithPreload();
+        }
+        else {
+            checkForUpgrade();
+        }
+    }
+
+    private void checkForUpgrade(){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(db.getVersion() < ModelNames.DB_VERSION_ID){
+            onUpgrade(db, db.getVersion(), ModelNames.DB_VERSION_ID);
         }
     }
 

@@ -211,6 +211,38 @@
                     android:text="New Text"
                     android:textColor="@color/black" />
             </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+
+                <Button
+                    android:padding="5dp"
+                    android:textColor="#000"
+                    android:background="@drawable/gray_button_selector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Download Audio"
+                    android:id="@+id/download_audio_button"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"/>
+
+                <Button
+                    android:padding="5dp"
+                    android:background="@drawable/gray_button_selector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Download Video"
+                    android:id="@+id/download_video_button"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000"
+                    />
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -22,6 +22,7 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
     private String signature;
     private Integer status;
     private long bookId;
+    private long audioChapterId;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -31,6 +32,9 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
 
     private Book book;
     private Long book__resolvedKey;
+
+    private AudioChapter audioChapter;
+    private Long audioChapter__resolvedKey;
 
 
     // KEEP FIELDS - put your custom fields here
@@ -43,12 +47,13 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
         this.id = id;
     }
 
-    public Verification(Long id, String signingInstitution, String signature, Integer status, long bookId) {
+    public Verification(Long id, String signingInstitution, String signature, Integer status, long bookId, long audioChapterId) {
         this.id = id;
         this.signingInstitution = signingInstitution;
         this.signature = signature;
         this.status = status;
         this.bookId = bookId;
+        this.audioChapterId = audioChapterId;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -97,6 +102,14 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
         this.bookId = bookId;
     }
 
+    public long getAudioChapterId() {
+        return audioChapterId;
+    }
+
+    public void setAudioChapterId(long audioChapterId) {
+        this.audioChapterId = audioChapterId;
+    }
+
     /** To-one relationship, resolved on first access. */
     public Book getBook() {
         long __key = this.bookId;
@@ -122,6 +135,34 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
             this.book = book;
             bookId = book.getId();
             book__resolvedKey = bookId;
+        }
+    }
+
+    /** To-one relationship, resolved on first access. */
+    public AudioChapter getAudioChapter() {
+        long __key = this.audioChapterId;
+        if (audioChapter__resolvedKey == null || !audioChapter__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            AudioChapterDao targetDao = daoSession.getAudioChapterDao();
+            AudioChapter audioChapterNew = targetDao.load(__key);
+            synchronized (this) {
+                audioChapter = audioChapterNew;
+            	audioChapter__resolvedKey = __key;
+            }
+        }
+        return audioChapter;
+    }
+
+    public void setAudioChapter(AudioChapter audioChapter) {
+        if (audioChapter == null) {
+            throw new DaoException("To-one property 'audioChapterId' has not-null constraint; cannot set to-one to null");
+        }
+        synchronized (this) {
+            this.audioChapter = audioChapter;
+            audioChapterId = audioChapter.getId();
+            audioChapter__resolvedKey = audioChapterId;
         }
     }
 

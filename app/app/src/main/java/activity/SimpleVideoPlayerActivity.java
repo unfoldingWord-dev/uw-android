@@ -20,12 +20,12 @@ public class SimpleVideoPlayerActivity extends Activity{
         VideoView videoView =(VideoView)findViewById(R.id.simple_video_player_video_view);
         MediaController mediaController= new MediaController(this);
         mediaController.setAnchorView(videoView);
-        Uri uri= Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test_video);
-        videoView.setMediaController(mediaController);
-        videoView.setVideoURI(uri);
-        videoView.requestFocus();
-
-        videoView.start();
+//        Uri uri= Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test_video);
+//        videoView.setMediaController(mediaController);
+//        videoView.setVideoURI(uri);
+//        videoView.requestFocus();
+//
+//        videoView.start();
 
 
     }

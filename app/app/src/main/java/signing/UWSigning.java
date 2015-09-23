@@ -77,10 +77,38 @@ public class UWSigning {
 
             updateVerifications(context, verifications, book.getId());
         }
-        catch (JSONException e){
+        catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+//    private static Verification getVerification(Context context, byte[] text, JSONObject verificationModel){
+//
+//        Verification model = new Verification();
+//        model = (Verification) model.setupModelFromJson(verificationModel);
+//
+//        if(model == null){
+//
+//            Verification errorModel = new Verification();
+//            errorModel.setStatus(2);
+//            return errorModel;
+//        }
+//
+//        try {
+//            SigningEntity signingEntity = getSigningEntity(context);
+//
+//            Status sigStatus = signingEntity.verifyContent(model.getSignature(), text);
+//            if (sigStatus != Status.VERIFIED) {
+//                Log.e(TAG, "Signature not verified: " + sigStatus.toString());
+//            } else {
+//                Log.i(TAG, "Signature status: " + sigStatus.toString());
+//            }
+//            model.setStatus(sigStatus.ordinal());
+//        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//        }
+//    }
 
     private static void updateVerifications(Context context, List<Verification> newModels, long bookId){
 

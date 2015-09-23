@@ -33,11 +33,13 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
         public final static Property Signature = new Property(2, String.class, "signature", false, "SIGNATURE");
         public final static Property Status = new Property(3, Integer.class, "status", false, "STATUS");
         public final static Property BookId = new Property(4, long.class, "bookId", false, "BOOK_ID");
+        public final static Property AudioChapterId = new Property(5, long.class, "audioChapterId", false, "AUDIO_CHAPTER_ID");
     };
 
     private DaoSession daoSession;
 
     private Query<Verification> book_VerificationsQuery;
+    private Query<Verification> audioChapter_VerificationsQuery;
 
     public VerificationDao(DaoConfig config) {
         super(config);
@@ -56,7 +58,8 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
                 "\"SIGNING_INSTITUTION\" TEXT," + // 1: signingInstitution
                 "\"SIGNATURE\" TEXT," + // 2: signature
                 "\"STATUS\" INTEGER," + // 3: status
-                "\"BOOK_ID\" INTEGER NOT NULL );"); // 4: bookId
+                "\"BOOK_ID\" INTEGER NOT NULL ," + // 4: bookId
+                "\"AUDIO_CHAPTER_ID\" INTEGER NOT NULL );"); // 5: audioChapterId
     }
 
     /** Drops the underlying database table. */
@@ -90,6 +93,7 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
             stmt.bindLong(4, status);
         }
         stmt.bindLong(5, entity.getBookId());
+        stmt.bindLong(6, entity.getAudioChapterId());
     }
 
     @Override
@@ -112,7 +116,8 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // signingInstitution
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // signature
             cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // status
-            cursor.getLong(offset + 4) // bookId
+            cursor.getLong(offset + 4), // bookId
+            cursor.getLong(offset + 5) // audioChapterId
         );
         return entity;
     }
@@ -125,6 +130,7 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
         entity.setSignature(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setStatus(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
         entity.setBookId(cursor.getLong(offset + 4));
+        entity.setAudioChapterId(cursor.getLong(offset + 5));
      }
     
     /** @inheritdoc */
@@ -164,6 +170,20 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
         return query.list();
     }
 
+    /** Internal query to resolve the "verifications" to-many relationship of AudioChapter. */
+    public List<Verification> _queryAudioChapter_Verifications(long audioChapterId) {
+        synchronized (this) {
+            if (audioChapter_VerificationsQuery == null) {
+                QueryBuilder<Verification> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.AudioChapterId.eq(null));
+                audioChapter_VerificationsQuery = queryBuilder.build();
+            }
+        }
+        Query<Verification> query = audioChapter_VerificationsQuery.forCurrentThread();
+        query.setParameter(0, audioChapterId);
+        return query.list();
+    }
+
     private String selectDeep;
 
     protected String getSelectDeep() {
@@ -172,8 +192,11 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
             SqlUtils.appendColumns(builder, "T0", daoSession.getBookDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T1", daoSession.getAudioChapterDao().getAllColumns());
             builder.append(" FROM VERIFICATION T");
             builder.append(" LEFT JOIN BOOK T0 ON T.\"BOOK_ID\"=T0.\"_id\"");
+            builder.append(" LEFT JOIN AUDIO_CHAPTER T1 ON T.\"AUDIO_CHAPTER_ID\"=T1.\"_id\"");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -187,6 +210,12 @@ public class VerificationDao extends AbstractDao<Verification, Long> {
         Book book = loadCurrentOther(daoSession.getBookDao(), cursor, offset);
          if(book != null) {
             entity.setBook(book);
+        }
+        offset += daoSession.getBookDao().getAllColumns().length;
+
+        AudioChapter audioChapter = loadCurrentOther(daoSession.getAudioChapterDao(), cursor, offset);
+         if(audioChapter != null) {
+            entity.setAudioChapter(audioChapter);
         }
 
         return entity;    

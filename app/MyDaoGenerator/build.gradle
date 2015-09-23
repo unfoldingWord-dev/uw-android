@@ -1,6 +1,9 @@
 project(':MyDaoGenerator') {
     apply plugin: 'application'
     apply plugin: 'java'
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
 
     mainClassName = "unfoldingword.MyDaoGenerator"
     // edit output direction
