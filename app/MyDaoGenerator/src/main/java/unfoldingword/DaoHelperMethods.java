@@ -74,7 +74,7 @@ public class DaoHelperMethods {
         }
     }
 
-    private static void addBooleanAttributesToEntity(Entity entity, String[] booleanAttributes){
+    public static void addBooleanAttributesToEntity(Entity entity, String[] booleanAttributes){
 
         if(arrayIsValid(booleanAttributes)) {
             for (String name : booleanAttributes) {
@@ -122,6 +122,10 @@ public class DaoHelperMethods {
         public EntityInformation(String entityName, String[] stringAttributes, String[] dateAttributes,
                                  String[] intAttributes, String[] booleanAttributes) {
             this(entityName, stringAttributes, dateAttributes, intAttributes);
+            this.booleanAttributes = booleanAttributes;
+        }
+
+        public void setBooleanAttributes(String[] booleanAttributes) {
             this.booleanAttributes = booleanAttributes;
         }
     }

@@ -26,7 +26,7 @@ public class VerificationUpdater {
         try {
             byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
             String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
-            UWSigning.updateVerification(context, book, bookText, sigText);
+            UWSigning.updateBookVerification(context, book, bookText, sigText);
             listener.verificationFinishedWithResult(bookText);
         }
         catch (IOException e){

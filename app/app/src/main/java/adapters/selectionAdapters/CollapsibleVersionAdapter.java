@@ -27,6 +27,7 @@ import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import services.UWMediaDownloaderService;
 import services.UWUpdaterService;
 import services.UWVersionDownloaderService;
 import utils.NetWorkUtil;
@@ -184,6 +185,18 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     }
 
     @Override
+    public void audioButtonWasClicked(Version version) {
+
+        downloadMedia(version, false);
+    }
+
+    @Override
+    public void videoButtonWasClicked(Version version) {
+
+        downloadMedia(version, true);
+    }
+
+    @Override
     public void versionWasSelected(Version version) {
 
         listener.versionWasSelected(version);
@@ -207,6 +220,24 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             version.update();
             Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
             downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, version.getId());
+            getContext().startService(downloadIntent);
+            reload();
+        }
+    }
+
+    private void downloadMedia(Version version, boolean isVideo){
+
+        if (!NetWorkUtil.isConnected(getContext())) {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Alert")
+                    .setMessage("Failed connecting to the internet.")
+                    .setPositiveButton("OK", null)
+                    .create().show();
+        } else {
+            setupIntentFilter();
+            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
+            downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, version.getId());
+            downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, isVideo);
             getContext().startService(downloadIntent);
             reload();
         }

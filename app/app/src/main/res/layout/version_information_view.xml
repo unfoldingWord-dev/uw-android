@@ -218,7 +218,6 @@
                 android:orientation="horizontal"
                 android:gravity="center">
 
-
                 <Button
                     android:padding="5dp"
                     android:textColor="#000"

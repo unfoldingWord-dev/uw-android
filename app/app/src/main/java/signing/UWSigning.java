@@ -31,7 +31,15 @@ public class UWSigning {
     private static final String stockCertPub = "certs/ca.pub";
 
 
-    public static void updateVerification(Context context, Book book, byte[] text, String sigData) throws IOException{
+    public static void updateBookVerification(Context context, Book book, byte[] text, String sigData) throws IOException{
+
+        ArrayList<Verification> verifications = getVerifications(context, text, sigData);
+        if(verifications  != null) {
+            updateBookVerifications(context, verifications, book.getId());
+        }
+    }
+
+    private static ArrayList<Verification> getVerifications(Context context, byte[] text, String sigData){
 
         try {
 //            String sigData = URLDownloadUtil.downloadString(book.getSignatureUrl());
@@ -40,77 +48,51 @@ public class UWSigning {
 
             if(sigData.contains("404")){
                 Verification errorModel = new Verification();
-                errorModel.setStatus( 2);
+                errorModel.setStatus(2);
                 verifications.add(errorModel);
-                updateVerifications(context, verifications, book.getId());
-                return;
+            }
+            else {
+
+                JSONArray sigArray = new JSONArray(sigData);
+                for (int i = 0; i < sigArray.length(); i++) {
+                    JSONObject obj = sigArray.getJSONObject(i);
+                    Verification model = new Verification();
+                    model = (Verification) model.setupModelFromJson(obj);
+
+                    if (model == null) {
+
+                        Verification errorModel = new Verification();
+                        errorModel.setStatus(2);
+                        verifications.add(errorModel);
+                        break;
+                    }
+
+                    SigningEntity signingEntity = getSigningEntity(context);
+
+                    Status sigStatus = signingEntity.verifyContent(model.getSignature(), text);
+                    if (sigStatus != Status.VERIFIED) {
+                        Log.e(TAG, "Signature not verified: " + sigStatus.toString());
+                    } else {
+                        Log.i(TAG, "Signature status: " + sigStatus.toString());
+                    }
+                    model.setStatus(sigStatus.ordinal());
+
+                    verifications.add(model);
+                }
             }
 
-            JSONArray sigArray = new JSONArray(sigData);
-            for (int i = 0; i < sigArray.length(); i++) {
-                JSONObject obj = sigArray.getJSONObject(i);
-                Verification model = new Verification();
-                model = (Verification) model.setupModelFromJson(obj);
-
-                if(model == null){
-
-                    Verification errorModel = new Verification();
-                    errorModel.setStatus(2);
-                    verifications.add(errorModel);
-                    updateVerifications(context, verifications, book.getId());
-                    return;
-                }
-
-                SigningEntity signingEntity = getSigningEntity(context);
-
-                Status sigStatus = signingEntity.verifyContent(model.getSignature(), text);
-                if (sigStatus != Status.VERIFIED) {
-                    Log.e(TAG, "Signature not verified: " + sigStatus.toString());
-                }
-                else{
-                    Log.i(TAG, "Signature status: " + sigStatus.toString());
-                }
-                model.setStatus(sigStatus.ordinal());
-
-                verifications.add(model);
-            }
-
-            updateVerifications(context, verifications, book.getId());
+            return verifications;
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
-//    private static Verification getVerification(Context context, byte[] text, JSONObject verificationModel){
-//
-//        Verification model = new Verification();
-//        model = (Verification) model.setupModelFromJson(verificationModel);
-//
-//        if(model == null){
-//
-//            Verification errorModel = new Verification();
-//            errorModel.setStatus(2);
-//            return errorModel;
-//        }
-//
-//        try {
-//            SigningEntity signingEntity = getSigningEntity(context);
-//
-//            Status sigStatus = signingEntity.verifyContent(model.getSignature(), text);
-//            if (sigStatus != Status.VERIFIED) {
-//                Log.e(TAG, "Signature not verified: " + sigStatus.toString());
-//            } else {
-//                Log.i(TAG, "Signature status: " + sigStatus.toString());
-//            }
-//            model.setStatus(sigStatus.ordinal());
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//    }
-
-    private static void updateVerifications(Context context, List<Verification> newModels, long bookId){
+    private static void updateBookVerifications(Context context, List<Verification> newModels, long bookId){
 
         List<Verification> currentVerifications = Verification.getModelForBookId(bookId, DaoDBHelper.getDaoSession(context));
 

@@ -149,6 +149,7 @@
         <service android:name="services.UWVersionDownloaderService" />
         <service android:name="services.UWPreLoaderService" />
         <service android:name="services.UWSideLoaderService" />
+        <service android:name="services.UWMediaDownloaderService" />
 
     </application>
 

@@ -35,9 +35,11 @@ public class BookDao extends AbstractDao<Book, Long> {
         public final static Property Description = new Property(4, String.class, "description", false, "DESCRIPTION");
         public final static Property SourceUrl = new Property(5, String.class, "sourceUrl", false, "SOURCE_URL");
         public final static Property SignatureUrl = new Property(6, String.class, "signatureUrl", false, "SIGNATURE_URL");
-        public final static Property Modified = new Property(7, java.util.Date.class, "modified", false, "MODIFIED");
-        public final static Property VersionId = new Property(8, long.class, "versionId", false, "VERSION_ID");
-        public final static Property AudioBookId = new Property(9, long.class, "audioBookId", false, "AUDIO_BOOK_ID");
+        public final static Property AudioIsDownloaded = new Property(7, Boolean.class, "audioIsDownloaded", false, "AUDIO_IS_DOWNLOADED");
+        public final static Property VideoIsDownloaded = new Property(8, Boolean.class, "videoIsDownloaded", false, "VIDEO_IS_DOWNLOADED");
+        public final static Property Modified = new Property(9, java.util.Date.class, "modified", false, "MODIFIED");
+        public final static Property VersionId = new Property(10, long.class, "versionId", false, "VERSION_ID");
+        public final static Property AudioBookId = new Property(11, long.class, "audioBookId", false, "AUDIO_BOOK_ID");
     };
 
     private DaoSession daoSession;
@@ -64,9 +66,11 @@ public class BookDao extends AbstractDao<Book, Long> {
                 "\"DESCRIPTION\" TEXT," + // 4: description
                 "\"SOURCE_URL\" TEXT," + // 5: sourceUrl
                 "\"SIGNATURE_URL\" TEXT," + // 6: signatureUrl
-                "\"MODIFIED\" INTEGER," + // 7: modified
-                "\"VERSION_ID\" INTEGER NOT NULL ," + // 8: versionId
-                "\"AUDIO_BOOK_ID\" INTEGER NOT NULL );"); // 9: audioBookId
+                "\"AUDIO_IS_DOWNLOADED\" INTEGER," + // 7: audioIsDownloaded
+                "\"VIDEO_IS_DOWNLOADED\" INTEGER," + // 8: videoIsDownloaded
+                "\"MODIFIED\" INTEGER," + // 9: modified
+                "\"VERSION_ID\" INTEGER NOT NULL ," + // 10: versionId
+                "\"AUDIO_BOOK_ID\" INTEGER NOT NULL );"); // 11: audioBookId
     }
 
     /** Drops the underlying database table. */
@@ -115,12 +119,22 @@ public class BookDao extends AbstractDao<Book, Long> {
             stmt.bindString(7, signatureUrl);
         }
  
+        Boolean audioIsDownloaded = entity.getAudioIsDownloaded();
+        if (audioIsDownloaded != null) {
+            stmt.bindLong(8, audioIsDownloaded ? 1L: 0L);
+        }
+ 
+        Boolean videoIsDownloaded = entity.getVideoIsDownloaded();
+        if (videoIsDownloaded != null) {
+            stmt.bindLong(9, videoIsDownloaded ? 1L: 0L);
+        }
+ 
         java.util.Date modified = entity.getModified();
         if (modified != null) {
-            stmt.bindLong(8, modified.getTime());
+            stmt.bindLong(10, modified.getTime());
         }
-        stmt.bindLong(9, entity.getVersionId());
-        stmt.bindLong(10, entity.getAudioBookId());
+        stmt.bindLong(11, entity.getVersionId());
+        stmt.bindLong(12, entity.getAudioBookId());
     }
 
     @Override
@@ -146,9 +160,11 @@ public class BookDao extends AbstractDao<Book, Long> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // description
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // sourceUrl
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // signatureUrl
-            cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)), // modified
-            cursor.getLong(offset + 8), // versionId
-            cursor.getLong(offset + 9) // audioBookId
+            cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0, // audioIsDownloaded
+            cursor.isNull(offset + 8) ? null : cursor.getShort(offset + 8) != 0, // videoIsDownloaded
+            cursor.isNull(offset + 9) ? null : new java.util.Date(cursor.getLong(offset + 9)), // modified
+            cursor.getLong(offset + 10), // versionId
+            cursor.getLong(offset + 11) // audioBookId
         );
         return entity;
     }
@@ -163,9 +179,11 @@ public class BookDao extends AbstractDao<Book, Long> {
         entity.setDescription(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setSourceUrl(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setSignatureUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setModified(cursor.isNull(offset + 7) ? null : new java.util.Date(cursor.getLong(offset + 7)));
-        entity.setVersionId(cursor.getLong(offset + 8));
-        entity.setAudioBookId(cursor.getLong(offset + 9));
+        entity.setAudioIsDownloaded(cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0);
+        entity.setVideoIsDownloaded(cursor.isNull(offset + 8) ? null : cursor.getShort(offset + 8) != 0);
+        entity.setModified(cursor.isNull(offset + 9) ? null : new java.util.Date(cursor.getLong(offset + 9)));
+        entity.setVersionId(cursor.getLong(offset + 10));
+        entity.setAudioBookId(cursor.getLong(offset + 11));
      }
     
     /** @inheritdoc */

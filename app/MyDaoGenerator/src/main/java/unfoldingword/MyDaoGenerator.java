@@ -80,6 +80,7 @@ public class MyDaoGenerator {
         DaoHelperMethods.EntityInformation bookInfo =
                 new DaoHelperMethods.EntityInformation(ModelNames.BOOK, ModelNames.BOOK_STRING_ATTRIBUTES,
                         ModelNames.BOOK_DATE_ATTRIBUTES);
+        bookInfo.setBooleanAttributes(ModelNames.BOOK_BOOLEAN_ATTRIBUTES);
         Entity book = DaoHelperMethods.createEntity(schema, bookInfo);
         book.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
         DaoHelperMethods.createParentChildRelationship(

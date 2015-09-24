@@ -35,6 +35,8 @@ public class VersionRowViewHolder {
 
     private FrameLayout downloadFrame;
     private ProgressBar downloadProgressBar;
+    private Button downloadAudioButton;
+    private Button downloadVideoButton;
     private Button deleteButton;
 
     private Context context;
@@ -63,6 +65,8 @@ public class VersionRowViewHolder {
         downloadProgressBar = (ProgressBar) baseView.findViewById(R.id.download_progress_bar);
 
         downloadButton = (ImageView) baseView.findViewById(R.id.download_status_image);
+        downloadAudioButton = (Button) baseView.findViewById(R.id.download_audio_button);
+        downloadVideoButton = (Button) baseView.findViewById(R.id.download_video_button);
         deleteButton = (Button) baseView.findViewById(R.id.delete_button);
         clickableLayout = (LinearLayout) baseView.findViewById(R.id.clickableRow);
 
@@ -114,6 +118,20 @@ public class VersionRowViewHolder {
                 infoWasClicked();
             }
         });
+
+        downloadAudioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.audioButtonWasClicked(version);
+            }
+        });
+
+        downloadVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.videoButtonWasClicked(version);
+            }
+        });
     }
 
     private void infoWasClicked() {
@@ -147,5 +165,7 @@ public class VersionRowViewHolder {
         void downloadWasPressed(VersionRowViewHolder holder, Version version);
         void deletePressed(Version version);
         void versionWasSelected(Version version);
+        void audioButtonWasClicked(Version version);
+        void videoButtonWasClicked(Version version);
     }
 }

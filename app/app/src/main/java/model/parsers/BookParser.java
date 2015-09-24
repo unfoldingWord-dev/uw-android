@@ -37,6 +37,8 @@ public class BookParser extends UWDataParser{
         newModel.setSignatureUrl(jsonObject.getString(SIGNATURE_URL_JSON_KEY));
         newModel.setTitle(jsonObject.getString(TITLE_JSON_KEY));
         newModel.setVersionId(((Version) parent).getId());
+        newModel.setAudioIsDownloaded(false);
+        newModel.setVideoIsDownloaded(false);
 
         return newModel;
     }

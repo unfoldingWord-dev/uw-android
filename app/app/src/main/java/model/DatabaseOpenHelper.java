@@ -60,6 +60,8 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
         if(oldVersion == 100 && newVersion == 101){
             db.execSQL("ALTER TABLE '" + ModelNames.VERIFICATION + "' ADD '" + "AUDIO_CHAPTER_ID" + "' INTEGER");
+            db.execSQL("ALTER TABLE '" + ModelNames.BOOK + "' ADD '" + "AUDIO_IS_DOWNLOADED" + "' BOOLEAN");
+            db.execSQL("ALTER TABLE '" + ModelNames.BOOK + "' ADD '" + "VIDEO_IS_DOWNLOADED" + "' BOOLEAN");
             db.setVersion(101);
         }
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
@@ -95,17 +97,6 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             /* Database does not exists create blank database */
             sqliteDatabase.close();
             populateWithPreload();
-        }
-        else {
-            checkForUpgrade();
-        }
-    }
-
-    private void checkForUpgrade(){
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(db.getVersion() < ModelNames.DB_VERSION_ID){
-            onUpgrade(db, db.getVersion(), ModelNames.DB_VERSION_ID);
         }
     }
 

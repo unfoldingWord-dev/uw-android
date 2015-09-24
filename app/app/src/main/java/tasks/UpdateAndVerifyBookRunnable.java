@@ -38,7 +38,7 @@ public class UpdateAndVerifyBookRunnable implements Runnable{
     private void updateVerification(){
 
         try {
-            UWSigning.updateVerification(updater.getApplicationContext(), book, bookText, sigText);
+            UWSigning.updateBookVerification(updater.getApplicationContext(), book, bookText, sigText);
             parseText(bookText);
         }
         catch (IOException e){

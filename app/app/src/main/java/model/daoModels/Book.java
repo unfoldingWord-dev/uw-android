@@ -33,6 +33,8 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     private String description;
     private String sourceUrl;
     private String signatureUrl;
+    private Boolean audioIsDownloaded;
+    private Boolean videoIsDownloaded;
     private java.util.Date modified;
     private long versionId;
     private long audioBookId;
@@ -64,7 +66,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         this.id = id;
     }
 
-    public Book(Long id, String uniqueSlug, String slug, String title, String description, String sourceUrl, String signatureUrl, java.util.Date modified, long versionId, long audioBookId) {
+    public Book(Long id, String uniqueSlug, String slug, String title, String description, String sourceUrl, String signatureUrl, Boolean audioIsDownloaded, Boolean videoIsDownloaded, java.util.Date modified, long versionId, long audioBookId) {
         this.id = id;
         this.uniqueSlug = uniqueSlug;
         this.slug = slug;
@@ -72,6 +74,8 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
         this.description = description;
         this.sourceUrl = sourceUrl;
         this.signatureUrl = signatureUrl;
+        this.audioIsDownloaded = audioIsDownloaded;
+        this.videoIsDownloaded = videoIsDownloaded;
         this.modified = modified;
         this.versionId = versionId;
         this.audioBookId = audioBookId;
@@ -137,6 +141,22 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     public void setSignatureUrl(String signatureUrl) {
         this.signatureUrl = signatureUrl;
+    }
+
+    public Boolean getAudioIsDownloaded() {
+        return audioIsDownloaded;
+    }
+
+    public void setAudioIsDownloaded(Boolean audioIsDownloaded) {
+        this.audioIsDownloaded = audioIsDownloaded;
+    }
+
+    public Boolean getVideoIsDownloaded() {
+        return videoIsDownloaded;
+    }
+
+    public void setVideoIsDownloaded(Boolean videoIsDownloaded) {
+        this.videoIsDownloaded = videoIsDownloaded;
     }
 
     public java.util.Date getModified() {

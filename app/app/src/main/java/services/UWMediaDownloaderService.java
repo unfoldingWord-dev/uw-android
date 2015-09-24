@@ -23,12 +23,11 @@ import utils.FileNameHelper;
  */
 public class UWMediaDownloaderService extends UWUpdaterService {
 
-    public static final String STOP_DOWNLOAD_VERSION_MESSAGE = "STOP_DOWNLOAD_VERSION_MESSAGE";
-    public static final String VERSION_ID_PARAM = "VERSION_ID_PARAM";
+    public static final String STOP_DOWNLOAD_MEDIA_MESSAGE = "STOP_DOWNLOAD_MEDIA_MESSAGE";
+    public static final String VERSION_PARAM = "VERSION_PARAM";
     public static final String IS_VIDEO_PARAM = "IS_VIDEO_PARAM";
 
-    private static final String TAG = "UWVersionDownloader";
-    public static final String VERSION_PARAM = "VERSION_PARAM";
+    private static final String TAG = "MediaDownloaderService";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -50,7 +49,7 @@ public class UWMediaDownloaderService extends UWUpdaterService {
 
             int i = 1;
             for (Book book : version.getBooks()) {
-                addRunnable(new UpdateBookContentRunnable(book, this), i++);
+                addRunnable(new UpdateMediaRunnable(false, book), i++);
             }
         }
 
@@ -59,29 +58,37 @@ public class UWMediaDownloaderService extends UWUpdaterService {
 
     private class UpdateMediaRunnable implements Runnable {
 
-        private Version updateVersion;
+        private final Book book;
         private boolean isUpdatingVideo;
 
-        public UpdateMediaRunnable(boolean isUpdatingVideo, Version updateVersion) {
+        public UpdateMediaRunnable(boolean isUpdatingVideo, Book book) {
+            this.book = book;
             this.isUpdatingVideo = isUpdatingVideo;
-            this.updateVersion = updateVersion;
         }
 
         @Override
         public void run() {
 
-            updateVersion(updateVersion);
+            updateBook();
 
         }
 
-        private void updateVersion(Version version ){
+        private void updateBook(){
 
-            for(Book book : version.getBooks()){
+            if(isUpdatingVideo && !book.getVideoIsDownloaded() || !isUpdatingVideo && !book.getAudioIsDownloaded()) {
 
-                for(AudioChapter chapter : book.getAudioBook().getAudioChapters()){
+                for (AudioChapter chapter : book.getAudioBook().getAudioChapters()) {
                     downloadMedia(chapter.getSource());
                 }
+                if(isUpdatingVideo){
+                    book.setVideoIsDownloaded(true);
+                }
+                else {
+                    book.setAudioIsDownloaded(true);
+                }
+                book.update();
             }
+            runnableFinished();
         }
 
         private void downloadMedia(final String url){
@@ -89,6 +96,7 @@ public class UWMediaDownloaderService extends UWUpdaterService {
             new BytesDownloadTask(new BytesDownloadTask.DownloadTaskListener(){
                 @Override
                 public void downloadFinishedWithJson(byte[] data) {
+                    Log.d(TAG, "Downloaded media: " + url);
                     saveMediaFile(url, data);
                 }
             }).execute(url);
@@ -99,11 +107,11 @@ public class UWMediaDownloaderService extends UWUpdaterService {
                 FileOutputStream fos = getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
                 fos.write(data);
                 fos.close();
-                Log.i(TAG, "File Saved");
+                Log.i(TAG, "Media Saved: " + url);
             }
             catch (IOException e){
                 e.printStackTrace();
-                Log.e(TAG, "Error when saving USFM");
+                Log.e(TAG, "Error when saving media file");
             }
         }
     }
