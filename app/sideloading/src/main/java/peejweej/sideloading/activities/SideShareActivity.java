@@ -110,7 +110,7 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
 
         AlertDialog dialogue = new AlertDialog.Builder(this)
                 .setCustomTitle(titleView)
-                .setMessage("Before starting, Turn on Bluetooth on both devices and ensure the other device is discoverable.")
+                .setMessage(getString(R.string.bluetooth_turn_on_message))
                 .setPositiveButton("Start", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         openBluetoothSharing();
@@ -123,8 +123,6 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
                 }).create();
         dialogue.show();
     }
-
-
 
     private void openBluetoothSharing(){
 

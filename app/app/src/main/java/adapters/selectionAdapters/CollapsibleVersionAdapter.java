@@ -78,19 +78,6 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
                 Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
                 reload();
-//                Bundle extra = intent.getExtras();
-//                if (extra != null) {
-//                    String itemId = extra.getString(UWVersionDownloaderService.VERSION_ID);
-//                    Log.d(TAG, itemId);
-//                }
-//                if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_COMP)) {
-//                    Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
-//                    reload();
-//                } else if (intent.getAction().equals(URLUtils.VERSION_BROADCAST_DOWN_STOPPED)) {
-//                    Toast.makeText(context, "Download Stopped", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(context, "Download Error", Toast.LENGTH_SHORT).show();
-//                }
             }
         };
     }

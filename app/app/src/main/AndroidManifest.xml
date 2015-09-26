@@ -150,6 +150,7 @@
         <service android:name="services.UWPreLoaderService" />
         <service android:name="services.UWSideLoaderService" />
         <service android:name="services.UWMediaDownloaderService" />
+        <service android:name="services.UWBookMediaDownloaderService" />
 
     </application>
 

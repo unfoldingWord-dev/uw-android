@@ -18,6 +18,7 @@ import model.daoModels.Book;
 import model.daoModels.Language;
 import model.daoModels.Version;
 import utils.FileNameHelper;
+import utils.UWFileUtils;
 
 /**
  * Created by PJ Fechner on 6/22/15.
@@ -151,8 +152,8 @@ public class VersionParser extends UWDataParser{
 
         for(Book book : version.getBooks()){
             try {
-                sourcesObject.put(book.getSourceUrl(), loadSource(book.getSourceUrl(), context));
-                sourcesObject.put(book.getSignatureUrl(), loadSource(book.getSignatureUrl(), context));
+                sourcesObject.put(book.getSourceUrl(), UWFileUtils.loadSource(book.getSourceUrl(), context));
+                sourcesObject.put(book.getSignatureUrl(), UWFileUtils.loadSource(book.getSignatureUrl(), context));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -161,36 +162,7 @@ public class VersionParser extends UWDataParser{
         return sourcesObject;
     }
 
-    /**
-     * @param url URL of the desired source
-     * @param context Context ot use
-     * @return The desired Source file as a String.
-     */
-    private static String loadSource(String url, Context context){
 
-        try{
-            FileInputStream fos = context.openFileInput(FileNameHelper.getSaveFileNameFromUrl(url));
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fos.read(b)) != -1) {
-                bos.write(b, 0, bytesRead);
-            }
-            byte[] bytes = bos.toByteArray();
-
-            return new String(bytes, "UTF-8");
-        }
-        catch (FileNotFoundException e){
-            e.printStackTrace();
-            Log.e(TAG, "Error when saving USFM");
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            Log.e(TAG, "Error when saving USFM");
-        }
-        return null;
-    }
 
     //endregion
 }

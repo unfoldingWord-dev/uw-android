@@ -3,69 +3,123 @@
     android:layout_width="match_parent" android:layout_height="50dp"
     android:background="#f6f6f6"
     android:id="@+id/base_audio_player_layout"
-    android:visibility="gone">
+    android:visibility="visible">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="#aaa"/>
 
-
-    <ImageButton
-        android:background="@drawable/basic_button_selector"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:id="@+id/audio_player_play_pause_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/play"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"/>
-
-    <SeekBar
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:thumb="@drawable/audiohandle"
-        android:progress="0"
-        android:progressTint="@color/progress_color"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_centerVertical="true"
-        android:id="@+id/audio_player_progress"
-        style="?android:attr/progressBarStyleHorizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_toRightOf="@+id/audio_player_play_pause_button"
-        android:layout_toEndOf="@+id/audio_player_play_pause_button"
-        />
+        android:layout_height="match_parent"
+        android:id="@+id/download_audio_layout"
+        android:visibility="gone">
 
-    <TextView
-        android:paddingLeft="15dp"
-        android:paddingRight="0dp"
-        android:gravity="start"
-        android:textColor="#000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="1:22"
-        android:id="@+id/audio_player_current_time_text_view"
-        android:layout_above="@+id/audio_player_progress"
-        android:layout_alignLeft="@+id/audio_player_progress"
-        android:layout_alignStart="@+id/audio_player_progress" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/gray_button_selector"
+            android:layout_centerInParent="true"
+            android:text="Download Audio"
+            android:id="@+id/reading_audio_download_button"
+            android:textColor="#000"
+            />
 
-    <TextView
-        android:paddingRight="15dp"
-        android:paddingEnd="15dp"
-        android:gravity="end"
-        android:textColor="#000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="2:22"
-        android:id="@+id/audio_player_end_time_text_view"
-        android:layout_above="@+id/audio_player_progress"
-        android:layout_alignRight="@+id/audio_player_progress"
-        android:layout_alignEnd="@+id/audio_player_progress" />
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/downloading_audio_layout"
+            android:layout_centerInParent="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Downloading..."
+                android:textColor="#000"/>
+
+            <ProgressBar
+                android:id="@+id/reading_download_audio_button"
+                style="@style/ProgressBar.Spinner.Indeterminate.Small"
+                android:layout_width="@dimen/version_selection_button_size"
+                android:layout_height="@dimen/version_selection_button_size"
+                android:layout_gravity="center"
+                android:max="200"
+                android:paddingRight="5dp"
+                android:paddingEnd="5dp"
+                />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/audio_player_controls"
+        >
+
+        <ImageButton
+            android:background="@drawable/basic_button_selector"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:id="@+id/audio_player_play_pause_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/play"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+
+        <SeekBar
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:thumb="@drawable/audiohandle"
+            android:progress="0"
+            android:progressTint="@color/progress_color"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/audio_player_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_toRightOf="@+id/audio_player_play_pause_button"
+            android:layout_toEndOf="@+id/audio_player_play_pause_button"
+            />
+
+        <TextView
+            android:paddingLeft="15dp"
+            android:paddingRight="0dp"
+            android:gravity="start"
+            android:textColor="#000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="1:22"
+            android:id="@+id/audio_player_current_time_text_view"
+            android:layout_above="@+id/audio_player_progress"
+            android:layout_alignLeft="@+id/audio_player_progress"
+            android:layout_alignStart="@+id/audio_player_progress" />
+
+        <TextView
+            android:paddingRight="15dp"
+            android:paddingEnd="15dp"
+            android:gravity="end"
+            android:textColor="#000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="2:22"
+            android:id="@+id/audio_player_end_time_text_view"
+            android:layout_above="@+id/audio_player_progress"
+            android:layout_alignRight="@+id/audio_player_progress"
+            android:layout_alignEnd="@+id/audio_player_progress" />
+
+    </RelativeLayout>
+
+
 
 </RelativeLayout>

@@ -1,31 +1,22 @@
 package services;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import model.DaoDBHelper;
-import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;
-import tasks.BytesDownloadTask;
-import tasks.UpdateBookContentRunnable;
 import tasks.UpdateMediaRunnable;
-import utils.FileNameHelper;
+import unfoldingword.DaoHelperMethods;
 
 /**
  * Created by PJ fechner
  * Service to download and add a Version to the DB
  */
-public class UWMediaDownloaderService extends UWUpdaterService {
+public class UWBookMediaDownloaderService extends UWUpdaterService {
 
     public static final String STOP_DOWNLOAD_MEDIA_MESSAGE = "STOP_DOWNLOAD_MEDIA_MESSAGE";
-    public static final String VERSION_PARAM = "VERSION_PARAM";
+    public static final String BOOK_PARAM = "BOOK_PARAM";
     public static final String IS_VIDEO_PARAM = "IS_VIDEO_PARAM";
 
     private static final String TAG = "MediaDownloaderService";
@@ -44,16 +35,11 @@ public class UWMediaDownloaderService extends UWUpdaterService {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if(intent != null && intent.getExtras() != null) {
-            long versionId = intent.getExtras().getLong(VERSION_PARAM);
+            long bookId = intent.getExtras().getLong(BOOK_PARAM);
             boolean isVideo = intent.getExtras().getBoolean(IS_VIDEO_PARAM);
-            Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getApplicationContext()));
-
-            int i = 1;
-            for (Book book : version.getBooks()) {
-                addRunnable(new UpdateMediaRunnable(false, book, this), i++);
-            }
+            Book book = DaoDBHelper.getDaoSession(getApplicationContext()).getBookDao().load(bookId);
+            addRunnable(new UpdateMediaRunnable(false, book, this));
         }
-
         return START_STICKY;
     }
 

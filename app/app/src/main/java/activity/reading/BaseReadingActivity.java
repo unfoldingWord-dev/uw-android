@@ -18,13 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
 import java.io.IOException;
 
 import activity.AnimationParadigm;
-import activity.SimpleVideoPlayerActivity;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
@@ -38,6 +38,8 @@ import model.SharingHelper;
 import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import services.UWBookMediaDownloaderService;
+import services.UWUpdaterService;
 import utils.UWPreferenceDataManager;
 import view.AudioPlayerViewGroup;
 import view.ReadingTabBar;
@@ -131,7 +133,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     /**
      * @return url to use for audio, else null
      */
-    abstract protected @Nullable String getAudioUrl();
+    abstract protected @Nullable Uri getAudioUri();
 
     /**
      * signal to make the reading text larger
@@ -297,7 +299,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         ViewGroup baseAudioPlayerLayout = (RelativeLayout) findViewById(R.id.audio_player);
         baseAudioPlayerLayout.setVisibility(View.GONE);
 
-        int[] images = {R.drawable.audio_normal, R.drawable.video_normal, R.drawable.font_normal, R.drawable.diglot_normal, R.drawable.share_normal};
+        int[] images = {R.drawable.audio_normal, R.drawable.video_normal,
+                R.drawable.font_normal, R.drawable.diglot_normal,
+                R.drawable.share_normal};
 
         tabBar = new ReadingTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.tab_bar_view), baseAudioPlayerLayout, new UWTabBar.BottomBarListener() {
             @Override
@@ -313,6 +317,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         tabBar.getButton(0).setEnabled(hasAudioBook);
         tabBar.getButton(0).setClickable(hasAudioBook);
         tabBar.setImageAtIndex((hasAudioBook)? R.drawable.audio_normal : R.drawable.audio_disabled, 0);
+        if(audioPlayerLayout != null && !hasAudioBook){
+            audioPlayerLayout.setVisibility(View.GONE);
+        }
 
         boolean hasVideo = false;
         tabBar.getButton(1).setEnabled(hasVideo);
@@ -322,29 +329,64 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void setupAudioPlayer(){
 
-        String url = getAudioUrl();
-
-        if(url == null){
-            return;
-        }
-
-        if(mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(url));
-        }
-        else{
-            try {
-                mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url));
-            }
-            catch (IOException e){
-                e.printStackTrace();
-            }
-        }
         playerViewGroup = new AudioPlayerViewGroup(getApplicationContext(), mediaPlayer, audioPlayerLayout, new AudioPlayerViewGroup.AudioPlayerViewGroupListener() {
             @Override
             public void audioPlayerStateChanged(boolean isPlaying) {
                 setAudioButtonState(isPlaying);
             }
+
+            @Override
+            public void downloadClicked() {
+                playerViewGroup.setDownloading();
+                downloadBookAudio();
+            }
         });
+    }
+
+    private void downloadBookAudio(){
+
+        setupIntentFilter();
+        Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
+        downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_PARAM, getBook().getId());
+        downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
+        getApplicationContext().startService(downloadIntent);
+    }
+
+    private void setupIntentFilter(){
+        receiver = createBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
+        getApplicationContext().registerReceiver(receiver, filter);
+    }
+
+    private BroadcastReceiver createBroadcastReceiver() {
+
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
+                if(playerViewGroup != null) {
+                    setupMediaPlayer(getAudioUri());
+                    playerViewGroup.resetViews();
+                }
+            }
+        };
+    }
+
+    private void setupMediaPlayer(Uri uri){
+
+        if(uri == null){
+            return;
+        }
+
+        if(mediaPlayer != null && playerViewGroup != null && mediaPlayer.isPlaying()){
+            playerViewGroup.stopPlayback();
+        }
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+
+        if(playerViewGroup != null ){
+            playerViewGroup.setMediaPlayer(mediaPlayer);
+        }
     }
 
     private void setAudioButtonState(boolean isPlaying){
@@ -356,10 +398,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
         switch (index){
             case 0:{
-                if(playerViewGroup == null){
-                    setupAudioPlayer();
-                }
-                audioPlayerLayout.setVisibility((audioPlayerLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
+                toggleAudioPlayerVisibility();
                 break;
             }
             case 1:{
@@ -382,6 +421,26 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 break;
             }
         }
+    }
+
+    private void toggleAudioPlayerVisibility(){
+
+        if(mediaPlayer == null){
+            setupMediaPlayer(getAudioUri());
+        }
+
+        if(playerViewGroup == null){
+            setupAudioPlayer();
+        }
+
+        if(!getBook().getAudioIsDownloaded()){
+            playerViewGroup.setNeedsToDownload();
+        }
+        else{
+            playerViewGroup.resetViews();
+        }
+
+        audioPlayerLayout.setVisibility((audioPlayerLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
     }
 
     private void shareVersion(){
@@ -621,6 +680,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
         loadData();
         updateViews();
+        setupMediaPlayer(getAudioUri());
     }
 
     //endregion

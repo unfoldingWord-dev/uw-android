@@ -9,6 +9,7 @@
 package activity.reading;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import java.io.File;
 import java.util.List;
 
 import fragments.BibleReadingFragment;
@@ -25,6 +27,7 @@ import model.daoModels.AudioChapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
@@ -70,14 +73,19 @@ public class ReadingActivity extends BaseReadingActivity {
 
     @Nullable
     @Override
-    protected String getAudioUrl() {
+    protected Uri getAudioUri() {
         updateChapters();
         AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
 
         if(audioBook != null){
             AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
             if(audioChapter != null){
-                return audioChapter.getSource();
+
+                File audioFile = UWFileUtils.loadSourceFile(audioChapter.getSource(), getApplicationContext());
+
+                if(audioFile != null){
+                    return Uri.fromFile(audioFile);
+                }
             }
         }
         return null;
