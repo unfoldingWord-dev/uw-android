@@ -139,6 +139,26 @@ public class SideShareActivity extends BaseActivity implements SideLoadTypeChoos
         startActivityForResult(sharingIntent, 0);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Bluetooth Sharing");
+
+        if(resultCode == 0){
+            AlertDialog dialogue = new AlertDialog.Builder(this)
+                    .setCustomTitle(titleView)
+                    .setMessage(getString(R.string.bluetooth_directions_text))
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            handleBack();
+                        }
+                    }).create();
+            dialogue.show();
+        }
+    }
+
     private void startNFCShareAction(){
 
         Uri fileUri = getFileUri();
