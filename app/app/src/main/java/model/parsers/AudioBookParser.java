@@ -35,10 +35,12 @@ public class AudioBookParser extends UWDataParser{
 
         JSONObject jsonModel = new JSONObject();
 
-        jsonModel.put(CONTRIBUTORS_JSON_KEY, model.getContributors());
-        jsonModel.put(REVISION_JSON_KEY, model.getRevision());
-        jsonModel.put(TEXT_VERSION_JSON_KEY, model.getTextVersion());
-        jsonModel.put(SOURCE_LIST_JSON_KEY, AudioChapterParser.getBooksJsonForVersion(model));
+        if(model != null){
+            jsonModel.put(CONTRIBUTORS_JSON_KEY, model.getContributors());
+            jsonModel.put(REVISION_JSON_KEY, model.getRevision());
+            jsonModel.put(TEXT_VERSION_JSON_KEY, model.getTextVersion());
+            jsonModel.put(SOURCE_LIST_JSON_KEY, AudioChapterParser.getBooksJsonForVersion(model));
+        }
 
         return jsonModel;
     }

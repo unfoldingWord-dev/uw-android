@@ -78,7 +78,7 @@
     <string name="label_peers">Other Devices</string>
     <string name="empty_message">No devices found. Turn on P2P and perform discovery from the Action Bar</string>
 
-    <string name="share_keyboards_button_text">Share Keyboards</string>
+    <string name="share_keyboards_button_text">Share Versions</string>
 
     <string name="save_file_extension">.ufw</string>
 
