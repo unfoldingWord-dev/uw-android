@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white_mix_gary">#DAD9D7</color>
-    <color name="white">#fffefc</color>
+    <color name="white">#fff</color>
     <color name="off_white">#eeeeee</color>
 
 
@@ -108,6 +108,8 @@
 
     <color name="gray_button_color">#ccc</color>
     <color name="gray_button_color_pressed">#aaa</color>
+    <color name="gray_button_color_disabled">#ddd</color>
 
+    <color name="delete_button_text_color">#e11</color>
 
 </resources>

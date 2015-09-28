@@ -200,6 +200,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         super.onResume();
         setupToolbar();
         setupViews();
+        audioPlayerLayout = (ViewGroup) (findViewById(R.id.audio_player));
+        setAudioPlayerVisibility(false);
 
         boolean dataIsLoaded = loadData();
         updateTabBar();
@@ -250,9 +252,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     //region accessors
 
     /**
-     * @return the current version being used
+     * @return the current Book being used
      */
     protected Book getBook(){
+        if(this.book != null) {
+            this.book.refresh();
+        }
         return this.book;
     }
 
@@ -425,6 +430,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void toggleAudioPlayerVisibility(){
 
+        setAudioPlayerVisibility(audioPlayerLayout.getVisibility() != View.VISIBLE);
+    }
+
+    private void setAudioPlayerVisibility(boolean visible){
+
         if(mediaPlayer == null){
             setupMediaPlayer(getAudioUri());
         }
@@ -433,14 +443,21 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             setupAudioPlayer();
         }
 
-        if(!getBook().getAudioIsDownloaded()){
-            playerViewGroup.setNeedsToDownload();
-        }
-        else{
-            playerViewGroup.resetViews();
+        switch (getBook().getAudioSaveStateEnum()){
+            case DOWNLOAD_STATE_DOWNLOADED:{
+                playerViewGroup.resetViews();
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADING:{
+                playerViewGroup.setDownloading();
+                break;
+            }
+            default:{
+                playerViewGroup.setNeedsToDownload();
+            }
         }
 
-        audioPlayerLayout.setVisibility((audioPlayerLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
+        audioPlayerLayout.setVisibility((visible) ? View.VISIBLE : View.GONE);
     }
 
     private void shareVersion(){

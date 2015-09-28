@@ -44,18 +44,17 @@ public class UWMediaDownloaderService extends UWUpdaterService {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if(intent != null && intent.getExtras() != null) {
+            numberPending++;
             long versionId = intent.getExtras().getLong(VERSION_PARAM);
             boolean isVideo = intent.getExtras().getBoolean(IS_VIDEO_PARAM);
             Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getApplicationContext()));
 
-            int i = 1;
             for (Book book : version.getBooks()) {
-                addRunnable(new UpdateMediaRunnable(false, book, this), i++);
+                addRunnable(new UpdateMediaRunnable(false, book, this), 2);
             }
+            runnableFinished();
         }
 
         return START_STICKY;
     }
-
-
 }

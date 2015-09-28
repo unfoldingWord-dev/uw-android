@@ -35,8 +35,8 @@ public class BookDao extends AbstractDao<Book, Long> {
         public final static Property Description = new Property(4, String.class, "description", false, "DESCRIPTION");
         public final static Property SourceUrl = new Property(5, String.class, "sourceUrl", false, "SOURCE_URL");
         public final static Property SignatureUrl = new Property(6, String.class, "signatureUrl", false, "SIGNATURE_URL");
-        public final static Property AudioIsDownloaded = new Property(7, Boolean.class, "audioIsDownloaded", false, "AUDIO_IS_DOWNLOADED");
-        public final static Property VideoIsDownloaded = new Property(8, Boolean.class, "videoIsDownloaded", false, "VIDEO_IS_DOWNLOADED");
+        public final static Property AudioSaveState = new Property(7, Integer.class, "audioSaveState", false, "AUDIO_SAVE_STATE");
+        public final static Property VideoSaveState = new Property(8, Integer.class, "videoSaveState", false, "VIDEO_SAVE_STATE");
         public final static Property Modified = new Property(9, java.util.Date.class, "modified", false, "MODIFIED");
         public final static Property VersionId = new Property(10, long.class, "versionId", false, "VERSION_ID");
         public final static Property AudioBookId = new Property(11, long.class, "audioBookId", false, "AUDIO_BOOK_ID");
@@ -66,8 +66,8 @@ public class BookDao extends AbstractDao<Book, Long> {
                 "\"DESCRIPTION\" TEXT," + // 4: description
                 "\"SOURCE_URL\" TEXT," + // 5: sourceUrl
                 "\"SIGNATURE_URL\" TEXT," + // 6: signatureUrl
-                "\"AUDIO_IS_DOWNLOADED\" INTEGER," + // 7: audioIsDownloaded
-                "\"VIDEO_IS_DOWNLOADED\" INTEGER," + // 8: videoIsDownloaded
+                "\"AUDIO_SAVE_STATE\" INTEGER," + // 7: audioSaveState
+                "\"VIDEO_SAVE_STATE\" INTEGER," + // 8: videoSaveState
                 "\"MODIFIED\" INTEGER," + // 9: modified
                 "\"VERSION_ID\" INTEGER NOT NULL ," + // 10: versionId
                 "\"AUDIO_BOOK_ID\" INTEGER NOT NULL );"); // 11: audioBookId
@@ -119,14 +119,14 @@ public class BookDao extends AbstractDao<Book, Long> {
             stmt.bindString(7, signatureUrl);
         }
  
-        Boolean audioIsDownloaded = entity.getAudioIsDownloaded();
-        if (audioIsDownloaded != null) {
-            stmt.bindLong(8, audioIsDownloaded ? 1L: 0L);
+        Integer audioSaveState = entity.getAudioSaveState();
+        if (audioSaveState != null) {
+            stmt.bindLong(8, audioSaveState);
         }
  
-        Boolean videoIsDownloaded = entity.getVideoIsDownloaded();
-        if (videoIsDownloaded != null) {
-            stmt.bindLong(9, videoIsDownloaded ? 1L: 0L);
+        Integer videoSaveState = entity.getVideoSaveState();
+        if (videoSaveState != null) {
+            stmt.bindLong(9, videoSaveState);
         }
  
         java.util.Date modified = entity.getModified();
@@ -160,8 +160,8 @@ public class BookDao extends AbstractDao<Book, Long> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // description
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // sourceUrl
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // signatureUrl
-            cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0, // audioIsDownloaded
-            cursor.isNull(offset + 8) ? null : cursor.getShort(offset + 8) != 0, // videoIsDownloaded
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // audioSaveState
+            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8), // videoSaveState
             cursor.isNull(offset + 9) ? null : new java.util.Date(cursor.getLong(offset + 9)), // modified
             cursor.getLong(offset + 10), // versionId
             cursor.getLong(offset + 11) // audioBookId
@@ -179,8 +179,8 @@ public class BookDao extends AbstractDao<Book, Long> {
         entity.setDescription(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setSourceUrl(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setSignatureUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setAudioIsDownloaded(cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0);
-        entity.setVideoIsDownloaded(cursor.isNull(offset + 8) ? null : cursor.getShort(offset + 8) != 0);
+        entity.setAudioSaveState(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setVideoSaveState(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
         entity.setModified(cursor.isNull(offset + 9) ? null : new java.util.Date(cursor.getLong(offset + 9)));
         entity.setVersionId(cursor.getLong(offset + 10));
         entity.setAudioBookId(cursor.getLong(offset + 11));

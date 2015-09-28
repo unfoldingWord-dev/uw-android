@@ -2,6 +2,7 @@ package view;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -35,8 +36,11 @@ public class VersionRowViewHolder {
 
     private FrameLayout downloadFrame;
     private ProgressBar downloadProgressBar;
+
     private Button downloadAudioButton;
+    private ViewGroup downloadingAudioLayout;
     private Button downloadVideoButton;
+    private ViewGroup downloadingVideoLayout;
     private Button deleteButton;
 
     private Context context;
@@ -66,7 +70,9 @@ public class VersionRowViewHolder {
 
         downloadButton = (ImageView) baseView.findViewById(R.id.download_status_image);
         downloadAudioButton = (Button) baseView.findViewById(R.id.download_audio_button);
+        downloadingAudioLayout = (ViewGroup) baseView.findViewById(R.id.versions_downloading_audio_layout);
         downloadVideoButton = (Button) baseView.findViewById(R.id.download_video_button);
+        downloadingVideoLayout = (ViewGroup) baseView.findViewById(R.id.versions_downloading_video_layout);
         deleteButton = (Button) baseView.findViewById(R.id.delete_button);
         clickableLayout = (LinearLayout) baseView.findViewById(R.id.clickableRow);
 
@@ -86,6 +92,9 @@ public class VersionRowViewHolder {
         int verificationStatus = version.getVerificationStatus();
         status.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
         status.setText(RowStatusHelper.getButtonTextForStatus(context, verificationStatus));
+
+        setupForAudioDownloadState(version.getAudioDownloadState(), version.hasAudio());
+        setupForVideoDownloadState(version.getVideoDownloadState(), false);
     }
 
     private void setupOnClickListeners(){
@@ -157,7 +166,44 @@ public class VersionRowViewHolder {
         deleteButton.setVisibility((isDownloaded) ? View.VISIBLE : View.GONE);
         clickableLayout.setClickable(isDownloaded);
         downloadFrame.setClickable(!isDownloaded);
-        downloadFrame.setVisibility((!isDownloaded)? View.VISIBLE : View.GONE);
+        downloadFrame.setVisibility((!isDownloaded) ? View.VISIBLE : View.GONE);
+    }
+
+    public void setupForAudioDownloadState(DownloadState state, boolean canDownload){
+
+        setupForDownloadingAudio(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+        if(!canDownload) {
+            downloadAudioButton.setVisibility( View.GONE);
+        }
+        else if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+            downloadAudioButton.setText("Downloaded");
+//            downloadAudioButton.setText("Delete");
+//            downloadAudioButton.setTextColor(context.getResources().getColor(R.color.delete_button_text_color));
+//            downloadAudioButton.setBackgroundResource(R.drawable.delete_button_click);
+        }
+        else{
+            downloadAudioButton.setText("Download Version");
+            downloadAudioButton.setTextColor(context.getResources().getColor(R.color.black));
+            downloadAudioButton.setBackgroundResource(R.drawable.gray_button_selector);
+        }
+    }
+
+    public void setupForVideoDownloadState(DownloadState state, boolean canDownload) {
+
+        setupForDownloadingVideo(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+        downloadVideoButton.setVisibility((canDownload) ? View.VISIBLE : View.GONE);
+    }
+
+    private void setupForDownloadingAudio(boolean downloading){
+
+        this.downloadingAudioLayout.setVisibility((downloading)? View.VISIBLE : View.GONE);
+        this.downloadAudioButton.setVisibility((downloading)? View.GONE : View.VISIBLE);
+    }
+
+    private void setupForDownloadingVideo(boolean downloading){
+
+        this.downloadingVideoLayout.setVisibility((downloading)? View.VISIBLE : View.GONE);
+        this.downloadVideoButton.setVisibility((downloading)? View.GONE : View.VISIBLE);
     }
 
     public interface VersionRowViewHolderListener{

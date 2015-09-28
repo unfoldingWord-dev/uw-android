@@ -63,8 +63,8 @@ public class UWUpdaterService extends Service {
      * @param index as-yet unimplemented possibility for multiple thread pools.
      */
     synchronized public void addRunnable(Runnable runnable, int index){
-        UpdateManager.addRunnable(runnable, index);
         numberPending++;
+        UpdateManager.addRunnable(runnable, index);
     }
 
     /**

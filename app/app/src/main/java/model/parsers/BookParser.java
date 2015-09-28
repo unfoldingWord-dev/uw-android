@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.Version;
@@ -37,8 +38,8 @@ public class BookParser extends UWDataParser{
         newModel.setSignatureUrl(jsonObject.getString(SIGNATURE_URL_JSON_KEY));
         newModel.setTitle(jsonObject.getString(TITLE_JSON_KEY));
         newModel.setVersionId(((Version) parent).getId());
-        newModel.setAudioIsDownloaded(false);
-        newModel.setVideoIsDownloaded(false);
+        newModel.setAudioSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
+        newModel.setVideoSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
 
         return newModel;
     }

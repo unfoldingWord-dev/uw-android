@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import model.DownloadState;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import services.UWUpdaterService;
@@ -32,39 +33,41 @@ public class UpdateMediaRunnable implements Runnable {
     public void run() {
 
         updateBook();
-
     }
 
     private void updateBook(){
 
-        if(isUpdatingVideo && !book.getVideoIsDownloaded() || !isUpdatingVideo && !book.getAudioIsDownloaded()) {
+        if(!isUpdatingVideo && !book.getAudioSaveStateEnum().equals(DownloadState.DOWNLOAD_STATE_DOWNLOADED) || isUpdatingVideo && !book.getVideoSaveState().equals(DownloadState.DOWNLOAD_STATE_DOWNLOADED)) {
 
+            int numberOfChapters = book.getAudioBook().getAudioChapters().size();
+            int i = 1;
             for (AudioChapter chapter : book.getAudioBook().getAudioChapters()) {
-                downloadMedia(chapter.getSource());
+                downloadMedia(chapter.getSource(), (i >= numberOfChapters));
+                i++;
             }
             if(isUpdatingVideo){
-                book.setVideoIsDownloaded(true);
+                book.setVideoSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
             }
             else {
-                book.setAudioIsDownloaded(true);
+                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
             }
             book.update();
         }
-        updater.runnableFinished();
+
     }
 
-    private void downloadMedia(final String url){
+    private void downloadMedia(final String url, final boolean isLast){
 
         new BytesDownloadTask(new BytesDownloadTask.DownloadTaskListener(){
             @Override
             public void downloadFinishedWithJson(byte[] data) {
                 Log.d(TAG, "Downloaded media: " + url);
-                saveMediaFile(url, data);
+                saveMediaFile(url, data, isLast);
             }
         }).execute(url);
     }
 
-    private void saveMediaFile(String url, byte[] data){
+    private void saveMediaFile(String url, byte[] data, boolean isLast){
         try{
             FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
             fos.write(data);
@@ -74,6 +77,9 @@ public class UpdateMediaRunnable implements Runnable {
         catch (IOException e){
             e.printStackTrace();
             Log.e(TAG, "Error when saving media file");
+        }
+        if(isLast) {
+            updater.runnableFinished();
         }
     }
 }

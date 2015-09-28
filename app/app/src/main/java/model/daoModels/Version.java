@@ -279,6 +279,61 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP METHODS - put your custom methods here
 
+
+    public void willDownloadAudio(){
+        for(Book book : getBooks()){
+            if(book.getAudioSaveState() == DownloadState.DOWNLOAD_STATE_NONE.ordinal()){
+                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
+                book.update();
+            }
+        }
+    }
+
+    public DownloadState getAudioDownloadState(){
+
+        DownloadState downloadState = DownloadState.DOWNLOAD_STATE_DOWNLOADED;
+        for(Book book : getBooks()){
+            if(book.getAudioSaveState() == DownloadState.DOWNLOAD_STATE_NONE.ordinal()){
+                return DownloadState.DOWNLOAD_STATE_NONE;
+            }
+            if(book.getAudioSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()){
+                downloadState = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
+            }
+        }
+
+        return downloadState;
+    }
+
+    public DownloadState getVideoDownloadState(){
+
+        DownloadState downloadState = DownloadState.DOWNLOAD_STATE_DOWNLOADED;
+        for(Book book : getBooks()){
+            if(book.getVideoSaveState() == DownloadState.DOWNLOAD_STATE_NONE.ordinal()){
+                return DownloadState.DOWNLOAD_STATE_NONE;
+            }
+            if(book.getVideoSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()){
+                downloadState = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
+            }
+        }
+
+        return downloadState;
+    }
+
+    public boolean hasAudio(){
+
+        for(Book book : getBooks()){
+
+            if(book.getAudioBook() != null){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasVideo(){
+        return false;
+    }
+
     //region UWDatabaseModel
 
     @Override

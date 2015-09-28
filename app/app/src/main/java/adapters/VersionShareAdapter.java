@@ -31,7 +31,7 @@ public class VersionShareAdapter extends ArrayAdapter<Version> {
     private int chosenIndex = -1;
 
     public VersionShareAdapter(Context context, List<Version> models, VersionAdapterListener listener) {
-        super(context, R.layout.row_version_selection, models);
+        super(context, R.layout.row_version_share_selection, models);
         this.context = context;
         this.models = models;
         this.listener = listener;
@@ -51,7 +51,7 @@ public class VersionShareAdapter extends ArrayAdapter<Version> {
 
             holder = new ViewHolderForGroup();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.row_version_selection, parent, false);
+            view = inflater.inflate(R.layout.row_version_share_selection, parent, false);
 
             holder.titleTextView = (TextView) view.findViewById(R.id.keyboard_selection_title);
             holder.completedImageView = (ImageView) view.findViewById(R.id.keyboard_selection_checkbox_image);

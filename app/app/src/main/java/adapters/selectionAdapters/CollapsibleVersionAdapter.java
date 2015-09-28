@@ -226,6 +226,9 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, version.getId());
             downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, isVideo);
             getContext().startService(downloadIntent);
+            if(!isVideo){
+                version.willDownloadAudio();
+            }
             reload();
         }
     }

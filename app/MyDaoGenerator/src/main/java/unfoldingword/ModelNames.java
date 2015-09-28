@@ -28,7 +28,7 @@ public class ModelNames {
     static public final String BOOK = "Book";
     static public final String[] BOOK_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "title", "description", "sourceUrl", "signatureUrl" };
     static public final String[] BOOK_DATE_ATTRIBUTES = { "modified" };
-    static public final String[] BOOK_BOOLEAN_ATTRIBUTES = { "audioIsDownloaded", "videoIsDownloaded"};
+    static public final String[] BOOK_INT_ATTRIBUTES= { "audioSaveState", "videoSaveState" };
     static public final String BOOK_VERSION_ATTRIBUTE = "versionId";
     static public final String BOOK_VERIFICATIONS_ATTRIBUTE = "verifications";
     static public final String BOOK_BIBLE_CHAPTERS_ATTRIBUTE = "bibleChapters";

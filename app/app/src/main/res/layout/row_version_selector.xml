@@ -175,7 +175,7 @@
                 android:layout_height="40dp"
                 android:background="@drawable/delete_button_click"
                 android:text="@string/delete_version"
-                android:textColor="#e11"
+                android:textColor="@color/delete_button_text_color"
                 android:gravity="center"
                 android:layout_gravity="center"
                 />
