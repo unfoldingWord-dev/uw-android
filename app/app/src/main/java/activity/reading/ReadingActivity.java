@@ -73,6 +73,9 @@ public class ReadingActivity extends BaseReadingActivity {
     @Nullable
     @Override
     protected Uri getAudioUri() {
+        if(currentChapter == null){
+            return null;
+        }
         updateChapters();
         AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
 

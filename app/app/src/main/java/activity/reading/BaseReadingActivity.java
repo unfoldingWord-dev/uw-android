@@ -201,7 +201,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         setupToolbar();
         setupViews();
         audioPlayerLayout = (ViewGroup) (findViewById(R.id.audio_player));
-        setAudioPlayerVisibility(false);
+        if(getBook() != null) {
+            setAudioPlayerVisibility(false);
+        }
 
         boolean dataIsLoaded = loadData();
         updateTabBar();
