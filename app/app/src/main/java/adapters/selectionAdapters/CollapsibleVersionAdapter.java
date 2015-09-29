@@ -172,15 +172,15 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     }
 
     @Override
-    public void audioButtonWasClicked(Version version) {
+    public void audioButtonWasClicked(VersionRowViewHolder holder, Version version) {
 
-        downloadMedia(version, false);
+        downloadMedia(holder, version, false);
     }
 
     @Override
-    public void videoButtonWasClicked(Version version) {
+    public void videoButtonWasClicked(VersionRowViewHolder holder, Version version) {
 
-        downloadMedia(version, true);
+        downloadMedia(holder, version, true);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         }
     }
 
-    private void downloadMedia(Version version, boolean isVideo){
+    private void downloadMedia(VersionRowViewHolder holder, Version version, boolean isVideo){
 
         if (!NetWorkUtil.isConnected(getContext())) {
             new AlertDialog.Builder(getContext())
@@ -228,8 +228,8 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             getContext().startService(downloadIntent);
             if(!isVideo){
                 version.willDownloadAudio();
+                holder.setupForAudioDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING, false);
             }
-            reload();
         }
     }
 
@@ -248,6 +248,38 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
                                 listener.isLoading(true);
                                 UWPreferenceDataManager.willDeleteVersion(getContext(), version);
                                 new DeleteVersionTask().execute(version);
+                            }
+                        })
+                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                reload();
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                return builder.create();
+            }
+        }).show(parentFragment.getFragmentManager(), "confirmAlert");
+    }
+
+    @Override
+    public void deleteAudioWasPressed(Version version) {
+
+        deleteAudio(version);
+    }
+
+    private void deleteAudio(final Version version){
+        (new DialogFragment() {
+
+            @NonNull
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                // Use the Builder class for convenient dialog construction
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(getResources().getString(R.string.delete_audio_warning_text))
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                listener.isLoading(true);
+                                new DeleteVersionAudioTask().execute(version);
                             }
                         })
                         .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -309,6 +341,22 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
             super.onPostExecute(aVoid);
             reload();
             listener.isLoading(false);
+        }
+    }
+
+    private class DeleteVersionAudioTask extends AsyncTask<Version, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Version... params) {
+            params[0].deleteAudio(getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            listener.isLoading(false);
+            reload();
         }
     }
 

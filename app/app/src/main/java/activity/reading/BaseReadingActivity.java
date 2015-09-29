@@ -206,11 +206,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
 
         boolean dataIsLoaded = loadData();
+
         updateTabBar();
         setupReadingVisibility(dataIsLoaded);
         if (dataIsLoaded){
 //            getToolbar().setRightImageResource(R.drawable.diglot_icon);
             updateViews();
+            setupMediaPlayer(getAudioUri());
         }
         else{
 //            getToolbar().setRightImageVisible(false);
@@ -347,6 +349,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 playerViewGroup.setDownloading();
                 downloadBookAudio();
             }
+
+            @Override
+            public MediaPlayer getMediaPlayer() {
+                return mediaPlayer;
+            }
         });
     }
 
@@ -392,7 +399,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
 
         if(playerViewGroup != null ){
-            playerViewGroup.setMediaPlayer(mediaPlayer);
+            playerViewGroup.setupMediaPlayer();
         }
     }
 
@@ -576,7 +583,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      */
     private void goToChapterActivity(){
 
-        if(isTablet()){
+        if(false){//isTablet()){
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             getChapterFragment().show(ft, CHAPTER_SELECTION_FRAGMENT_ID);
         }

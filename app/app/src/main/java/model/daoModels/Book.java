@@ -13,6 +13,7 @@ import model.UWDatabaseModel;
 
 import model.parsers.BookParser;
 import signing.Status;
+import utils.UWFileUtils;
 import view.ViewContentHelper;
 
 import org.json.JSONException;
@@ -20,7 +21,9 @@ import org.json.JSONObject;
 
 import java.util.Collections;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 // KEEP INCLUDES END
 /**
  * Entity mapped to table "BOOK".
@@ -57,7 +60,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     private List<Verification> verifications;
 
     // KEEP FIELDS - put your custom fields here
-//    static private final String TAG = "Version";
+    static private final String TAG = "Book";
     // KEEP FIELDS END
 
     public Book() {
@@ -499,6 +502,15 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     //region UWDatabaseModel
 
+    public void deleteAudio(Context context){
+
+        for(AudioChapter chapter : getAudioBook().getAudioChapters()){
+            Log.i(TAG, "Deleting source: " + chapter.getSource());
+            UWFileUtils.deleteSource(chapter.getSource(), context);
+        }
+        setAudioSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
+        update();
+    }
     @Override
     public String toString() {
         return "Book{" +

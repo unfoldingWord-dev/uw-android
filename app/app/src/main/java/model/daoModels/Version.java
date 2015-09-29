@@ -507,6 +507,13 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     //endregion
 
+    public void deleteAudio(Context context){
+
+        for(Book book : getBooks()){
+            book.deleteAudio(context);
+        }
+    }
+
     @Override
     public String toString() {
         return "Version{" +

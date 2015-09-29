@@ -131,14 +131,14 @@ public class VersionRowViewHolder {
         downloadAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.audioButtonWasClicked(version);
+                listener.audioButtonWasClicked(finalHolder, version);
             }
         });
 
         downloadVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.videoButtonWasClicked(version);
+                listener.videoButtonWasClicked(finalHolder, version);
             }
         });
     }
@@ -171,20 +171,32 @@ public class VersionRowViewHolder {
 
     public void setupForAudioDownloadState(DownloadState state, boolean canDownload){
 
+        final VersionRowViewHolder finalHolder = this;
         setupForDownloadingAudio(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING);
         if(!canDownload) {
             downloadAudioButton.setVisibility( View.GONE);
         }
         else if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
-            downloadAudioButton.setText("Downloaded");
-//            downloadAudioButton.setText("Delete");
-//            downloadAudioButton.setTextColor(context.getResources().getColor(R.color.delete_button_text_color));
-//            downloadAudioButton.setBackgroundResource(R.drawable.delete_button_click);
+            downloadAudioButton.setText("Delete Audio");
+            downloadAudioButton.setTextColor(context.getResources().getColor(R.color.delete_button_text_color));
+            downloadAudioButton.setBackgroundResource(R.drawable.delete_button_click);
+            downloadAudioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.deleteAudioWasPressed(version);
+                }
+            });
         }
         else{
-            downloadAudioButton.setText("Download Version");
+            downloadAudioButton.setText("Download Audio");
             downloadAudioButton.setTextColor(context.getResources().getColor(R.color.black));
             downloadAudioButton.setBackgroundResource(R.drawable.gray_button_selector);
+            downloadAudioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.audioButtonWasClicked(finalHolder, version);
+                }
+            });
         }
     }
 
@@ -208,10 +220,11 @@ public class VersionRowViewHolder {
 
     public interface VersionRowViewHolderListener{
 
+        void deleteAudioWasPressed(Version version);
         void downloadWasPressed(VersionRowViewHolder holder, Version version);
         void deletePressed(Version version);
         void versionWasSelected(Version version);
-        void audioButtonWasClicked(Version version);
-        void videoButtonWasClicked(Version version);
+        void audioButtonWasClicked(VersionRowViewHolder holder, Version version);
+        void videoButtonWasClicked(VersionRowViewHolder holder, Version version);
     }
 }

@@ -17,6 +17,11 @@ public class UWFileUtils {
 
     private static final String TAG = "UWFileUtils";
 
+    public static boolean deleteSource(String url, Context context){
+
+        return context.deleteFile(FileNameHelper.getSaveFileNameFromUrl(url));
+    }
+
     /**
      * @param url URL of the desired source
      * @param context Context ot use

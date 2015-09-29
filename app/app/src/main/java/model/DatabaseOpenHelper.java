@@ -58,11 +58,9 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        if(oldVersion == 100 && newVersion == 101){
-            db.execSQL("ALTER TABLE '" + ModelNames.VERIFICATION + "' ADD '" + "AUDIO_CHAPTER_ID" + "' INTEGER");
-            db.execSQL("ALTER TABLE '" + ModelNames.BOOK + "' ADD '" + "AUDIO_IS_DOWNLOADED" + "' BOOLEAN");
-            db.execSQL("ALTER TABLE '" + ModelNames.BOOK + "' ADD '" + "VIDEO_IS_DOWNLOADED" + "' BOOLEAN");
-            db.setVersion(101);
+        if(oldVersion < ModelNames.DB_VERSION_ID){
+
+            populateWithPreload();
         }
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
     }

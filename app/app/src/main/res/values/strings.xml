@@ -63,6 +63,7 @@
     <string name="splash_loading_text">Loading Content...</string>
 
     <string name="delete_warning_text">Are you sure you want to delete this resource?</string>
+    <string name="delete_audio_warning_text">Are you sure you want to delete this audio?</string>
 
     <string name="enable_p2p_button">P2P On/Off</string>
     <string name="discover_peers_button">Discover</string>

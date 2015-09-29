@@ -19,7 +19,6 @@ import org.unfoldingword.mobile.R;
  */
 public class AudioPlayerViewGroup {
 
-    private MediaPlayer mediaPlayer;
     private ViewGroup downloadViewGroup;
     private ViewGroup downloadingAudioViewGroup;
     private ViewGroup controlsViewGroup;
@@ -36,7 +35,6 @@ public class AudioPlayerViewGroup {
 
     public AudioPlayerViewGroup(Context context, MediaPlayer mediaPlayer, View containingView, AudioPlayerViewGroupListener listener) {
         this.context = context;
-        this.mediaPlayer = mediaPlayer;
         this.listener = listener;
         getViews(containingView);
         setupListeners();
@@ -75,8 +73,8 @@ public class AudioPlayerViewGroup {
 
     private void setupForMediaPlayer(){
 
-        if(mediaPlayer != null){
-            int duration = mediaPlayer.getDuration();
+        if(listener.getMediaPlayer() != null){
+            int duration = listener.getMediaPlayer().getDuration();
             seekBar.setProgress(0);
             seekBar.setMax(duration);
 
@@ -94,9 +92,8 @@ public class AudioPlayerViewGroup {
         }
     }
 
-    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+    public void setupMediaPlayer() {
         hasChangedMediaPlayers = true;
-        this.mediaPlayer = mediaPlayer;
         setupForMediaPlayer();
         setupListeners();
     }
@@ -104,15 +101,15 @@ public class AudioPlayerViewGroup {
     public void updatePlayProgress() {
 
         if(!hasChangedMediaPlayers) {
-            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            seekBar.setProgress(listener.getMediaPlayer().getCurrentPosition());
 
-            if (mediaPlayer.isPlaying()) {
+            if (listener.getMediaPlayer().isPlaying()) {
                 playPauseButton.setImageResource(R.drawable.pause);
                 waitAndUpdatePlayProgress();
             }else{
-                mediaPlayer.pause();
+                listener.getMediaPlayer().pause();
                 playPauseButton.setImageResource(R.drawable.play);
-                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                seekBar.setProgress(listener.getMediaPlayer().getCurrentPosition());
                 this.listener.audioPlayerStateChanged(false);
             }
 
@@ -146,22 +143,22 @@ public class AudioPlayerViewGroup {
 
     // This is event handler thumb moving event
     private void seekChange(View v){
-        if(mediaPlayer.isPlaying()){
+        if(listener.getMediaPlayer().isPlaying()){
             SeekBar sb = (SeekBar)v;
-            mediaPlayer.seekTo(sb.getProgress());
+            listener.getMediaPlayer().seekTo(sb.getProgress());
         }
         updateLabelsForTimes();
     }
 
     private void playPauseClicked(){
         hasChangedMediaPlayers = false;
-        if(mediaPlayer.isPlaying()){
-            mediaPlayer.pause();
+        if(listener.getMediaPlayer().isPlaying()){
+            listener.getMediaPlayer().pause();
             playPauseButton.setImageResource(R.drawable.play);
             this.listener.audioPlayerStateChanged(false);
         }
         else{
-            mediaPlayer.start();
+            listener.getMediaPlayer().start();
             playPauseButton.setImageResource(R.drawable.pause);
             updatePlayProgress();
             this.listener.audioPlayerStateChanged(true);
@@ -170,8 +167,8 @@ public class AudioPlayerViewGroup {
     }
 
     private void updateLabelsForTimes() {
-        if(mediaPlayer != null){
-            updateLabelsForTimes(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration());
+        if(listener.getMediaPlayer() != null){
+            updateLabelsForTimes(listener.getMediaPlayer().getCurrentPosition(), listener.getMediaPlayer().getDuration());
         }
     }
 
@@ -194,20 +191,19 @@ public class AudioPlayerViewGroup {
 
     public void pausePlayback(){
 
-        if(mediaPlayer != null) {
-            mediaPlayer.pause();
+        if(listener.getMediaPlayer() != null) {
+            listener.getMediaPlayer().pause();
         }
     }
 
     public void stopPlayback() {
-        if(mediaPlayer != null) {
-            mediaPlayer.stop();
+        if(listener.getMediaPlayer() != null) {
+            listener.getMediaPlayer().stop();
             seekBar.setProgress(0);
             hasChangedMediaPlayers = true;
             updateLabelsForTimes();
         }
     }
-
 
     public void resetViews(){
         controlsViewGroup.setVisibility(View.VISIBLE);
@@ -232,5 +228,6 @@ public class AudioPlayerViewGroup {
     public interface AudioPlayerViewGroupListener{
         void audioPlayerStateChanged(boolean isPlaying);
         void downloadClicked();
+        MediaPlayer getMediaPlayer();
     }
 }
