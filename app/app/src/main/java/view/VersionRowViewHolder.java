@@ -16,6 +16,7 @@ import model.DownloadState;
 import model.daoModels.Version;
 import utils.CustomSlideAnimationRelativeLayout;
 import utils.RowStatusHelper;
+import utils.ViewHelper;
 
 /**
  * Created by Fechner on 8/19/15.
@@ -146,11 +147,13 @@ public class VersionRowViewHolder {
     private void infoWasClicked() {
 
         if (versionInfoLayout.getVisibility() == View.GONE) {
-            CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
-            versionInfoLayout.startAnimation(animationRelativeLayout);
+            ViewHelper.expand(versionInfoLayout);
+//            CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.EXPAND);
+//            versionInfoLayout.startAnimation(animationRelativeLayout);
         } else {
-            CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.COLLAPSE);
-            versionInfoLayout.startAnimation(animationRelativeLayout);
+            ViewHelper.collapse(versionInfoLayout);
+//            CustomSlideAnimationRelativeLayout animationRelativeLayout = new CustomSlideAnimationRelativeLayout(versionInfoLayout, 300, CustomSlideAnimationRelativeLayout.COLLAPSE);
+//            versionInfoLayout.startAnimation(animationRelativeLayout);
         }
     }
 

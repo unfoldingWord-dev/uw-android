@@ -134,7 +134,7 @@ public class VersionSelectionFragment extends DialogFragment {
     protected void prepareListView(View view){
 
         mListView = (AnimatedExpandableListView) view.findViewById(R.id.versions_list);
-        mListView.setOnGroupClickListener(getOnGroupClickListener());
+//        mListView.setOnGroupClickListener(getOnGroupClickListener());
 
         Version version = getVersion();
 
@@ -175,34 +175,34 @@ public class VersionSelectionFragment extends DialogFragment {
 
     //region listeners
 
-    private ExpandableListView.OnGroupClickListener getOnGroupClickListener(){
-
-        return new ExpandableListView.OnGroupClickListener() {
-
-            @Override
-            public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, long id) {
-                // We call collapseGroupWithAnimation(int) and
-                // expandGroupWithAnimation(int) to animate group
-                // expansion/collapse.
-                if(!showProjectTitle) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mListView.isGroupExpanded(groupPosition)) {
-                                mListView.collapseGroupWithAnimation(groupPosition);
-                            } else {
-                                mListView.expandGroupWithAnimation(groupPosition);
-                            }
-                        }
-                    });
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        };
-    }
+//    private ExpandableListView.OnGroupClickListener getOnGroupClickListener(){
+//
+//        return new ExpandableListView.OnGroupClickListener() {
+//
+//            @Override
+//            public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, long id) {
+//                // We call collapseGroupWithAnimation(int) and
+//                // expandGroupWithAnimation(int) to animate group
+//                // expansion/collapse.
+//                if(!showProjectTitle) {
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (mListView.isGroupExpanded(groupPosition)) {
+//                                mListView.collapseGroupWithAnimation(groupPosition);
+//                            } else {
+//                                mListView.expandGroupWithAnimation(groupPosition);
+//                            }
+//                        }
+//                    });
+//                    return true;
+//                }
+//                else {
+//                    return false;
+//                }
+//            }
+//        };
+//    }
 
     private CollapsibleVersionAdapter.VersionAdapterListener getAdapterListener(){
 
