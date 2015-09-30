@@ -24,6 +24,7 @@ import tasks.UpdateAndVerifyBookRunnable;
 import unfoldingword.ModelNames;
 import utils.FileNameHelper;
 import utils.FileUtil;
+import utils.UWPreferenceDataManager;
 
 public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
@@ -61,6 +62,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         if(oldVersion < ModelNames.DB_VERSION_ID){
 
             populateWithPreload();
+            UWPreferenceDataManager.resetChapterSelections(context);
         }
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
     }

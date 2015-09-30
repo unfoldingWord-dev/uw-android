@@ -15,6 +15,13 @@ import model.daoModels.Version;
  */
 public class UWPreferenceDataManager {
 
+    public static void resetChapterSelections(Context context){
+        changedToBibleChapter(context, -1, true);
+        changedToBibleChapter(context, -1, false);
+        changedToStoryPage(context, -1, true);
+        changedToStoryPage(context, -1, false);
+    }
+
     public static void changedToBibleChapter(Context context, long chapterId, boolean isSecond){
         if(isSecond){
             UWPreferenceManager.setSelectedBibleChapterSecondary(context, chapterId);
