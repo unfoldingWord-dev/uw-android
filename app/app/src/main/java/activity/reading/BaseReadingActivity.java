@@ -110,11 +110,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected Project getProject();
 
     /**
-     * do any action required when the user scrolls
-     */
-    abstract protected void scrolled();
-
-    /**
      * @return Version to be shared
      */
     abstract protected Version getSharingVersion();
@@ -704,6 +699,17 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @Override
     public void chapterWasSelected() {
         removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
+        resetMediaPlayer();
+    }
+
+    /**
+     * do any action required when the user scrolls
+     */
+    protected void scrolled(){
+        resetMediaPlayer();
+    }
+
+    private void resetMediaPlayer(){
         loadData();
         updateViews();
         setupMediaPlayer(getAudioUri());

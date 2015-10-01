@@ -7,11 +7,6 @@
     android:background="#fff"
     >
 
-
-    <android.support.v7.widget.RecyclerView
-
-        />
-
     <TextView
         android:gravity="center"
 

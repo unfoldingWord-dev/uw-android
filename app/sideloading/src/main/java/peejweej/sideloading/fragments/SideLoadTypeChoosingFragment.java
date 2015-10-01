@@ -66,7 +66,7 @@ public class SideLoadTypeChoosingFragment extends Fragment {
 
         boolean isSharing = (info == null || info.fileName != null);
         boolean canUseQrCode = (isSharing && info != null && info.file != null && info.file.length() < 1024);
-        adapter = new ShareAdapter(getActivity().getApplicationContext(),
+        adapter = new ShareAdapter(getActivity(),
                 SideLoadType.getListOfSideLoadTypes(getActivity().getApplicationContext(), !isSharing, canUseQrCode));
         listView.setAdapter(adapter);
 

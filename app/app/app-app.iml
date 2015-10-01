@@ -118,5 +118,7 @@
     <orderEntry type="module" module-name="MyDaoGenerator" exported="" />
     <orderEntry type="module" module-name="FileDialog" exported="" />
     <orderEntry type="module" module-name="sideloading" exported="" />
+    <orderEntry type="module" module-name="com.door43.tools.reporting" exported="" />
+    <orderEntry type="library" exported="" name="org.apache.http.legacy-android-23" level="project" />
   </component>
 </module>

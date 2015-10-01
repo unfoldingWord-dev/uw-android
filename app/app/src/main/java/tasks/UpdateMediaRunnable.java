@@ -40,6 +40,10 @@ public class UpdateMediaRunnable implements Runnable {
 
         if(!isUpdatingVideo && !book.getAudioSaveStateEnum().equals(DownloadState.DOWNLOAD_STATE_DOWNLOADED) || isUpdatingVideo && !book.getVideoSaveState().equals(DownloadState.DOWNLOAD_STATE_DOWNLOADED)) {
 
+            if(!isUpdatingVideo){
+                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
+                book.update();
+            }
             int numberOfChapters = book.getAudioBook().getAudioChapters().size();
             int i = 1;
             for (AudioChapter chapter : book.getAudioBook().getAudioChapters()) {
@@ -49,13 +53,6 @@ public class UpdateMediaRunnable implements Runnable {
                 downloadMedia(chapter.getAudioUrl(), (i >= numberOfChapters));
                 i++;
             }
-            if(isUpdatingVideo){
-                book.setVideoSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-            }
-            else {
-                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-            }
-            book.update();
         }
     }
 
@@ -83,6 +80,13 @@ public class UpdateMediaRunnable implements Runnable {
             Log.e(TAG, "Error when saving media file");
         }
         if(isLast) {
+            if(isUpdatingVideo){
+                book.setVideoSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+            }
+            else {
+                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+            }
+            book.update();
             updater.runnableFinished();
         }
     }

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.List;
 
 import peejweej.sideloading.R;
@@ -20,7 +19,7 @@ import peejweej.sideloading.model.SideLoadType;
 public class ShareAdapter extends ArrayAdapter<SideLoadType> {
 
     public ShareAdapter(Context context, List<SideLoadType> objects) {
-        super(context, R.layout.row_share, objects);
+        super(context, R.layout.row_sideloading_share, objects);
     }
 
     @Override
@@ -30,13 +29,14 @@ public class ShareAdapter extends ArrayAdapter<SideLoadType> {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
+//        view = super.getView(position, view, parent);
         final SideLoadType currentRow = getItem(position);
         ViewHolderForGroup holder;
         if (view == null) {
 
             holder = new ViewHolderForGroup();
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.row_share, parent, false);
+            view = inflater.inflate(R.layout.row_sideloading_share, null);
 
             holder.labelTextView = (TextView) view.findViewById(R.id.share_label);
             holder.iconView = (ImageView) view.findViewById(R.id.share_icon);

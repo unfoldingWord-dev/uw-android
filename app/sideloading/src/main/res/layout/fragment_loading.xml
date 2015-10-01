@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -8,15 +9,15 @@
     android:minWidth="200dp"
     >
 
+
     <TextView
-        android:minWidth="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:paddingTop="20dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:id="@+id/progress_bar_fragment_text_view"
         android:textColor="#000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Loading..."
         android:layout_centerHorizontal="true"

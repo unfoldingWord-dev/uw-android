@@ -40,8 +40,6 @@
             android:background="@drawable/language_button_click"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:layout_toLeftOf="@+id/toolbar_right_button_layout"
-            android:layout_toStartOf="@+id/toolbar_right_button_layout"
             android:layout_toRightOf="@+id/toolbar_left_button"
             android:layout_toEndOf="@+id/toolbar_left_button"
             android:visibility="gone"

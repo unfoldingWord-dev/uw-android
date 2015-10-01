@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.door43.tools.reporting.BugReporterActivity;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import org.unfoldingword.mobile.R;
@@ -60,7 +61,6 @@ public class InitialScreenActivity extends UWBaseActivity{
     private ViewGroup updateLayout = null;
 
     private Button mRefreshButton = null;
-    private Button settingsButton = null;
     private ListView listview;
 
     InitialPageAdapter adapter;
@@ -195,21 +195,30 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     private void addSettingsFooter(){
 
-        if(settingsButton == null) {
-            LayoutInflater inflater = getLayoutInflater();
-            View footerView = inflater.inflate(R.layout.settings_footer, null);
+        LayoutInflater inflater = getLayoutInflater();
+        View footerView = inflater.inflate(R.layout.settings_footer, null);
 
 
-            // change version number
-            settingsButton = (Button) footerView.findViewById(R.id.settings_button);
-            settingsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    moveToSettings();
-                }
-            });
-            listview.addFooterView(footerView);
-        }
+        // change version number
+         Button settingsButton = (Button) footerView.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveToSettings();
+            }
+        });
+        footerView.findViewById(R.id.report_but_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToReportBug();
+            }
+        });
+        listview.addFooterView(footerView);
+    }
+
+    private void goToReportBug(){
+
+        startActivity(new Intent(getApplicationContext(), BugReporterActivity.class));
     }
 
     private void setupRefreshButton() {

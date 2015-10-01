@@ -50,14 +50,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected void scrolled() {
-        boolean isLoaded = loadData();
-        if (isLoaded){
-            updateToolbar();
-        }
-    }
-
-    @Override
     protected String getMainVersionText() {
         loadData();
         return  (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
