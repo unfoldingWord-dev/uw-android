@@ -332,7 +332,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
         @Override
         protected Void doInBackground(Version... params) {
             UWPreferenceDataManager.willDeleteVersion(getContext(), params[0]);
-            params[0].deleteContent();
+            params[0].deleteContent(getContext());
             return null;
         }
 

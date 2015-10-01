@@ -196,7 +196,7 @@ public class UWSideLoaderService extends UWUpdaterService {
             JSONArray booksJson = json.getJSONArray(VersionParser.BOOKS_JSON_KEY);
             for(int i = 0; i < booksJson.length(); i++){
                 JSONObject bookJson = booksJson.optJSONObject(i);
-                books.add(sideLoadBook(bookJson, model));
+                books.add(sideLoadBook(getApplicationContext(), bookJson, model));
             }
         }
         catch (JSONException e){
@@ -205,7 +205,7 @@ public class UWSideLoaderService extends UWUpdaterService {
         return books;
     }
 
-    private Book sideLoadBook(JSONObject json, Version parent){
+    private Book sideLoadBook(Context context, JSONObject json, Version parent){
 
         Book model = new Book();
         model = (Book) model.setupModelFromJson(json, parent);
@@ -215,7 +215,7 @@ public class UWSideLoaderService extends UWUpdaterService {
 
         if(oldModel != null){
             oldModel.updateWithModel(model);
-            oldModel.deleteBookContent();
+            oldModel.deleteBookContent(context);
             model = oldModel;
         }
         else {

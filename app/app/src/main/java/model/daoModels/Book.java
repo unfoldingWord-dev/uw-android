@@ -382,7 +382,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
     /**
      * Deletes all data related to the sources of this book
      */
-    public void deleteBookContent(){
+    public void deleteBookContent(Context context){
 
         if(getStoryChapters() != null){
             for(StoriesChapter chapter : storyChapters){
@@ -394,7 +394,8 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
                 chapter.delete();
             }
         }
-
+        deleteAudio(context);
+        setAudioSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
     }
 
     /**

@@ -171,7 +171,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
         if(audioBook != null){
             AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
             if(audioChapter != null){
-                File audioFile = UWFileUtils.loadSourceFile(audioChapter.getSource(), getApplicationContext());
+                File audioFile = UWFileUtils.loadSourceFile(audioChapter.getAudioUrl(), getApplicationContext());
 
                 if(audioFile != null){
                     return Uri.fromFile(audioFile);

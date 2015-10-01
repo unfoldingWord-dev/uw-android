@@ -17,31 +17,20 @@ public class AudioChapterParser extends UWDataParser{
 
     private static final String BITRATE_JSON_KEY = "br";
     private static final String LENGTH_JSON_KEY = "length";
-    private static final String MODIFIED_JSON_KEY = "mod";
-    private static final String SIZE_JSON_KEY = "size";
     private static final String SOURCE_JSON_KEY = "src";
     private static final String SOURCE_SIGNATURE_JSON_KEY = "src_sig";
+    private static final String CHAPTER_JSON_KEY = "chap";
 
     public static AudioChapter parseAudioChapter(JSONObject jsonObject, AudioBook parent) throws JSONException {
 
-        Iterator<?> keys = jsonObject.keys();
-
-        String key = (String)keys.next();
-        return parseAudioChapter(jsonObject.getJSONObject(key), parent, Integer.parseInt(key));
-    }
-
-    public static AudioChapter parseAudioChapter(JSONObject jsonObject, AudioBook parent, int chapter) throws JSONException {
-
         AudioChapter newModel = new AudioChapter();
 
-        newModel.setChapter(chapter);
-        newModel.setBitRate(jsonObject.getInt(BITRATE_JSON_KEY));
+        newModel.setChapter(Integer.parseInt(jsonObject.getString(CHAPTER_JSON_KEY)));
+        newModel.setBitrateJson(jsonObject.getJSONArray(BITRATE_JSON_KEY).toString());
         newModel.setLength(jsonObject.getInt(LENGTH_JSON_KEY));
-        newModel.setModified(getDate(jsonObject.getLong(MODIFIED_JSON_KEY)));
-        newModel.setSize(jsonObject.getInt(SIZE_JSON_KEY));
         newModel.setSource(jsonObject.getString(SOURCE_JSON_KEY));
         newModel.setSourceSignature(jsonObject.getString(SOURCE_SIGNATURE_JSON_KEY));
-        newModel.setUniqueSlug(parent.getUniqueSlug() + Integer.toString(chapter));
+        newModel.setUniqueSlug(parent.getUniqueSlug() + Integer.toString(newModel.getChapter()));
         newModel.setAudioBookId(parent.getId());
 
         return newModel;
@@ -64,10 +53,8 @@ public class AudioChapterParser extends UWDataParser{
 
         JSONObject jsonModel = new JSONObject();
 
-        jsonModel.put(BITRATE_JSON_KEY, model.getBitRate());
+        jsonModel.put(BITRATE_JSON_KEY, model.getBitrateJson());
         jsonModel.put(LENGTH_JSON_KEY, model.getLength());
-        jsonModel.put(MODIFIED_JSON_KEY, model.getModified().getTime());
-        jsonModel.put(SIZE_JSON_KEY, model.getSize());
         jsonModel.put(SOURCE_JSON_KEY, model.getSource());
         jsonModel.put(SOURCE_SIGNATURE_JSON_KEY, model.getSourceSignature());
 

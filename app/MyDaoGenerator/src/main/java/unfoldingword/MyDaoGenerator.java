@@ -182,7 +182,8 @@ public class MyDaoGenerator {
     private static Entity createAudioChapter(Schema schema, Entity audioBook) {
 
         DaoHelperMethods.EntityInformation audioChapterInfo =
-                new DaoHelperMethods.EntityInformation(ModelNames.AUDIO_CHAPTER, ModelNames.AUDIO_CHAPTER_STRING_ATTRIBUTES, ModelNames.AUDIO_CHAPTER_DATE_ATTRIBUTES,  ModelNames.AUDIO_CHAPTER_INT_ATTRIBUTES);
+                new DaoHelperMethods.EntityInformation(ModelNames.AUDIO_CHAPTER, ModelNames.AUDIO_CHAPTER_STRING_ATTRIBUTES);
+        audioChapterInfo.intAttributes = ModelNames.AUDIO_CHAPTER_INT_ATTRIBUTES;
         Entity audioChapter = DaoHelperMethods.createEntity(schema, audioChapterInfo);
         audioChapter.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
         audioChapter.implementsInterface(getComparableInterfaceForClassName(ModelNames.AUDIO_CHAPTER));

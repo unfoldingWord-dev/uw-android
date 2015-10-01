@@ -33,7 +33,8 @@
     <string name="preloaded_catalog_file_name">preloaded_data.json</string>
     <string name="preloaded_locales_file_name">locales_data.json</string>
 
-    <string name="pref_default_base_url">https://api.unfoldingword.org/uw/txt/2/catalog.json</string>
+    <string name="pref_default_base_url">https://api.unfoldingword.org/uw/txt/beta/catalog.json</string>
+    <string name="pref_default_base_url_test">https://api.unfoldingword.org/uw/txt/2/catalog.json</string>
     <string name="old_pref_default_base_url">https://api.unfoldingword.org/ts/txt/2/catalog.json</string>
     <string name="languages_json_url">http://td.unfoldingword.org/exports/langnames.json</string>
 

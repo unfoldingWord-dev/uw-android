@@ -69,9 +69,8 @@ public class ModelNames {
     static public final String AUDIO_BOOK_BOOK_ATTRIBUTE = "bookId";
 
     static public final String AUDIO_CHAPTER = "AudioChapter";
-    static public final String[] AUDIO_CHAPTER_DATE_ATTRIBUTES = { "modified" };
-    static public final String[] AUDIO_CHAPTER_STRING_ATTRIBUTES = { "uniqueSlug", "source","sourceSignature"};
-    static public final String[] AUDIO_CHAPTER_INT_ATTRIBUTES = { "chapter", "bitRate", "length", "size"};
+    static public final String[] AUDIO_CHAPTER_STRING_ATTRIBUTES = {"bitrateJson", "uniqueSlug", "source","sourceSignature"};
+    static public final String[] AUDIO_CHAPTER_INT_ATTRIBUTES = { "chapter", "length"};
     static public final String AUDIO_CHAPTER_AUDIO_BOOK_ATTRIBUTE = "audioBookId";
     static public final String AUDIO_CHAPTER_VERIFICATIONS_ATTRIBUTE = "verifications";
 }

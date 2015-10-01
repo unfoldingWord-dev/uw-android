@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
@@ -75,7 +76,9 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateChapters(Book parent){
 
-        updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
+        if(parent.getVersion().getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal()) {
+            updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
+        }
     }
 
     private void updateMedia(JSONObject bookJson, Book book){

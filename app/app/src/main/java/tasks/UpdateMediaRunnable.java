@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import model.AudioBitrate;
 import model.DownloadState;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
@@ -42,7 +43,10 @@ public class UpdateMediaRunnable implements Runnable {
             int numberOfChapters = book.getAudioBook().getAudioChapters().size();
             int i = 1;
             for (AudioChapter chapter : book.getAudioBook().getAudioChapters()) {
-                downloadMedia(chapter.getSource(), (i >= numberOfChapters));
+//                for(AudioBitrate bitrate : chapter.getBitRates()){
+//                    downloadMedia(chapter.getAudioUrl(bitrate.getBitrate()), (i >= numberOfChapters));
+//                }
+                downloadMedia(chapter.getAudioUrl(), (i >= numberOfChapters));
                 i++;
             }
             if(isUpdatingVideo){
@@ -53,7 +57,6 @@ public class UpdateMediaRunnable implements Runnable {
             }
             book.update();
         }
-
     }
 
     private void downloadMedia(final String url, final boolean isLast){
@@ -68,6 +71,7 @@ public class UpdateMediaRunnable implements Runnable {
     }
 
     private void saveMediaFile(String url, byte[] data, boolean isLast){
+
         try{
             FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
             fos.write(data);

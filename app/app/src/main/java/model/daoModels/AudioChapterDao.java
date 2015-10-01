@@ -29,15 +29,13 @@ public class AudioChapterDao extends AbstractDao<AudioChapter, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property UniqueSlug = new Property(1, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
-        public final static Property Source = new Property(2, String.class, "source", false, "SOURCE");
-        public final static Property SourceSignature = new Property(3, String.class, "sourceSignature", false, "SOURCE_SIGNATURE");
-        public final static Property Chapter = new Property(4, Integer.class, "chapter", false, "CHAPTER");
-        public final static Property BitRate = new Property(5, Integer.class, "bitRate", false, "BIT_RATE");
+        public final static Property BitrateJson = new Property(1, String.class, "bitrateJson", false, "BITRATE_JSON");
+        public final static Property UniqueSlug = new Property(2, String.class, "uniqueSlug", false, "UNIQUE_SLUG");
+        public final static Property Source = new Property(3, String.class, "source", false, "SOURCE");
+        public final static Property SourceSignature = new Property(4, String.class, "sourceSignature", false, "SOURCE_SIGNATURE");
+        public final static Property Chapter = new Property(5, Integer.class, "chapter", false, "CHAPTER");
         public final static Property Length = new Property(6, Integer.class, "length", false, "LENGTH");
-        public final static Property Size = new Property(7, Integer.class, "size", false, "SIZE");
-        public final static Property Modified = new Property(8, java.util.Date.class, "modified", false, "MODIFIED");
-        public final static Property AudioBookId = new Property(9, long.class, "audioBookId", false, "AUDIO_BOOK_ID");
+        public final static Property AudioBookId = new Property(7, long.class, "audioBookId", false, "AUDIO_BOOK_ID");
     };
 
     private DaoSession daoSession;
@@ -58,15 +56,13 @@ public class AudioChapterDao extends AbstractDao<AudioChapter, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"AUDIO_CHAPTER\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
-                "\"UNIQUE_SLUG\" TEXT," + // 1: uniqueSlug
-                "\"SOURCE\" TEXT," + // 2: source
-                "\"SOURCE_SIGNATURE\" TEXT," + // 3: sourceSignature
-                "\"CHAPTER\" INTEGER," + // 4: chapter
-                "\"BIT_RATE\" INTEGER," + // 5: bitRate
+                "\"BITRATE_JSON\" TEXT," + // 1: bitrateJson
+                "\"UNIQUE_SLUG\" TEXT," + // 2: uniqueSlug
+                "\"SOURCE\" TEXT," + // 3: source
+                "\"SOURCE_SIGNATURE\" TEXT," + // 4: sourceSignature
+                "\"CHAPTER\" INTEGER," + // 5: chapter
                 "\"LENGTH\" INTEGER," + // 6: length
-                "\"SIZE\" INTEGER," + // 7: size
-                "\"MODIFIED\" INTEGER," + // 8: modified
-                "\"AUDIO_BOOK_ID\" INTEGER NOT NULL );"); // 9: audioBookId
+                "\"AUDIO_BOOK_ID\" INTEGER NOT NULL );"); // 7: audioBookId
     }
 
     /** Drops the underlying database table. */
@@ -85,46 +81,36 @@ public class AudioChapterDao extends AbstractDao<AudioChapter, Long> {
             stmt.bindLong(1, id);
         }
  
+        String bitrateJson = entity.getBitrateJson();
+        if (bitrateJson != null) {
+            stmt.bindString(2, bitrateJson);
+        }
+ 
         String uniqueSlug = entity.getUniqueSlug();
         if (uniqueSlug != null) {
-            stmt.bindString(2, uniqueSlug);
+            stmt.bindString(3, uniqueSlug);
         }
  
         String source = entity.getSource();
         if (source != null) {
-            stmt.bindString(3, source);
+            stmt.bindString(4, source);
         }
  
         String sourceSignature = entity.getSourceSignature();
         if (sourceSignature != null) {
-            stmt.bindString(4, sourceSignature);
+            stmt.bindString(5, sourceSignature);
         }
  
         Integer chapter = entity.getChapter();
         if (chapter != null) {
-            stmt.bindLong(5, chapter);
-        }
- 
-        Integer bitRate = entity.getBitRate();
-        if (bitRate != null) {
-            stmt.bindLong(6, bitRate);
+            stmt.bindLong(6, chapter);
         }
  
         Integer length = entity.getLength();
         if (length != null) {
             stmt.bindLong(7, length);
         }
- 
-        Integer size = entity.getSize();
-        if (size != null) {
-            stmt.bindLong(8, size);
-        }
- 
-        java.util.Date modified = entity.getModified();
-        if (modified != null) {
-            stmt.bindLong(9, modified.getTime());
-        }
-        stmt.bindLong(10, entity.getAudioBookId());
+        stmt.bindLong(8, entity.getAudioBookId());
     }
 
     @Override
@@ -144,15 +130,13 @@ public class AudioChapterDao extends AbstractDao<AudioChapter, Long> {
     public AudioChapter readEntity(Cursor cursor, int offset) {
         AudioChapter entity = new AudioChapter( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uniqueSlug
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // source
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // sourceSignature
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // chapter
-            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // bitRate
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // bitrateJson
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // uniqueSlug
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // source
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // sourceSignature
+            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // chapter
             cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // length
-            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // size
-            cursor.isNull(offset + 8) ? null : new java.util.Date(cursor.getLong(offset + 8)), // modified
-            cursor.getLong(offset + 9) // audioBookId
+            cursor.getLong(offset + 7) // audioBookId
         );
         return entity;
     }
@@ -161,15 +145,13 @@ public class AudioChapterDao extends AbstractDao<AudioChapter, Long> {
     @Override
     public void readEntity(Cursor cursor, AudioChapter entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setUniqueSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setSource(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setSourceSignature(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setChapter(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setBitRate(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
+        entity.setBitrateJson(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setUniqueSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setSource(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setSourceSignature(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setChapter(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
         entity.setLength(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
-        entity.setSize(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
-        entity.setModified(cursor.isNull(offset + 8) ? null : new java.util.Date(cursor.getLong(offset + 8)));
-        entity.setAudioBookId(cursor.getLong(offset + 9));
+        entity.setAudioBookId(cursor.getLong(offset + 7));
      }
     
     /** @inheritdoc */

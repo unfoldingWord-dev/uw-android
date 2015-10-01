@@ -489,9 +489,9 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
     /**
      * Deletes all downloaded content
      */
-    public void deleteContent(){
+    public void deleteContent(Context context){
         for(Book book : getBooks()){
-            book.deleteBookContent();
+            book.deleteBookContent(context);
         }
         saveState = DownloadState.DOWNLOAD_STATE_NONE.ordinal();
         update();

@@ -33,6 +33,7 @@ public class VersionRowViewHolder {
     private FrameLayout infoFrame;
 
     private Button status;
+    private Button informationStatus;
     private ImageView downloadButton;
 
     private FrameLayout downloadFrame;
@@ -66,6 +67,7 @@ public class VersionRowViewHolder {
         versionInfoLayout = (LinearLayout) baseView.findViewById(R.id.version_information_layout);
         infoFrame = (FrameLayout) baseView.findViewById(R.id.info_image_frame);
         status = (Button) baseView.findViewById(R.id.verification_status);
+        informationStatus = (Button) baseView.findViewById(R.id.verification_information_status);
         downloadFrame = (FrameLayout) baseView.findViewById(R.id.download_status_frame);
         downloadProgressBar = (ProgressBar) baseView.findViewById(R.id.download_progress_bar);
 
@@ -94,7 +96,10 @@ public class VersionRowViewHolder {
         status.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
         status.setText(RowStatusHelper.getButtonTextForStatus(context, verificationStatus));
 
-        setupForAudioDownloadState(version.getAudioDownloadState(), version.hasAudio());
+        informationStatus.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
+        informationStatus.setText(RowStatusHelper.getButtonTextForStatus(context, verificationStatus));
+
+        setupForAudioDownloadState(version.getAudioDownloadState(), version.hasAudio() && version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
         setupForVideoDownloadState(version.getVideoDownloadState(), false);
     }
 
