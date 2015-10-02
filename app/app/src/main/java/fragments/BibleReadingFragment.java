@@ -193,9 +193,17 @@ public class BibleReadingFragment extends Fragment implements
     public void scrollToCurrentPage(){
         updateBook();
         BibleChapter correctItem = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        BibleChapter currentItem = currentBook.getBibleChapters(true).get(readingViewPager.getCurrentItem());
+        List<BibleChapter> chapters = currentBook.getBibleChapters(true);
+        BibleChapter currentItem = (chapters.size() <= readingViewPager.getCurrentItem())?
+                null : chapters.get(readingViewPager.getCurrentItem());
 
-        boolean shouldUpdate = (correctItem != null && currentItem != null && !correctItem.getId().equals(currentItem.getId()));
+        boolean shouldUpdate;
+        if(currentItem == null && correctItem != null){
+            shouldUpdate = true;
+        }
+        else{
+            shouldUpdate = correctItem != null && !correctItem.getId().equals(currentItem.getId());
+        }
 
         if(shouldUpdate) {
 

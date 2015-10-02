@@ -21,6 +21,8 @@ import activity.reading.BaseReadingActivity;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
+import utils.UWPreferenceDataAccessor;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
 import view.ViewContentHelper;
@@ -199,7 +201,12 @@ public class StoryPagerAdapter extends PagerAdapter {
             mainChapter = nextChapter;
             getCount();
 
-            UWPreferenceManager.setSelectedStoryPage(context, mainChapter.getStoryPages().get(0).getId());
+            UWPreferenceDataManager.setNewStoriesPage(context, mainChapter.getStoryPages().get(0), false);
+
+            StoryPage newSecondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, true);
+            if(newSecondaryPage != null) {
+                secondChapter = newSecondaryPage.getStoriesChapter();
+            }
             notifyDataSetChanged();
             ((ViewPager) this.container).setCurrentItem(0);
             context.getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));

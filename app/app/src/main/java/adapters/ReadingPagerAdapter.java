@@ -85,10 +85,10 @@ public class ReadingPagerAdapter extends PagerAdapter {
         this.container = container;
         View view = null;
 
-        if (position == getCount() - 1) {
+        if (position == chapters.size()) {
             view = getNextBookView(inflater);
         }
-        if(view == null){
+        else{
 
             view = inflater.inflate(R.layout.reading_pager_layout, container, false);
             view.setEnabled(false);
@@ -96,11 +96,10 @@ public class ReadingPagerAdapter extends PagerAdapter {
             textWebView.getSettings().setJavaScriptEnabled(true);
 
             textWebView.setOnTouchListener(this.pagerOnTouchListener);
+            String pageText = getTextCss() + new USFMParser().parseUsfmChapter(chapters.get(position).getText());
+            textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
         }
 
-        WebView textWebView = (WebView) view.findViewById(R.id.chapterWebView);
-        String pageText = getTextCss() + new USFMParser().parseUsfmChapter(chapters.get(position).getText());
-        textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
         ((ViewPager) container).addView(view);
         return view;
     }
