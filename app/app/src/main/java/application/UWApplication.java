@@ -21,12 +21,11 @@ public class UWApplication extends Application {
         super.onCreate();
         Iconify.with(new FontAwesomeModule());
 
-
-        File dir = new File(getExternalCacheDir(), STACKTRACE_DIR);
-        GlobalExceptionHandler.register(dir);
-
-        // configure logger
-        int minLogLevel = 1;
-        Logger.configure(new File(getExternalCacheDir(), "log.txt"), Logger.Level.getLevel(minLogLevel));
+//        File dir = new File(getExternalCacheDir(), STACKTRACE_DIR);
+//        GlobalExceptionHandler.register(dir);
+//
+//        // configure logger
+//        int minLogLevel = 1;
+//        Logger.configure(new File(getExternalCacheDir(), "log.txt"), Logger.Level.getLevel(minLogLevel));
     }
 }

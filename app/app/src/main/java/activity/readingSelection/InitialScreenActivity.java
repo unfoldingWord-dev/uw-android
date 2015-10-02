@@ -196,7 +196,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     private void addSettingsFooter(){
 
         LayoutInflater inflater = getLayoutInflater();
-        View footerView = inflater.inflate(R.layout.settings_footer, null);
+        View footerView = inflater.inflate(R.layout.footer_settings, null);
 
 
         // change version number

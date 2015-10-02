@@ -390,6 +390,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
         if(mediaPlayer != null && playerViewGroup != null && mediaPlayer.isPlaying()){
             playerViewGroup.stopPlayback();
+            mediaPlayer.release();
         }
         mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
 
@@ -399,7 +400,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void setAudioButtonState(boolean isPlaying){
-
         tabBar.setImageAtIndex((isPlaying)? R.drawable.audio_active : R.drawable.audio_normal, 0);
     }
 
