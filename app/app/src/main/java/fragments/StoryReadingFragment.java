@@ -86,15 +86,17 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     }
 
     private void updateData(){
-        StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
-        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+        if(getActivity() != null) {
+            StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+            StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
 
-        if(mainPage != null){
-            mainChapter = mainPage.getStoriesChapter();
-        }
+            if (mainPage != null) {
+                mainChapter = mainPage.getStoriesChapter();
+            }
 
-        if(secondaryPage != null){
-            secondChapter = secondaryPage.getStoriesChapter();
+            if (secondaryPage != null) {
+                secondChapter = secondaryPage.getStoriesChapter();
+            }
         }
     }
 
