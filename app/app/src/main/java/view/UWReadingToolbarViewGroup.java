@@ -118,7 +118,9 @@ public class UWReadingToolbarViewGroup {
 
     public void setMainVersionText(String mainVersionText) {
         this.mainVersionText = mainVersionText;
-        mainVersionTextView.setText((this.mainVersionText != null)? this.mainVersionText : "");
+        boolean hasNoText = (mainVersionText == null || mainVersionText.length() < 1);
+        mainVersionTextView.setText((!hasNoText)? this.mainVersionText : "");
+        mainVersionLayout.setVisibility((hasNoText) ? View.INVISIBLE : View.VISIBLE);
         layoutViews();
     }
 
@@ -193,6 +195,24 @@ public class UWReadingToolbarViewGroup {
         if(isMinni || hasTwoVersions){
             chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         }
+
+        if(!isMinni && !hasTwoVersions){
+            chapterParams.addRule(getSDKSafeRightOf(), leftButton.getId());
+            chapterParams.addRule(getSDKSafeLeftOf(), mainVersionLayout.getId());
+        }
+        else if (!hasTwoVersions && isMinni){
+            chapterParams.addRule(getSDKSafeLeftOf(), mainVersionLayout.getId());
+            chapterParams.addRule(getSDKSafeAlignParentLeft());
+        }
+        else if( hasTwoVersions && isMinni){
+            chapterParams.addRule(getSDKSafeRightOf(), secondaryVersionLayout.getId());
+            chapterParams.addRule(getSDKSafeLeftOf(), mainVersionLayout.getId());
+        }
+        else{
+            chapterParams.addRule(getSDKSafeRightOf(), leftButton.getId());
+            chapterParams.addRule(getSDKSafeLeftOf(), rightButtonPlaceholder.getId());
+        }
+
         chapterLayout.setLayoutParams(chapterParams);
     }
 
@@ -202,16 +222,13 @@ public class UWReadingToolbarViewGroup {
         versionParams.height = getSizeForDp((!isMinni && !hasTwoVersions)? 50 : 25);
         versionParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
 
-        if(!hasTwoVersions || isMinni){
-            versionParams.addRule(getSDKSafeAlignParentRight());
-        }
         if(hasTwoVersions && !isMinni){
             versionParams.addRule(getSDKSafeLeftOf(), rightButtonPlaceholder.getId());
             versionParams.addRule(getSDKSafeRightOf(), centerMarker.getId());
             versionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
         }
-        if(hasTwoVersions && isMinni){
-            versionParams.addRule(getSDKSafeRightOf(), chapterLayout.getId());
+        else{
+            versionParams.addRule(getSDKSafeAlignParentRight());
         }
         mainVersionLayout.setLayoutParams(versionParams);
     }
@@ -220,15 +237,16 @@ public class UWReadingToolbarViewGroup {
 
         if(hasTwoVersions) {
             RelativeLayout.LayoutParams secondaryVersionParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, getSizeForDp(25));
-            secondaryVersionParams.addRule((isMinni) ? getSDKSafeLeftOf() : RelativeLayout.BELOW, chapterLayout.getId());
-            secondaryVersionLayout.setLayoutParams(secondaryVersionParams);
+
             if(isMinni){
                 secondaryVersionParams.addRule(getSDKSafeAlignParentLeft());
             }
             else{
+                secondaryVersionParams.addRule(RelativeLayout.BELOW, chapterLayout.getId());
                 secondaryVersionParams.addRule(getSDKSafeRightOf(), leftButton.getId());
                 secondaryVersionParams.addRule(getSDKSafeLeftOf(), centerMarker.getId());
             }
+            secondaryVersionLayout.setLayoutParams(secondaryVersionParams);
         }
     }
 

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId 'com.unfoldingword.androidapp'
         minSdkVersion 8
@@ -41,8 +41,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/core-1.51.0.0.jar')
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:support-v4:23.0.1'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.guava:guava-io:r03'
@@ -53,8 +53,8 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.7'
     compile project(':sideloading')
     compile project(':MyDaoGenerator')
-    compile 'com.android.support:cardview-v7:23.0.0'
-    compile 'com.android.support:recyclerview-v7:23.0.0'
-    compile 'com.android.support:palette-v7:23.0.0'
+    compile 'com.android.support:cardview-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.android.support:palette-v7:23.0.1'
     compile project(':com.door43.tools.reporting')
 }
