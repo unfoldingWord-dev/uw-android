@@ -1,6 +1,6 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Reporting</string>
-    <string name="github_bug_report_repo">https://api.github.com/repos/unfoldingWord-dev/translationKeyboard/issues</string>
+    <string name="github_bug_report_repo">https://api.github.com/repos/unfoldingWord-dev/uw-android/issues</string>
 
     <string name="title_projects">Project</string>
     <string name="title_frames">Frame</string>
