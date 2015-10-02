@@ -1,19 +1,23 @@
 package activity.reading;
 
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -407,6 +411,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
         switch (index){
             case 0:{
+                getAudioInfo();
                 toggleAudioPlayerVisibility();
                 break;
             }
@@ -430,6 +435,18 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 break;
             }
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
+    private void getAudioInfo(){
+
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(getApplicationContext(), getAudioUri());
+        Log.i(TAG, "Media tracks: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_NUM_TRACKS));
+        Log.i(TAG, "Media bitrate: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+        Log.i(TAG, "Media duration: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        Log.i(TAG, "Media title: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+
     }
 
     private void toggleAudioPlayerVisibility(){
