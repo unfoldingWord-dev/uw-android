@@ -145,6 +145,17 @@
             android:label="@string/title_activity_settings" >
         </activity>
 
+        <activity
+            android:name="com.door43.tools.reporting.BugReporterActivity"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            >
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="activity.readingSelection.InitialScreenActivity" />
+        </activity>
+
         <service android:name="services.UWUpdaterService" />
         <service android:name="services.UWVersionDownloaderService" />
         <service android:name="services.UWPreLoaderService" />

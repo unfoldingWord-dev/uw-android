@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Created by joel on 1/14/2015.
  */
-public class BugReporterActivity extends ActionBarActivity {
+public class BugReporterActivity extends AppCompatActivity {
     private Button mOkButton;
     private Button mCancelButton;
     private ProgressDialog mDialog;
@@ -34,12 +34,13 @@ public class BugReporterActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        final UploadReportsTask task = new UploadReportsTask();
 
         mOkButton = (Button)findViewById(R.id.okButton);
         mCancelButton = (Button)findViewById(R.id.cancelButton);
         mCrashReportText = (EditText)findViewById(R.id.crashDescriptioneditText);
         mDialog = new ProgressDialog(BugReporterActivity.this);
+
+        final UploadReportsTask task = new UploadReportsTask(mCrashReportText.getText().toString().trim());
 
         mCrashReportText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -89,10 +90,15 @@ public class BugReporterActivity extends ActionBarActivity {
 
     private class UploadReportsTask extends AsyncTask<Boolean, String, Void> {
 
+        String notes;
+
+        public UploadReportsTask(String notes) {
+            this.notes = notes;
+        }
+
         @Override
         protected Void doInBackground(Boolean... bools) {
             Boolean upload = bools[0];
-            String notes = mCrashReportText.getText().toString().trim();
             Handler handle = new Handler(getMainLooper());
             if(upload) {
                 mDialog.setMessage(getResources().getString(R.string.uploading));
