@@ -27,6 +27,7 @@ import android.widget.Toast;
 import org.unfoldingword.mobile.R;
 
 import java.io.IOException;
+import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
@@ -38,10 +39,12 @@ import fragments.ReadingFragmentListener;
 import fragments.StoryChaptersFragment;
 import fragments.VersionInfoFragment;
 import fragments.VersionSelectionFragment;
+import model.AudioMarker;
 import model.SharingHelper;
 import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import model.parsers.AudioMarkerParser;
 import services.UWBookMediaDownloaderService;
 import services.UWUpdaterService;
 import utils.UWPreferenceDataManager;
@@ -391,6 +394,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(uri == null){
             return;
         }
+        List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri);
 
         if(mediaPlayer != null && playerViewGroup != null && mediaPlayer.isPlaying()){
             playerViewGroup.stopPlayback();
@@ -411,7 +415,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
         switch (index){
             case 0:{
-                getAudioInfo();
                 toggleAudioPlayerVisibility();
                 break;
             }
@@ -440,12 +443,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     private void getAudioInfo(){
 
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(getApplicationContext(), getAudioUri());
-        Log.i(TAG, "Media tracks: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_NUM_TRACKS));
-        Log.i(TAG, "Media bitrate: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
-        Log.i(TAG, "Media duration: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        Log.i(TAG, "Media title: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//        retriever.setDataSource(getApplicationContext(), getAudioUri());
+//        Log.i(TAG, "Media tracks: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_NUM_TRACKS));
+//        Log.i(TAG, "Media bitrate: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+//        Log.i(TAG, "Media duration: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+//        Log.i(TAG, "Media title: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
 
     }
 

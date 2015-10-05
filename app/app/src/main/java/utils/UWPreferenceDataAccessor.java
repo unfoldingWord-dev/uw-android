@@ -3,6 +3,9 @@ package utils;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.StoryPage;
@@ -19,6 +22,24 @@ public class UWPreferenceDataAccessor {
 
     private StoryPage currentPage;
     private StoryPage currentSecondPage;
+
+    private static List<PreferencesStoryPageChangedListener> storyPageChangedListeners = new ArrayList<>();
+    private static List<PreferencesBibleChapterChangedListener> bibleChapterChangedListeners = new ArrayList<>();
+
+    public void addStoryPageListener(PreferencesStoryPageChangedListener listener){
+        storyPageChangedListeners.add(listener);
+    }
+    public void addBibleChapterListener(PreferencesBibleChapterChangedListener listener){
+        bibleChapterChangedListeners.add(listener);
+    }
+
+    public void removeStoryPageListener(PreferencesStoryPageChangedListener listener){
+        storyPageChangedListeners.remove(listener);
+    }
+    public void removeBibleChapterListener(PreferencesBibleChapterChangedListener listener){
+        bibleChapterChangedListeners.remove(listener);
+    }
+
 
     /**
      * @param context Context to use
@@ -134,5 +155,11 @@ public class UWPreferenceDataAccessor {
         return DaoDBHelper.getDaoSession(context).getStoryPageDao().loadDeep(id);
     }
 
+    public interface PreferencesStoryPageChangedListener{
+        void storyPageChanged(StoryPage page);
+    }
 
+    public interface PreferencesBibleChapterChangedListener{
+        void bibleChapterChanged(BibleChapter chapter);
+    }
 }
