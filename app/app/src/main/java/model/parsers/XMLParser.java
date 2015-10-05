@@ -22,6 +22,9 @@ public class XMLParser {
 
     public static Document getDomElement(String xml){
 
+        if(xml == null || xml.length() < 1){
+            return null;
+        }
         Document doc = null;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {

@@ -112,7 +112,17 @@ public class AudioMarkerParser {
         if(description != null) {
             NamedNodeMap nodes = description.getAttributes();
 
-            long startTime = Long.parseLong(nodes.getNamedItem("xmpDM:startTime").getTextContent());
+            String startTimeText = nodes.getNamedItem("xmpDM:startTime").getTextContent();
+            long startTime = 0;
+            if(startTimeText.contains("f")){
+                String[] splitTimeText= startTimeText.split("f");
+                startTime = Long.parseLong(splitTimeText[0]);
+                frameRate = Long.parseLong(splitTimeText[1]);
+            }
+            else{
+                startTime = Long.parseLong(startTimeText);
+            }
+
 
             long duration = -1;
             Node durationNode = nodes.getNamedItem("xmpDM:duration");
@@ -130,6 +140,9 @@ public class AudioMarkerParser {
     private static Element getDescriptionElement(String text){
 
         Document doc = XMLParser.getDomElement(text);
+        if(doc == null){
+            return null;
+        }
         NodeList nodes = doc.getElementsByTagName("xmpDM:Tracks");
 
         Element tracks = XMLParser.getElement(nodes, "xmpDM:Tracks");

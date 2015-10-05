@@ -11,6 +11,7 @@ import java.util.List;
 
 import fragments.StoryReadingFragment;
 import model.DaoDBHelper;
+import model.DownloadState;
 import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
 import model.daoModels.Project;
@@ -160,9 +161,9 @@ public class StoryReadingActivity extends BaseReadingActivity {
         loadData();
         AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
 
-        if(audioBook != null){
+        if(audioBook != null && this.currentChapter.getBook().getAudioSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal()){
             AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
-            if(audioChapter != null){
+            if(audioChapter != null ){
                 File audioFile = UWFileUtils.loadSourceFile(audioChapter.getAudioUrl(), getApplicationContext());
 
                 if(audioFile != null){
