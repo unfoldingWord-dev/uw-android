@@ -31,6 +31,7 @@ import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
+import view.ReadingToolbarViewData;
 
 public class ReadingActivity extends BaseReadingActivity {
     static private final String TAG = "ReadingActivity";
@@ -47,57 +48,57 @@ public class ReadingActivity extends BaseReadingActivity {
         super.onCreate(savedInstanceState);
     }
 
-    @Override
-    protected String getChapterLabelText() {
-        return (currentChapter != null) ? currentChapter.getTitle() : null;
-    }
-
-    @Override
-    protected String getMainVersionText() {
-        updateChapters();
-        return (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
-    }
-
-    @Override
-    protected String getSecondaryVersionText() {
-
-        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), true);
-        return (secondaryChapter != null)? secondaryChapter.getBook().getVersion().getTitle() : "";
-    }
+//    @Override
+//    protected String getChapterLabelText() {
+//        return (currentChapter != null) ? currentChapter.getTitle() : null;
+//    }
+//
+//    @Override
+//    protected String getMainVersionText() {
+//        updateChapters();
+//        return (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
+//    }
+//
+//    @Override
+//    protected String getSecondaryVersionText() {
+//
+//        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), true);
+//        return (secondaryChapter != null)? secondaryChapter.getBook().getVersion().getTitle() : "";
+//    }
 
     @Override
     protected Version getSharingVersion() {
         return (currentChapter == null)? null : currentChapter.getBook().getVersion();
     }
 
-    @Nullable
     @Override
-    protected Uri getAudioUri() {
-        if(currentChapter == null){
-            return null;
-        }
-        updateChapters();
-        AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
-
-        if(audioBook != null){
-            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
-            if(audioChapter != null){
-
-                File audioFile = UWFileUtils.loadSourceFile(audioChapter.getAudioUrl(), getApplicationContext());
-
-                if(audioFile != null){
-                    return Uri.fromFile(audioFile);
-                }
-            }
-        }
+    protected ReadingToolbarViewData getToolbarViewData() {
         return null;
     }
 
-    @Override
-    protected void scrolled() {
-        updateChapters();
-        updateReadingView();
-    }
+    //    @Nullable
+//    @Override
+//    protected AudioChapter getAudioChapter() {
+//        if(currentChapter == null){
+//            return null;
+//        }
+//        updateChapters();
+//        AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
+//
+//        if(audioBook != null){
+//            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
+//            if(audioChapter != null){
+//                return audioChapter;
+//            }
+//        }
+//        return null;
+//    }
+
+//    @Override
+//    protected void scrolled() {
+//        updateChapters();
+//        updateReadingView();
+//    }
 
     private void updateChapters(){
 
@@ -121,32 +122,32 @@ public class ReadingActivity extends BaseReadingActivity {
         return null;
     }
 
-    @Override
-    protected boolean loadData() {
-
-        updateChapters();
-
-        return (currentChapter != null);
-    }
-
-    @Override
-    protected void updateReadingView() {
-
-        if(currentChapter != null) {
-            if (this.readingFragment == null) {
-                this.readingFragment = createReadingFragment(readingLayout, false);
-            }
-            else {
-                readingFragment.update();
-            }
-            if(this.secondaryReadingFragment == null){
-                this.secondaryReadingFragment = createReadingFragment(secondaryReadingLayout, true);
-            }
-            else{
-                secondaryReadingFragment.update();
-            }
-        }
-    }
+//    @Override
+//    protected boolean loadData() {
+//
+//        updateChapters();
+//
+//        return (currentChapter != null);
+//    }
+//
+//    @Override
+//    protected void updateReadingView() {
+//
+//        if(currentChapter != null) {
+//            if (this.readingFragment == null) {
+//                this.readingFragment = createReadingFragment(readingLayout, false);
+//            }
+//            else {
+//                readingFragment.update();
+//            }
+//            if(this.secondaryReadingFragment == null){
+//                this.secondaryReadingFragment = createReadingFragment(secondaryReadingLayout, true);
+//            }
+//            else{
+//                secondaryReadingFragment.update();
+//            }
+//        }
+//    }
 
     @Override
     protected void makeTextLarger() {

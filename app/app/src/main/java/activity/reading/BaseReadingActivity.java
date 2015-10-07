@@ -1,33 +1,20 @@
 package activity.reading;
 
 
-import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
-
-import java.io.IOException;
-import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
@@ -37,19 +24,22 @@ import fragments.ChapterSelectionFragment;
 import fragments.ChapterSelectionFragmentListener;
 import fragments.ReadingFragmentListener;
 import fragments.StoryChaptersFragment;
-import fragments.VersionInfoFragment;
 import fragments.VersionSelectionFragment;
-import model.AudioMarker;
+import model.DownloadState;
 import model.SharingHelper;
+import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Project;
+import model.daoModels.StoryPage;
 import model.daoModels.Version;
-import model.parsers.AudioMarkerParser;
 import services.UWBookMediaDownloaderService;
-import services.UWUpdaterService;
+import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import view.AudioPlayerViewGroup;
 import view.ReadingTabBar;
+import view.ReadingToolbarViewBibleModel;
+import view.ReadingToolbarViewData;
+import view.ReadingToolbarViewStoriesModel;
 import view.UWReadingToolbarViewGroup;
 import view.UWTabBar;
 
@@ -58,10 +48,10 @@ import view.UWTabBar;
  * abstract activity to handle most of the logic involved in the different reading activites.
  */
 public abstract class BaseReadingActivity extends UWBaseActivity implements
-        VersionSelectionFragment.VersionSelectionFragmentListener,
-        ChapterSelectionFragmentListener,
         ReadingFragmentListener,
-        UWReadingToolbarViewGroup.UWReadingToolbarListener
+        UWReadingToolbarViewGroup.UWReadingToolbarListener,
+        UWPreferenceDataAccessor.PreferencesStoryPageChangedListener,
+        UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener
 {
     private static final String TAG = "ReadingActivity";
 
@@ -72,7 +62,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private static final String VERSION_FRAGMENT_ID = "VERSION_FRAGMENT_ID";
     private static final String CHAPTER_SELECTION_FRAGMENT_ID = "CHAPTER_SELECTION_FRAGMENT_ID";
-    protected static final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
+//    protected static final String CHECKING_LEVEL_FRAGMENT_ID = "CHECKING_LEVEL_FRAGMENT_ID";
 
 
     protected FrameLayout readingLayout;
@@ -82,34 +72,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     private ReadingTabBar tabBar;
 
     private UWReadingToolbarViewGroup readingToolbar;
-    private BroadcastReceiver receiver;
     private ViewGroup audioPlayerLayout;
-    private AudioPlayerViewGroup playerViewGroup;
-
-    private MediaPlayer mediaPlayer;
+    private AudioPlayerViewGroup audioPlayerViewGroup;
 
     private boolean isMini = false;
     private boolean isDiglot = false;
 
     //region Abstract Methods
-
-    /**
-     * should load any data necessary for operation
-     * @return Whether the data could be loaded
-     */
-    abstract protected boolean loadData();
-
-    /**
-     * The text for the chapter's label
-     * @return label text, or null if the text should not be shown
-     */
-    @Nullable
-    abstract protected String getChapterLabelText();
-
-    /**
-     * should update the reading view with the current data
-     */
-    abstract protected void updateReadingView();
 
     /**
      * @return The project for the current activity
@@ -122,32 +91,19 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected Version getSharingVersion();
 
     /**
-     * @return Text for main version label
-     */
-    abstract protected String getMainVersionText();
-
-    /**
-     * Text for secondary version label
-     * @return
-     */
-    abstract protected String getSecondaryVersionText();
-
-    /**
-     * @return url to use for audio, else null
-     */
-    abstract protected @Nullable Uri getAudioUri();
-
-    /**
      * signal to make the reading text larger
-     * @return true if the text size is at it's largest
      */
     abstract protected void makeTextLarger();
 
     /**
      * signal to make the reading text smaller
-     * @return true if the text size is at it's smallest
      */
     abstract protected void makeTextSmaller();
+
+    /**
+     * @return View data for the toolbar
+     */
+    abstract protected ReadingToolbarViewData getToolbarViewData();
 
     //endregion
 
@@ -157,19 +113,51 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reading);
+        setupViews();
+    }
 
-        if(!loadData()){
-            versionSelectionButtonClicked(false);
+    protected void setupViews(){
+        audioPlayerLayout = (ViewGroup) (findViewById(R.id.audio_player));
+        readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
+        secondaryReadingLayout = (FrameLayout) findViewById(R.id.secondary_reading_fragment_frame);
+        errorView = findViewById(R.id.no_version_layout);
+
+        findViewById(R.id.larger_text_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeTextLarger();
+            }
+        });
+
+        findViewById(R.id.smaller_text_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeTextSmaller();
+            }
+        });
+        findViewById(R.id.reading_text_options).setVisibility(View.GONE);
+    }
+
+    public void updateToolbar(ReadingToolbarViewData data){
+
+        if(readingToolbar != null){
+            readingToolbar.setViewData(data);
+        }
+        else {
+            readingToolbar = new UWReadingToolbarViewGroup((Toolbar) findViewById(R.id.toolbar), this, data, this);
+        }
+    }
+
+    /**
+     * after this method is run all views and data should be updated
+     */
+    protected void update(){
+        updateToolbar(getToolbarViewData());
+        if(audioPlayerViewGroup != null){
+            audioPlayerViewGroup.resume();
         }
         setupTabBar();
         updateTabBar();
-        setupToolbar();
-        audioPlayerLayout = (ViewGroup) (findViewById(R.id.audio_player));
-    }
-
-    public void setupToolbar(){
-        readingToolbar = new UWReadingToolbarViewGroup((Toolbar) findViewById(R.id.toolbar), this, this);
-        updateToolbar();
     }
 
     protected boolean toggleDiglot(){
@@ -200,46 +188,24 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        setupToolbar();
-        setupViews();
-        audioPlayerLayout = (ViewGroup) (findViewById(R.id.audio_player));
-        if(getBook() != null) {
-            setAudioPlayerVisibility(false);
+        update();
+        if(audioPlayerViewGroup != null){
+            onResume();
         }
-
-        boolean dataIsLoaded = loadData();
-
-        updateTabBar();
-        setupReadingVisibility(dataIsLoaded);
-        if (dataIsLoaded){
-//            getToolbar().setRightImageResource(R.drawable.diglot_icon);
-            updateViews();
-            setupMediaPlayer(getAudioUri());
-        }
-        else{
-//            getToolbar().setRightImageVisible(false);
-        }
-        registerReceivers();
+        UWPreferenceDataAccessor.addBibleChapterListener(this);
+        UWPreferenceDataAccessor.addStoryPageListener(this);
     }
 
     @Override
     protected void onPause() {
-
-        if(mediaPlayer != null) {
-            mediaPlayer.pause();
-        }
-
-        if(receiver != null) {
-            getApplicationContext().unregisterReceiver(receiver);
-        }
-        receiver = null;
         super.onPause();
-    }
+        if(audioPlayerViewGroup != null){
+            audioPlayerViewGroup.onPause();
+        }
 
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//    }
+        UWPreferenceDataAccessor.removeBibleChapterListener(this);
+        UWPreferenceDataAccessor.removeStoryPageListener(this);
+    }
 
     @Override
     public void onBackPressed(boolean isSharing) {
@@ -327,7 +293,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         boolean hasAudioBook = (getBook() != null && getBook().getAudioBook() != null);
         tabBar.getButton(0).setEnabled(hasAudioBook);
         tabBar.getButton(0).setClickable(hasAudioBook);
-        tabBar.setImageAtIndex((hasAudioBook)? R.drawable.audio_normal : R.drawable.audio_disabled, 0);
+        tabBar.setImageAtIndex((hasAudioBook) ? R.drawable.audio_normal : R.drawable.audio_disabled, 0);
         if(audioPlayerLayout != null && !hasAudioBook){
             audioPlayerLayout.setVisibility(View.GONE);
         }
@@ -335,77 +301,49 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         boolean hasVideo = false;
         tabBar.getButton(1).setEnabled(hasVideo);
         tabBar.getButton(1).setClickable(hasVideo);
-        tabBar.setImageAtIndex((hasVideo)? R.drawable.video_normal : R.drawable.video_disabled, 1);
+        tabBar.setImageAtIndex((hasVideo) ? R.drawable.video_normal : R.drawable.video_disabled, 1);
     }
 
     private void setupAudioPlayer(){
 
-        playerViewGroup = new AudioPlayerViewGroup(getApplicationContext(), mediaPlayer, audioPlayerLayout, new AudioPlayerViewGroup.AudioPlayerViewGroupListener() {
-            @Override
-            public void audioPlayerStateChanged(boolean isPlaying) {
-                setAudioButtonState(isPlaying);
-            }
-
+        audioPlayerViewGroup = new AudioPlayerViewGroup(getApplicationContext(), audioPlayerLayout, new AudioPlayerViewGroup.AudioPlayerViewGroupListener() {
             @Override
             public void downloadClicked() {
-                playerViewGroup.setDownloading();
+                audioPlayerViewGroup.handleDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
                 downloadBookAudio();
-            }
-
-            @Override
-            public MediaPlayer getMediaPlayer() {
-                return mediaPlayer;
             }
         });
     }
 
     private void downloadBookAudio(){
 
-        setupIntentFilter();
         Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
         downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_PARAM, getBook().getId());
         downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
         getApplicationContext().startService(downloadIntent);
     }
 
-    private void setupIntentFilter(){
-        receiver = createBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
-        getApplicationContext().registerReceiver(receiver, filter);
-    }
-
-    private BroadcastReceiver createBroadcastReceiver() {
-
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
-                if(playerViewGroup != null) {
-                    setupMediaPlayer(getAudioUri());
-                    playerViewGroup.resetViews();
-                }
-            }
-        };
-    }
-
-    private void setupMediaPlayer(Uri uri){
-
-        if(uri == null){
-            return;
-        }
-        List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri);
-
-        if(mediaPlayer != null && playerViewGroup != null && mediaPlayer.isPlaying()){
-            playerViewGroup.stopPlayback();
-            mediaPlayer.release();
-        }
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-
-        if(playerViewGroup != null ){
-            playerViewGroup.setupMediaPlayer();
-        }
-    }
+//    private void setupMediaPlayer(AudioChapter chapter){
+//
+//        if(chapter == null){
+//            return;
+//        }
+//
+//        File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), getApplicationContext());
+//        Uri uri = Uri.fromFile(audioFile);
+//
+//        List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength());
+//
+//        if(mediaPlayer != null && audioPlayerViewGroup != null && mediaPlayer.isPlaying()){
+//            audioPlayerViewGroup.stopPlayback();
+//            mediaPlayer.release();
+//        }
+//        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+//
+//        if(audioPlayerViewGroup != null ){
+//            audioPlayerViewGroup.setupMediaPlayer();
+//        }
+//    }
 
     private void setAudioButtonState(boolean isPlaying){
         tabBar.setImageAtIndex((isPlaying)? R.drawable.audio_active : R.drawable.audio_normal, 0);
@@ -430,7 +368,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             }
             case 3:{
                 readingToolbar.setHasTwoVersions(toggleDiglot());
-                updateToolbar();
                 break;
             }
             case 4:{
@@ -440,18 +377,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
-    private void getAudioInfo(){
-
-//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//        retriever.setDataSource(getApplicationContext(), getAudioUri());
-//        Log.i(TAG, "Media tracks: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_NUM_TRACKS));
-//        Log.i(TAG, "Media bitrate: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
-//        Log.i(TAG, "Media duration: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-//        Log.i(TAG, "Media title: " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-
-    }
-
     private void toggleAudioPlayerVisibility(){
 
         setAudioPlayerVisibility(audioPlayerLayout.getVisibility() != View.VISIBLE);
@@ -459,28 +384,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void setAudioPlayerVisibility(boolean visible){
 
-        if(mediaPlayer == null){
-            setupMediaPlayer(getAudioUri());
-        }
-
-        if(playerViewGroup == null){
+        if(audioPlayerViewGroup == null){
             setupAudioPlayer();
         }
 
-        switch (getBook().getAudioSaveStateEnum()){
-            case DOWNLOAD_STATE_DOWNLOADED:{
-                playerViewGroup.resetViews();
-                break;
-            }
-            case DOWNLOAD_STATE_DOWNLOADING:{
-                playerViewGroup.setDownloading();
-                break;
-            }
-            default:{
-                playerViewGroup.setNeedsToDownload();
-            }
-        }
-
+        audioPlayerViewGroup.handleDownloadState(getBook().getAudioSaveStateEnum());
         audioPlayerLayout.setVisibility((visible) ? View.VISIBLE : View.GONE);
     }
 
@@ -494,67 +402,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void toggleTextSizeVisibility(){
         View view = findViewById(R.id.reading_text_options);
-        view.setVisibility((view.getVisibility() == View.VISIBLE)? View.GONE : View.VISIBLE);
+        view.setVisibility((view.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
     }
 
-    protected void setupViews(){
-        readingLayout = (FrameLayout) findViewById(R.id.reading_fragment_frame);
-        secondaryReadingLayout = (FrameLayout) findViewById(R.id.secondary_reading_fragment_frame);
-        errorView = findViewById(R.id.no_version_layout);
 
-        findViewById(R.id.larger_text_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makeTextLarger();
-            }
-        });
-
-        findViewById(R.id.smaller_text_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makeTextSmaller();
-            }
-        });
-        findViewById(R.id.reading_text_options).setVisibility(View.GONE);
-    }
-
-    private void registerReceivers(){
-
-        receiver = new BroadcastReceiver(){
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                if (intent.getAction().equals(SCROLLED_PAGE)) {
-//                    if(intent.getExtras().containsKey(ReadingScrollNotifications.BIBLE_CHAPTER_PARAM)
-//                            || intent.getExtras().containsKey(ReadingScrollNotifications.STORY_PAGE_PARAM)) {
-                    scrolled();
-                    updateToolbar();
-//                    }
-                }
-            }
-        };
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SCROLLED_PAGE);
-        getApplicationContext().registerReceiver(receiver, filter);
-    }
-
-    //endregion
-
-    //region updating Views
-
-    protected void updateViews(){
-
-        updateToolbar();
-        updateReadingView();
-    }
-
-    protected void updateToolbar() {
-        readingToolbar.setChapterText(getChapterLabelText());
-        readingToolbar.setMainVersionText(getMainVersionText());
-        readingToolbar.setSecondaryVersionText(getSecondaryVersionText());
-        readingToolbar.setViewState(isMini, isDiglot);
-    }
 
     //endregion
 
@@ -610,14 +461,14 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     /**
      * will show the checking level fragment for the passed version
-     * @param version version for which to show the info fragment
+//     * @param version version for which to show the info fragment
      */
-    private void goToCheckingLevelView(Version version){
-        VersionInfoFragment fragment = VersionInfoFragment.createFragment(version);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-        fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
-    }
+//    private void goToCheckingLevelView(Version version){
+//        VersionInfoFragment fragment = VersionInfoFragment.createFragment(version);
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//
+//        fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
+//    }
 
     //endregion
 
@@ -704,36 +555,18 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     //endregion
 
-    //region VersionSelectionFragmentListener
+    //region dataChangeListeners
 
     @Override
-    public void versionWasSelected(Version version, boolean isSecondVersion) {
-        UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
-        removeFragment(VERSION_FRAGMENT_ID);
+    public void bibleChapterChanged(BibleChapter mainChapter, BibleChapter secondaryChapter) {
+        updateToolbar(new ReadingToolbarViewBibleModel(mainChapter, secondaryChapter));
     }
-
-    //endregion
-
-    //region ChapterSelectionFragmentListener
 
     @Override
-    public void chapterWasSelected() {
-        removeFragment(CHAPTER_SELECTION_FRAGMENT_ID);
-        resetMediaPlayer();
+    public void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage) {
+        updateToolbar(new ReadingToolbarViewStoriesModel(mainPage, secondaryPage));
     }
 
-    /**
-     * do any action required when the user scrolls
-     */
-    protected void scrolled(){
-        resetMediaPlayer();
-    }
-
-    private void resetMediaPlayer(){
-        loadData();
-        updateViews();
-        setupMediaPlayer(getAudioUri());
-    }
 
     //endregion
 }

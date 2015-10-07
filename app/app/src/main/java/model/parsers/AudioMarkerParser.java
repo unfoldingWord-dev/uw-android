@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,12 +30,15 @@ public class AudioMarkerParser {
 
 //    private static final String TRACKS
 
-    public static List<AudioMarker> createAudioMarkers(Uri audioUri){
+    public static List<AudioMarker> createAudioMarkers(Uri audioUri, long trackLength){
 
         Element description = getDescriptionElement(getNeededText(audioUri));
         long frameRate = getFrameRate(description);
 
-        return getAudioMarkersFromDescription(description, frameRate);
+        List<AudioMarker> markers = getAudioMarkersFromDescription(description, frameRate);
+        Collections.sort(markers);
+        markers = AudioMarker.createLengths(markers, trackLength);
+        return markers;
     }
 
     private static String getNeededText(Uri audioUri){
@@ -130,7 +134,7 @@ public class AudioMarkerParser {
                 duration = Long.parseLong(durationNode.getTextContent());
             }
 
-            return new AudioMarker(getTimeForMarker(startTime, frameRate), getTimeForMarker(duration, frameRate));
+            return new AudioMarker((int) getTimeForMarker(startTime, frameRate), (int) getTimeForMarker(duration, frameRate));
         }
         else{
             return  null;

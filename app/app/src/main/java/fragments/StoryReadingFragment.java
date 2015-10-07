@@ -27,23 +27,16 @@ import view.ReadingDoubleTapHandler;
  * Use the {@link StoryReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener{
+public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener, UWPreferenceDataAccessor.PreferencesStoryPageChangedListener{
 
     private static final String TEXT_SIZE_PARAM = "TEXT_SIZE_PARAM";
 
     private ViewPager readingViewPager;
-    private StoriesChapter  mainChapter;
-    private StoriesChapter secondChapter;
 
     private ReadingFragmentListener listener;
     private StoryPagerAdapter adapter;
-//    private TabBar mainBottomBar;
-//    private TabBar secondBottomBar;
-
-    private RelativeLayout baseLayout;
 
     private int textSize;
-    private View secondBarView;
 
     public static StoryReadingFragment newInstance(int textSize) {
         StoryReadingFragment fragment = new StoryReadingFragment();
@@ -66,6 +59,18 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        UWPreferenceDataAccessor.addStoryPageListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        UWPreferenceDataAccessor.removeStoryPageListener(this);
+    }
+
     public void setTextSize(int textSize){
         this.textSize = textSize;
         adapter.setTextSize(this.textSize);
@@ -76,132 +81,85 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_story_reading, container, false);
-        baseLayout = (RelativeLayout) view.findViewById(R.id.story_reading_fragment_base_layout);
-        updateData();
         setupViews(view);
-        updateVersionInfo();
         setDiglotShowing(false);
 
         return view;
     }
 
-    private void updateData(){
-        if(getActivity() != null) {
-            StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
-            StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+    public void update(){
 
-            if (mainPage != null) {
-                mainChapter = mainPage.getStoriesChapter();
-            }
-
-            if (secondaryPage != null) {
-                secondChapter = secondaryPage.getStoriesChapter();
-            }
-        }
+        StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+        update(mainPage, secondaryPage, false);
     }
 
-    public void update(){
-        updateData();
-        updateVersionInfo();
-        adapter.update(mainChapter, secondChapter);
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
-        if(page != null) {
-            int currentIndex = page.getStoriesChapter().getStoryPages().indexOf(page);
-            readingViewPager.setCurrentItem(currentIndex);
+    private void update(StoryPage mainPage, StoryPage secondaryPage, boolean animateScroll){
+
+        if(mainPage != null && secondaryPage != null) {
+
+            if(adapter != null) {
+                adapter.update(mainPage.getStoriesChapter(), secondaryPage.getStoriesChapter());
+
+                int currentIndex = mainPage.getStoriesChapter().getStoryPages().indexOf(mainPage);
+                readingViewPager.setCurrentItem(currentIndex, animateScroll);
+            }
         }
     }
 
     private void setupViews(View view){
-        setupBottomBars(view);
+
         setupPager(view);
-//        secondBarView = view.findViewById(R.id.story_bottom_bar_second_layout);
-        setBottomBarsDiglot(false);
         adapter.setIsLandscape(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-    }
-
-    private void updateVersionInfo(){
-
-//        if(mainChapter != null && secondChapter != null){
-//            this.mainBottomBar.updateWithVersion(mainChapter.getBook().getVersion());
-//            this.secondBottomBar.updateWithVersion(secondChapter.getBook().getVersion());
-//        }
-    }
-
-    private void setupBottomBars(View view){
-
-        Version mainVersion = (mainChapter != null)? mainChapter.getBook().getVersion() : null;
-
-//        mainBottomBar = new TabBar(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_main_layout),
-//                mainVersion, new TabBar.BottomBarListener() {
-//            @Override
-//            public void checkingLevelPressed() {
-//                listener.showCheckingLevel(mainChapter.getBook().getVersion());
-//            }
-//
-//            @Override
-//            public void versionButtonClicked() {
-//                listener.clickedChooseVersion(false);
-//            }
-//
-//            @Override
-//            public void shareButtonClicked() {
-//                shareVersion(mainChapter.getBook().getVersion());
-//            }
-//        });
-
-        Version secondVersion = (secondChapter != null)? secondChapter.getBook().getVersion() : null;
-//        secondBottomBar = new TabBar(getActivity(), (RelativeLayout) view.findViewById(R.id.story_bottom_bar_second_layout),
-//                secondVersion, new TabBar.BottomBarListener() {
-//            @Override
-//            public void checkingLevelPressed() {
-//                listener.showCheckingLevel(secondChapter.getBook().getVersion());
-//            }
-//
-//            @Override
-//            public void versionButtonClicked() {
-//                listener.clickedChooseVersion(true);
-//            }
-//
-//            @Override
-//            public void shareButtonClicked() {
-//                shareVersion(secondChapter.getBook().getVersion());
-//            }
-//        });
     }
 
     private void setupPager(View view){
 
+        StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
+        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+
+        if(mainPage != null && secondaryPage != null) {
+            adapter = new StoryPagerAdapter(getActivity(), mainPage.getStoriesChapter(), secondaryPage.getStoriesChapter(), textSize);
+        }
+        else{
+            adapter = new StoryPagerAdapter(getActivity(), null, null, textSize);
+        }
+
         readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
-        adapter = new StoryPagerAdapter(getActivity(), mainChapter, secondChapter, textSize);
+        readingViewPager.setAdapter(adapter);
+        readingViewPager.setOnTouchListener(new ReadingDoubleTapHandler(getResources(), this));
+        update(mainPage, secondaryPage, false);
 
-            readingViewPager.setAdapter(adapter);
-            readingViewPager.setOnTouchListener(new ReadingDoubleTapHandler(getResources(), this));
+        readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
-            readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+                if (state != 0) {
+                    return;
                 }
+                int position = readingViewPager.getCurrentItem();
+                List<StoryPage> pages = adapter.getMainChapter().getStoryPages();
 
-                @Override
-                public void onPageSelected(int position) {
+                if (position < pages.size()) {
+                    StoryPage model = pages.get(position);
+                    UWPreferenceDataAccessor.changedToNewStoriesPage(getActivity().getApplicationContext(), model, false);
                 }
+            }
+        });
+    }
 
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                    if(state != 0){
-                        return;
-                    }
-                    int position = readingViewPager.getCurrentItem();
-                    List<StoryPage> pages = adapter.getMainChapter().getStoryPages();
-
-                    if (position < pages.size()) {
-                        StoryPage model = pages.get(position);
-                        UWPreferenceDataManager.setNewStoriesPage(getActivity().getApplicationContext(), model, false);
-//                        getActivity().getApplicationContext().sendBroadcast(new Intent(ReadingScrollNotifications.SCROLLED_PAGE));
-                    }
-                }
-            });
+    @Override
+    public void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage) {
+        update(mainPage, secondaryPage, true);
     }
 
     @Override
@@ -221,25 +179,6 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
         if(adapter != null) {
             adapter.setIsDiglot(showing);
         }
-        setBottomBarsDiglot(showing);
-    }
-
-    public void setBottomBarsDiglot(boolean showing){
-//        secondBarView.findViewById(R.id.story_bottom_bar_second_layout).setVisibility((showing) ? View.VISIBLE : View.GONE);
-    }
-
-    public void setBottomBarHidden(boolean hide){
-
-//        LinearLayout layout = (LinearLayout) baseLayout.findViewById(R.id.stories_bottom_bar_layout);
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
-//        if(hide){
-//            params.addRule(RelativeLayout.BELOW, R.id.bottom_marker_layout);
-//        }
-//        else{
-//            params.removeRule(RelativeLayout.BELOW);
-//        }
-//
-//        layout.setLayoutParams(params);
     }
 
     public void setOrientationAsLandscape(boolean isLandscape){

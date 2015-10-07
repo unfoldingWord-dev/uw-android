@@ -21,6 +21,8 @@ import model.daoModels.Version;
 import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceManager;
+import view.ReadingToolbarViewData;
+import view.ReadingToolbarViewStoriesModel;
 
 /**
  * Created by PJ Fechner
@@ -41,40 +43,19 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected String getChapterLabelText() {
-        return (currentChapter != null) ? currentChapter.getTitle() : null;
-    }
-
-    @Override
     protected Version getSharingVersion() {
         return (currentChapter == null)? null : currentChapter.getBook().getVersion();
     }
 
     @Override
-    protected String getMainVersionText() {
-        loadData();
-        return  (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
+    protected void update() {
+        super.update();
+        updateReadingView();
     }
 
     @Override
-    protected String getSecondaryVersionText() {
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), true);
-        return (page != null)? page.getStoriesChapter().getBook().getVersion().getTitle() : "";
-    }
-
-    @Override
-    protected boolean loadData() {
-
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
-
-        if(page != null){
-                currentChapter = page.getStoriesChapter();
-                this.book = currentChapter.getBook();
-                return true;
-        } else {
-            currentChapter = null;
-            return false;
-        }
+    protected ReadingToolbarViewData getToolbarViewData() {
+        return new ReadingToolbarViewStoriesModel(getApplicationContext());
     }
 
     @Override
@@ -112,9 +93,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
         setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
     }
 
-
-
-    @Override
     protected void updateReadingView() {
 
         if (this.readingFragment == null) {
@@ -143,35 +121,8 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    public boolean toggleHidden() {
-        boolean isHidden = super.toggleHidden();
-        readingFragment.setBottomBarHidden(isHidden);
-        return isHidden;
-    }
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         readingFragment.setOrientationAsLandscape((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE));
-    }
-
-    @Nullable
-    @Override
-    protected Uri getAudioUri() {
-        loadData();
-        AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
-
-        if(audioBook != null && this.currentChapter.getBook().getAudioSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal()){
-            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
-            if(audioChapter != null ){
-                File audioFile = UWFileUtils.loadSourceFile(audioChapter.getAudioUrl(), getApplicationContext());
-
-                if(audioFile != null){
-                    return Uri.fromFile(audioFile);
-                }
-            }
-        }
-
-        return null;
     }
 }

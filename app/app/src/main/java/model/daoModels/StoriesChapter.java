@@ -198,6 +198,17 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
 
     // KEEP METHODS - put your custom methods here
 
+    public AudioChapter getAudioForChapter(){
+
+        AudioBook audioBook = getBook().getAudioBook();
+        if(audioBook != null){
+            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.getNumber()));
+            if(audioChapter != null ){
+                return audioChapter;
+            }
+        }
+        return null;
+    }
 
     @Nullable
     public StoriesChapter getNextChapter(){

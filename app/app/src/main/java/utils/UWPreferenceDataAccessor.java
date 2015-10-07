@@ -23,23 +23,83 @@ public class UWPreferenceDataAccessor {
     private StoryPage currentPage;
     private StoryPage currentSecondPage;
 
-    private static List<PreferencesStoryPageChangedListener> storyPageChangedListeners = new ArrayList<>();
-    private static List<PreferencesBibleChapterChangedListener> bibleChapterChangedListeners = new ArrayList<>();
+    private List<PreferencesStoryPageChangedListener> storyPageChangedListeners = new ArrayList<>();
+    private List<PreferencesBibleChapterChangedListener> bibleChapterChangedListeners = new ArrayList<>();
 
-    public void addStoryPageListener(PreferencesStoryPageChangedListener listener){
-        storyPageChangedListeners.add(listener);
+    public static void addStoryPageListener(PreferencesStoryPageChangedListener listener){
+        ourInstance.storyPageChangedListeners.add(listener);
     }
-    public void addBibleChapterListener(PreferencesBibleChapterChangedListener listener){
-        bibleChapterChangedListeners.add(listener);
-    }
-
-    public void removeStoryPageListener(PreferencesStoryPageChangedListener listener){
-        storyPageChangedListeners.remove(listener);
-    }
-    public void removeBibleChapterListener(PreferencesBibleChapterChangedListener listener){
-        bibleChapterChangedListeners.remove(listener);
+    public static void addBibleChapterListener(PreferencesBibleChapterChangedListener listener){
+        ourInstance.bibleChapterChangedListeners.add(listener);
     }
 
+    public static void removeStoryPageListener(PreferencesStoryPageChangedListener listener){
+        ourInstance.storyPageChangedListeners.remove(listener);
+    }
+    public static void removeBibleChapterListener(PreferencesBibleChapterChangedListener listener){
+        ourInstance.bibleChapterChangedListeners.remove(listener);
+    }
+
+    public static void changedToNewStoriesPage(Context context, StoryPage page, boolean isSecond){
+        UWPreferenceDataManager.setNewStoriesPage(context, page, isSecond);
+        ourInstance.updateStoryPages(context);
+    }
+
+    public static void changeToNewBibleChapter(Context context, BibleChapter chapter, boolean isSecond){
+        UWPreferenceDataManager.changedToBibleChapter(context, chapter.getId(), isSecond);
+    }
+
+    private void updateStoryPages(Context context){
+        boolean mainDidChange = !storyPageIsUpToDate(context, false);
+        boolean secondDidChange = !storyPageIsUpToDate(context, true);
+
+        if(mainDidChange){
+            getCurrentStoryPage(context, false);
+        }
+        if(secondDidChange){
+            getCurrentStoryPage(context, true);
+        }
+
+        if(mainDidChange || secondDidChange){
+            updateStoryListeners();
+        }
+    }
+
+    public void updateStoryListeners(){
+
+        currentPage.refresh();
+        currentSecondPage.refresh();
+        for(PreferencesStoryPageChangedListener listener : storyPageChangedListeners){
+            if(listener != null){
+                listener.storyPageChanged(currentPage, currentSecondPage);
+            }
+        }
+    }
+
+    private void updateBibleChapters(Context context){
+        boolean mainDidChange = bibleChapterIsUpToDate(context, false);
+        boolean secondDidChange = bibleChapterIsUpToDate(context, true);
+
+        if(mainDidChange){
+            getCurrentBibleChapter(context, false);
+        }
+        if(secondDidChange){
+            getCurrentBibleChapter(context, true);
+        }
+
+        if(mainDidChange || secondDidChange){
+            updateChapterListeners();
+        }
+    }
+
+    private void updateChapterListeners(){
+
+        for(PreferencesBibleChapterChangedListener listener : bibleChapterChangedListeners){
+            if(listener != null){
+                listener.bibleChapterChanged(currentChapter, currentSecondChapter);
+            }
+        }
+    }
 
     /**
      * @param context Context to use
@@ -106,6 +166,28 @@ public class UWPreferenceDataAccessor {
         return currentSecondChapter;
     }
 
+    synchronized private boolean bibleChapterIsUpToDate(Context context, boolean isSecond){
+        if(isSecond) {
+            long chapterId = UWPreferenceManager.getCurrentBibleChapter(context, true);
+            return chapterId < 0 || (currentSecondChapter != null && chapterId == currentSecondChapter.getId());
+        }
+        else{
+            long chapterId = UWPreferenceManager.getCurrentBibleChapter(context, false);
+            return chapterId < 0 || (currentChapter != null && chapterId == currentChapter.getId());
+        }
+    }
+
+    synchronized private boolean storyPageIsUpToDate(Context context, boolean isSecond){
+        if(isSecond) {
+            long chapterId = UWPreferenceManager.getCurrentStoryPage(context, true);
+            return chapterId < 0 || (currentSecondPage != null && chapterId == currentSecondPage.getId());
+        }
+        else{
+            long chapterId = UWPreferenceManager.getCurrentStoryPage(context, false);
+            return chapterId < 0 || (currentPage != null && chapterId == currentPage.getId());
+        }
+    }
+
     @Nullable
     private BibleChapter loadChapterFromDB(Context context, long id){
         if(id < 0){
@@ -113,7 +195,6 @@ public class UWPreferenceDataAccessor {
         }
         return BibleChapter.getModelForId(id, DaoDBHelper.getDaoSession(context));
     }
-
 
     @Nullable
     private StoryPage getStoryPage(Context context, boolean second){
@@ -156,10 +237,10 @@ public class UWPreferenceDataAccessor {
     }
 
     public interface PreferencesStoryPageChangedListener{
-        void storyPageChanged(StoryPage page);
+        void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage);
     }
 
     public interface PreferencesBibleChapterChangedListener{
-        void bibleChapterChanged(BibleChapter chapter);
+        void bibleChapterChanged(BibleChapter mainChapter, BibleChapter secondaryChapter);
     }
 }

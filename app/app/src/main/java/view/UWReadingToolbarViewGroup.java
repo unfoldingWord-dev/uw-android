@@ -39,12 +39,11 @@ public class UWReadingToolbarViewGroup {
     private boolean isMinni = false;
     private boolean hasTwoVersions = false;
 
-    private String chapterText;
-    private String mainVersionText;
-    private String secondaryVersionText;
+    private ReadingToolbarViewData viewData;
 
-    public UWReadingToolbarViewGroup(Toolbar toolbar, Activity activity, UWReadingToolbarListener listener) {
+    public UWReadingToolbarViewGroup(Toolbar toolbar, Activity activity, ReadingToolbarViewData viewData, UWReadingToolbarListener listener) {
 
+        this.viewData = viewData;
         this.listener = listener;
         this.toolbar = toolbar;
         this.activity = activity;
@@ -55,6 +54,7 @@ public class UWReadingToolbarViewGroup {
 
         getViews();
         setupClickListeners();
+        updateLabels();
         layoutViews();
     }
 
@@ -106,28 +106,35 @@ public class UWReadingToolbarViewGroup {
         });
     }
 
-    public void setChapterText(String chapterText) {
-        this.chapterText = chapterText;
-        if(chapterText != null) {
-            this.chapterTextView.setText(this.chapterText);
+    public void setViewData(ReadingToolbarViewData viewData) {
+        this.viewData = viewData;
+        updateLabels();
+    }
+
+    private void updateLabels(){
+
+        updateLabel(viewData.getTitleText(), chapterTextView, chapterLayout);
+        updateLabel(viewData.getMainVersionText(), mainVersionTextView, mainVersionLayout);
+        updateLabel(viewData.getSecondaryVersionText(), secondaryVersionTextView, secondaryVersionLayout);
+        if(!hasTwoVersions){
+            secondaryVersionLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isValidToDisplay(String text){
+
+        return text != null && text.length() > 0;
+    }
+
+    private void updateLabel(String text, TextView textView, ViewGroup containingLayout){
+
+        if(isValidToDisplay(text)){
+            textView.setText(text);
+            containingLayout.setVisibility(View.VISIBLE);
         }
         else{
-            chapterLayout.setVisibility(View.INVISIBLE);
+            containingLayout.setVisibility(View.INVISIBLE);
         }
-    }
-
-    public void setMainVersionText(String mainVersionText) {
-        this.mainVersionText = mainVersionText;
-        boolean hasNoText = (mainVersionText == null || mainVersionText.length() < 1);
-        mainVersionTextView.setText((!hasNoText)? this.mainVersionText : "");
-        mainVersionLayout.setVisibility((hasNoText) ? View.INVISIBLE : View.VISIBLE);
-        layoutViews();
-    }
-
-    public void setSecondaryVersionText(String secondaryVersionText) {
-        this.secondaryVersionText = secondaryVersionText;
-        secondaryVersionTextView.setText((this.secondaryVersionText != null)? this.secondaryVersionText : "");
-        layoutViews();
     }
 
     public boolean hasTwoVersions() {
@@ -168,15 +175,14 @@ public class UWReadingToolbarViewGroup {
 
     private void setViewVisibilities(){
 
-        chapterLayout.setVisibility(View.VISIBLE);
-        mainVersionLayout.setVisibility(View.VISIBLE);
-
         leftButton.setVisibility((isMinni) ? View.GONE : View.VISIBLE);
-        secondaryVersionLayout.setVisibility((hasTwoVersions) ? View.VISIBLE : View.GONE);
         rightButtonPlaceholder.setVisibility((!isMinni && hasTwoVersions) ? View.INVISIBLE : View.GONE);
 
-        if(chapterText == null || chapterText.length() < 1) {
-            chapterLayout.setVisibility(View.INVISIBLE);
+        if(hasTwoVersions){
+            secondaryVersionLayout.setVisibility((isValidToDisplay(viewData.getSecondaryVersionText())) ? View.VISIBLE : View.INVISIBLE);
+        }
+        else{
+            secondaryVersionLayout.setVisibility(View.GONE);
         }
     }
 
@@ -192,6 +198,7 @@ public class UWReadingToolbarViewGroup {
         chapterParams.addRule((!isMinni && !hasTwoVersions) ? RelativeLayout.CENTER_IN_PARENT : RelativeLayout.CENTER_HORIZONTAL);
         chapterParams.height = getSizeForDp((!isMinni && !hasTwoVersions)? 50 : 25);
         chapterParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+
         if(isMinni || hasTwoVersions){
             chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         }

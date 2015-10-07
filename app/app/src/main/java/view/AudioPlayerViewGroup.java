@@ -14,10 +14,14 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import model.AudioMarker;
+import model.DownloadState;
+import singletons.UWAudioPlayer;
+
 /**
  * Created by Fechner on 9/18/15.
  */
-public class AudioPlayerViewGroup {
+public class AudioPlayerViewGroup implements UWAudioPlayer.UWAudioPlayerListener{
 
     private ViewGroup downloadViewGroup;
     private ViewGroup downloadingAudioViewGroup;
@@ -31,14 +35,20 @@ public class AudioPlayerViewGroup {
     private SeekBar seekBar;
     private AudioPlayerViewGroupListener listener;
 
-    private boolean hasChangedMediaPlayers;
-
-    public AudioPlayerViewGroup(Context context, MediaPlayer mediaPlayer, View containingView, AudioPlayerViewGroupListener listener) {
+    public AudioPlayerViewGroup(Context context, View containingView, AudioPlayerViewGroupListener listener) {
         this.context = context;
         this.listener = listener;
         getViews(containingView);
         setupListeners();
-        setupForMediaPlayer();
+        updateViews();
+    }
+
+    public void resume(){
+        UWAudioPlayer.getInstance(context).addListener(this);
+    }
+
+    public void onPause(){
+        UWAudioPlayer.getInstance(context).removeListener(this);
     }
 
     private void getViews(View containingView){
@@ -62,124 +72,64 @@ public class AudioPlayerViewGroup {
                 listener.downloadClicked();
             }
         });
-
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playPauseClicked();
             }
         });
-    }
 
-    private void setupForMediaPlayer(){
-
-        if(listener.getMediaPlayer() != null){
-            int duration = listener.getMediaPlayer().getDuration();
-            seekBar.setProgress(0);
-            seekBar.setMax(duration);
-
-            seekBar.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    seekChange(v);
-                    return false;
-                }
-            });
-
-            // avoid updating after a media player change since time can get weird.
-            updateLabelsForTimes();
-            playPauseButton.setImageResource(R.drawable.play);
-        }
-    }
-
-    public void setupMediaPlayer() {
-        hasChangedMediaPlayers = true;
-        setupForMediaPlayer();
-        setupListeners();
-    }
-
-    public void updatePlayProgress() {
-
-        if(!hasChangedMediaPlayers) {
-            seekBar.setProgress(listener.getMediaPlayer().getCurrentPosition());
-
-            if (listener.getMediaPlayer().isPlaying()) {
-                playPauseButton.setImageResource(R.drawable.pause);
-                waitAndUpdatePlayProgress();
-            }else{
-                listener.getMediaPlayer().pause();
-                playPauseButton.setImageResource(R.drawable.play);
-                seekBar.setProgress(listener.getMediaPlayer().getCurrentPosition());
-                this.listener.audioPlayerStateChanged(false);
-            }
-
-            updateLabelsForTimes();
-        }
-    }
-
-    private void waitAndUpdatePlayProgress(){
-
-        new AsyncTask<Void, Void, Void>(){
+        seekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            protected  Void doInBackground(Void... params) {
-                try {
-                    synchronized (this) {
-                        wait(1000);
-                    }
-                }
-                catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                return null;
+            public boolean onTouch(View v, MotionEvent event) {
+                seekChange();
+                return false;
             }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                updatePlayProgress();
-            }
-        }.execute();
+        });
+        UWAudioPlayer.getInstance(context).addListener(this);
     }
 
-    // This is event handler thumb moving event
-    private void seekChange(View v){
-        if(listener.getMediaPlayer().isPlaying()){
-            SeekBar sb = (SeekBar)v;
-            listener.getMediaPlayer().seekTo(sb.getProgress());
+    private void updateViews(){
+        updateSeekBar();
+        updatePlayPause();
+    }
+
+    private void updateSeekBar(){
+        AudioMarker marker = UWAudioPlayer.getInstance(context).getCurrentMarker();
+        int progress = UWAudioPlayer.getInstance(context).getCurrentTime();
+        if(marker != null && progress >= 0){
+            seekBar.setMax(marker.getDuration());
+            seekBar.setProgress(progress);
+            updateLabelsForTimes(progress, marker.getEndTime());
         }
-        updateLabelsForTimes();
+    }
+
+    private void updateSeekBar(int duration, int progress){
+        seekBar.setMax(duration);
+        seekBar.setProgress(progress);
+        updateLabelsForTimes(progress, duration);
+    }
+
+    private void updatePlayPause(){
+
+        boolean playing = UWAudioPlayer.getInstance(context).isPlaying();
+        playPauseButton.setImageResource((playing) ? R.drawable.pause : R.drawable.play);
+    }
+
+    private void seekChange(){
+        UWAudioPlayer.getInstance(context).seekTo(seekBar.getProgress());
     }
 
     private void playPauseClicked(){
-        hasChangedMediaPlayers = false;
-        if(listener.getMediaPlayer().isPlaying()){
-            listener.getMediaPlayer().pause();
-            playPauseButton.setImageResource(R.drawable.play);
-            this.listener.audioPlayerStateChanged(false);
-        }
-        else{
-            listener.getMediaPlayer().start();
-            playPauseButton.setImageResource(R.drawable.pause);
-            updatePlayProgress();
-            this.listener.audioPlayerStateChanged(true);
-        }
-        updateLabelsForTimes();
+
+        UWAudioPlayer.getInstance(context).togglePlay();
     }
 
-    private void updateLabelsForTimes() {
-        if(listener.getMediaPlayer() != null){
-            updateLabelsForTimes(listener.getMediaPlayer().getCurrentPosition(), listener.getMediaPlayer().getDuration());
-        }
-    }
+    private void updateLabelsForTimes(long elapsedInSeconds, long totalInSeconds){
 
-    private void updateLabelsForTimes(long elapsedInMilli, long totalInMilli){
-
-        long elapsed = elapsedInMilli / 1000;
-        long total = totalInMilli / 1000;
-
-        String currentTime = getTimeStringFromSeconds(elapsed);
+        String currentTime = getTimeStringFromSeconds(elapsedInSeconds);
         currentTimeTextView.setText(currentTime);
-        String endTime = getTimeStringFromSeconds(total);
+        String endTime = getTimeStringFromSeconds(totalInSeconds);
         endTimeTextView.setText(endTime);
     }
 
@@ -189,45 +139,40 @@ public class AudioPlayerViewGroup {
         return Long.toString((long) Math.floor(seconds / 60.0)) + ":" + secondsText;
     }
 
-    public void pausePlayback(){
-
-        if(listener.getMediaPlayer() != null) {
-            listener.getMediaPlayer().pause();
-        }
-    }
-
-    public void stopPlayback() {
-        if(listener.getMediaPlayer() != null) {
-            listener.getMediaPlayer().stop();
-            seekBar.setProgress(0);
-            hasChangedMediaPlayers = true;
-            updateLabelsForTimes();
-        }
-    }
-
     public void resetViews(){
         controlsViewGroup.setVisibility(View.VISIBLE);
         downloadViewGroup.setVisibility(View.GONE);
     }
 
-    public void setDownloading(){
-        controlsViewGroup.setVisibility(View.GONE);
-        downloadViewGroup.setVisibility(View.VISIBLE);
-        downloadingAudioViewGroup.setVisibility(View.VISIBLE);
-        downloadButton.setVisibility(View.GONE);
+    public void handleDownloadState(DownloadState state){
+
+        if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+            resetViews();
+        }
+        else{
+            controlsViewGroup.setVisibility(View.GONE);
+            downloadViewGroup.setVisibility(View.VISIBLE);
+            downloadingAudioViewGroup.setVisibility((state == DownloadState.DOWNLOAD_STATE_DOWNLOADING)? View.VISIBLE : View.GONE);
+            downloadButton.setVisibility((state == DownloadState.DOWNLOAD_STATE_DOWNLOADING)? View.GONE : View.VISIBLE);
+        }
     }
 
-    public void setNeedsToDownload(){
+    @Override
+    public void paused() {
+        updatePlayPause();
+    }
 
-        downloadButton.setVisibility(View.VISIBLE);
-        controlsViewGroup.setVisibility(View.GONE);
-        downloadViewGroup.setVisibility(View.VISIBLE);
-        downloadingAudioViewGroup.setVisibility(View.GONE);
+    @Override
+    public void update(long duration, long progress) {
+        updateLabelsForTimes(duration, progress);
+    }
+
+    @Override
+    public void started() {
+        updatePlayPause();
     }
 
     public interface AudioPlayerViewGroupListener{
-        void audioPlayerStateChanged(boolean isPlaying);
         void downloadClicked();
-        MediaPlayer getMediaPlayer();
     }
 }
