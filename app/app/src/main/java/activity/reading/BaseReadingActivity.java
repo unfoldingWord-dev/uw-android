@@ -21,10 +21,8 @@ import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
 import fragments.ChapterSelectionFragment;
-import fragments.ChapterSelectionFragmentListener;
 import fragments.ReadingFragmentListener;
 import fragments.StoryChaptersFragment;
-import fragments.VersionSelectionFragment;
 import model.DownloadState;
 import model.SharingHelper;
 import model.daoModels.BibleChapter;
@@ -33,8 +31,8 @@ import model.daoModels.Project;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import services.UWBookMediaDownloaderService;
+import singletons.UWAudioPlayer;
 import utils.UWPreferenceDataAccessor;
-import utils.UWPreferenceDataManager;
 import view.AudioPlayerViewGroup;
 import view.ReadingTabBar;
 import view.ReadingToolbarViewBibleModel;
@@ -51,7 +49,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         ReadingFragmentListener,
         UWReadingToolbarViewGroup.UWReadingToolbarListener,
         UWPreferenceDataAccessor.PreferencesStoryPageChangedListener,
-        UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener
+        UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener,
+        UWAudioPlayer.UWAudioPlayerListener
 {
     private static final String TAG = "ReadingActivity";
 
@@ -68,7 +67,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     protected FrameLayout readingLayout;
     protected FrameLayout secondaryReadingLayout;
     protected View errorView;
-    protected Book book;
     private ReadingTabBar tabBar;
 
     private UWReadingToolbarViewGroup readingToolbar;
@@ -80,6 +78,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     //region Abstract Methods
 
+    /**
+     * @return the current Book being used
+     */
+    abstract protected Book getBook();
     /**
      * @return The project for the current activity
      */
@@ -192,8 +194,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(audioPlayerViewGroup != null){
             onResume();
         }
+        registerForListeners();
+    }
+
+    private void registerForListeners(){
         UWPreferenceDataAccessor.addBibleChapterListener(this);
         UWPreferenceDataAccessor.addStoryPageListener(this);
+        UWAudioPlayer.getInstance(getApplicationContext()).addListener(this);
     }
 
     @Override
@@ -203,8 +210,14 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             audioPlayerViewGroup.onPause();
         }
 
+        unregisterListeners();
+        UWAudioPlayer.getInstance(getApplicationContext()).reset();
+    }
+
+    private void unregisterListeners(){
         UWPreferenceDataAccessor.removeBibleChapterListener(this);
         UWPreferenceDataAccessor.removeStoryPageListener(this);
+        UWAudioPlayer.getInstance(getApplicationContext()).removeListener(this);
     }
 
     @Override
@@ -217,20 +230,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     @Override
     public AnimationParadigm getAnimationParadigm() {
         return AnimationParadigm.ANIMATION_LEFT_RIGHT;
-    }
-
-    //endregion
-
-    //region accessors
-
-    /**
-     * @return the current Book being used
-     */
-    protected Book getBook(){
-        if(this.book != null) {
-            this.book.refresh();
-        }
-        return this.book;
     }
 
     //endregion
@@ -288,6 +287,20 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         });
     }
 
+    @Override
+    public void paused() {
+        setAudioButtonState(false);
+    }
+
+    @Override
+    public void update(long duration, long progress) {
+    }
+
+    @Override
+    public void started() {
+        setAudioButtonState(true);
+    }
+
     private void updateTabBar(){
 
         boolean hasAudioBook = (getBook() != null && getBook().getAudioBook() != null);
@@ -315,35 +328,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         });
     }
 
-    private void downloadBookAudio(){
+    private void downloadBookAudio() {
 
         Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
         downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_PARAM, getBook().getId());
         downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
         getApplicationContext().startService(downloadIntent);
     }
-
-//    private void setupMediaPlayer(AudioChapter chapter){
-//
-//        if(chapter == null){
-//            return;
-//        }
-//
-//        File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), getApplicationContext());
-//        Uri uri = Uri.fromFile(audioFile);
-//
-//        List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength());
-//
-//        if(mediaPlayer != null && audioPlayerViewGroup != null && mediaPlayer.isPlaying()){
-//            audioPlayerViewGroup.stopPlayback();
-//            mediaPlayer.release();
-//        }
-//        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-//
-//        if(audioPlayerViewGroup != null ){
-//            audioPlayerViewGroup.setupMediaPlayer();
-//        }
-//    }
 
     private void setAudioButtonState(boolean isPlaying){
         tabBar.setImageAtIndex((isPlaying)? R.drawable.audio_active : R.drawable.audio_normal, 0);

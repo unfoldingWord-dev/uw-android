@@ -14,10 +14,12 @@ import model.DaoDBHelper;
 import model.DownloadState;
 import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
+import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
+import singletons.UWAudioPlayer;
 import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceManager;
@@ -51,11 +53,23 @@ public class StoryReadingActivity extends BaseReadingActivity {
     protected void update() {
         super.update();
         updateReadingView();
+
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
+        if(page != null){
+            UWAudioPlayer.getInstance(getApplicationContext()).prepareAudio(page);
+        }
     }
 
     @Override
     protected ReadingToolbarViewData getToolbarViewData() {
         return new ReadingToolbarViewStoriesModel(getApplicationContext());
+    }
+
+    @Override
+    protected Book getBook() {
+
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
+        return(page != null)? page.getStoriesChapter().getBook() : null;
     }
 
     @Override

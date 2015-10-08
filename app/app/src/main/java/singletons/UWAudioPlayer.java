@@ -75,8 +75,8 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
 
     public void seekTo(int timeInSeconds){
         if(mediaPlayer != null){
-            mediaPlayer.seekTo(timeInSeconds * 1000);
-            updatePlayProgress();
+            mediaPlayer.seekTo((int) (timeInSeconds + currentMarker.getStartTime()));
+            updatePlayProgress(false);
         }
     }
 
@@ -98,14 +98,23 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     public void play(){
         if(mediaPlayer != null) {
             mediaPlayer.start();
-            notifyPlay();
+            updatePlayPause();
         }
     }
 
     public void pause(){
         if(mediaPlayer != null){
             mediaPlayer.pause();
+            updatePlayPause();
+        }
+    }
+
+    public void updatePlayPause(){
+        if(isPlaying()){
             notifyPause();
+        }
+        else{
+            notifyPlay();
         }
     }
 
@@ -122,13 +131,14 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     public int getCurrentTime(){
 
         if(mediaPlayer != null && currentMarker != null){
-            return (mediaPlayer.getCurrentPosition() / 1000) - currentMarker.getStartTime();
+            return mediaPlayer.getCurrentPosition() - (int) currentMarker.getStartTime();
         }
-
-        else return -1;
+        else {
+            return -1;
+        }
     }
 
-    public void setupAudio(StoryPage page){
+    public void prepareAudio(StoryPage page){
 
         AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
         if(chapter != null){
@@ -137,49 +147,63 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
 
             List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength());
             currentModel = page;
-            startAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
+            setupAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
         }
     }
 
-    private void startAudio(Uri audioUri, AudioMarker marker){
+    private void setupAudio(Uri audioUri, AudioMarker marker){
 
-        boolean isPlaying = mediaPlayer.isPlaying();
+        boolean wasPlaying = mediaPlayer != null && mediaPlayer.isPlaying();
         currentMarker = marker;
-        if(currentModel == null || !audioUri.getPath().equalsIgnoreCase(currentUri.getPath())) {
+        if(currentModel == null || currentUri == null || !audioUri.getPath().equalsIgnoreCase(currentUri.getPath())) {
             resetMediaPLayer();
             mediaPlayer = MediaPlayer.create(context, audioUri);
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    notifyPause();
+                    currentUri = null;
+                    prepareAudio(currentModel);
+                }
+            });
+
             currentUri = audioUri;
         }
 
-        int currentPosition = mediaPlayer.getCurrentPosition() / 1000;
+        int currentPosition = mediaPlayer.getCurrentPosition();
 
         // seek to start time if the current time isn't within a second of the start time
         if(currentPosition >= marker.getStartTime() + 1 || currentPosition <= marker.getStartTime() -1){
-            mediaPlayer.seekTo((int) marker.getStartTime() * 1000);
+            mediaPlayer.seekTo((int) marker.getStartTime());
         }
 
-        if(isPlaying){
+        if(wasPlaying){
             mediaPlayer.start();
-            updatePlayProgress();
         }
+        updatePlayProgress(false);
     }
 
-    private void updatePlayProgress(){
+    private void updatePlayProgress(boolean autoUpdate){
 
-        long currentPosition = currentMarker.getEndTime() - mediaPlayer.getCurrentPosition();
+        long currentPosition = (mediaPlayer.getCurrentPosition()) - currentMarker.getStartTime();
         long duration = currentMarker.getDuration();
-        boolean markerIsComplete = currentPosition <= 0;
+        boolean markerIsComplete = currentPosition >= duration;
 
-        if(markerIsComplete){
+        if(markerIsComplete && autoUpdate){
             goToNextPage();
         }
         else {
-            for (UWAudioPlayerListener listener : listeners) {
-                if (listener != null) {
-                    listener.update(duration, currentPosition);
-                }
-            }
+            updateListeners(duration, currentPosition);
             waitAndUpdatePlayProgress();
+        }
+    }
+
+    private void updateListeners(long duration, long currentPosition){
+
+        for (UWAudioPlayerListener listener : listeners) {
+            if (listener != null) {
+                listener.update(duration, currentPosition);
+            }
         }
     }
 
@@ -202,10 +226,14 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     }
 
     private void goToNextPage(){
-        StoryPage newPage = currentModel.getStoriesChapter().getStoryPageForNumber(Integer.toString(Integer.parseInt(currentModel.getNumber()) + 1));
+        StoryPage newPage = currentModel.getNextStoryPage();
 
         if(newPage != null){
             UWPreferenceDataAccessor.changedToNewStoriesPage(context, newPage, false);
+            UWPreferenceDataAccessor.getOurInstance().updateStoryListeners();
+        }
+        else{
+            pause();
         }
     }
 
@@ -216,7 +244,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
             protected  Void doInBackground(Void... params) {
                 try {
                     synchronized (this) {
-                        wait(1000);
+                        wait(500);
                     }
                 }
                 catch (InterruptedException e){
@@ -228,7 +256,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                updatePlayProgress();
+                updatePlayProgress(true);
             }
         }.execute();
     }
@@ -240,7 +268,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
 
     @Override
     public void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage) {
-        setupAudio(mainPage);
+        prepareAudio(mainPage);
     }
 
     public interface UWAudioPlayerListener{

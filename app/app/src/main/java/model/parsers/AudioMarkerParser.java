@@ -134,7 +134,7 @@ public class AudioMarkerParser {
                 duration = Long.parseLong(durationNode.getTextContent());
             }
 
-            return new AudioMarker((int) getTimeForMarker(startTime, frameRate), (int) getTimeForMarker(duration, frameRate));
+            return new AudioMarker(getTimeForMarker(startTime, frameRate), getTimeForMarker(duration, frameRate));
         }
         else{
             return  null;
@@ -157,7 +157,7 @@ public class AudioMarkerParser {
 
     private static long getTimeForMarker(long markerValue, long frameRate){
 
-        return markerValue / frameRate;
+        return (markerValue / frameRate) * 1000;
     }
 }
 

@@ -173,7 +173,25 @@ public class StoryPage extends model.UWDatabaseModel  implements java.io.Seriali
 
     //region UWDatabaseModel
 
-    @Override
+    /**
+     * @param number number of this chapter's page that is desired
+     * @return StoryPage with the passed Number
+     */
+    public StoryPage getStoryPageForNumber(String number){
+
+        StoryPageDao dao = daoSession.getStoryPageDao();
+        return dao.queryBuilder()
+                .where(StoryPageDao.Properties.StoryChapterId.eq(getStoryChapterId()), StoryPageDao.Properties.Number.eq(number))
+                .unique();
+    }
+
+    public StoryPage getNextStoryPage(){
+        int newNumber = Integer.parseInt(getNumber()) + 1;
+        String newNumberText = (newNumber < 10)? "0" : "";
+        newNumberText += Integer.toString(newNumber);
+        return getStoryPageForNumber(newNumberText);
+    }
+
     public UWDatabaseModel setupModelFromJson(JSONObject json, UWDatabaseModel parent) {
         try {
             return StoryPageParser.parseStoryPage(json, parent);

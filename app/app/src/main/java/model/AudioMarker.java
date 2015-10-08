@@ -9,23 +9,23 @@ import java.util.List;
  */
 public class AudioMarker implements Comparable<AudioMarker>{
 
-    private int startTime;
-    private int duration;
+    private long startTime;
+    private long duration;
 
-    public AudioMarker(int startTime, int duration) {
+    public AudioMarker(long startTime, long duration) {
         this.duration = duration;
         this.startTime = startTime;
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public int getStartTime() {
+    public long getStartTime() {
         return startTime;
     }
 
-    public int getEndTime(){
+    public long getEndTime(){
         return startTime + duration;
     }
 
@@ -42,7 +42,7 @@ public class AudioMarker implements Comparable<AudioMarker>{
                 marker.startTime = 0;
             }
             if(i == (markers.size() - 1)){
-                marker.duration = (int) (totalLength - marker.startTime);
+                marker.duration = (totalLength - marker.startTime);
             }
             else {
                 marker.duration = markers.get(i + 1).startTime - marker.startTime;

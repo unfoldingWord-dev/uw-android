@@ -25,6 +25,7 @@ import model.DaoDBHelper;
 import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
 import model.daoModels.BibleChapter;
+import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWFileUtils;
@@ -100,13 +101,19 @@ public class ReadingActivity extends BaseReadingActivity {
 //        updateReadingView();
 //    }
 
+
+    @Override
+    protected Book getBook() {
+        return null;
+    }
+
     private void updateChapters(){
 
-        currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
-
-        if (currentChapter != null) {
-            this.book = currentChapter.getBook();
-        }
+//        currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
+//
+//        if (currentChapter != null) {
+//            this.book = currentChapter.getBook();
+//        }
     }
 
     @Override

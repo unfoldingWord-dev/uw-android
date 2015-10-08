@@ -98,9 +98,9 @@ public class AudioPlayerViewGroup implements UWAudioPlayer.UWAudioPlayerListener
         AudioMarker marker = UWAudioPlayer.getInstance(context).getCurrentMarker();
         int progress = UWAudioPlayer.getInstance(context).getCurrentTime();
         if(marker != null && progress >= 0){
-            seekBar.setMax(marker.getDuration());
+            seekBar.setMax((int) marker.getDuration());
             seekBar.setProgress(progress);
-            updateLabelsForTimes(progress, marker.getEndTime());
+            updateLabelsForTimes(progress, marker.getDuration());
         }
     }
 
@@ -125,11 +125,11 @@ public class AudioPlayerViewGroup implements UWAudioPlayer.UWAudioPlayerListener
         UWAudioPlayer.getInstance(context).togglePlay();
     }
 
-    private void updateLabelsForTimes(long elapsedInSeconds, long totalInSeconds){
+    private void updateLabelsForTimes(long elapsedInMill, long totalInMill){
 
-        String currentTime = getTimeStringFromSeconds(elapsedInSeconds);
+        String currentTime = getTimeStringFromSeconds(elapsedInMill / 1000);
         currentTimeTextView.setText(currentTime);
-        String endTime = getTimeStringFromSeconds(totalInSeconds);
+        String endTime = getTimeStringFromSeconds(totalInMill / 1000);
         endTimeTextView.setText(endTime);
     }
 
@@ -164,7 +164,8 @@ public class AudioPlayerViewGroup implements UWAudioPlayer.UWAudioPlayerListener
 
     @Override
     public void update(long duration, long progress) {
-        updateLabelsForTimes(duration, progress);
+        updateSeekBar((int)duration, (int) progress);
+        updateLabelsForTimes(progress, duration);
     }
 
     @Override

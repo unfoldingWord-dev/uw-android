@@ -273,9 +273,11 @@ public class StoriesChapter extends model.UWDatabaseModel  implements java.io.Se
 
         StoryPageDao dao = daoSession.getStoryPageDao();
         return dao.queryBuilder()
-                .where(StoryPageDao.Properties.StoryChapterId.eq(getId()), StoryPageDao.Properties.Slug.eq(number))
+                .where(StoryPageDao.Properties.StoryChapterId.eq(getId()), StoryPageDao.Properties.Number.eq(number))
                 .unique();
     }
+
+
 
     //endregion
 

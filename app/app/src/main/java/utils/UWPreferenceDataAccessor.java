@@ -16,6 +16,9 @@ import model.daoModels.StoryPage;
 public class UWPreferenceDataAccessor {
 
     private static UWPreferenceDataAccessor ourInstance = new UWPreferenceDataAccessor();
+    public static UWPreferenceDataAccessor getOurInstance(){
+        return ourInstance;
+    }
 
     private BibleChapter currentChapter;
     private BibleChapter currentSecondChapter;
