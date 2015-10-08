@@ -84,6 +84,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
         if(mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
@@ -145,7 +146,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
             File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
             Uri uri = Uri.fromFile(audioFile);
 
-            List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength());
+            List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);
             currentModel = page;
             setupAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
         }
@@ -173,7 +174,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
         int currentPosition = mediaPlayer.getCurrentPosition();
 
         // seek to start time if the current time isn't within a second of the start time
-        if(currentPosition >= marker.getStartTime() + 1 || currentPosition <= marker.getStartTime() -1){
+        if(currentPosition >= marker.getStartTime() + 1000 || currentPosition <= marker.getStartTime() - 1000){
             mediaPlayer.seekTo((int) marker.getStartTime());
         }
 
@@ -185,6 +186,9 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
 
     private void updatePlayProgress(boolean autoUpdate){
 
+        if(mediaPlayer == null){
+            return;
+        }
         long currentPosition = (mediaPlayer.getCurrentPosition()) - currentMarker.getStartTime();
         long duration = currentMarker.getDuration();
         boolean markerIsComplete = currentPosition >= duration;
@@ -232,9 +236,6 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
             UWPreferenceDataAccessor.changedToNewStoriesPage(context, newPage, false);
             UWPreferenceDataAccessor.getOurInstance().updateStoryListeners();
         }
-        else{
-            pause();
-        }
     }
 
     private void waitAndUpdatePlayProgress(){
@@ -244,7 +245,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
             protected  Void doInBackground(Void... params) {
                 try {
                     synchronized (this) {
-                        wait(500);
+                        wait(100);
                     }
                 }
                 catch (InterruptedException e){

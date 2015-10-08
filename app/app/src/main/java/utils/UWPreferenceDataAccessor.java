@@ -50,6 +50,7 @@ public class UWPreferenceDataAccessor {
 
     public static void changeToNewBibleChapter(Context context, BibleChapter chapter, boolean isSecond){
         UWPreferenceDataManager.changedToBibleChapter(context, chapter.getId(), isSecond);
+        ourInstance.updateBibleChapters(context);
     }
 
     private void updateStoryPages(Context context){
@@ -80,8 +81,8 @@ public class UWPreferenceDataAccessor {
     }
 
     private void updateBibleChapters(Context context){
-        boolean mainDidChange = bibleChapterIsUpToDate(context, false);
-        boolean secondDidChange = bibleChapterIsUpToDate(context, true);
+        boolean mainDidChange = !bibleChapterIsUpToDate(context, false);
+        boolean secondDidChange = !bibleChapterIsUpToDate(context, true);
 
         if(mainDidChange){
             getCurrentBibleChapter(context, false);

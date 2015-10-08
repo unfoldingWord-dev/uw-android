@@ -26,7 +26,7 @@ public class ReadingToolbarViewBibleModel implements ReadingToolbarViewData {
     private void setup(Context context){
 
         BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, false);
-        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, false);
+        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, true);
         setup(currentChapter, secondaryChapter);
     }
 

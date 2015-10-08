@@ -43,5 +43,10 @@ public class UWBookMediaDownloaderService extends UWUpdaterService {
         return START_STICKY;
     }
 
+    @Override
+    protected void stopService() {
+        getApplicationContext();
+        super.stopService();
 
+    }
 }

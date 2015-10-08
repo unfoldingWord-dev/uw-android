@@ -37,7 +37,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
     static private final int LOW_TEXT_SIZE_LIMIT = 15;
 
     private StoryReadingFragment readingFragment;
-    private StoriesChapter currentChapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,13 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
     @Override
     protected Version getSharingVersion() {
-        return (currentChapter == null)? null : currentChapter.getBook().getVersion();
+        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
+        if(page != null){
+            return page.getStoriesChapter().getBook().getVersion();
+        }
+        else{
+            return null;
+        }
     }
 
     @Override

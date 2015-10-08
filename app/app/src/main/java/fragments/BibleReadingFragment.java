@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 
 import org.unfoldingword.mobile.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import activity.reading.BaseReadingActivity;
 import adapters.ReadingPagerAdapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
+import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import view.ReadingDoubleTapHandler;
@@ -26,7 +28,7 @@ import view.ReadingDoubleTapHandler;
  * Fragment to handle the display of the text
  */
 public class BibleReadingFragment extends Fragment implements
-        ReadingPagerAdapter.ReadingPagerAdapterListener, ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener {
+        ReadingPagerAdapter.ReadingPagerAdapterListener, ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener, UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener{
 
 //    private static final String TAG = "BibleReadingFragment";
     private static final String IS_SECONDARY_PARAM = "IS_SECONDARY_PARAM";
@@ -34,12 +36,9 @@ public class BibleReadingFragment extends Fragment implements
 
     private ReadingPagerAdapter adapter;
     private ViewPager readingViewPager;
-
     private ReadingFragmentListener listener;
 
-    private Book currentBook;
     private boolean isSecondary;
-
     private int textSize;
 
     //region setup
@@ -66,7 +65,6 @@ public class BibleReadingFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         isSecondary = getArguments().getBoolean(IS_SECONDARY_PARAM);
         textSize = getArguments().getInt(TEXT_SIZE_PARAM);
-        updateBook();
 
         if(getActivity() instanceof ReadingFragmentListener){
             this.listener = (ReadingFragmentListener) getActivity();
@@ -74,16 +72,24 @@ public class BibleReadingFragment extends Fragment implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        UWPreferenceDataAccessor.addBibleChapterListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        UWPreferenceDataAccessor.removeBibleChapterListener(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_bible_reading, container, false);
-        updateBook();
-        if(currentBook != null){
-            setupViews(view);
-            updateVersionInfo();
-        }
-
+        setupViews(view);
+        update();
         return view;
     }
 
@@ -96,63 +102,78 @@ public class BibleReadingFragment extends Fragment implements
      * Loads the most recent data and updates the views.
      */
     public void update(){
-
-        if(updateBook()) {
-            updateVersionInfo();
-            adapter.update(currentBook.getBibleChapters(true));
-        }
-        scrollToCurrentPage();
+        setupOrUpdatePager();
     }
 
     private void setupViews(View view){
-//        bottomBar = new TabBar(getActivity(), (RelativeLayout) view.findViewById(R.id.bottom_bar_layout),
-//                currentBook.getVersion(), this);
-        setupPager(view);
+        readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
     }
 
-    private void setupPager(View view){
+    private void setupOrUpdatePager(){
 
-        readingViewPager = (ViewPager) view.findViewById(R.id.myViewPager);
+        BibleChapter correctItem = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        if(correctItem != null){
+            setupOrUpdatePager(correctItem);
+        }
 
-        List<BibleChapter> chapters = currentBook.getBibleChapters(true);
-        adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters,
-                new ReadingDoubleTapHandler(getResources(), this), textSize, this);
+    }
 
-        readingViewPager.setAdapter(adapter);
-        readingViewPager.setOnTouchListener(new ReadingDoubleTapHandler(getResources(), this));
-        scrollToCurrentPage();
-        readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+    private void setupOrUpdatePager(BibleChapter correctItem){
 
-            @Override
-            public void onPageSelected(int position) {
-            }
+        List<BibleChapter> chapters = new ArrayList<>();
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
+        if(correctItem != null){
+            chapters = correctItem.getBook().getBibleChapters(true);
+        }
+        if(adapter == null) {
 
-                boolean userDidScrollChapter = (state == 0);
-                if (!userDidScrollChapter) {
-                    return;
+            adapter = new ReadingPagerAdapter(getActivity().getApplicationContext(), chapters,
+                    new ReadingDoubleTapHandler(getResources(), this), textSize, this);
+
+            readingViewPager.setAdapter(adapter);
+            readingViewPager.setOnTouchListener(new ReadingDoubleTapHandler(getResources(), this));
+            readingViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 }
 
-                int position = readingViewPager.getCurrentItem();
-                if (position < adapter.getChapters().size()) {
-                    scrolled(position);
+                @Override
+                public void onPageSelected(int position) {
                 }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                    boolean userDidScrollChapter = (state == 0);
+                    if (!userDidScrollChapter) {
+                        return;
+                    }
+
+                    int position = readingViewPager.getCurrentItem();
+                    if (position < adapter.getChapters().size()) {
+                        scrolled(position);
+                    }
+                }
+            });
+        }
+
+
+        if(correctItem != null){
+
+            if(adapter.getChapters().get(0).getBookId() != correctItem.getBookId()){
+                adapter.update(chapters);
             }
-        });
+
+            int desiredIndex = chapters.indexOf(correctItem);
+            if(readingViewPager.getCurrentItem() != desiredIndex) {
+                readingViewPager.setCurrentItem(chapters.indexOf(correctItem), true);
+            }
+        }
     }
 
     //endregion
 
     //region updating
-
-    private void updateVersionInfo(){
-//        this.bottomBar.updateWithVersion(currentBook.getVersion());
-    }
 
     private void scrolled(int position){
 
@@ -167,66 +188,22 @@ public class BibleReadingFragment extends Fragment implements
         boolean needsUpdate = (!currentModel.getId().equals(model.getId()) && currentModel.getNumber().equals(otherModel.getNumber()));
 
         if (needsUpdate) {
-            UWPreferenceDataManager.changedToBibleChapter(getActivity().getApplicationContext(), model.getId(), isSecondary);
-            getActivity().getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));
+            UWPreferenceDataAccessor.changeToNewBibleChapter(getActivity().getApplicationContext(), model, isSecondary);
         }
     }
-
-    private boolean updateBook(){
-
-        BibleChapter currentItem = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        if(currentItem != null) {
-            boolean needsToUpdateBook = (this.currentBook != null && !currentBook.getId().equals(currentItem.getBookId()));
-            this.currentBook = currentItem.getBook();
-            if(needsToUpdateBook){
-                adapter.update(currentBook.getBibleChapters());
-                readingViewPager.setCurrentItem(0, false);
-            }
-            return needsToUpdateBook;
-        }
-        return false;
-    }
-
-    /**
-     * updates the data and scrolls to the currently selected page
-     */
-    public void scrollToCurrentPage(){
-        updateBook();
-        BibleChapter correctItem = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
-        List<BibleChapter> chapters = currentBook.getBibleChapters(true);
-        BibleChapter currentItem = (chapters.size() <= readingViewPager.getCurrentItem())?
-                null : chapters.get(readingViewPager.getCurrentItem());
-
-        boolean shouldUpdate;
-        if(currentItem == null && correctItem != null){
-            shouldUpdate = true;
-        }
-        else{
-            shouldUpdate = correctItem != null && !correctItem.getId().equals(currentItem.getId());
-        }
-
-        if(shouldUpdate) {
-
-            for (int i = 0; i < currentBook.getBibleChapters().size(); i++) {
-                if (correctItem.getId().equals(currentBook.getBibleChapters().get(i).getId())) {
-                    readingViewPager.setCurrentItem(i, true);
-                    return;
-                }
-            }
-        }
-    }
-
     //endregion
 
     //region ReadingPagerAdapterListener
 
     @Override
     public void goToNextBook() {
-        Book nextBook = currentBook.getNextBook();
-        if(nextBook != null){
-            BibleChapter nextChapter = nextBook.getBibleChapters(true).get(0);
-            UWPreferenceDataManager.changedToBibleChapter(getActivity().getApplicationContext(), nextChapter.getId(), isSecondary);
-            getActivity().getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));
+        BibleChapter currentModel = UWPreferenceDataAccessor.getCurrentBibleChapter(getActivity().getApplicationContext(), isSecondary);
+        if(currentModel != null){
+            Book nextBook = currentModel.getBook().getNextBook();
+            if(nextBook != null) {
+                BibleChapter nextChapter = nextBook.getBibleChapters(true).get(0);
+                UWPreferenceDataAccessor.changeToNewBibleChapter(getActivity().getApplicationContext(), nextChapter, isSecondary);
+            }
         }
     }
 
@@ -246,41 +223,8 @@ public class BibleReadingFragment extends Fragment implements
         }
     }
 
-    //endregion
-
-    //region BottomBarListener
-
-//    @Override
-//    public void checkingLevelPressed() {
-//        listener.showCheckingLevel(currentBook.getVersion());
-//    }
-//
-//    @Override
-//    public void shareButtonClicked() {
-//
-//        ((UWBaseActivity)getActivity()).goToNewActivity(SharingHelper.getIntentForSharing(getContext(), currentBook.getVersion()));
-//
-////        SideSharer sharer = new SideSharer((UWBaseActivity) getActivity(), new SideSharer.SideLoaderListener() {
-////            @Override
-////            public void sideLoadingSucceeded(String response) {
-////            }
-////            @Override
-////            public void sideLoadingFailed(String errorMessage) {
-////            }
-////            @Override
-////            public boolean confirmSideLoadingType(SideLoadType type) {
-////                return true;
-////            }
-////        });
-////        Version currentVersion = currentBook.getVersion();
-////        sharer.startSharing(currentVersion.getAsPreloadJson(getActivity().getApplicationContext()).toString(),
-////                currentVersion.getName() + getActivity().getString(R.string.save_file_extension));
-//    }
-//
-//    @Override
-//    public void versionButtonClicked() {
-//        listener.clickedChooseVersion(isSecondary);
-//    }
-
-    //endregion
+    @Override
+    public void bibleChapterChanged(BibleChapter mainChapter, BibleChapter secondaryChapter) {
+        setupOrUpdatePager((isSecondary)? secondaryChapter : mainChapter);
+    }
 }

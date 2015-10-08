@@ -32,15 +32,15 @@ import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
+import view.ReadingToolbarViewBibleModel;
 import view.ReadingToolbarViewData;
 
 public class ReadingActivity extends BaseReadingActivity {
-    static private final String TAG = "ReadingActivity";
+//    static private final String TAG = "ReadingActivity";
 
     static private final int HIGH_TEXT_SIZE_LIMIT = 20;
     static private final int LOW_TEXT_SIZE_LIMIT = 10;
 
-    private BibleChapter currentChapter;
     private BibleReadingFragment readingFragment;
     private BibleReadingFragment secondaryReadingFragment;
 
@@ -49,71 +49,31 @@ public class ReadingActivity extends BaseReadingActivity {
         super.onCreate(savedInstanceState);
     }
 
-//    @Override
-//    protected String getChapterLabelText() {
-//        return (currentChapter != null) ? currentChapter.getTitle() : null;
-//    }
-//
-//    @Override
-//    protected String getMainVersionText() {
-//        updateChapters();
-//        return (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
-//    }
-//
-//    @Override
-//    protected String getSecondaryVersionText() {
-//
-//        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), true);
-//        return (secondaryChapter != null)? secondaryChapter.getBook().getVersion().getTitle() : "";
-//    }
+    @Override
+    protected void update() {
+        super.update();
+        updateReadingView();
+    }
 
     @Override
     protected Version getSharingVersion() {
-        return (currentChapter == null)? null : currentChapter.getBook().getVersion();
+        BibleChapter activeChapter = getActiveChapter();
+        return(activeChapter != null)? activeChapter.getBook().getVersion() : null;
+    }
+
+    private BibleChapter getActiveChapter(){
+        return UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
     }
 
     @Override
     protected ReadingToolbarViewData getToolbarViewData() {
-        return null;
+        return new ReadingToolbarViewBibleModel(getApplicationContext());
     }
-
-    //    @Nullable
-//    @Override
-//    protected AudioChapter getAudioChapter() {
-//        if(currentChapter == null){
-//            return null;
-//        }
-//        updateChapters();
-//        AudioBook audioBook = this.currentChapter.getBook().getAudioBook();
-//
-//        if(audioBook != null){
-//            AudioChapter audioChapter = audioBook.getChapter(Integer.parseInt(this.currentChapter.getNumber()));
-//            if(audioChapter != null){
-//                return audioChapter;
-//            }
-//        }
-//        return null;
-//    }
-
-//    @Override
-//    protected void scrolled() {
-//        updateChapters();
-//        updateReadingView();
-//    }
-
 
     @Override
     protected Book getBook() {
-        return null;
-    }
-
-    private void updateChapters(){
-
-//        currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
-//
-//        if (currentChapter != null) {
-//            this.book = currentChapter.getBook();
-//        }
+        BibleChapter activeChapter = getActiveChapter();
+        return (activeChapter != null)? activeChapter.getBook() : null;
     }
 
     @Override
@@ -129,32 +89,21 @@ public class ReadingActivity extends BaseReadingActivity {
         return null;
     }
 
-//    @Override
-//    protected boolean loadData() {
-//
-//        updateChapters();
-//
-//        return (currentChapter != null);
-//    }
-//
-//    @Override
-//    protected void updateReadingView() {
-//
-//        if(currentChapter != null) {
-//            if (this.readingFragment == null) {
-//                this.readingFragment = createReadingFragment(readingLayout, false);
-//            }
-//            else {
-//                readingFragment.update();
-//            }
-//            if(this.secondaryReadingFragment == null){
-//                this.secondaryReadingFragment = createReadingFragment(secondaryReadingLayout, true);
-//            }
-//            else{
-//                secondaryReadingFragment.update();
-//            }
-//        }
-//    }
+    protected void updateReadingView() {
+
+        if(getActiveChapter() != null) {
+            if (this.readingFragment == null) {
+                this.readingFragment = createReadingFragment(readingLayout, false);
+            } else {
+                readingFragment.update();
+            }
+            if (this.secondaryReadingFragment == null) {
+                this.secondaryReadingFragment = createReadingFragment(secondaryReadingLayout, true);
+            } else {
+                secondaryReadingFragment.update();
+            }
+        }
+    }
 
     @Override
     protected void makeTextLarger() {

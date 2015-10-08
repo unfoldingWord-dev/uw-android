@@ -1,7 +1,10 @@
 package activity.reading;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
@@ -31,6 +35,7 @@ import model.daoModels.Project;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import services.UWBookMediaDownloaderService;
+import services.UWUpdaterService;
 import singletons.UWAudioPlayer;
 import utils.UWPreferenceDataAccessor;
 import view.AudioPlayerViewGroup;
@@ -155,9 +160,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      */
     protected void update(){
         updateToolbar(getToolbarViewData());
-        if(audioPlayerViewGroup != null){
-            audioPlayerViewGroup.resume();
-        }
         setupTabBar();
         updateTabBar();
     }
@@ -179,22 +181,26 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     @Override
     public void mainVersionButtonClicked() {
-        versionSelectionButtonClicked(false);
+        gotoVersionSelection(false);
     }
 
     @Override
     public void secondaryVersionButtonClicked() {
-        versionSelectionButtonClicked(true);
+        gotoVersionSelection(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        update();
+
         if(audioPlayerViewGroup != null){
-            onResume();
+            audioPlayerViewGroup.onResume();
         }
+        update();
         registerForListeners();
+        if(getBook() == null){
+            gotoVersionSelection(false);
+        }
     }
 
     private void registerForListeners(){
@@ -238,7 +244,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     public void versionSelectionButtonClicked(View view) {
 
-        versionSelectionButtonClicked(false);
+        gotoVersionSelection(false);
     }
 
     //endregion
@@ -310,6 +316,13 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(audioPlayerLayout != null && !hasAudioBook){
             audioPlayerLayout.setVisibility(View.GONE);
         }
+        if(audioPlayerViewGroup != null) {
+            Book book = getBook();
+            if(book != null) {
+            book.refresh();
+                audioPlayerViewGroup.handleDownloadState(book.getAudioSaveStateEnum());
+            }
+        }
 
         boolean hasVideo = false;
         tabBar.getButton(1).setEnabled(hasVideo);
@@ -330,10 +343,32 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void downloadBookAudio() {
 
+        setupIntentFilter();
         Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
         downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_PARAM, getBook().getId());
         downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
         getApplicationContext().startService(downloadIntent);
+    }
+
+    private BroadcastReceiver receiver;
+    private BroadcastReceiver createBroadcastReceiver() {
+
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
+                Book book = getBook();
+                book.refresh();
+                audioPlayerViewGroup.handleDownloadState(book.getAudioSaveStateEnum());
+            }
+        };
+    }
+
+    private void setupIntentFilter(){
+        receiver = createBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
+        getApplicationContext().registerReceiver(receiver, filter);
     }
 
     private void setAudioButtonState(boolean isPlaying){
@@ -396,8 +431,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         view.setVisibility((view.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
     }
 
-
-
     //endregion
 
     //region viewChanging
@@ -418,7 +451,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
      * will go to version selection
      * @param isSecondVersion whether the user is requesting to change the second version of the diglot view
      */
-    protected void versionSelectionButtonClicked(boolean isSecondVersion){
+    protected void gotoVersionSelection(boolean isSecondVersion){
 
 //        if(isTablet()){
 //
@@ -449,17 +482,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
         }
     }
-
-    /**
-     * will show the checking level fragment for the passed version
-//     * @param version version for which to show the info fragment
-     */
-//    private void goToCheckingLevelView(Version version){
-//        VersionInfoFragment fragment = VersionInfoFragment.createFragment(version);
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//
-//        fragment.show(ft, CHECKING_LEVEL_FRAGMENT_ID);
-//    }
 
     //endregion
 

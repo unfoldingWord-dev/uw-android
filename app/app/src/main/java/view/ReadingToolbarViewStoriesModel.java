@@ -25,7 +25,7 @@ public class ReadingToolbarViewStoriesModel implements ReadingToolbarViewData {
     private void setup(Context context){
 
         StoryPage currentPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, false);
-        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, false);
+        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, true);
 
         setup(currentPage, secondaryPage);
     }

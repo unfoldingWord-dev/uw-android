@@ -43,7 +43,7 @@ public class AudioPlayerViewGroup implements UWAudioPlayer.UWAudioPlayerListener
         updateViews();
     }
 
-    public void resume(){
+    public void onResume(){
         UWAudioPlayer.getInstance(context).addListener(this);
     }
 
