@@ -4,12 +4,14 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.AudioMarker;
+import model.DownloadState;
 import model.daoModels.AudioChapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.StoryPage;
@@ -21,6 +23,8 @@ import utils.UWPreferenceDataAccessor;
  * Created by Fechner on 10/5/15.
  */
 public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener, UWPreferenceDataAccessor.PreferencesStoryPageChangedListener {
+
+    private static final String TAG = "UWAudioPlayer";
 
     private static UWAudioPlayer ourInstance;
     public static UWAudioPlayer getInstance(Context context) {
@@ -142,7 +146,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     public void prepareAudio(StoryPage page){
 
         AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
-        if(chapter != null){
+        if(chapter != null && chapter.getAudioBook().getBook().getAudioSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal()){
             File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
             Uri uri = Uri.fromFile(audioFile);
 
@@ -176,6 +180,8 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
         // seek to start time if the current time isn't within a second of the start time
         if(currentPosition >= marker.getStartTime() + 1000 || currentPosition <= marker.getStartTime() - 1000){
             mediaPlayer.seekTo((int) marker.getStartTime());
+//            int currentTime = mediaPlayer.getCurrentPosition();
+//            Log.i(TAG, "current  time: " + currentTime);
         }
 
         if(wasPlaying){

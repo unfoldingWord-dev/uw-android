@@ -276,7 +276,7 @@ public class AudioChapter extends model.UWDatabaseModel  implements java.io.Seri
     }
 
     public String getAudioUrl(){
-        return getAudioUrl(findHighestBitrate(getBitRates()).getBitrate());
+        return getAudioUrl(32);//findHighestBitrate(getBitRates()).getBitrate());
     }
 
     public String getAudioUrl(int bitrate){
