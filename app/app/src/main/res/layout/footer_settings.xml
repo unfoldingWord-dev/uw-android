@@ -8,27 +8,26 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/light_brown"
+        android:background="@color/primary"
         android:padding="10dp">
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:text="Settings"
-            android:textColor="@color/white_mix_gary"
+            android:textColor="@color/white"
             android:id="@+id/settings_button"
-            android:background="@drawable/language_button_click"
+            android:background="@drawable/green_button_selector"
             android:layout_gravity="center" />
 
         <Button
-            android:visibility="gone"
             android:layout_marginTop="5dp"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="Report Issue"
-            android:textColor="@color/white_mix_gary"
+            android:text="Report Problem"
+            android:textColor="@color/white"
             android:id="@+id/report_but_button"
-            android:background="@drawable/language_button_click"
+            android:background="@drawable/green_button_selector"
             android:layout_gravity="center" />
     </LinearLayout>
 

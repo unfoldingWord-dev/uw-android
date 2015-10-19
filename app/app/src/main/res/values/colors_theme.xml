@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#659688</color>
-    <color name="primary_dark">#659688</color>
-    <color name="primary_light">#AAA</color>
+    <color name="primary">#009688</color>
+    <color name="primary_dark">#009688</color>
+    <color name="primary_light">#009688</color>z
     <color name="accent">#8BC34A</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+
+    <color name="primary_button_light">#6cb3ac</color>z
+
+
 
     <color name="progress_color">#00C3FF</color>
 

@@ -60,10 +60,10 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     private ViewGroup updateLayout = null;
 
-    private Button mRefreshButton = null;
+    private View mRefreshButton = null;
     private ListView listview;
 
-    InitialPageAdapter adapter;
+    private InitialPageAdapter adapter;
 
     private List<Project> mProjects = null;
 
@@ -213,6 +213,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                 goToReportBug();
             }
         });
+
         listview.addFooterView(footerView);
     }
 
@@ -227,7 +228,7 @@ public class InitialScreenActivity extends UWBaseActivity{
             LayoutInflater inflater = getLayoutInflater();
             View mview1 = inflater.inflate(R.layout.refresh_header_view, null);
             updateLayout = (ViewGroup) mview1.findViewById(R.id.refreshView);
-            mRefreshButton = (Button) mview1.findViewById(R.id.refreshButton);
+            mRefreshButton = mview1.findViewById(R.id.refreshButton);
             mRefreshButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

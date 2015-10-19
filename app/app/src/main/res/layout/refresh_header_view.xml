@@ -4,18 +4,19 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
+        android:id="@+id/refreshButton"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/refresh_button_size"
-        android:background="@color/greenyellow">
+        android:background="@drawable/green_button_selector">
 
-        <Button
-            android:id="@+id/refreshButton"
+        <ImageView
             android:layout_width="@dimen/refresh_button_size"
             android:layout_height="@dimen/refresh_button_size"
-            android:layout_gravity="center"
-            android:background="@drawable/refresh_button_click" />
-    </FrameLayout>
+            android:layout_centerInParent="true"
+            android:background="@drawable/refresh_icon" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="vertical"

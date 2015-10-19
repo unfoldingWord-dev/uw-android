@@ -40,7 +40,7 @@ public class BugReporterActivity extends AppCompatActivity {
         mCrashReportText = (EditText)findViewById(R.id.crashDescriptioneditText);
         mDialog = new ProgressDialog(BugReporterActivity.this);
 
-        final UploadReportsTask task = new UploadReportsTask(mCrashReportText.getText().toString().trim());
+
 
         mCrashReportText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -67,6 +67,7 @@ public class BugReporterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(mCrashReportText.getText().toString().length() > 0) {
+                    UploadReportsTask task = new UploadReportsTask(mCrashReportText.getText().toString().trim());
                     showLoading();
                     task.execute(true);
                 }
