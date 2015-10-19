@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="pref_default_base_url">https://api.unfoldingword.org/uw/txt/2/catalog.json</string>
+    <string name="pref_default_base_url_test">https://api.unfoldingword.org/uw/txt/2/catalog.json</string>
+    <string name="beta_api_base_url">https://api.unfoldingword.org/uw/txt/beta/catalog.json</string>
+    <string name="old_pref_default_base_url">https://api.unfoldingword.org/ts/txt/2/catalog.json</string>
+    <string name="languages_json_url">http://td.unfoldingword.org/exports/langnames.json</string>
+
+</resources>
