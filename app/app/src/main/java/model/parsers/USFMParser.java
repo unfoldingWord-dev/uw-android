@@ -161,7 +161,12 @@ public class USFMParser {
 //                System.out.println("or there");
             }
 
-            qLessString = qLessString.replace("\\q" + qNumber, "<span class=\"q" + qNumber + "\">") + "</span>";
+            if(qLessString.replace("\\q" + qNumber, "").replace("\\s", "").trim().length() < 3){
+                qLessString = qLessString.replace("\\q" + qNumber, "");
+            }
+            else {
+                qLessString = qLessString.replace("\\q" + qNumber, "<span class=\"q" + qNumber + "\">") + "</span>";
+            }
             text = text.replace(qString, qLessString);
         }
 

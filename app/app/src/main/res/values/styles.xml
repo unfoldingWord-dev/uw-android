@@ -10,7 +10,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowActionBarOverlay">true</item>
         <item name="android:textColor">#fff</item>
-
     </style>
 
     <!-- Base application theme. -->

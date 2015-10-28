@@ -29,7 +29,6 @@ public class UWUpdaterService extends Service {
     public static final String PROJECTS_JSON_KEY = "cat";
     public static final String MODIFIED_JSON_KEY = "mod";
 
-
     int numberPending = 0;
 
     @Override
