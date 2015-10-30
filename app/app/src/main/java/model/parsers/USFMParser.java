@@ -69,8 +69,6 @@ public class USFMParser {
         return chapters;
     }
 
-
-
     public String getStringFromBytes(byte[] bytes) throws CharacterCodingException{
 
         Charset utfSet = Charset.forName("UTF-8");

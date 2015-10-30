@@ -121,6 +121,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reading);
         setupViews();
+
+        if(getBook() == null){
+            gotoVersionSelection(false);
+        }
     }
 
     protected void setupViews(){
@@ -198,9 +202,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
         update();
         registerForListeners();
-        if(getBook() == null){
-            gotoVersionSelection(false);
-        }
     }
 
     private void registerForListeners(){
