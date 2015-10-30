@@ -6,10 +6,13 @@
 
     <view.ASyncImageView
         android:id="@+id/chapter_image_view"
-        android:scaleType="fitStart"
+        android:scaleType="fitCenter"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/test_image"
+        android:adjustViewBounds="true"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
