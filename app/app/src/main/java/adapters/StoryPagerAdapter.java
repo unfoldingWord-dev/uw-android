@@ -25,6 +25,7 @@ import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ASyncImageView;
+import view.ScalingImageView;
 import view.ViewContentHelper;
 
 /**
@@ -95,8 +96,9 @@ public class StoryPagerAdapter extends PagerAdapter {
             StoryPage currentSecondPage = getSecondModelForRow(position);
 
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
-            ASyncImageView chapterImageView = (ASyncImageView) view.findViewById(R.id.chapter_image_view);
+            ScalingImageView chapterImageView = (ScalingImageView) view.findViewById(R.id.chapter_image_view);
             chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.FIT_START);
+//            chapterImageView.setAdjustViewBounds(true);
 
             TextView mainTextView = (TextView) view.findViewById(R.id.story_main_text_view);
             TextView secondaryTextView = (TextView) view.findViewById(R.id.story_secondary_text_view);
@@ -108,8 +110,8 @@ public class StoryPagerAdapter extends PagerAdapter {
             String imgUrl = mainChapter.getStoryPages().get(position).getImageUrl();
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
-            chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
 
+            chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
             setupPageForDiglot(mainTextView, secondaryTextView);
         }
         ((ViewPager) container).addView(view);

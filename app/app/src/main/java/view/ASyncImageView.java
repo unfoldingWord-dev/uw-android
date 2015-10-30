@@ -42,7 +42,7 @@ public class ASyncImageView extends ImageView {
         picasso.setIndicatorsEnabled(true);
         picasso.setLoggingEnabled(true);
         if(crop) {
-            picasso.load(uri).into(this);
+            picasso.load(uri).centerCrop().into(this);
         }
         else{
             picasso.load(uri).into(this);
