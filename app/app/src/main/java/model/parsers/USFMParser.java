@@ -83,7 +83,6 @@ public class USFMParser {
     public String parseUsfmChapter(String chapter){
 
         footnoteNumber = 1;
-        String finalChapterText = "<div class=\"chapter-div\">";
 
         chapter = handleDs(chapter);
         chapter = handleQSelahs(chapter);
@@ -93,7 +92,7 @@ public class USFMParser {
         chapter = addLineBreaks(chapter);
         chapter = cleanUp(chapter);
 
-        finalChapterText += "<p>" + chapter + "</p></div>";
+        String finalChapterText = "<div class=\"chapter-div\"><p>" + chapter + "</p></div>";
 
         return finalChapterText;
     }
@@ -156,7 +155,7 @@ public class USFMParser {
 
         for (String dString : dText) {
 
-            String dLessString = dString.replace("\\d", "<p class=\"d\">") + "</p>";
+            String dLessString = dString.replace("\\d", "</p><p class=\"d\">") + "</p><p>";
             text = text.replace(dString, dLessString);
         }
 
@@ -268,7 +267,7 @@ public class USFMParser {
         if (text.substring(0, 2).equalsIgnoreCase("\\p")) {
             text = text.substring(2);
         }
-        text = text.replace("\\b", "<br/><br/>");
+        text = text.replace("\\b", "<br/>");
         String sRegex = "\\\\pi\\d*";
         text = text.replaceAll(sRegex, "<br/>" + TAB);
         text = text.replace("\\p", "<br/>");

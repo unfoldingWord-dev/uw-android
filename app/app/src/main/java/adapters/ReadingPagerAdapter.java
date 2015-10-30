@@ -134,15 +134,15 @@ public class ReadingPagerAdapter extends PagerAdapter {
     private String getTextCss(){
 
         String css = "<style type=\"text/css\">\n" +
-                ".selah {text-align: right; font-style: italic; float: right;}\n" +
+                ".selah {text-align: right; font-style: italic; float: right; padding-right: 1em;}\n" +
                 ".verse { font-size: 9pt}\n" +
-                ".d {font-style: italic; text-align: center; padding: 0px; line-height: 0.9;}\n" +
                 ".q, .q1, .q2 { margin:0; display: block; padding:0;}\n" +
                 ".q, .q1 { padding-left: 1em; }\n" +
                 ".q2 { padding-left: 2em; }\n" +
                 ".q3 { padding-left: 3em; }\n" +
+                ".d {font-style: italic; text-align: center; padding: 0px; line-height: 0.9; font-size: " + Integer.toString(textSize - 2) + "pt; width: 90%; padding: 0 5% 0 5%;}\n" +
                 "p { width:96%; font-size: " + Integer.toString(textSize) + "pt; text-align: justify; line-height: 1.3; padding:5px; unicode-bidi:bidi-override; direction:" +
-                getTextDirection() + " ;}\n" +
+                getTextDirection() + ";}\n" +
                 ".footnote {font-size: 11pt;}\n" +
                 "sup {font-size: 9pt;}\n" +
                 "</style>\n";
