@@ -23,6 +23,7 @@ public class USFMParser {
     private static final Pattern NUMBER_REGEX = Pattern.compile("\\s*(\\d*)");
     private static final Pattern Q_NUMBER_REGEX = Pattern.compile("\\\\q\\d");
     private static final Pattern Q_REGEX = Pattern.compile("\\\\(q)\\d?\\ .*");
+    private static final Pattern D_REGEX = Pattern.compile("\\\\d.*");
 
     private static final String QS_REGEX = "\\\\(qs)\\d?\\ .*\\\\qs\\*";
 
@@ -84,8 +85,9 @@ public class USFMParser {
     public String parseUsfmChapter(String chapter){
 
         footnoteNumber = 1;
-        String finalChapterText = "<div =\"chapter-div\">";
+        String finalChapterText = "<div class=\"chapter-div\">";
 
+        chapter = handleDs(chapter);
         chapter = handleQSelahs(chapter);
         chapter = replaceQs(chapter);
         chapter = replaceVerseTags(chapter);
@@ -138,17 +140,29 @@ public class USFMParser {
 
     private String handleQSelahs(String text){
 
-//        Matcher qsMatcher = QS_REGEX.matcher(text);
-//
-//        ArrayList<String> qsText = new ArrayList<String>();
-//        while (qsMatcher.find()) {
-//            qsText.add(qsMatcher.group(0));
-//        }
-//
-//        if (qsText.isEmpty()) {
-//            return text;
-//        }
         return text.replaceAll(QS_REGEX, "<span class=\"selah\">Selah<br/></span></br>");
+    }
+
+    private String handleDs(String text){
+
+        Matcher dMatcher = D_REGEX.matcher(text);
+
+        ArrayList<String> dText = new ArrayList<>();
+        while (dMatcher.find()) {
+            dText.add(dMatcher.group(0));
+        }
+
+        if (dText.isEmpty()) {
+            return text;
+        }
+
+        for (String dString : dText) {
+
+            String dLessString = dString.replace("\\d", "<p class=\"d\">") + "</p>";
+            text = text.replace(dString, dLessString);
+        }
+
+        return text;
     }
 
     private String replaceQs(String text) {
