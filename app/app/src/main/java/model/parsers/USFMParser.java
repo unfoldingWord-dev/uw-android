@@ -22,7 +22,9 @@ public class USFMParser {
     private static final Pattern VERSE_REGEX = Pattern.compile("\\\\v\\s([0-9-])*\\s", Pattern.DOTALL);
     private static final Pattern NUMBER_REGEX = Pattern.compile("\\s*(\\d*)");
     private static final Pattern Q_NUMBER_REGEX = Pattern.compile("\\\\q\\d");
-    private static final Pattern Q_REGEX = Pattern.compile("\\\\q[0-9]*\\s*\\n*.+");
+    private static final Pattern Q_REGEX = Pattern.compile("\\\\(q)\\d?\\ .*");
+
+    private static final String QS_REGEX = "\\\\(qs)\\d?\\ .*\\\\qs\\*";
 
     private static final Pattern FOOTNOTE_REGEX = Pattern.compile("(\\\\f)(\\s+)((.*)(\\n*)){1,5}(\\\\f[*])");
     private static final Pattern FOOTNOTE_TEXT_REGEX = Pattern.compile("(\\\\f.)(\\s)*(\\+)(\\s)(\\\\ft)*\\s*(.)*\\n(\\\\fqa)");
@@ -84,13 +86,14 @@ public class USFMParser {
         footnoteNumber = 1;
         String finalChapterText = "<div =\"chapter-div\">";
 
+        chapter = handleQSelahs(chapter);
         chapter = replaceQs(chapter);
         chapter = replaceVerseTags(chapter);
         chapter = findFootnotes(chapter);
         chapter = addLineBreaks(chapter);
         chapter = cleanUp(chapter);
 
-        finalChapterText += "<p>" + TAB + chapter + "</p></div>";
+        finalChapterText += "<p>" + chapter + "</p></div>";
 
         return finalChapterText;
     }
@@ -133,6 +136,21 @@ public class USFMParser {
         return text;
     }
 
+    private String handleQSelahs(String text){
+
+//        Matcher qsMatcher = QS_REGEX.matcher(text);
+//
+//        ArrayList<String> qsText = new ArrayList<String>();
+//        while (qsMatcher.find()) {
+//            qsText.add(qsMatcher.group(0));
+//        }
+//
+//        if (qsText.isEmpty()) {
+//            return text;
+//        }
+        return text.replaceAll(QS_REGEX, "<span class=\"selah\">Selah<br/></span></br>");
+    }
+
     private String replaceQs(String text) {
 
         Matcher qMatcher = Q_REGEX.matcher(text);
@@ -161,13 +179,10 @@ public class USFMParser {
 //                System.out.println("or there");
             }
 
-            if(qLessString.replace("\\q" + qNumber, "").replace("\\s", "").trim().length() < 3){
-                qLessString = qLessString.replace("\\q" + qNumber, "");
-            }
-            else {
+            if(qLessString.replace("\\q" + qNumber, "").replace("\\s", "").trim().length() > 4){
                 qLessString = qLessString.replace("\\q" + qNumber, "<span class=\"q" + qNumber + "\">") + "</span>";
+                text = text.replace(qString, qLessString);
             }
-            text = text.replace(qString, qLessString);
         }
 
         return text;
@@ -244,7 +259,7 @@ public class USFMParser {
         text = text.replace("\\b", "<br/><br/>");
         String sRegex = "\\\\pi\\d*";
         text = text.replaceAll(sRegex, "<br/>" + TAB);
-        text = text.replace("\\p", "<br/>" + TAB);
+        text = text.replace("\\p", "<br/>");
         return text;
 
     }
@@ -255,6 +270,7 @@ public class USFMParser {
         text = text.replaceAll(sRegex, "");
         text = text.replace("\n", " ");
         text = text.replace("\\m ", "");
+        text = text.replace("\\q ", "");
         return text;
     }
 }
