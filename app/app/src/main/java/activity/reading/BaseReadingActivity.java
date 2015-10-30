@@ -200,8 +200,17 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(audioPlayerViewGroup != null){
             audioPlayerViewGroup.onResume();
         }
+
         update();
-        registerForListeners();
+        if(getBook() == null){
+            errorView.setVisibility(View.VISIBLE);
+            findViewById(R.id.tab_bar_view).setVisibility(View.INVISIBLE);
+        }
+        else {
+            findViewById(R.id.tab_bar_view).setVisibility(View.VISIBLE);
+            errorView.setVisibility(View.GONE);
+            registerForListeners();
+        }
     }
 
     private void registerForListeners(){

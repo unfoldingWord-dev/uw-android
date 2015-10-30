@@ -21,4 +21,5 @@ public class ReadingTabBar extends UWTabBar{
     private int getSizeForDp(int sizeInDP){
         return (int) (sizeInDP * getContext().getResources().getDisplayMetrics().density + 0.5f) ;
     }
+
 }
