@@ -46,6 +46,7 @@ import services.UWUpdaterService;
 import utils.NetWorkUtil;
 import utils.URLUtils;
 import utils.UWPreferenceManager;
+import view.UWTabBar;
 
 /**
  * Created by PJ Fechner on 2/27/15.
@@ -64,9 +65,8 @@ public class InitialScreenActivity extends UWBaseActivity{
     private ListView listview;
 
     private InitialPageAdapter adapter;
-
     private List<Project> mProjects = null;
-
+    private UWTabBar tabBar;
     /**
      * This broadcast for When the update is completed
      */
@@ -77,7 +77,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.initial_list_activity);
+        setContentView(R.layout.activity_initial_list);
         setupViews();
     }
 
@@ -168,6 +168,7 @@ public class InitialScreenActivity extends UWBaseActivity{
         getToolbar().setRightImageFontAwesome(FontAwesomeIcons.fa_download);
         setupListView();
         addSettingsFooter();
+        setupTabBar();
     }
 
     private void setupListView() {
@@ -204,7 +205,7 @@ public class InitialScreenActivity extends UWBaseActivity{
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moveToSettings();
+                goToSettings();
             }
         });
         footerView.findViewById(R.id.report_but_button).setOnClickListener(new View.OnClickListener() {
@@ -295,7 +296,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     //region Navigation actions
 
-    private void moveToSettings(){
+    private void goToSettings(){
 
         goToNewActivity(SettingsActivity.class);
     }
@@ -423,6 +424,38 @@ public class InitialScreenActivity extends UWBaseActivity{
                     }
                 })
                 .show();
+    }
+
+    private void setupTabBar(){
+
+        int[] images = {R.drawable.settings_icon_selector, R.drawable.update_icon_selector,
+                R.drawable.share_icon_selector};
+
+        tabBar = new UWTabBar(getApplicationContext(), images, (ViewGroup) findViewById(R.id.intial_activity_tab_bar_view), new UWTabBar.BottomBarListener() {
+            @Override
+            public void buttonPressedAtIndex(int index) {
+                tabBarPressed(index);
+            }
+        });
+    }
+
+    private void tabBarPressed(int index){
+
+        switch (index){
+            case 0:{
+                goToSettings();
+                break;
+            }
+            case 1:{
+                refre
+                break;
+            }
+            case 2:{
+                startSharingActivity();
+                break;
+            }
+        }
+
     }
 
 

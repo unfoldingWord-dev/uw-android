@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/Fechner/Documents/Android/UW/app/app/libs/aFileDialog/FileDialog/build/intermediates/bundles/debug/res/values-fr/values-fr.xml -->
-    <eat-comment/>
     <color name="daidalos_active_file">#fff</color>
     <color name="daidalos_backgroud">#000</color>
     <color name="daidalos_gray">#888</color>

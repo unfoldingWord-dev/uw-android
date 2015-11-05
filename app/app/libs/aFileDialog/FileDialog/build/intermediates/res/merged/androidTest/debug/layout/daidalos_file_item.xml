@@ -18,4 +18,4 @@
         android:text="@string/daidalos_hello"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-</LinearLayout><!-- From: file:/Users/Fechner/Documents/Android/UW/app/app/libs/aFileDialog/FileDialog/src/main/res/layout/daidalos_file_item.xml --><!-- From: file:/Users/Fechner/Documents/Android/UW/app/app/libs/aFileDialog/FileDialog/build/intermediates/bundles/debug/res/layout/daidalos_file_item.xml -->
+</LinearLayout>

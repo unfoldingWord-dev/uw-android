@@ -1,9 +1,11 @@
 package view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -89,9 +91,12 @@ public class UWTabBar {
     private ImageButton createButton(int index, int imageResource, float weight){
 
         ImageButton button = new ImageButton(context);
-        button.setBackgroundResource(R.drawable.basic_button_selector);
+        button.setBackgroundColor(Color.parseColor("#00000000"));
         button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, weight));
+        int padding = getSizeForDp(6);
+        button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        button.setPadding(padding, padding, padding, padding);
         button.setOnClickListener(new TabButtonListener(index));
         button.setImageResource(imageResource);
         return button;
