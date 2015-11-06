@@ -134,7 +134,7 @@ public class VersionSelectionFragment extends DialogFragment {
     protected void prepareListView(View view){
 
         mListView = (AnimatedExpandableListView) view.findViewById(R.id.versions_list);
-//        mListView.setOnGroupClickListener(getOnGroupClickListener());
+//        listView.setOnGroupClickListener(getOnGroupClickListener());
 
         Version version = getVersion();
 
@@ -188,10 +188,10 @@ public class VersionSelectionFragment extends DialogFragment {
 //                    getActivity().runOnUiThread(new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            if (mListView.isGroupExpanded(groupPosition)) {
-//                                mListView.collapseGroupWithAnimation(groupPosition);
+//                            if (listView.isGroupExpanded(groupPosition)) {
+//                                listView.collapseGroupWithAnimation(groupPosition);
 //                            } else {
-//                                mListView.expandGroupWithAnimation(groupPosition);
+//                                listView.expandGroupWithAnimation(groupPosition);
 //                            }
 //                        }
 //                    });

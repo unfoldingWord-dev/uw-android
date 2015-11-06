@@ -1,6 +1,5 @@
 package fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -55,9 +54,9 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
+//        if (getArguments() != null) {
+//
+//        }
     }
 
     @Override
@@ -75,7 +74,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
     protected void prepareListView(View view) {
 
-        List<GeneralRowInterface> data = this.getData();
+        List<GeneralRowInterface> data = this.setupData();
 
         if (listView == null) {
             listView = (ListView) view.findViewById(R.id.generalList);
@@ -88,10 +87,10 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
         ChaptersAdapter adapter = new ChaptersAdapter(getContext(), data, this, selectedRow);
         listView.setAdapter(adapter);
-//        listView.setSelection((scrollPosition > 1) ? scrollPosition - 1 : 0);
+        listView.setSelection((selectedRow > 5) ? selectedRow - 3 : 0);
     }
 
-    protected List<GeneralRowInterface> getData(){
+    protected List<GeneralRowInterface> setupData(){
 
         BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
         if(currentChapter == null){

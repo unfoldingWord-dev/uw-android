@@ -60,7 +60,6 @@ public class InitialPageAdapter extends ArrayAdapter<GeneralRowInterface> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        holder.title.setTextColor(ViewContentHelper.getColorForSelection(selectedPosition == pos));
         holder.title.setText(models.get(pos).getTitle());
 
         return view;

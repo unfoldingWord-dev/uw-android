@@ -75,7 +75,7 @@ public class UWToolbarViewGroup {
         }
 
         titleLayout.setVisibility(View.GONE);
-        rightButtonLayout.setVisibility(View.GONE);
+        rightButtonLayout.setVisibility(View.INVISIBLE);
     }
 
     public void setBackResource(int resource){

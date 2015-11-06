@@ -14,13 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.door43.tools.reporting.BugReporterActivity;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import org.unfoldingword.mobile.R;
 
@@ -165,9 +163,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     private void setupViews(){
 
         setupToolbar(true, getString(R.string.app_name), false);
-        getToolbar().setRightImageFontAwesome(FontAwesomeIcons.fa_download);
         setupListView();
-        addSettingsFooter();
         setupTabBar();
     }
 
@@ -194,29 +190,29 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
     }
 
-    private void addSettingsFooter(){
-
-        LayoutInflater inflater = getLayoutInflater();
-        View footerView = inflater.inflate(R.layout.footer_settings, null);
-
-
-        // change version number
-         Button settingsButton = (Button) footerView.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToSettings();
-            }
-        });
-        footerView.findViewById(R.id.report_but_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToReportBug();
-            }
-        });
-
-        listview.addFooterView(footerView);
-    }
+//    private void addSettingsFooter(){
+//
+//        LayoutInflater inflater = getLayoutInflater();
+//        View footerView = inflater.inflate(R.layout.footer_settings, null);
+//
+//
+//        // change version number
+//         Button settingsButton = (Button) footerView.findViewById(R.id.settings_button);
+//        settingsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                goToSettings();
+//            }
+//        });
+//        footerView.findViewById(R.id.report_but_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                goToReportBug();
+//            }
+//        });
+//
+//        listview.addFooterView(footerView);
+//    }
 
     private void goToReportBug(){
 
@@ -227,15 +223,15 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         if(mRefreshButton == null) {
             LayoutInflater inflater = getLayoutInflater();
-            View mview1 = inflater.inflate(R.layout.refresh_header_view, null);
+            View mview1 = inflater.inflate(R.layout.header_main, null);
             updateLayout = (ViewGroup) mview1.findViewById(R.id.refreshView);
-            mRefreshButton = mview1.findViewById(R.id.refreshButton);
-            mRefreshButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    update();
-                }
-            });
+//            mRefreshButton = mview1.findViewById(R.id.refreshButton);
+//            mRefreshButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    update();
+//                }
+//            });
 
             listview.addHeaderView(mview1);
 
@@ -447,7 +443,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                 break;
             }
             case 1:{
-                refre
+                update();
                 break;
             }
             case 2:{

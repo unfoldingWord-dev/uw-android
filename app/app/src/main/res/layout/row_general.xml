@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants">
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/layout_button_click"
         android:orientation="horizontal"
@@ -14,10 +13,10 @@
         <LinearLayout
             android:id="@+id/row"
             android:layout_width="fill_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_height="@dimen/general_row_height"
             android:orientation="vertical"
-            android:gravity="center_vertical|left">
+            android:gravity="center_vertical|left|start">
 
             <TextView
                 android:id="@+id/itemTitle"
@@ -25,9 +24,9 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:text="New Text"
-                android:textColor="@color/black_light"
-                android:textSize="@dimen/general_row_text_size"
-                android:textStyle="bold"/>
+                android:textColor="#000"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
         </LinearLayout>
     </LinearLayout>

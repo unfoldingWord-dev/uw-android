@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/chapter_selection_title"
-        android:id="@+id/chapter_selection_text_view"
+        android:id="@+id/initial_screen_title_view"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:visibility="gone" />

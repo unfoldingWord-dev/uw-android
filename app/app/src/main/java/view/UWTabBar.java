@@ -94,12 +94,16 @@ public class UWTabBar {
         button.setBackgroundColor(Color.parseColor("#00000000"));
         button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, weight));
-        int padding = getSizeForDp(6);
+        int padding = getButtonPadding();
         button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         button.setPadding(padding, padding, padding, padding);
         button.setOnClickListener(new TabButtonListener(index));
         button.setImageResource(imageResource);
         return button;
+    }
+
+    protected int getButtonPadding(){
+        return getSizeForDp(6);
     }
 
 //    public void toggleHidden(){

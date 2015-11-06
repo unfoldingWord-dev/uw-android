@@ -1,6 +1,5 @@
 package fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 
 /**
  * Fragment used for a user to select a BibleChapter from a list
@@ -33,7 +31,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         this.listener = listener;
     }
 
-    protected ListView mListView = null;
+    protected ListView listView = null;
 
     private List<BibleChapter> chapters;
     private ChaptersAdapter adapter;
@@ -102,16 +100,17 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
 
         List<GeneralRowInterface> data = this.getData();
 
-        if (mListView == null) {
-            mListView = (ListView) view.findViewById(R.id.generalList);
+        if (listView == null) {
+            listView = (ListView) view.findViewById(R.id.generalList);
         }
         if (data == null) {
             return;
         }
 
-        mListView.setOnItemClickListener(this);
+        listView.setOnItemClickListener(this);
         adapter = new ChaptersAdapter(getContext(), data, this, selectedRow);
-        mListView.setAdapter(adapter);
+        listView.setAdapter(adapter);
+        listView.setSelection((selectedRow > 5) ? selectedRow - 3 : 0);
     }
 
     /**

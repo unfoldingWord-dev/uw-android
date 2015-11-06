@@ -22,4 +22,8 @@ public class ReadingTabBar extends UWTabBar{
         return (int) (sizeInDP * getContext().getResources().getDisplayMetrics().density + 0.5f) ;
     }
 
+    @Override
+    protected int getButtonPadding() {
+        return 0;
+    }
 }

@@ -2,7 +2,6 @@ package fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -23,7 +22,6 @@ import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 
 /**
  * Fragment for displaying a list of OBS chapters
@@ -98,7 +96,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
     }
 
     private void setupViews(View view){
-        titleTextView = (TextView) view.findViewById(R.id.chapter_selection_text_view);
+        titleTextView = (TextView) view.findViewById(R.id.initial_screen_title_view);
         if(!showTitle){
             titleTextView.setVisibility(View.GONE);
         }
@@ -128,11 +126,11 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
 //    protected void reload(){
 //
-//        List<StoriesChapter> data = this.getData();
+//        List<StoriesChapter> data = this.setupData();
 //        StoryPage page = UWPreferenceDataManager.getCurrentStoryPage(getContext(), false);
 //        int index = (page != null)? data.indexOf(page.getStoriesChapter()) : -1;
 //        StoriesChapterAdapter adapter = new StoriesChapterAdapter(getContext(), data, index);
-//        mListView.setAdapter(adapter);
+//        listView.setAdapter(adapter);
 //    }
 
     //region accessors

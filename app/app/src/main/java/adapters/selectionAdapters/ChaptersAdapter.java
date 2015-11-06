@@ -68,15 +68,15 @@ public class ChaptersAdapter extends ArrayAdapter<GeneralRowInterface> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        setColorChange(holder, ViewContentHelper.getColorForSelection(selectedRow == pos));
         holder.title.setText(row.getTitle());
+        setColorChange(holder, ViewContentHelper.getColorForSelection(selectedRow == pos));
 
         return view;
     }
 
     public void setColorChange(ViewHolderForGroup holder, int color) {
 
-        holder.title.setTextColor(color);
+        holder.title.setTextColor(context.getResources().getColor(color));
     }
 
     private static class ViewHolderForGroup {

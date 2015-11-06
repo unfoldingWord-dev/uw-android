@@ -97,7 +97,7 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
     private void setupViews(View view){
 
         tabHost = (TabHost) view.findViewById(R.id.tabHost);
-        TextView titleTextView = (TextView) view.findViewById(R.id.chapter_selection_text_view);
+        TextView titleTextView = (TextView) view.findViewById(R.id.initial_screen_title_view);
         if(!showTitle){
             titleTextView.setVisibility(View.GONE);
         }

@@ -146,11 +146,11 @@ public class ViewContentHelper {
      */
     public static int getColorForSelection(boolean selected){
 
-        if(!selected){
-            return R.color.black_light;
+        if(selected){
+            return R.color.cyan;
         }
         else {
-            return R.color.cyan;
+            return R.color.black;
         }
     }
 
