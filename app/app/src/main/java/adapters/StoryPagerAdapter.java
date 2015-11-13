@@ -96,7 +96,7 @@ public class StoryPagerAdapter extends PagerAdapter {
             StoryPage currentSecondPage = getSecondModelForRow(position);
 
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
-            ScalingImageView chapterImageView = (ScalingImageView) view.findViewById(R.id.chapter_image_view);
+            ImageView chapterImageView = (ImageView) view.findViewById(R.id.chapter_image_view);
             chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.FIT_START);
 //            chapterImageView.setAdjustViewBounds(true);
 
@@ -105,17 +105,25 @@ public class StoryPagerAdapter extends PagerAdapter {
             mainTextView.setTextSize((float) textSize);
             secondaryTextView.setTextSize((float) textSize);
 
-            mainTextView.setText(currentMainPage.getText());
-            secondaryTextView.setText(currentSecondPage.getText());
+            mainTextView.setText(addTestText(currentMainPage.getText()));
+            secondaryTextView.setText(addTestText(currentSecondPage.getText()));
             String imgUrl = mainChapter.getStoryPages().get(position).getImageUrl();
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
             chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
-            setupPageForDiglot(mainTextView, secondaryTextView);
+            setupPageForDiglot(view.findViewById(R.id.middle_separator), secondaryTextView);
         }
         ((ViewPager) container).addView(view);
         return view;
+    }
+
+    private String addTestText(String base){
+
+//        for(int i = 0; i < 20; i++){
+//            base = base + "this is some extras text\n";
+//        }
+        return base;
     }
 
     @Override
@@ -146,8 +154,9 @@ public class StoryPagerAdapter extends PagerAdapter {
         ((ViewPager) container).removeView((RelativeLayout) object);
     }
 
-    private void setupPageForDiglot(TextView mainView, TextView secondView){
-        secondView.setVisibility((isDiglot) ? View.VISIBLE : View.GONE);
+    private void setupPageForDiglot(View separatorView, TextView secondView){
+        secondView.setVisibility((isDiglot)? View.VISIBLE : View.GONE);
+        separatorView.setVisibility((isDiglot)? View.VISIBLE : View.GONE);
     }
 
     //endregion
