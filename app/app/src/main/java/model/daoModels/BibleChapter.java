@@ -21,6 +21,7 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
     private String slug;
     private String number;
     private String text;
+    private String singleChapterBookName;
     private long bookId;
 
     /** Used to resolve relations */
@@ -43,12 +44,13 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
         this.id = id;
     }
 
-    public BibleChapter(Long id, String uniqueSlug, String slug, String number, String text, long bookId) {
+    public BibleChapter(Long id, String uniqueSlug, String slug, String number, String text, String singleChapterBookName, long bookId) {
         this.id = id;
         this.uniqueSlug = uniqueSlug;
         this.slug = slug;
         this.number = number;
         this.text = text;
+        this.singleChapterBookName = singleChapterBookName;
         this.bookId = bookId;
     }
 
@@ -96,6 +98,14 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getSingleChapterBookName() {
+        return singleChapterBookName;
+    }
+
+    public void setSingleChapterBookName(String singleChapterBookName) {
+        this.singleChapterBookName = singleChapterBookName;
     }
 
     public long getBookId() {
@@ -206,7 +216,12 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
      */
     public String getTitle(){
 
-        return getBook().getTitle() + " " + this.number;
+        String book = getBook().getTitle();
+
+        if(singleChapterBookName != null && singleChapterBookName.length() > 0){
+            book = singleChapterBookName;
+        }
+        return book + " " + this.number;
     }
 
     /**

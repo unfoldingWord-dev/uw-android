@@ -44,7 +44,8 @@ public class UpdateBibleChaptersRunnable implements Runnable{
 
         try {
             Map<String, String> parsedUsfm = new USFMParser().getChaptersFromUsfm(textBytes);
-            createModels(parsedUsfm);
+            String optionalSingleChapterBookName = USFMParser.getSingleChapterBookName(USFMParser.getStringFromBytes(textBytes));
+            createModels(parsedUsfm, optionalSingleChapterBookName);
         }
         catch (CharacterCodingException e){
             e.printStackTrace();
@@ -52,14 +53,14 @@ public class UpdateBibleChaptersRunnable implements Runnable{
     }
 
 
-    private void createModels(Map<String, String> models){
+    private void createModels(Map<String, String> models, String singleChapterBookName){
 
         List<BibleChapter> chapters = new ArrayList<BibleChapter>();
         int i = 0;
         for(Map.Entry<String, String> entry : models.entrySet()){
 
             try {
-                chapters.add(BibleChapterParser.parseBibleChapter(parent, entry.getKey(), entry.getValue()));
+                chapters.add(BibleChapterParser.parseBibleChapter(parent, entry.getKey(), entry.getValue(), singleChapterBookName));
             }
             catch (JSONException e){
                 e.printStackTrace();

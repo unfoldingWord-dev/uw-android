@@ -5,7 +5,7 @@ package unfoldingword;
  */
 public class ModelNames {
 
-    static public final int DB_VERSION_ID = 101;
+    static public final int DB_VERSION_ID = 102;
 
     static public final String PROJECT = "Project";
     static public final String[] PROJECT_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "title" };
@@ -42,7 +42,7 @@ public class ModelNames {
     static public final String VERIFICATION_AUDIO_CHAPTER_ATTRIBUTE = "audioChapterId";
 
     static public final String BIBLE_CHAPTER = "BibleChapter";
-    static public final String[] BIBLE_CHAPTER_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "number", "text" };
+    static public final String[] BIBLE_CHAPTER_STRING_ATTRIBUTES = { "uniqueSlug", "slug", "number", "text", "singleChapterBookName" };
     static public final String BIBLE_CHAPTER_BOOK_ATTRIBUTE = "bookId";
 
     static public final String STORY_CHAPTER = "StoriesChapter";

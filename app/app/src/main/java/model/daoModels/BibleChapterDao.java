@@ -33,7 +33,8 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
         public final static Property Slug = new Property(2, String.class, "slug", false, "SLUG");
         public final static Property Number = new Property(3, String.class, "number", false, "NUMBER");
         public final static Property Text = new Property(4, String.class, "text", false, "TEXT");
-        public final static Property BookId = new Property(5, long.class, "bookId", false, "BOOK_ID");
+        public final static Property SingleChapterBookName = new Property(5, String.class, "singleChapterBookName", false, "SINGLE_CHAPTER_BOOK_NAME");
+        public final static Property BookId = new Property(6, long.class, "bookId", false, "BOOK_ID");
     };
 
     private DaoSession daoSession;
@@ -58,7 +59,8 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
                 "\"SLUG\" TEXT," + // 2: slug
                 "\"NUMBER\" TEXT," + // 3: number
                 "\"TEXT\" TEXT," + // 4: text
-                "\"BOOK_ID\" INTEGER NOT NULL );"); // 5: bookId
+                "\"SINGLE_CHAPTER_BOOK_NAME\" TEXT," + // 5: singleChapterBookName
+                "\"BOOK_ID\" INTEGER NOT NULL );"); // 6: bookId
     }
 
     /** Drops the underlying database table. */
@@ -96,7 +98,12 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
         if (text != null) {
             stmt.bindString(5, text);
         }
-        stmt.bindLong(6, entity.getBookId());
+ 
+        String singleChapterBookName = entity.getSingleChapterBookName();
+        if (singleChapterBookName != null) {
+            stmt.bindString(6, singleChapterBookName);
+        }
+        stmt.bindLong(7, entity.getBookId());
     }
 
     @Override
@@ -120,7 +127,8 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // slug
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // number
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // text
-            cursor.getLong(offset + 5) // bookId
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // singleChapterBookName
+            cursor.getLong(offset + 6) // bookId
         );
         return entity;
     }
@@ -133,7 +141,8 @@ public class BibleChapterDao extends AbstractDao<BibleChapter, Long> {
         entity.setSlug(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setNumber(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setText(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setBookId(cursor.getLong(offset + 5));
+        entity.setSingleChapterBookName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setBookId(cursor.getLong(offset + 6));
      }
     
     /** @inheritdoc */

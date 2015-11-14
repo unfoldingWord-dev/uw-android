@@ -11,7 +11,7 @@ import model.daoModels.Book;
  */
 public class BibleChapterParser extends UWDataParser{
 
-    public static BibleChapter parseBibleChapter(Book parent, String number, String text) throws JSONException{
+    public static BibleChapter parseBibleChapter(Book parent, String number, String text, String singleChapterBookName) throws JSONException{
 
         number = number.trim();
         BibleChapter chapter = new BibleChapter();
@@ -20,7 +20,7 @@ public class BibleChapterParser extends UWDataParser{
         chapter.setUniqueSlug(parent.getUniqueSlug() + number);
         chapter.setText(text);
         chapter.setBookId(parent.getId());
-
+        chapter.setSingleChapterBookName(singleChapterBookName);
 
         return chapter;
     }

@@ -1,6 +1,8 @@
 package model.parsers;
 
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -19,6 +21,8 @@ import java.util.regex.Pattern;
  */
 public class USFMParser {
 
+    private static final String TAG = "USFMParser";
+
     private static final Pattern VERSE_REGEX = Pattern.compile("\\\\v\\s([0-9-])*\\s", Pattern.DOTALL);
     private static final Pattern NUMBER_REGEX = Pattern.compile("\\s*(\\d*)");
     private static final Pattern Q_NUMBER_REGEX = Pattern.compile("\\\\q\\d");
@@ -30,6 +34,8 @@ public class USFMParser {
     private static final Pattern FOOTNOTE_REGEX = Pattern.compile("(\\\\f)(\\s+)((.*)(\\n*)){1,5}(\\\\f[*])");
     private static final Pattern FOOTNOTE_TEXT_REGEX = Pattern.compile("(\\\\f.)(\\s)*(\\+)(\\s)(\\\\ft)*\\s*(.)*\\n(\\\\fqa)");
     private static final Pattern FOOTNOTE_VERSE_REGEX = Pattern.compile("\\\\fqa.*\\\\f[*]");
+
+    private static final Pattern SINGLE_CHAPTER_BOOK_NAME_REGEX = Pattern.compile("\\\\cl.(.*)");
 
     private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
@@ -69,7 +75,19 @@ public class USFMParser {
         return chapters;
     }
 
-    public String getStringFromBytes(byte[] bytes) throws CharacterCodingException{
+    public static String getSingleChapterBookName(String text){
+
+        Matcher verseMatcher = SINGLE_CHAPTER_BOOK_NAME_REGEX.matcher(text);
+
+        while (verseMatcher.find()) {
+            String name = verseMatcher.group(0);
+            name = name.substring(name.indexOf(" "), name.length()).trim();
+            return name;
+        }
+        return "";
+    }
+
+    static public String getStringFromBytes(byte[] bytes) throws CharacterCodingException{
 
         Charset utfSet = Charset.forName("UTF-8");
         CharsetDecoder decoder = utfSet.newDecoder();
