@@ -67,6 +67,8 @@ public enum SideLoadType {
                 return R.drawable.search;
             case SIDE_LOAD_TYPE_FILE:
                 return R.drawable.file_o;
+            case SIDE_LOAD_TYPE_OTHER:
+                return R.drawable.ellipsis_h;
             default:
                 return -1;
         }

@@ -95,7 +95,6 @@ public class LoadingFragment extends android.support.v4.app.DialogFragment {
         loadingTextView.setText(loadingText);
         loadingCancelButton = (Button) view.findViewById(R.id.progress_bar_fragment_cancel_button);
         loadingCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 cancelLoading();
             }

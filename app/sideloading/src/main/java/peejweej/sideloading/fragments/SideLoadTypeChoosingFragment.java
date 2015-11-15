@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import peejweej.sideloading.R;
 import peejweej.sideloading.adapters.ShareAdapter;
@@ -20,7 +20,7 @@ public class SideLoadTypeChoosingFragment extends Fragment {
 
     private static final String INFO_PARAM = "INFO";
 
-    private ListView listView;
+    private GridView gridView;
     private ShareAdapter adapter;
 
     private SideLoadInformation info;
@@ -61,16 +61,15 @@ public class SideLoadTypeChoosingFragment extends Fragment {
     }
 
     private void setupViews(View view){
-
-        listView = (ListView) view.findViewById(R.id.side_load_list_view);
+        gridView = (GridView) view.findViewById(R.id.side_load_list_view);
 
         boolean isSharing = (info == null || info.fileName != null);
         boolean canUseQrCode = (isSharing && info != null && info.file != null && info.file.length() < 1024);
         adapter = new ShareAdapter(getActivity(),
                 SideLoadType.getListOfSideLoadTypes(getActivity().getApplicationContext(), !isSharing, canUseQrCode));
-        listView.setAdapter(adapter);
+        gridView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedType(adapter.getItem(position));
             }
