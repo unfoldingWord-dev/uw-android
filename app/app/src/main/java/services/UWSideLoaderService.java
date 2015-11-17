@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.github.peejweej.androidsideloading.utilities.FileUtilities;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +36,6 @@ import model.daoModels.Version;
 import model.parsers.LanguageParser;
 import model.parsers.ProjectParser;
 import model.parsers.VersionParser;
-import peejweej.sideloading.utilities.FileUtilities;
 import tasks.UpdateAndVerifyBookRunnable;
 import utils.FileNameHelper;
 import utils.FileUtil;

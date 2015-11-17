@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <color name="clear_color">#0000</color>
-    <color name="basic_button_pressed">#9aaa</color>
-
-    <color name="gray_color">#ddd</color>
-
-</resources>

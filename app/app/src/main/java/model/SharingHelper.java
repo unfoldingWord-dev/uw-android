@@ -12,12 +12,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.github.peejweej.androidsideloading.activities.SideLoadActivity;
+import com.github.peejweej.androidsideloading.activities.SideShareActivity;
+import com.github.peejweej.androidsideloading.model.SideLoadInformation;
+import com.github.peejweej.androidsideloading.model.SideLoadVerifier;
+import com.github.peejweej.androidsideloading.utilities.FileUtilities;
+
 import model.daoModels.Version;
-import peejweej.sideloading.activities.SideLoadActivity;
-import peejweej.sideloading.activities.SideShareActivity;
-import peejweej.sideloading.model.SideLoadInformation;
-import peejweej.sideloading.model.SideLoadVerifier;
-import peejweej.sideloading.utilities.FileUtilities;
 import utils.FileUtil;
 
 /**
