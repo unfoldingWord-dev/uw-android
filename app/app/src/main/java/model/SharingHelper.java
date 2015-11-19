@@ -28,7 +28,7 @@ public class SharingHelper {
 
     private static final String FILE_EXTENSION = ".ufw";
 
-    private static SideLoadInformation getLoadInformation(){
+    public static SideLoadInformation getLoadInformation(){
         return new SideLoadInformation(FILE_EXTENSION, new SideLoadVerifier() {
             @Override
             public boolean fileIsValid(String file) {
@@ -46,7 +46,7 @@ public class SharingHelper {
         return new SideLoadInformation(fileName, fileUri);
     }
 
-    private static SideLoadInformation getShareInformation(Context context, Version version){
+    public static SideLoadInformation getShareInformation(Context context, Version version){
 
         Uri fileUri = getFileForVersion(context, version);
 

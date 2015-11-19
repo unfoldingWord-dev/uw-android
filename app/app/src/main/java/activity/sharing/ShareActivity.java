@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
+
 import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
 
@@ -63,7 +65,10 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
         Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
-            goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
+            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version))
+                    .show(getSupportFragmentManager(), "TypeChoosingFragment");
+
+//            goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
         }
 
     }

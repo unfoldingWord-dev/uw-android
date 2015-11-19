@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.door43.tools.reporting.BugReporterActivity;
+import com.github.peejweej.androidsideloading.fragments.SideLoadTypeChoosingFragment;
 
 import org.unfoldingword.mobile.R;
 
@@ -341,7 +342,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                                         break;
                                     }
                                     case 1: {
-                                        startSideLoadActivity();
+                                        showSideLoadDialog();
                                         break;
                                     }
                                     default: {
@@ -359,6 +360,21 @@ public class InitialScreenActivity extends UWBaseActivity{
         dialogue.show();
     }
 
+    private void showSideLoadDialog(){
+
+        SideLoadTypeChoosingFragment.constructFragment(SharingHelper.getLoadInformation(), new SideLoadTypeChoosingFragment.SideLoadChoosingFragmentListener() {
+            @Override
+            public void finishWithFile(Uri uri) {
+                loadVersion(uri);
+            }
+
+            @Override
+            public void finishWithText(String s) {
+
+            }
+        }).show(getSupportFragmentManager(), "SideLoadTypeChoosingFragment");
+    }
+
     private void startSideLoadActivity(){
 
         int enterAnimation = AnimationParadigm.getNextAnimationEnter(AnimationParadigm.ANIMATION_VERTICAL);
@@ -374,7 +390,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
         if(data != null){
 
-            Uri file = data.getData();
+            Uri file = SideLoadTypeChoosingFragment.getUriFromActivityResult(requestCode, resultCode, data, SharingHelper.getLoadInformation());
             if(file != null){
                 loadVersion(file);
             }
