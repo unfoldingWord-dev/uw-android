@@ -26,15 +26,23 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
+
 import org.unfoldingword.mobile.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
-import fragments.ChapterSelectionFragment;
-import fragments.ReadingFragmentListener;
-import fragments.StoryChaptersFragment;
+import adapters.ResourceChoosingAdapter;
+import enums.ResourceType;
+import fragments.ResourceChoosingFragment;
+import fragments.selection.ChapterSelectionFragment;
+import fragments.Reading.ReadingFragmentListener;
+import fragments.selection.StoryChaptersFragment;
 import model.DownloadState;
 import model.SharingHelper;
 import model.daoModels.BibleChapter;
@@ -63,7 +71,8 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         UWReadingToolbarViewGroup.UWReadingToolbarListener,
         UWPreferenceDataAccessor.PreferencesStoryPageChangedListener,
         UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener,
-        UWAudioPlayer.UWAudioPlayerListener
+        UWAudioPlayer.UWAudioPlayerListener,
+        ResourceChoosingFragment.ResourceChoosingListener
 {
     private static final String TAG = "ReadingActivity";
 
@@ -390,7 +399,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void setAudioButtonState(boolean isPlaying){
-        tabBar.setImageAtIndex((isPlaying)? R.drawable.audio_active : R.drawable.audio_normal, 0);
+        tabBar.setImageAtIndex((isPlaying) ? R.drawable.audio_active : R.drawable.audio_normal, 0);
     }
 
     private void tabBarPressed(int index){
@@ -440,8 +449,30 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
         Version sharingVersion = getSharingVersion();
         if(sharingVersion != null) {
-            goToNewActivity(SharingHelper.getIntentForSharing(getApplicationContext(), sharingVersion));
+            shareVersion(sharingVersion);
         }
+    }
+
+    private void shareVersion(Version version){
+
+        if(version.hasVideo() || version.hasAudio()){
+            ResourceChoosingFragment.newInstance(version).show(getSupportFragmentManager(), "ResourceChoosingFragment");
+        }
+        else{
+            shareVersion(new ArrayList<ResourceType>(), version);
+        }
+    }
+
+    @Override
+    public void resourcesChosen(List<ResourceType> types) {
+
+        shareVersion(types, getSharingVersion());
+    }
+
+    private void shareVersion(List<ResourceType> types, Version version){
+
+        TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, types))
+                .show(getSupportFragmentManager(), "TypeChoosingFragment");
     }
 
     private void toggleTextSizeVisibility(){

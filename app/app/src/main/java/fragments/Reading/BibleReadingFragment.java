@@ -6,10 +6,9 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package fragments;
+package fragments.Reading;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -22,13 +21,10 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import activity.reading.BaseReadingActivity;
 import adapters.ReadingPagerAdapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
-import utils.UWPreferenceDataManager;
 import view.ReadingDoubleTapHandler;
 
 /**

@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package fragments;
+package fragments.selection;
 
 /**
  * Created by Fechner on 8/18/15.

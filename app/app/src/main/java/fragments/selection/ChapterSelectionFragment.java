@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package fragments;
+package fragments.selection;
 
 import android.app.Activity;
 import android.app.Dialog;

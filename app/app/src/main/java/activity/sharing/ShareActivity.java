@@ -18,11 +18,13 @@ import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
 import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import adapters.VersionShareAdapter;
+import enums.ResourceType;
 import model.DaoDBHelper;
 import model.SharingHelper;
 import model.daoModels.Version;
@@ -65,7 +67,7 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
         Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
-            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version))
+            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<ResourceType>()))
                     .show(getSupportFragmentManager(), "TypeChoosingFragment");
 
 //            goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));

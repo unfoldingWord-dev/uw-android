@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package fragments;
+package fragments.Reading;
 
 import model.daoModels.Version;
 

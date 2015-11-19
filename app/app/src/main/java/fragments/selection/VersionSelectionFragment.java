@@ -6,11 +6,10 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package fragments;
+package fragments.selection;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -18,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;

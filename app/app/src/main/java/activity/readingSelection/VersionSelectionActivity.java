@@ -14,11 +14,10 @@ import org.unfoldingword.mobile.R;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
-import fragments.VersionSelectionFragment;
+import fragments.selection.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 
 /**
  * Created by Fechner on 2/27/15.

@@ -18,8 +18,12 @@ import com.github.peejweej.androidsideloading.model.SideLoadInformation;
 import com.github.peejweej.androidsideloading.model.SideLoadVerifier;
 import com.github.peejweej.androidsideloading.utilities.FileUtilities;
 
+import enums.ResourceType;
 import model.daoModels.Version;
 import utils.FileUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Fechner on 8/24/15.
@@ -46,7 +50,7 @@ public class SharingHelper {
         return new SideLoadInformation(fileName, fileUri);
     }
 
-    public static SideLoadInformation getShareInformation(Context context, Version version){
+    public static SideLoadInformation getShareInformation(Context context, Version version, List<ResourceType> types){
 
         Uri fileUri = getFileForVersion(context, version);
 
@@ -68,6 +72,6 @@ public class SharingHelper {
 
     public static Intent getIntentForSharing(Context context, Version version){
 
-        return new Intent(context, SideShareActivity.class).putExtra(SideShareActivity.SIDE_LOAD_INFORMATION_PARAM, getShareInformation(context, version));
+        return new Intent(context, SideShareActivity.class).putExtra(SideShareActivity.SIDE_LOAD_INFORMATION_PARAM, getShareInformation(context, version, new ArrayList<ResourceType>()));
     }
 }

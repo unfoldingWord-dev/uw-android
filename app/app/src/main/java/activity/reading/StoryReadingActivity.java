@@ -8,26 +8,18 @@
 package activity.reading;
 
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import java.io.File;
 import java.util.List;
 
-import fragments.StoryReadingFragment;
+import fragments.Reading.StoryReadingFragment;
 import model.DaoDBHelper;
-import model.DownloadState;
-import model.daoModels.AudioBook;
-import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.daoModels.Project;
-import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import singletons.UWAudioPlayer;
-import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceManager;
 import view.ReadingToolbarViewData;

@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="fragments.ResourceChoosingFragment"
+    android:orientation="vertical"
+    android:layout_marginLeft="5dp"
+    android:layout_marginStart="5dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+
+    <TextView
+        android:gravity="start|left|center_vertical|"
+        android:height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/resource_choosing_title_view"
+        android:textColor="#888"/>
+
+    <TextView
+        android:textColor="#000"
+        android:gravity="center"
+        android:height="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Medium Text"
+        android:id="@+id/resource_choosing_sub_title_view"
+        />
+
+    <ListView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:id="@+id/resource_choosing_list_view"/>
+
+    <LinearLayout
+        android:gravity="right|end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:background="@drawable/basic_button_selector"
+            android:textColor="@color/primary"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/resource_choosing_cancel_button"/>
+
+        <Button
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/basic_button_selector"
+            android:textColor="@color/primary"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Continue"
+            android:id="@+id/resource_choosing_continue_button"
+            />
+    </LinearLayout>
+
+</LinearLayout>

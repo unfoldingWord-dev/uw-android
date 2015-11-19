@@ -115,7 +115,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     @Override
     public void rightButtonClicked() {
 
-        startSharingActivity();
+        startSharing();
     }
 
     //endregion
@@ -323,7 +323,7 @@ public class InitialScreenActivity extends UWBaseActivity{
         UWPreferenceManager.setIsFirstLaunch(getApplicationContext(), false);
     }
 
-    private void startSharingActivity(){
+    private void startSharing(){
 
         View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
         ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Select Share Method");
@@ -470,7 +470,7 @@ public class InitialScreenActivity extends UWBaseActivity{
                 break;
             }
             case 2:{
-                startSharingActivity();
+                startSharing();
                 break;
             }
         }

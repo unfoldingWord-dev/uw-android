@@ -16,9 +16,9 @@ import org.unfoldingword.mobile.R;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
-import fragments.ChapterSelectionFragment;
-import fragments.ChapterSelectionFragmentListener;
-import fragments.StoryChaptersFragment;
+import fragments.selection.ChapterSelectionFragment;
+import fragments.selection.ChapterSelectionFragmentListener;
+import fragments.selection.StoryChaptersFragment;
 import model.daoModels.Project;
 
 /**

@@ -9,28 +9,21 @@
 package activity.reading;
 
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import java.io.File;
 import java.util.List;
 
-import fragments.BibleReadingFragment;
+import fragments.Reading.BibleReadingFragment;
 import model.DaoDBHelper;
-import model.daoModels.AudioBook;
-import model.daoModels.AudioChapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
-import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
-import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 import view.ReadingToolbarViewBibleModel;
 import view.ReadingToolbarViewData;
