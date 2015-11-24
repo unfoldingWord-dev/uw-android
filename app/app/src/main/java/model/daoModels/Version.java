@@ -15,6 +15,7 @@ import model.UWDatabaseModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unfoldingword.mobile.R;
 // KEEP INCLUDES END
 /**
  * Entity mapped to table "VERSION".
@@ -512,6 +513,10 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         for(Book book : getBooks()){
             book.deleteAudio(context);
         }
+    }
+
+    public boolean isObs(Context context){
+        return getLanguage().getProject().getUniqueSlug().equalsIgnoreCase(context.getString(R.string.open_bible_stories_slug));
     }
 
     @Override

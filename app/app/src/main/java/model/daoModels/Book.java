@@ -18,6 +18,7 @@ import view.ViewContentHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unfoldingword.mobile.R;
 
 import java.util.Collections;
 
@@ -527,6 +528,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
                 ", version__resolvedKey=" + version__resolvedKey +
                 '}';
     }
+
     // KEEP METHODS END
 
 }

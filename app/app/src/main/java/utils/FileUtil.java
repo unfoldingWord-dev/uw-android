@@ -84,23 +84,43 @@ public class FileUtil {
 
     public static Uri saveFile(byte[] bytes, String dirName, String fileName){
 
+        File dir = new File(dirName, fileName);
+        return saveFile(dir, bytes);
+
+//        try{
+//            dir.mkdirs();
+//            File file = new File(dirName, fileName);
+//            if (!file.exists()) {
+//                file.createNewFile();
+//            }
+//            FileOutputStream fos = new FileOutputStream(file);
+//            fos.write(bytes);
+//            fos.close();
+//            Log.i(TAG, "USFM File Saved");
+//            return Uri.fromFile(file);
+//        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//            Log.e(TAG, "Error when saving file");
+//            return null;
+//        }
+    }
+
+    public static Uri saveFile(File file, byte[] bytes){
+
+        file.mkdirs();
         try{
-            File dir = new File(dirName);
-            dir.mkdirs();
-            File file = new File(dirName, fileName);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(bytes);
             fos.close();
-            Log.i(TAG, "USFM File Saved");
+//            Log.i(TAG, "File Saved");
             return Uri.fromFile(file);
         }
         catch (IOException e){
             e.printStackTrace();
-            Log.e(TAG, "Error when saving file");
+//            Log.e(TAG, "Error when saving file");
             return null;
+
         }
     }
 
