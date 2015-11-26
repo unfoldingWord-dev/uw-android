@@ -34,7 +34,7 @@ public class FileUtil {
 
     private static final String TAG = "FileLoader";
 
-    //region Out Methods
+    //region Out Methodsœ
     /**
      *
      * @param fileSequence

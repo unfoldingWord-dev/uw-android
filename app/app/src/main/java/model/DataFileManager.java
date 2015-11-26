@@ -27,9 +27,7 @@ public class DataFileManager {
         FileUtil.saveFile(new File(context.getFilesDir(), filePath), data);
     }
 
-    private static String getPath(MediaType mediaType, Version version){
-        return version.getUniqueSlug() + File.pathSeparator + mediaType.getPathForType() + File.pathSeparator;
-    }
+
 
     public static DownloadState getStateOfContent(Context context, Version version, MediaType type){
 
@@ -39,6 +37,17 @@ public class DataFileManager {
         }
         else {
             return verifyStateForContent(context, version, type, mediaFolder);
+        }
+    }
+
+    public static boolean deleteContentForBook(Context context, Version version, MediaType type){
+
+        File desiredFolder = new File(context.getFilesDir(), getPath(type, version));
+        if(desiredFolder.exists()){
+            return desiredFolder.delete();
+        }
+        else{
+            return true;
         }
     }
 
@@ -74,5 +83,8 @@ public class DataFileManager {
             }
             default: return -1;
         }
+    }
+    private static String getPath(MediaType mediaType, Version version){
+        return version.getUniqueSlug() + File.pathSeparator + mediaType.getPathForType() + File.pathSeparator;
     }
 }
