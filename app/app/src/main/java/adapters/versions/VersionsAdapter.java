@@ -1,0 +1,229 @@
+/**
+ * Copyright (c) 2015 unfoldingWord
+ * http://creativecommons.org/licenses/MIT/
+ * See LICENSE file for details.
+ * Contributors:
+ * PJ Fechner <pj@actsmedia.com>
+ */
+
+package adapters.versions;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.unfoldingword.mobile.R;
+
+import model.DaoDBHelper;
+import model.DownloadState;
+import model.daoModels.Language;
+import model.daoModels.LanguageLocale;
+import model.daoModels.Project;
+import model.daoModels.Version;
+import services.UWMediaDownloaderService;
+import services.UWUpdaterService;
+import services.UWVersionDownloaderService;
+import utils.NetWorkUtil;
+import utils.UWPreferenceDataManager;
+import view.AnimatedExpandableListView;
+import view.VersionRowViewHolder;
+
+
+/**
+ * Created by PJ Fechner
+ * Adapter for Versions
+ */
+public class VersionsAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
+
+//    private final static String TAG = "CollapseVersionAdapter";
+
+    private Fragment parentFragment;
+
+    private Project currentProject = null;
+    private VersionAdapterListener listener;
+    private long selectedVersionId;
+
+    private BroadcastReceiver receiver;
+
+    //region setup
+
+    public VersionsAdapter(Fragment fragment, Project currentProject, long selectedVersionId, VersionAdapterListener listener) {
+        this.parentFragment = fragment;
+        this.currentProject = currentProject;
+        this.selectedVersionId = selectedVersionId;
+        this.listener = listener;
+        setupIntentFilter();
+    }
+
+    private void setupIntentFilter(){
+        receiver = createBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
+        getContext().registerReceiver(receiver, filter);
+    }
+
+    private BroadcastReceiver createBroadcastReceiver() {
+
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
+                reload();
+            }
+        };
+    }
+
+    //endregion
+
+    //region adapter methods
+
+    @Override
+    public Version getChild(int groupPosition, int childPosition) {
+        return currentProject.getLanguages().get(groupPosition).getVersions().get(childPosition);
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        return childPosition;
+    }
+
+    @Override
+    public int getRealChildrenCount(int groupPosition) {
+        return getGroup(groupPosition).getVersions().size();
+    }
+
+    @Override
+    public View getRealChildView(final int groupPosition, final int childPosition,
+                                 boolean isLastChild, View convertView, ViewGroup parent) {
+
+        final Version version = getChild(groupPosition, childPosition);
+        final VersionRowViewHolder holder;
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.row_version_selector, parent, false);
+
+            holder = new VersionRowViewHolder(getContext(), version, convertView, this);
+            convertView.setTag(holder);
+        } else {
+            holder = (VersionRowViewHolder) convertView.getTag();
+        }
+
+        // version-dependent settings
+        boolean isSelected = (version.getId() == selectedVersionId);
+        holder.setupViewForVersion(version, isSelected);
+        return convertView;
+    }
+
+    //endregion
+
+    //region helpers
+
+    private Context getContext(){
+        return this.parentFragment.getActivity();
+    }
+
+    /**
+     * Do anything that needs to happen when the adapter will be destroyed
+     */
+    public void willDestroy(){
+        if(receiver != null) {
+            getContext().unregisterReceiver(receiver);
+        }
+        receiver = null;
+    }
+
+    //endregion
+
+    //region reloading
+
+    private void reload(){
+
+        currentProject = Project.getProjectForId(currentProject.getId(), DaoDBHelper.getDaoSession(getContext()));
+        notifyDataSetChanged();
+    }
+
+    //endregion
+
+    //region group methods
+
+    @Override
+    public Language getGroup(int groupPosition) {
+        return currentProject.getLanguages().get(groupPosition);
+    }
+
+    @Override
+    public int getGroupCount() {
+        return currentProject.getLanguages().size();
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
+        Language language = getGroup(groupPosition);
+        language.getVersions();
+        if (convertView == null) {
+
+            LayoutInflater inflater = (LayoutInflater) getContext()
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.row_group,
+                    null);
+        }
+
+        TextView item = (TextView) convertView.findViewById(R.id.group_title);
+        item.setTypeface(null, Typeface.BOLD);
+        LanguageLocale languageLocale = LanguageLocale.getLocalForKey(language.getLanguageAbbreviation(), DaoDBHelper.getDaoSession(getContext()));
+        item.setText((languageLocale != null)? languageLocale.getLanguageName() : "");
+
+        return convertView;
+    }
+
+    @Override
+    public void onGroupCollapsed(int groupPosition) {
+        super.onGroupCollapsed(groupPosition);
+    }
+
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
+    }
+
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    //endregion
+
+    public interface VersionAdapterListener{
+        /**
+         * User chose a version
+         * @param version Version that was chosen
+         */
+        void versionWasSelected(Version version);
+
+        /**
+         * The adapter is loading
+         * @param loading true if the adapter is loading
+         */
+        void isLoading(boolean loading);
+    }
+}
+

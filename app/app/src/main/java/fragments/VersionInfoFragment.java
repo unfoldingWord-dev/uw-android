@@ -81,7 +81,7 @@ public class VersionInfoFragment extends DialogFragment {
         ((TextView) view.findViewById(R.id.checking_level_explanation_text)).setText(ViewContentHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
         ((ImageView) view.findViewById(R.id.checking_level_image))
-                .setImageResource(ViewContentHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+                .setImageResource(ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
 
         int verificationStatus = version.getVerificationStatus();
         Button status = (Button) view.findViewById(R.id.verification_status);

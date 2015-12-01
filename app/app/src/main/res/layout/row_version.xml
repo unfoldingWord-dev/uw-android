@@ -66,7 +66,7 @@
         >
 
         <ProgressBar
-            android:id="@+id/download_progress_bar"
+            android:id="@+id/version_row_download_progress_bar"
             style="@style/ProgressBar.Spinner.Indeterminate.Small"
             android:layout_width="@dimen/version_selection_button_size"
             android:layout_height="@dimen/version_selection_button_size"
@@ -77,7 +77,7 @@
             />
 
         <ImageView
-            android:id="@+id/download_status_image"
+            android:id="@+id/version_download_image"
             android:src="@drawable/download_button"
             android:layout_width="@dimen/version_selection_button_size"
             android:layout_height="match_parent"

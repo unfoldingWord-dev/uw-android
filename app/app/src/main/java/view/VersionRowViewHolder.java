@@ -22,7 +22,6 @@ import org.unfoldingword.mobile.R;
 
 import model.DownloadState;
 import model.daoModels.Version;
-import utils.CustomSlideAnimationRelativeLayout;
 import utils.RowStatusHelper;
 import utils.ViewHelper;
 
@@ -97,7 +96,7 @@ public class VersionRowViewHolder {
 
         versionInformationHolder.setInfoForVersion(context, version);
         languageNameTextView.setTextColor(RowStatusHelper.getColorForState(context, state));
-        languageTypeImageView.setImageResource(ViewContentHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        languageTypeImageView.setImageResource(ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
         languageNameTextView.setText(version.getName());
 
         int verificationStatus = version.getVerificationStatus();

@@ -31,7 +31,7 @@ public class ViewContentHelper {
      * @param level Checking level of the version being shown
      * @return dark Image resource for the passed checking level
      */
-    static public int getDarkCheckingLevelImage(int level){
+    static public int getDarkCheckingLevelImageResource(int level){
         switch (level){
             case 2:{
                 return R.drawable.level_two_dark;

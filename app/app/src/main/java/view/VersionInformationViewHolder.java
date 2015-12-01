@@ -51,7 +51,7 @@ public class VersionInformationViewHolder {
     public void setInfoForVersion(Context context, Version version){
 
         checkingEntityTextView.setText(version.getStatusCheckingEntity());
-        checkingLevelImage.setImageResource(ViewContentHelper.getDarkCheckingLevelImage(Integer.parseInt(version.getStatusCheckingLevel())));
+        checkingLevelImage.setImageResource(ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
         versionTextView.setText(version.getStatusVersion());
         publishDateTextView.setText(version.getStatusPublishDate());
         verificationTextView.setText(version.getVerificationText());
