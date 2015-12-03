@@ -23,15 +23,19 @@ public class DataFileManager {
 
     public static void saveDataForBook(Context context, Book book, byte[] data, MediaType type){
 
-        String filePath = getPath(type, book.getVersion()) + FileNameHelper.getSaveFileNameFromUrl(book.getSourceUrl());
-        FileUtil.saveFile(new File(context.getFilesDir(), filePath), data);
+        String fileName =  FileNameHelper.getSaveFileNameFromUrl(book.getSourceUrl());
+        FileUtil.saveFile(new File(context.getFilesDir() + getPath(type, book.getVersion()), fileName), data);
     }
 
+    public static void saveSignatureForBook(Context context, Book book, byte[] data, MediaType type){
 
+        String fileName =  FileNameHelper.getSaveFileNameFromUrl(book.getSignatureUrl());
+        FileUtil.saveFile(new File(context.getFilesDir() + getPath(type, book.getVersion()), fileName), data);
+    }
 
     public static DownloadState getStateOfContent(Context context, Version version, MediaType type){
 
-        File mediaFolder = new File(context.getFilesDir(), getPath(type, version));
+        File mediaFolder = new File(context.getFilesDir() + getPath(type, version));
         if(!mediaFolder.exists()){
             return DownloadState.DOWNLOAD_STATE_NONE;
         }
@@ -84,7 +88,9 @@ public class DataFileManager {
             default: return -1;
         }
     }
+
     private static String getPath(MediaType mediaType, Version version){
-        return version.getUniqueSlug() + File.pathSeparator + mediaType.getPathForType() + File.pathSeparator;
+        String type = mediaType.getPathForType();
+        return version.getUniqueSlug() + "/" + type;
     }
 }

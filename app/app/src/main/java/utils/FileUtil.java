@@ -108,8 +108,11 @@ public class FileUtil {
 
     public static Uri saveFile(File file, byte[] bytes){
 
-        file.mkdirs();
+        Log.d(TAG, "Saving file: " + file.getPath());
+        file.getParentFile().mkdirs();
+
         try{
+            file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(bytes);
             fos.close();

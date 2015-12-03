@@ -13,16 +13,20 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
 import activity.UWBaseActivity;
-import adapters.selectionAdapters.CollapsibleVersionAdapter;
+import adapters.versions.VersionViewModel;
+import adapters.versions.VersionsAdapter;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Language;
@@ -35,15 +39,16 @@ import view.AnimatedExpandableListView;
  * Fragment for users to select a new version
  */
 public class VersionSelectionFragment extends DialogFragment {
+    private static final String TAG = "VersionSelectionFragment";
 
     private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
     private static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
 
-    private VersionSelectionFragmentListener listener;
+private VersionSelectionFragmentListener listener;
 
-    protected AnimatedExpandableListView mListView = null;
-    private CollapsibleVersionAdapter adapter;
+    protected ExpandableListView listView = null;
+    private VersionsAdapter adapter;
     private TextView titleTextView;
 
     private boolean isSecondVersion;
@@ -92,9 +97,11 @@ public class VersionSelectionFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         chosenProject = (Project) getArguments().getSerializable(CHOSEN_PROJECT);
-        chosenProject = Project.getProjectForId(chosenProject.getId(), DaoDBHelper.getDaoSession(getContext()));
-        showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
-        isSecondVersion = getArguments().getBoolean(IS_SECOND_VERSION_PARAM);
+        if(chosenProject != null) {
+            chosenProject = Project.getProjectForId(chosenProject.getId(), DaoDBHelper.getDaoSession(getContext()));
+            showProjectTitle = getArguments().getBoolean(SHOW_TITLE_PARAM);
+            isSecondVersion = getArguments().getBoolean(IS_SECOND_VERSION_PARAM);
+        }
     }
 
     @Override
@@ -129,9 +136,7 @@ public class VersionSelectionFragment extends DialogFragment {
     private void setupViews(View view){
 
         titleTextView = (TextView) view.findViewById(R.id.version_selection_text_view);
-
         titleTextView.setText(chosenProject.getTitle());
-
         titleTextView.setVisibility((showProjectTitle)? View.VISIBLE : View.GONE);
 
         prepareListView(view);
@@ -139,21 +144,27 @@ public class VersionSelectionFragment extends DialogFragment {
 
     protected void prepareListView(View view){
 
-        mListView = (AnimatedExpandableListView) view.findViewById(R.id.versions_list);
+        listView = (ExpandableListView) view.findViewById(R.id.versions_list);
 //        listView.setOnGroupClickListener(getOnGroupClickListener());
 
+//        listView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+//            @Override
+//            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+//                return false;
+//            }
+//        });
         Version version = getVersion();
 
-        adapter = new CollapsibleVersionAdapter(this, this.chosenProject, (version != null)? version.getId() : -1, getAdapterListener());
-        mListView.setAdapter(adapter);
+        adapter = new VersionsAdapter(this, VersionViewModel.createModels(chosenProject), (version != null)? version.getId() : -1, getAdapterListener());
+        listView.setAdapter(adapter);
 
-        if(version != null) {
-            Language language = version.getLanguage();
-            int expandedIndex = language.getProject().getLanguages().indexOf(language);
-            if(expandedIndex > -1){
-                mListView.expandGroup(expandedIndex);
-            }
-        }
+//        if(version != null) {
+//            Language language = version.getLanguage();
+//            int expandedIndex = language.getProject().getLanguages().indexOf(language);
+//            if(expandedIndex > -1){
+//                listView.expandGroup(expandedIndex);
+//            }
+//        }
     }
 
     private Version getVersion(){
@@ -210,9 +221,9 @@ public class VersionSelectionFragment extends DialogFragment {
 //        };
 //    }
 
-    private CollapsibleVersionAdapter.VersionAdapterListener getAdapterListener(){
+    private VersionsAdapter.VersionAdapterListener getAdapterListener(){
 
-        return new CollapsibleVersionAdapter.VersionAdapterListener(){
+        return new VersionsAdapter.VersionAdapterListener(){
             @Override
             public void versionWasSelected(Version version) {
                 if(listener != null){
@@ -230,14 +241,6 @@ public class VersionSelectionFragment extends DialogFragment {
     //endregion
 
     //region detach
-
-    @Override
-    public void onDetach() {
-        if(adapter != null) {
-            adapter.willDestroy();
-        }
-        super.onDetach();
-    }
 
     //endregion
 

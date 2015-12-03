@@ -16,9 +16,9 @@ public enum MediaType {
         this.num = num;
     }
 
-    private static final String PATH_FOR_TEXT = File.pathSeparator + "text";
-    private static final String PATH_FOR_AUDIO = File.pathSeparator + "audio";
-    private static final String PATH_FOR_VIDEO = File.pathSeparator + "video";
+    private static final String PATH_FOR_TEXT =  "text";
+    private static final String PATH_FOR_AUDIO = "audio";
+    private static final String PATH_FOR_VIDEO = "video";
 
     public String getPathForType(){
 

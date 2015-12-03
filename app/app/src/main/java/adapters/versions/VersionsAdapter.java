@@ -15,19 +15,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
+
+import java.util.List;
 
 import model.DaoDBHelper;
 import model.DownloadState;
@@ -48,44 +53,43 @@ import view.VersionRowViewHolder;
  * Created by PJ Fechner
  * Adapter for Versions
  */
-public class VersionsAdapter extends AnimatedExpandableListView.AnimatedExpandableListAdapter {
+public class VersionsAdapter implements ExpandableListAdapter {
 
 //    private final static String TAG = "CollapseVersionAdapter";
 
     private Fragment parentFragment;
 
-    private Project currentProject = null;
+    private List<VersionViewModel> models;
     private VersionAdapterListener listener;
     private long selectedVersionId;
 
-    private BroadcastReceiver receiver;
-
     //region setup
 
-    public VersionsAdapter(Fragment fragment, Project currentProject, long selectedVersionId, VersionAdapterListener listener) {
+    public VersionsAdapter(Fragment fragment, List<VersionViewModel> models, long selectedVersionId, VersionAdapterListener listener) {
         this.parentFragment = fragment;
-        this.currentProject = currentProject;
+        this.models = models;
         this.selectedVersionId = selectedVersionId;
         this.listener = listener;
-        setupIntentFilter();
     }
 
-    private void setupIntentFilter(){
-        receiver = createBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
-        getContext().registerReceiver(receiver, filter);
+    @Override
+    public VersionViewModel getGroup(int groupPosition) {
+        return models.get(groupPosition);
     }
 
-    private BroadcastReceiver createBroadcastReceiver() {
+    @Override
+    public int getGroupCount() {
+        return models.size();
+    }
 
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
-                reload();
-            }
-        };
+    @Override
+    public long getGroupId(int groupPosition) {
+        return getCombinedGroupId(groupPosition);
+    }
+
+    @Override
+    public long getCombinedGroupId(long groupId) {
+        return groupId;
     }
 
     //endregion
@@ -93,39 +97,75 @@ public class VersionsAdapter extends AnimatedExpandableListView.AnimatedExpandab
     //region adapter methods
 
     @Override
-    public Version getChild(int groupPosition, int childPosition) {
-        return currentProject.getLanguages().get(groupPosition).getVersions().get(childPosition);
+    public View getGroupView(int groupPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
+
+        VersionTitleViewHolder holder;
+        if (convertView == null) {
+
+            LayoutInflater inflater = (LayoutInflater) getContext()
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.row_version_group, parent, false);
+            holder = new VersionTitleViewHolder(convertView, groupPosition);
+            convertView.setTag(holder);
+        }
+        else{
+            holder = (VersionTitleViewHolder) convertView.getTag();
+        }
+        VersionViewModel model = getGroup(groupPosition);
+        holder.updateWithModel(getContext(), model, model.getVersion().getId() == selectedVersionId);
+        holder.setExpanded(isExpanded);
+        return convertView;
+    }
+
+//    @Override
+//    public void onGroupCollapsed(int groupPosition) {
+//        super.onGroupCollapsed(groupPosition);
+//    }
+//
+//    @Override
+//    public void onGroupExpanded(int groupPosition) {
+//        super.onGroupExpanded(groupPosition);
+//    }
+
+    @Override
+    public VersionViewModel.ResourceViewModel getChild(int groupPosition, int childPosition) {
+        return models.get(groupPosition).getResources().get(childPosition);
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return childPosition;
+        return getCombinedChildId(groupPosition, childPosition);
     }
 
     @Override
-    public int getRealChildrenCount(int groupPosition) {
-        return getGroup(groupPosition).getVersions().size();
+    public long getCombinedChildId(long groupPosition, long childPosition) {
+        return (groupPosition * 1000) + childPosition;
     }
 
     @Override
-    public View getRealChildView(final int groupPosition, final int childPosition,
+    public int getChildrenCount(int groupPosition) {
+        return models.get(groupPosition).getResources().size();
+    }
+
+    @Override
+    public View getChildView(final int groupPosition, final int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final Version version = getChild(groupPosition, childPosition);
-        final VersionRowViewHolder holder;
+        VersionViewHolder holder;
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.row_version_selector, parent, false);
 
-            holder = new VersionRowViewHolder(getContext(), version, convertView, this);
+            LayoutInflater inflater = (LayoutInflater) getContext()
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.row_version, parent, false);
+            holder = new VersionViewHolder(convertView);
             convertView.setTag(holder);
-        } else {
-            holder = (VersionRowViewHolder) convertView.getTag();
+        }
+        else{
+            holder = (VersionViewHolder) convertView.getTag();
         }
 
-        // version-dependent settings
-        boolean isSelected = (version.getId() == selectedVersionId);
-        holder.setupViewForVersion(version, isSelected);
+        holder.updateViews(getContext(), getChild(groupPosition, childPosition));
         return convertView;
     }
 
@@ -137,70 +177,19 @@ public class VersionsAdapter extends AnimatedExpandableListView.AnimatedExpandab
         return this.parentFragment.getActivity();
     }
 
-    /**
-     * Do anything that needs to happen when the adapter will be destroyed
-     */
-    public void willDestroy(){
-        if(receiver != null) {
-            getContext().unregisterReceiver(receiver);
-        }
-        receiver = null;
-    }
 
     //endregion
 
     //region reloading
 
-    private void reload(){
-
-        currentProject = Project.getProjectForId(currentProject.getId(), DaoDBHelper.getDaoSession(getContext()));
-        notifyDataSetChanged();
+    private void reload(List<VersionViewModel> models){
+        this.models = models;
     }
 
     //endregion
 
     //region group methods
 
-    @Override
-    public Language getGroup(int groupPosition) {
-        return currentProject.getLanguages().get(groupPosition);
-    }
-
-    @Override
-    public int getGroupCount() {
-        return currentProject.getLanguages().size();
-    }
-
-    @Override
-    public long getGroupId(int groupPosition) {
-        return groupPosition;
-    }
-
-    @Override
-    public View getGroupView(int groupPosition, boolean isExpanded,
-                             View convertView, ViewGroup parent) {
-        Language language = getGroup(groupPosition);
-        language.getVersions();
-        if (convertView == null) {
-
-            LayoutInflater inflater = (LayoutInflater) getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.row_group,
-                    null);
-        }
-
-        TextView item = (TextView) convertView.findViewById(R.id.group_title);
-        item.setTypeface(null, Typeface.BOLD);
-        LanguageLocale languageLocale = LanguageLocale.getLocalForKey(language.getLanguageAbbreviation(), DaoDBHelper.getDaoSession(getContext()));
-        item.setText((languageLocale != null)? languageLocale.getLanguageName() : "");
-
-        return convertView;
-    }
-
-    @Override
-    public void onGroupCollapsed(int groupPosition) {
-        super.onGroupCollapsed(groupPosition);
-    }
 
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
@@ -208,6 +197,36 @@ public class VersionsAdapter extends AnimatedExpandableListView.AnimatedExpandab
 
     public boolean hasStableIds() {
         return true;
+    }
+
+    @Override
+    public void unregisterDataSetObserver(DataSetObserver observer) {
+
+    }
+
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
+
+    @Override
+    public void onGroupExpanded(int groupPosition) {
+
+    }
+
+    @Override
+    public void onGroupCollapsed(int groupPosition) {
+
     }
 
     //endregion

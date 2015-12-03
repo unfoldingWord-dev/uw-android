@@ -28,6 +28,7 @@ import java.util.ListIterator;
 import model.daoModels.Book;
 import model.daoModels.DaoMaster;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 import tasks.UpdateAndVerifyBookRunnable;
 import unfoldingword.ModelNames;
 import utils.FileNameHelper;
@@ -182,9 +183,8 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             try {
                 String signature = loadDbFile(FileNameHelper.getSaveFileNameFromUrl(book.getSignatureUrl()));
                 byte[] text = loadDbFileBytes(FileNameHelper.getSaveFileNameFromUrl(book.getSourceUrl()));
-                saveFile(text, book.getSourceUrl());
-                saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
-//                Log.i(TAG, "Saved book: " + book.getTitle());
+                DataFileManager.saveDataForBook(context, book, text, MediaType.MEDIA_TYPE_TEXT);
+                DataFileManager.saveSignatureForBook(context, book, signature.getBytes(), MediaType.MEDIA_TYPE_TEXT);
             }
             catch (IOException e){
                 e.printStackTrace();

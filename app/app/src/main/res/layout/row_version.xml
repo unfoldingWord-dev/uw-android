@@ -3,7 +3,7 @@
     android:id="@+id/mainLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="@color/white"
+    android:background="@drawable/white_button_selector"
     android:orientation="horizontal">
 
     <ImageView
@@ -35,12 +35,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/version_row_checking_level"
-        android:layout_width="@dimen/version_selection_image_size"
-        android:layout_height="@dimen/version_selection_image_size"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@color/white"
+        android:background="@drawable/basic_button_selector"
         android:cropToPadding="true"
         android:scaleType="center"
         android:src="@drawable/level_one"
@@ -58,7 +58,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_width="50dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/version_row_download_button"
         android:clickable="true"
         android:focusable="true"
@@ -77,15 +77,11 @@
             />
 
         <ImageView
+            android:layout_gravity="center"
             android:id="@+id/version_download_image"
-            android:src="@drawable/download_button"
+            android:src="@drawable/download_icon"
             android:layout_width="@dimen/version_selection_button_size"
             android:layout_height="match_parent"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:scaleType="fitCenter"
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
             />
 
     </FrameLayout>

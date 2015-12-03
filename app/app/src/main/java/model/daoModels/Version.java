@@ -92,7 +92,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         this.id = id;
     }
 
-    public String getUniqueSlug() {
+    public String  getUniqueSlug() {
         return uniqueSlug;
     }
 
