@@ -9,36 +9,44 @@
 package fragments.selection;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.unfoldingword.mobile.R;
 
-import activity.UWBaseActivity;
+import adapters.versions.VersionViewHolder;
 import adapters.versions.VersionViewModel;
 import adapters.versions.VersionsAdapter;
 import model.DaoDBHelper;
+import model.DownloadState;
 import model.daoModels.BibleChapter;
-import model.daoModels.Language;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import model.parsers.MediaType;
+import services.UWMediaDownloaderService;
+import services.UWUpdaterService;
+import services.UWVersionDownloaderService;
+import utils.NetWorkUtil;
 import utils.UWPreferenceManager;
-import view.AnimatedExpandableListView;
 
 /**
  * Fragment for users to select a new version
  */
-public class VersionSelectionFragment extends DialogFragment {
+public class VersionSelectionFragment extends DialogFragment implements VersionViewModel.VersionViewModelListener {
     private static final String TAG = "VersionSelectionFragment";
 
     private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
@@ -56,6 +64,8 @@ private VersionSelectionFragmentListener listener;
 
     private boolean showProjectTitle = false;
 
+    private BroadcastReceiver receiver;
+
     //region setup
 
     /**
@@ -66,12 +76,13 @@ private VersionSelectionFragmentListener listener;
      */
     public static VersionSelectionFragment newInstance(Project project, boolean showTitle, boolean isSecondVersion) {
 
-        VersionSelectionFragment fragment = new VersionSelectionFragment();
 
         Bundle args = new Bundle();
         args.putSerializable(CHOSEN_PROJECT, project);
         args.putBoolean(SHOW_TITLE_PARAM, showTitle);
         args.putBoolean(IS_SECOND_VERSION_PARAM, isSecondVersion);
+
+        VersionSelectionFragment fragment = new VersionSelectionFragment();
         fragment.setArguments(args);
 
         return fragment;
@@ -155,7 +166,7 @@ private VersionSelectionFragmentListener listener;
 //        });
         Version version = getVersion();
 
-        adapter = new VersionsAdapter(this, VersionViewModel.createModels(chosenProject), (version != null)? version.getId() : -1, getAdapterListener());
+        adapter = new VersionsAdapter(this, VersionViewModel.createModels(getContext(), chosenProject, this), (version != null)? version.getId() : -1);
         listView.setAdapter(adapter);
 
 //        if(version != null) {
@@ -186,6 +197,143 @@ private VersionSelectionFragmentListener listener;
         }
 
         return null;
+    }
+
+    private void setupIntentFilter(){
+        if(receiver == null) {
+            receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                    if(intent.getExtras() != null && intent.getExtras().containsKey(UWUpdaterService.DOWNLOAD_RESULT_PARAM)) {
+                        downloadEnded(intent.getExtras().getInt(UWUpdaterService.DOWNLOAD_RESULT_PARAM));
+                    }
+                }
+            };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
+            getContext().registerReceiver(receiver, filter);
+        }
+    }
+
+    private void downloadEnded(int result){
+
+        switch (result){
+            case UWUpdaterService.DOWNLOAD_SUCCESS:{
+                break;
+            }
+            case UWUpdaterService.DOWNLOAD_CANCELED:{
+                break;
+            }
+            case UWUpdaterService.DOWNLOAD_FAILED:{
+
+            }
+        }
+    }
+
+
+    private void reloadData(){
+
+    }
+
+    private boolean prepForDownload(){
+        if (!NetWorkUtil.isConnected(getContext())) {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Alert")
+                    .setMessage("Failed connecting to the internet.")
+                    .setPositiveButton("OK", null)
+                    .create().show();
+            return false;
+        } else {
+            setupIntentFilter();
+            return true;
+        }
+    }
+
+    @Override
+    public void doActionForText(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state) {
+
+        switch (state){
+            case DOWNLOAD_STATE_NONE:{
+
+                if (prepForDownload()) {
+                    Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
+                    downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+                    getContext().startService(downloadIntent);
+                }
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADED:{
+
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADING:{
+
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void doActionForAudio(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state) {
+
+        switch (state) {
+            case DOWNLOAD_STATE_NONE: {
+
+                if (prepForDownload()){
+                    Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
+                    downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+                    downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false);
+                    getContext().startService(downloadIntent);
+                }
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADED:{
+
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADING:{
+
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void doActionForVideo(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state) {
+
+        switch (state){
+            case DOWNLOAD_STATE_NONE:{
+
+                if (prepForDownload()) {
+                    Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
+                    downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+                    downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, true);
+                    getContext().startService(downloadIntent);
+                }
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADED:{
+                break;
+            }
+            case DOWNLOAD_STATE_DOWNLOADING:{
+
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void resourceChosen(VersionViewModel.ResourceViewModel viewModel, Version version) {
+
+        if(listener != null){
+            listener.versionWasSelected(version, isSecondVersion, viewModel.getType());
+        }
+    }
+
+    @Override
+    public void showCheckingLevel(Version version, MediaType type) {
+
     }
 
     //endregion
@@ -221,28 +369,25 @@ private VersionSelectionFragmentListener listener;
 //        };
 //    }
 
-    private VersionsAdapter.VersionAdapterListener getAdapterListener(){
-
-        return new VersionsAdapter.VersionAdapterListener(){
-            @Override
-            public void versionWasSelected(Version version) {
-                if(listener != null){
-                    listener.versionWasSelected(version, isSecondVersion);
-                }
-            }
-
-            @Override
-            public void isLoading(boolean loading) {
-                ((UWBaseActivity) getActivity()).setLoadingFragmentVisibility(loading, "Deleting...", false);
-            }
-        };
-    }
-
-    //endregion
-
-    //region detach
+//    private VersionsAdapter.VersionAdapterListener getAdapterListener(){
+//
+//        return new VersionsAdapter.VersionAdapterListener(){
+//            @Override
+//            public void versionWasSelected(Version version) {
+//                if(listener != null){
+//                    listener.versionWasSelected(version, isSecondVersion);
+//                }
+//            }
+//
+//            @Override
+//            public void isLoading(boolean loading) {
+//                ((UWBaseActivity) getActivity()).setLoadingFragmentVisibility(loading, "Deleting...", false);
+//            }
+//        };
+//    }
 
     //endregion
+
 
     public interface VersionSelectionFragmentListener {
         /**
@@ -250,7 +395,7 @@ private VersionSelectionFragmentListener listener;
          * @param version Version the was selected
          * @param isSecondVersion true if this is for the second version in the diglot view
          */
-        void versionWasSelected(Version version, boolean isSecondVersion);
+        void versionWasSelected(Version version, boolean isSecondVersion, MediaType mediaType);
     }
 
 }

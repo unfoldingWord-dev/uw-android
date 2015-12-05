@@ -24,7 +24,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,7 +73,7 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     private void setupIntentFilter(){
         receiver = createBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
         getContext().registerReceiver(receiver, filter);
     }
 

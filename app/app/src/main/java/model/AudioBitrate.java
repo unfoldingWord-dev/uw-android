@@ -48,4 +48,9 @@ public class AudioBitrate implements Serializable{
     public void setSize(int size) {
         this.size = size;
     }
+
+    @Override
+    public String toString() {
+        return "Bitrate: " + bitrate + " (" + Math.round(((double) size) / 1000.0 / 1000.0) + ") MB";
+    }
 }

@@ -37,7 +37,6 @@ import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
-import adapters.ResourceChoosingAdapter;
 import enums.ResourceType;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ChapterSelectionFragment;
@@ -394,7 +393,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     private void setupIntentFilter(){
         receiver = createBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWN_COMP);
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
         getApplicationContext().registerReceiver(receiver, filter);
     }
 

@@ -60,16 +60,16 @@ public class VersionsAdapter implements ExpandableListAdapter {
     private Fragment parentFragment;
 
     private List<VersionViewModel> models;
-    private VersionAdapterListener listener;
+//    private VersionAdapterListener listener;
     private long selectedVersionId;
 
     //region setup
 
-    public VersionsAdapter(Fragment fragment, List<VersionViewModel> models, long selectedVersionId, VersionAdapterListener listener) {
+    public VersionsAdapter(Fragment fragment, List<VersionViewModel> models, long selectedVersionId) {
         this.parentFragment = fragment;
         this.models = models;
         this.selectedVersionId = selectedVersionId;
-        this.listener = listener;
+//        this.listener = listener;
     }
 
     @Override
@@ -165,7 +165,7 @@ public class VersionsAdapter implements ExpandableListAdapter {
             holder = (VersionViewHolder) convertView.getTag();
         }
 
-        holder.updateViews(getContext(), getChild(groupPosition, childPosition));
+        holder.updateViews(getChild(groupPosition, childPosition));
         return convertView;
     }
 
@@ -231,18 +231,18 @@ public class VersionsAdapter implements ExpandableListAdapter {
 
     //endregion
 
-    public interface VersionAdapterListener{
-        /**
-         * User chose a version
-         * @param version Version that was chosen
-         */
-        void versionWasSelected(Version version);
-
-        /**
-         * The adapter is loading
-         * @param loading true if the adapter is loading
-         */
-        void isLoading(boolean loading);
-    }
+//    public interface VersionAdapterListener{
+//        /**
+//         * User chose a version
+//         * @param version Version that was chosen
+//         */
+//        void versionWasSelected(Version version);
+//
+//        /**
+//         * The adapter is loading
+//         * @param loading true if the adapter is loading
+//         */
+//        void isLoading(boolean loading);
+//    }
 }
 

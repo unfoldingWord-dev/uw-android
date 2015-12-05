@@ -12,16 +12,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Process;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import model.daoModels.LanguageLocale;
 import tasks.JsonDownloadTask;
-import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
 import utils.UWPreferenceManager;
 
@@ -33,7 +29,11 @@ public class UWUpdaterService extends Service {
 
     private static final String TAG = "UpdateService";
 
-    public static final String BROAD_CAST_DOWN_COMP = "org.unfoldingword.mobile.DOWNLOAD_COMPLETED";
+    public static final String BROAD_CAST_DOWNLOAD_ENDED = "org.unfoldingword.mobile.BROAD_CAST_DOWNLOAD_ENDED";
+    public static final String DOWNLOAD_RESULT_PARAM = "DOWNLOAD_RESULT_PARAM";
+    public static final int DOWNLOAD_SUCCESS = 0;
+    public static final int DOWNLOAD_FAILED = -1;
+    public static final int DOWNLOAD_CANCELED = 1;
     public static final String PROJECTS_JSON_KEY = "cat";
     public static final String MODIFIED_JSON_KEY = "mod";
 
@@ -88,7 +88,9 @@ public class UWUpdaterService extends Service {
     }
 
     protected void stopService(){
-        getApplicationContext().sendBroadcast(new Intent(BROAD_CAST_DOWN_COMP));
+        getApplicationContext().sendBroadcast(
+                new Intent(BROAD_CAST_DOWNLOAD_ENDED)
+                    .putExtra(DOWNLOAD_RESULT_PARAM, DOWNLOAD_SUCCESS));
         this.stopSelf();
     }
 

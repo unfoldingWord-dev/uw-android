@@ -30,17 +30,17 @@ public class UpdateMediaRunnable implements Runnable {
     private final Book book;
     private boolean isUpdatingVideo;
     private UWUpdaterService updater;
+    private AudioBitrate bitrate;
 
-    public UpdateMediaRunnable(boolean isUpdatingVideo, Book book, UWUpdaterService updater) {
+    public UpdateMediaRunnable(boolean isUpdatingVideo, Book book, UWUpdaterService updater, AudioBitrate bitrate) {
         this.book = book;
         this.isUpdatingVideo = isUpdatingVideo;
         this.updater = updater;
-
+        this.bitrate = bitrate;
     }
 
     @Override
     public void run() {
-
         updateBook();
     }
 
@@ -56,9 +56,9 @@ public class UpdateMediaRunnable implements Runnable {
             int i = 1;
             for (AudioChapter chapter : book.getAudioBook().getAudioChapters()) {
 //                for(AudioBitrate bitrate : chapter.getBitRates()){
-//                    downloadMedia(chapter.getAudioUrl(bitrate.getBitrate()), (i >= numberOfChapters));
+                    downloadMedia(chapter.getAudioUrl(bitrate.getBitrate()), (i >= numberOfChapters));
 //                }
-                downloadMedia(chapter.getAudioUrl(), (i >= numberOfChapters));
+//                downloadMedia(chapter.getAudioUrl(), (i >= numberOfChapters));
                 i++;
             }
         }

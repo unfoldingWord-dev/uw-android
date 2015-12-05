@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/relativeLayout"
+        android:gravity="center_horizontal"
+        >
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="240dp"
+            android:src="@drawable/splash_logo"/>
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="10Tales is where friends go to connect with each other and inside the stories they love"
+            />
+
+        <Button
+            android:textColor="#fff"
+            android:layout_width="270dp"
+            android:layout_height="70dp"
+            android:text="Sign Up"
+            android:background="@drawable/splash_signup_button_selector"
+            />
+
+        <Button
+            android:textColor="#fff"
+            android:layout_width="270dp"
+            android:layout_height="70dp"
+            android:text="Log In"
+            android:background="@drawable/splash_login_button_selector"
+            />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

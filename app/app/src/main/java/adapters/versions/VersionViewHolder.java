@@ -19,13 +19,14 @@ import model.DownloadState;
 public class VersionViewHolder {
 
     private static final String TAG = "VersionViewHolder";
-    View view;
-    ImageView resourceImage;
-    TextView titleTextView;
-    ImageButton checkingLevelImage;
-    ProgressBar loadingProgressBar;
-    ImageView downloadingImageView;
-    FrameLayout rowActionButtonLayout;
+    private VersionViewModel.ResourceViewModel viewModel;
+    private View view;
+    private ImageView resourceImage;
+    private TextView titleTextView;
+    private ImageButton checkingLevelImage;
+    private ProgressBar loadingProgressBar;
+    private ImageView downloadingImageView;
+    private FrameLayout rowActionButtonLayout;
 
     public VersionViewHolder(View view) {
         this.view = view;
@@ -38,17 +39,40 @@ public class VersionViewHolder {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "click listener clicked");
+                rowClicked();
+            }
+        });
+        checkingLevelImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkingLevelClicked();
+            }
+        });
+        rowActionButtonLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actionButtonClicked();
             }
         });
     }
 
-    public void updateViews(Context context, VersionViewModel.ResourceViewModel model){
+    public VersionViewModel.ResourceViewModel getViewModel() {
+        return viewModel;
+    }
 
+    public void updateViews(VersionViewModel.ResourceViewModel model){
+
+        this.viewModel = model;
         resourceImage.setImageResource(model.getImageResource());
         titleTextView.setText(model.getTitle());
         checkingLevelImage.setImageResource(model.getCheckingLevelImage());
-        setupForDownloadState(model.getDownloadState(context));
+        setupForDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+        model.getDownloadState(new VersionViewModel.GetDownloadStateResponse() {
+            @Override
+            public void foundDownloadState(DownloadState state) {
+                setupForDownloadState(state);
+            }
+        });
     }
 
     public void setupForDownloadState(DownloadState state){
@@ -72,5 +96,17 @@ public class VersionViewHolder {
                 break;
             }
         }
+    }
+
+    private void rowClicked(){
+        viewModel.itemClicked(this);
+    }
+
+    private void checkingLevelClicked(){
+        viewModel.checkingLevelClicked();
+    }
+
+    private void actionButtonClicked(){
+        viewModel.doActionOnModel(this);
     }
 }

@@ -45,7 +45,7 @@
     <string name="error_title_start">We experienced an error while verifying content.</string>
     <string name="failed_title_start">*Warning* the validity of some or all of this content has failed. Use at your own risk</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="chapter_selection_title">Chapter Selection</string>
     <string name="version_select_title_string">Select Version</string>

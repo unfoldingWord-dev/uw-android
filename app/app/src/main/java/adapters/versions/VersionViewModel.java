@@ -1,6 +1,7 @@
 package adapters.versions;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import org.unfoldingword.mobile.R;
 
@@ -22,20 +23,24 @@ import view.ViewContentHelper;
  */
 public class VersionViewModel {
 
+    private Context context;
+    private VersionViewModelListener listener;
     private Version version;
     private List<ResourceViewModel> resources = new ArrayList<>();
 
-    public static List<VersionViewModel> createModels(Project project){
+    public static List<VersionViewModel> createModels(Context context, Project project, VersionViewModelListener listener){
 
         List<VersionViewModel> models = new ArrayList<>();
         for(Language language : project.getLanguages()){
             for(Version version : language.getVersions()){
-                models.add(new VersionViewModel(version));
+                models.add(new VersionViewModel(context, version, listener));
             }
         }
         return models;
     }
-    public VersionViewModel(Version version) {
+    public VersionViewModel(Context context, Version version, VersionViewModelListener listener) {
+        this.listener = listener;
+        this.context = context;
         this.version = version;
         setupResources();
     }
@@ -61,7 +66,7 @@ public class VersionViewModel {
         return resources;
     }
 
-    public String getTitle(Context context){
+    public String getTitle(){
         return version.getName() + " " + getLanguageName(context) + " - " + version.getLanguage().getLanguageAbbreviation();
     }
 
@@ -70,12 +75,43 @@ public class VersionViewModel {
         return (languageLocale != null)? languageLocale.getLanguageName() : "";
     }
 
+    private void doAction(MediaType type, VersionViewHolder viewHolder, DownloadState state){
+
+        switch (type){
+
+            case MEDIA_TYPE_TEXT:{
+                listener.doActionForText(this, viewHolder, state);
+                break;
+            }
+            case MEDIA_TYPE_AUDIO:{
+                listener.doActionForAudio(this, viewHolder, state);
+                break;
+            }
+            case MEDIA_TYPE_VIDEO:{
+                listener.doActionForVideo(this, viewHolder, state);
+                break;
+            }
+        }
+    }
+
+    private void itemChosen(ResourceViewModel viewModel){
+        this.listener.resourceChosen(viewModel, version);
+    }
+
+    private void showCheckingLevel(MediaType type){
+        this.listener.showCheckingLevel(version, type);
+    }
+
     public class ResourceViewModel{
 
         private MediaType type;
 
         public ResourceViewModel(MediaType type) {
             this.type = type;
+        }
+
+        public MediaType getType() {
+            return type;
         }
 
         public int getImageResource(){
@@ -92,8 +128,21 @@ public class VersionViewModel {
             }
         }
 
-        public DownloadState getDownloadState(Context context){
-            return DataFileManager.getStateOfContent(context, version, type);
+        public void getDownloadState(final GetDownloadStateResponse response){
+
+            new AsyncTask<Context, DownloadState, DownloadState>(){
+                @Override
+                protected DownloadState doInBackground(Context... params) {
+                    return DataFileManager.getStateOfContent(params[0], version, type);
+                }
+
+                @Override
+                protected void onPostExecute(DownloadState downloadState) {
+                    super.onPostExecute(downloadState);
+                    response.foundDownloadState(downloadState);
+                }
+            }.execute(context);
+
         }
 
         public String getTitle(){
@@ -112,6 +161,48 @@ public class VersionViewModel {
         public int getCheckingLevelImage(){
             return ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel()));
         }
+
+        public void doActionOnModel(final VersionViewHolder viewHolder){
+
+
+            getDownloadState(new GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
+                    doAction(type, viewHolder, state);
+                }
+            });
+        }
+
+        public void itemClicked(final VersionViewHolder viewHolder){
+
+            final ResourceViewModel viewModel = this;
+            getDownloadState(new GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
+                    if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+                        itemChosen(viewModel);
+                    }
+                    else {
+                        doAction(type, viewHolder, state);
+                    }
+                }
+            });
+        }
+        public void checkingLevelClicked(){
+            showCheckingLevel(type);
+        }
+    }
+
+    public interface GetDownloadStateResponse{
+        void foundDownloadState(DownloadState state);
+    }
+
+    public interface VersionViewModelListener{
+        void doActionForText(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state);
+        void doActionForAudio(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state);
+        void doActionForVideo(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state);
+        void resourceChosen(ResourceViewModel viewModel, Version version);
+        void showCheckingLevel(Version version, MediaType type);
     }
 }
 

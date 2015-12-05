@@ -17,6 +17,7 @@ import android.util.Log;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import model.AudioBitrate;
 import model.DaoDBHelper;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
@@ -35,6 +36,7 @@ public class UWMediaDownloaderService extends UWUpdaterService {
     public static final String STOP_DOWNLOAD_MEDIA_MESSAGE = "STOP_DOWNLOAD_MEDIA_MESSAGE";
     public static final String VERSION_PARAM = "VERSION_PARAM";
     public static final String IS_VIDEO_PARAM = "IS_VIDEO_PARAM";
+    public static final String BITRATE_PARAM = "BITRATE_PARAM";
 
     private static final String TAG = "MediaDownloaderService";
 
@@ -55,10 +57,11 @@ public class UWMediaDownloaderService extends UWUpdaterService {
             numberPending++;
             long versionId = intent.getExtras().getLong(VERSION_PARAM);
             boolean isVideo = intent.getExtras().getBoolean(IS_VIDEO_PARAM);
+            AudioBitrate bitrate = (AudioBitrate) intent.getExtras().getSerializable(BITRATE_PARAM);
             Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getApplicationContext()));
 
             for (Book book : version.getBooks()) {
-                addRunnable(new UpdateMediaRunnable(false, book, this), 2);
+                addRunnable(new UpdateMediaRunnable(false, book, this, bitrate), 2);
             }
             runnableFinished();
         }
