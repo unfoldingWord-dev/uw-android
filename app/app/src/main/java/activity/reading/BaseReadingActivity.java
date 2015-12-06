@@ -38,10 +38,13 @@ import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
 import enums.ResourceType;
+import fragments.BitrateFragment;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ChapterSelectionFragment;
 import fragments.Reading.ReadingFragmentListener;
 import fragments.selection.StoryChaptersFragment;
+import model.AudioBitrate;
+import model.DataFileManager;
 import model.DownloadState;
 import model.SharingHelper;
 import model.daoModels.BibleChapter;
@@ -49,6 +52,7 @@ import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.StoryPage;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 import services.UWBookMediaDownloaderService;
 import services.UWUpdaterService;
 import singletons.UWAudioPlayer;
@@ -369,11 +373,23 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void downloadBookAudio() {
 
-        setupIntentFilter();
-        Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
-        downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_PARAM, getBook().getId());
-        downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
-        getApplicationContext().startService(downloadIntent);
+        BitrateFragment.newInstance(getBook().getAudioBook().getAudioChapters().get(0).getBitRates(),
+                "Select Audio Bitrate", new BitrateFragment.BitrateFragmentListener() {
+                    @Override
+                    public void bitrateChosen(DialogFragment fragment, AudioBitrate bitrate) {
+
+                        setupIntentFilter();
+                        Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
+                        downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_ID_PARAM, getBook().getId());
+                        downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
+                        downloadIntent.putExtra(UWBookMediaDownloaderService.BITRATE_PARAM, bitrate);
+                        getApplicationContext().startService(downloadIntent);
+                        fragment.dismiss();
+                    }
+                }).show(getSupportFragmentManager(), "BitrateFragment");
+
+
+
     }
 
     private BroadcastReceiver receiver;
@@ -385,7 +401,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
                 Book book = getBook();
                 book.refresh();
-                audioPlayerViewGroup.handleDownloadState(book.getAudioSaveStateEnum());
+                audioPlayerViewGroup.handleDownloadState(DataFileManager.getStateOfContent(context, book.getVersion(), MediaType.MEDIA_TYPE_AUDIO));
             }
         };
     }
@@ -440,7 +456,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             setupAudioPlayer();
         }
 
-        audioPlayerViewGroup.handleDownloadState(getBook().getAudioSaveStateEnum());
+        audioPlayerViewGroup.handleDownloadState(DataFileManager.getStateOfContent(getApplicationContext(), getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO));
         audioPlayerLayout.setVisibility((visible) ? View.VISIBLE : View.GONE);
     }
 

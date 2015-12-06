@@ -277,7 +277,7 @@ private VersionSelectionFragmentListener listener;
         }
     }
 
-    public void doAction(final VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state, final MediaType type) {
+    public void doAction(final VersionViewModel viewModel, final VersionViewHolder viewHolder, DownloadState state, final MediaType type) {
 
         switch (state){
             case DOWNLOAD_STATE_NONE:{
@@ -290,23 +290,33 @@ private VersionSelectionFragmentListener listener;
             }
             case DOWNLOAD_STATE_DOWNLOADED:{
 
-                new AlertDialog.Builder(getApplicationContext())
-                        .setTitle("Please Confirm")
+                View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+                ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Please Confirm");
+                new AlertDialog.Builder(getActivity())
+                        .setCustomTitle(titleView)
                         .setMessage("Delete " + viewModel.getTitle() + "?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                viewHolder.setupForDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
                                 deleteResource(viewModel, type);
                             }
                         })
-                        .setNegativeButton("No", null)
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
                         .create().show();
                 break;
             }
             case DOWNLOAD_STATE_DOWNLOADING:{
 
-                new AlertDialog.Builder(getApplicationContext())
-                        .setTitle("Please Confirm")
+                View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+                ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Please Confirm");
+                new AlertDialog.Builder(getActivity())
+                        .setCustomTitle(titleView)
                         .setMessage("Stop download?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
@@ -314,7 +324,12 @@ private VersionSelectionFragmentListener listener;
                                 stopDownload(viewModel, type);
                             }
                         })
-                        .setNegativeButton("No", null)
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
                         .create().show();
                 break;
             }
@@ -387,11 +402,14 @@ private VersionSelectionFragmentListener listener;
             BitrateFragment.newInstance(audioBook.getAudioChapters().get(0).getBitRates(),
                     "Select Audio Bitrate", new BitrateFragment.BitrateFragmentListener() {
                         @Override
-                        public void bitrateChosen(AudioBitrate bitrate) {
-                            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
-                            downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
-                            downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false);
+                        public void bitrateChosen(DialogFragment fragment, AudioBitrate bitrate) {
+
+                            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class)
+                            .putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId())
+                            .putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false)
+                            .putExtra(UWMediaDownloaderService.BITRATE_PARAM, bitrate);
                             getContext().startService(downloadIntent);
+                            fragment.dismiss();
                         }
                     }).show(getActivity().getSupportFragmentManager(), "BitrateFragment");
         }

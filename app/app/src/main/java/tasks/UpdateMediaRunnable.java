@@ -15,9 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import model.AudioBitrate;
+import model.DataFileManager;
 import model.DownloadState;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
+import model.parsers.MediaType;
 import services.UWUpdaterService;
 import utils.FileNameHelper;
 
@@ -77,23 +79,25 @@ public class UpdateMediaRunnable implements Runnable {
 
     private void saveMediaFile(String url, byte[] data, boolean isLast){
 
-        try{
-            FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
-            fos.write(data);
-            fos.close();
-            Log.i(TAG, "Media Saved: " + url);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            Log.e(TAG, "Error when saving media file");
-        }
+        DataFileManager.saveDataForBook(updater.getApplicationContext(), book, data, MediaType.MEDIA_TYPE_AUDIO);
+
+//        try{
+//            FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
+//            fos.write(data);
+//            fos.close();
+//            Log.i(TAG, "Media Saved: " + url);
+//        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//            Log.e(TAG, "Error when saving media file");
+//        }
         if(isLast) {
-            if(isUpdatingVideo){
-                book.setVideoSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-            }
-            else {
-                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-            }
+//            if(isUpdatingVideo){
+//                book.setVideoSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+//            }
+//            else {
+//                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+//            }
             book.update();
             updater.runnableFinished();
         }

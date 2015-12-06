@@ -18,7 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import model.DataFileManager;
 import model.daoModels.Book;
+import model.parsers.MediaType;
 import services.UWUpdaterService;
 import utils.FileNameHelper;
 import utils.URLDownloadUtil;
@@ -61,18 +63,27 @@ public class UpdateBookContentRunnable implements Runnable{
         byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
         String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
 
+        //try again if it failed
         if(bookText == null || bookText.length < 1){
             bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
         }
 
+        if(bookText == null || bookText.length < 1){
+            updater.runnableFinished();
+        }
+        else if(sigText == null){
+            sigText = "";
+        }
 
         if(bookText != null && bookText.length > 0 && sigText != null && sigText.length() > 0) {
-            saveFile(bookText, book.getSourceUrl());
-            try {
-                saveFile(sigText.getBytes("UTF-8"), book.getSignatureUrl());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            DataFileManager.saveDataForBook(updater.getApplicationContext(), book, bookText, MediaType.MEDIA_TYPE_TEXT);
+            DataFileManager.saveSignatureForBook(updater.getApplicationContext(), book, sigText.getBytes(), MediaType.MEDIA_TYPE_TEXT);
+//            saveFile(bookText, book.getSourceUrl());
+//            try {
+//                saveFile(sigText.getBytes("UTF-8"), book.getSignatureUrl());
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
 
             UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(parent, updater, bookText, sigText);
             updater.addRunnable(runnable, 4);
@@ -84,7 +95,8 @@ public class UpdateBookContentRunnable implements Runnable{
     private void saveFile(byte[] bytes, String url){
 
         try{
-            FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
+            FileOutputStream fos = updater.getApplicationContext()
+                    .openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
             fos.write(bytes);
             fos.close();
             Log.i(TAG, "File Saved");

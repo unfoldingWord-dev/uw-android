@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.ListIterator;
 
 import model.DaoDBHelper;
+import model.DataFileManager;
 import model.DownloadState;
 import model.daoModels.Book;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 import tasks.UpdateAndVerifyBookRunnable;
 import tasks.UpdateLanguageLocaleRunnable;
 import tasks.UpdateProjectsRunnable;
@@ -141,9 +143,14 @@ public class UWPreLoaderService extends UWUpdaterService {
                 Book book = (Book) li.previous();
                 try {
                     String signature = loadDbFile(FileNameHelper.getSaveFileNameFromUrl(book.getSignatureUrl()));
+                    if(signature == null){
+                        signature = "";
+                    }
                     byte[] text = loadDbFileBytes(FileNameHelper.getSaveFileNameFromUrl(book.getSourceUrl()));
-                    saveFile(text, book.getSourceUrl());
-                    saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
+                    DataFileManager.saveDataForBook(getApplicationContext(), book, text, MediaType.MEDIA_TYPE_TEXT);
+                    DataFileManager.saveSignatureForBook(getApplicationContext(), book, signature.getBytes(), MediaType.MEDIA_TYPE_TEXT);
+//                    saveFile(text, book.getSourceUrl());
+//                    saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
 
                     UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(book, getThis(), text, signature);
                     addRunnable(runnable, 1);

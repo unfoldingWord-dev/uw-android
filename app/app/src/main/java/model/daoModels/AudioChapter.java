@@ -268,7 +268,16 @@ public class AudioChapter extends model.UWDatabaseModel  implements java.io.Seri
     }
 
     public AudioBitrate[] getBitRates(){
-        return new Gson().fromJson(getBitrateJson(), AudioBitrate[].class);
+        AudioBitrate[] bitRates = new Gson().fromJson(getBitrateJson(), AudioBitrate[].class);
+
+        for(AudioBitrate bitRate : bitRates){
+            bitRate.setAudioChapter(this);
+        }
+        return bitRates;
+    }
+
+    public long getAudioSize(AudioBitrate bitrate){
+        return getAudioBook().getAudioSize(bitrate);
     }
 
     private String getUrlForBitrate(String url, int bitrate){

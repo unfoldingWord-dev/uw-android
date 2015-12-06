@@ -1,6 +1,7 @@
 package model;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.unfoldingword.mobile.R;
 
@@ -16,6 +17,8 @@ import utils.FileUtil;
  * Created by Fechner on 11/23/15.
  */
 public class DataFileManager {
+
+    private static final String TAG = "DataFileManager";
 
     private static final int FILES_PER_TEXT = 2;
     private static final int FILES_PER_AUDIO = 1;
@@ -46,13 +49,30 @@ public class DataFileManager {
 
     public static boolean deleteContentForBook(Context context, Version version, MediaType type){
 
-        File desiredFolder = new File(context.getFilesDir(), getPath(type, version));
+        File desiredFolder = new File(context.getFilesDir() + getPath(type, version));
         if(desiredFolder.exists()){
-            return desiredFolder.delete();
+            if(deleteContents(desiredFolder)) {
+                return desiredFolder.delete();
+            }
         }
-        else{
-            return true;
+        return false;
+    }
+
+    public static boolean deleteContents(File dir) {
+        File[] files = dir.listFiles();
+        boolean success = true;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    success &= deleteContents(file);
+                }
+                if (!file.delete()) {
+                    Log.d(TAG, "Failed to delete " + file);
+                    success = false;
+                }
+            }
         }
+        return success;
     }
 
     private static DownloadState verifyStateForContent(Context context, Version version, MediaType type, File folder){

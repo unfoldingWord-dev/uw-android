@@ -1,6 +1,8 @@
 package model.daoModels;
 
 import java.util.List;
+
+import model.AudioBitrate;
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -244,6 +246,22 @@ public class AudioBook extends model.UWDatabaseModel  implements java.io.Seriali
         return dao.queryBuilder()
                 .where(AudioBookDao.Properties.UniqueSlug.eq(uniqueSlug))
                 .unique();
+    }
+
+    public long getAudioSize(AudioBitrate bitRate){
+
+        long size = 0;
+        for(AudioChapter chapter : getAudioChapters()){
+
+            for(AudioBitrate individualBitrate : chapter.getBitRates()){
+
+                if(individualBitrate.getBitrate() == bitRate.getBitrate()){
+                    size += individualBitrate.getSize();
+                    break;
+                }
+            }
+        }
+        return size;
     }
     // KEEP METHODS END
 

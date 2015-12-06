@@ -67,12 +67,12 @@ public class VersionViewModel {
     }
 
     public String getTitle(){
-        return version.getName() + " " + getLanguageName(context) + " - " + version.getLanguage().getLanguageAbbreviation();
+        return  getLanguageName(context) + " (" + version.getLanguage().getLanguageAbbreviation() + ") - " + version.getName();
     }
 
     private String getLanguageName(Context context){
         LanguageLocale languageLocale = LanguageLocale.getLocalForKey(version.getLanguage().getLanguageAbbreviation(), DaoDBHelper.getDaoSession(context));
-        return (languageLocale != null)? languageLocale.getLanguageName() : "";
+        return  (languageLocale != null)? languageLocale.getLanguageName() : "";
     }
 
     private void doAction(MediaType type, VersionViewHolder viewHolder, DownloadState state){

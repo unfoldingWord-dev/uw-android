@@ -79,10 +79,10 @@ public class VersionRowViewHolder {
         downloadProgressBar = (ProgressBar) baseView.findViewById(R.id.download_progress_bar);
 
         downloadButton = (ImageView) baseView.findViewById(R.id.download_status_image);
-        downloadAudioButton = (Button) baseView.findViewById(R.id.download_audio_button);
-        downloadingAudioLayout = (ViewGroup) baseView.findViewById(R.id.versions_downloading_audio_layout);
-        downloadVideoButton = (Button) baseView.findViewById(R.id.download_video_button);
-        downloadingVideoLayout = (ViewGroup) baseView.findViewById(R.id.versions_downloading_video_layout);
+//        downloadAudioButton = (Button) baseView.findViewById(R.id.download_audio_button);
+//        downloadingAudioLayout = (ViewGroup) baseView.findViewById(R.id.versions_downloading_audio_layout);
+//        downloadVideoButton = (Button) baseView.findViewById(R.id.download_video_button);
+//        downloadingVideoLayout = (ViewGroup) baseView.findViewById(R.id.versions_downloading_video_layout);
         deleteButton = (Button) baseView.findViewById(R.id.delete_button);
         clickableLayout = (LinearLayout) baseView.findViewById(R.id.clickableRow);
 

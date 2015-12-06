@@ -1,6 +1,8 @@
 package model.daoModels;
 
 import java.util.List;
+
+import model.DataFileManager;
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -9,6 +11,9 @@ import de.greenrobot.dao.DaoException;
 // KEEP INCLUDES - put your custom includes here
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import model.parsers.MediaType;
 import model.parsers.VersionParser;
 import model.DownloadState;
 import model.UWDatabaseModel;
@@ -510,9 +515,11 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     public void deleteAudio(Context context){
 
-        for(Book book : getBooks()){
-            book.deleteAudio(context);
-        }
+//        for(Book book : getBooks()){
+//            book.deleteAudio(context);
+//        }
+        boolean result = DataFileManager.deleteContentForBook(context, this, MediaType.MEDIA_TYPE_AUDIO);
+        Log.i(TAG, "Result of audio deletion: " + result);
     }
 
     public boolean isObs(Context context){

@@ -17,6 +17,7 @@ import activity.UWBaseActivity;
 import fragments.selection.VersionSelectionFragment;
 import model.daoModels.Project;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 import utils.UWPreferenceDataManager;
 
 /**
@@ -57,9 +58,11 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
         return AnimationParadigm.ANIMATION_VERTICAL;
     }
 
+
     @Override
-    public void versionWasSelected(Version version, boolean secondVersion) {
-        UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, secondVersion);
+    public void versionWasSelected(Version version, boolean isSecondVersion, MediaType mediaType) {
+        UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
         handleBack();
     }
+
 }

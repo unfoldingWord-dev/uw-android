@@ -23,7 +23,7 @@ public class LanguageLocaleParser extends UWDataParser{
     private static final String GW_JSON_TAG = "gw";
     private static final String LANGUAGE_DIRECTION_JSON_KEY = "ld";
     private static final String LANGUAGE_KEY_JSON_KEY = "lc";
-    private static final String LANGUAGE_NAME_JSON_KEY = "lc";
+    private static final String LANGUAGE_NAME_JSON_KEY = "ln";
     private static final String CC_JSON_KEY = "cc";
     private static final String LANGUAGE_REGION_JSON_KEY = "lr";
     private static final String PK_JSON_KEY = "pk";

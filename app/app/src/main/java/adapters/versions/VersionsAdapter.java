@@ -34,21 +34,6 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import model.DaoDBHelper;
-import model.DownloadState;
-import model.daoModels.Language;
-import model.daoModels.LanguageLocale;
-import model.daoModels.Project;
-import model.daoModels.Version;
-import services.UWMediaDownloaderService;
-import services.UWUpdaterService;
-import services.UWVersionDownloaderService;
-import utils.NetWorkUtil;
-import utils.UWPreferenceDataManager;
-import view.AnimatedExpandableListView;
-import view.VersionRowViewHolder;
-
-
 /**
  * Created by PJ Fechner
  * Adapter for Versions

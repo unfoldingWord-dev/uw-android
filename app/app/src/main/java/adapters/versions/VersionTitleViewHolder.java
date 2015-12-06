@@ -25,7 +25,7 @@ public class VersionTitleViewHolder {
     }
 
     public void updateWithModel(Context context, VersionViewModel model, boolean selected){
-        titleView.setText(model.getTitle(context));
+        titleView.setText(model.getTitle());
         titleView.setTextColor(context.getResources().getColor((selected) ? R.color.primary : R.color.black));
     }
 

@@ -11,11 +11,10 @@ package services;
 import android.content.Intent;
 import android.os.IBinder;
 
+import model.AudioBitrate;
 import model.DaoDBHelper;
 import model.daoModels.Book;
-import model.daoModels.Version;
 import tasks.UpdateMediaRunnable;
-import unfoldingword.DaoHelperMethods;
 
 /**
  * Created by PJ fechner
@@ -24,8 +23,9 @@ import unfoldingword.DaoHelperMethods;
 public class UWBookMediaDownloaderService extends UWUpdaterService {
 
     public static final String STOP_DOWNLOAD_MEDIA_MESSAGE = "STOP_DOWNLOAD_MEDIA_MESSAGE";
-    public static final String BOOK_PARAM = "BOOK_PARAM";
+    public static final String BOOK_ID_PARAM = "BOOK_ID_PARAM";
     public static final String IS_VIDEO_PARAM = "IS_VIDEO_PARAM";
+    public static final String BITRATE_PARAM = "BITRATE_PARAM";
 
     private static final String TAG = "MediaDownloaderService";
 
@@ -43,10 +43,11 @@ public class UWBookMediaDownloaderService extends UWUpdaterService {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if(intent != null && intent.getExtras() != null) {
-            long bookId = intent.getExtras().getLong(BOOK_PARAM);
+            long bookId = intent.getExtras().getLong(BOOK_ID_PARAM);
             boolean isVideo = intent.getExtras().getBoolean(IS_VIDEO_PARAM);
+            AudioBitrate bitrate = (AudioBitrate) intent.getExtras().getSerializable(BITRATE_PARAM);
             Book book = DaoDBHelper.getDaoSession(getApplicationContext()).getBookDao().load(bookId);
-            addRunnable(new UpdateMediaRunnable(false, book, this));
+            addRunnable(new UpdateMediaRunnable(false, book, this, bitrate));
         }
         return START_STICKY;
     }

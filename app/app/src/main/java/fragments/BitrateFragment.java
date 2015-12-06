@@ -71,13 +71,14 @@ public class BitrateFragment extends DialogFragment {
         });
 
         final ListView listview = (ListView) view.findViewById(R.id.fragment_bitrate_list_view);
-        listview.setAdapter(new ArrayAdapter<AudioBitrate>(getActivity().getApplicationContext(),
+        listview.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
                 R.layout.row_bitrate_choosing, R.id.row_bitrate_choosing_text, bitrates));
 
+        final BitrateFragment fragment = this;
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                listener.bitrateChosen(bitrates[position]);
+                listener.bitrateChosen(fragment, bitrates[position]);
             }
         });
     }
@@ -101,6 +102,6 @@ public class BitrateFragment extends DialogFragment {
     }
 
     public interface BitrateFragmentListener {
-        void bitrateChosen(AudioBitrate bitrate);
+        void bitrateChosen(DialogFragment fragment, AudioBitrate bitrate);
     }
 }

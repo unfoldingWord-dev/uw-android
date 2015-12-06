@@ -1,6 +1,8 @@
 package model.daoModels;
 
 import java.util.List;
+
+import model.DataFileManager;
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -12,6 +14,7 @@ import de.greenrobot.dao.AbstractDao;
 import model.UWDatabaseModel;
 
 import model.parsers.BookParser;
+import model.parsers.MediaType;
 import signing.Status;
 import utils.UWFileUtils;
 import view.ViewContentHelper;
@@ -506,12 +509,13 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     public void deleteAudio(Context context){
 
-        for(AudioChapter chapter : getAudioBook().getAudioChapters()){
-            Log.i(TAG, "Deleting source: " + chapter.getSource());
-            UWFileUtils.deleteSource(chapter.getSource(), context);
-        }
-        setAudioSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
-        update();
+        getVersion().deleteAudio(context);
+//        for(AudioChapter chapter : getAudioBook().getAudioChapters()){
+//            Log.i(TAG, "Deleting source: " + chapter.getSource());
+//            UWFileUtils.deleteSource(chapter.getSource(), context);
+//        }
+//        setAudioSaveState(DownloadState.DOWNLOAD_STATE_NONE.ordinal());
+//        update();
     }
     @Override
     public String toString() {
