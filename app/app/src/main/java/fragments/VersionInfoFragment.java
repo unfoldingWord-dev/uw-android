@@ -23,6 +23,7 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import model.daoModels.Version;
+import model.parsers.MediaType;
 import view.ViewContentHelper;
 
 /**
@@ -32,8 +33,10 @@ import view.ViewContentHelper;
 public class VersionInfoFragment extends DialogFragment {
 
     private static final String VERSION_PARAM = "VERSION_PARAM";
+    private static final String MEDIA_TYPE_PARAM = "MEDIA_TYPE_PARAM";
 
     private Version version;
+    private MediaType type;
 
     //region setup
 
@@ -41,12 +44,13 @@ public class VersionInfoFragment extends DialogFragment {
      * @param version Version that's desired to show
      * @return
      */
-    public static VersionInfoFragment createFragment(Version version){
-
-        VersionInfoFragment fragment = new VersionInfoFragment();
+    public static VersionInfoFragment createFragment(Version version, MediaType type){
 
         Bundle args = new Bundle();
         args.putSerializable(VERSION_PARAM, version);
+        args.putSerializable(MEDIA_TYPE_PARAM, type);
+
+        VersionInfoFragment fragment = new VersionInfoFragment();
         fragment.setArguments(args);
 
         return fragment;
@@ -60,6 +64,7 @@ public class VersionInfoFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             version = (Version) getArguments().getSerializable(VERSION_PARAM);
+            type = (MediaType) getArguments().getSerializable(MEDIA_TYPE_PARAM);
         }
     }
 

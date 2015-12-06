@@ -77,21 +77,7 @@ public class VersionViewModel {
 
     private void doAction(MediaType type, VersionViewHolder viewHolder, DownloadState state){
 
-        switch (type){
-
-            case MEDIA_TYPE_TEXT:{
-                listener.doActionForText(this, viewHolder, state);
-                break;
-            }
-            case MEDIA_TYPE_AUDIO:{
-                listener.doActionForAudio(this, viewHolder, state);
-                break;
-            }
-            case MEDIA_TYPE_VIDEO:{
-                listener.doActionForVideo(this, viewHolder, state);
-                break;
-            }
-        }
+        this.listener.doAction(this, viewHolder, state, type);
     }
 
     private void itemChosen(ResourceViewModel viewModel){
@@ -198,9 +184,7 @@ public class VersionViewModel {
     }
 
     public interface VersionViewModelListener{
-        void doActionForText(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state);
-        void doActionForAudio(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state);
-        void doActionForVideo(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state);
+        void doAction(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state, MediaType type);
         void resourceChosen(ResourceViewModel viewModel, Version version);
         void showCheckingLevel(Version version, MediaType type);
     }

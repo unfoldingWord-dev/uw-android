@@ -13,8 +13,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -31,8 +33,12 @@ import org.unfoldingword.mobile.R;
 import adapters.versions.VersionViewHolder;
 import adapters.versions.VersionViewModel;
 import adapters.versions.VersionsAdapter;
+import fragments.BitrateFragment;
+import fragments.VersionInfoFragment;
+import model.AudioBitrate;
 import model.DaoDBHelper;
 import model.DownloadState;
+import model.daoModels.AudioBook;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
 import model.daoModels.Version;
@@ -41,6 +47,7 @@ import services.UWMediaDownloaderService;
 import services.UWUpdaterService;
 import services.UWVersionDownloaderService;
 import utils.NetWorkUtil;
+import utils.UWPreferenceDataManager;
 import utils.UWPreferenceManager;
 
 /**
@@ -118,6 +125,7 @@ private VersionSelectionFragmentListener listener;
     @Override
     public void onResume() {
         super.onResume();
+        registerReceiver();
         if(!showProjectTitle){
             titleTextView.setVisibility(View.GONE);
         }
@@ -125,6 +133,12 @@ private VersionSelectionFragmentListener listener;
             titleTextView.setText(chosenProject.getTitle());
             titleTextView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver();
     }
 
     @NonNull
@@ -199,128 +213,240 @@ private VersionSelectionFragmentListener listener;
         return null;
     }
 
-    private void setupIntentFilter(){
+    private void registerReceiver(){
         if(receiver == null) {
             receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
 
-                    if(intent.getExtras() != null && intent.getExtras().containsKey(UWUpdaterService.DOWNLOAD_RESULT_PARAM)) {
+                    if (intent.getExtras() != null && intent.getExtras().containsKey(UWUpdaterService.DOWNLOAD_RESULT_PARAM)) {
                         downloadEnded(intent.getExtras().getInt(UWUpdaterService.DOWNLOAD_RESULT_PARAM));
                     }
                 }
             };
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
-            getContext().registerReceiver(receiver, filter);
+        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
+        getActivity().getApplicationContext().registerReceiver(receiver, filter);
+    }
+
+    private void unregisterReceiver(){
+        if(receiver != null){
+            getActivity().getApplicationContext().unregisterReceiver(receiver);
+            receiver = null;
         }
     }
 
     private void downloadEnded(int result){
 
+        String resultText = "";
         switch (result){
             case UWUpdaterService.DOWNLOAD_SUCCESS:{
+                resultText = "Succeeded";
                 break;
             }
             case UWUpdaterService.DOWNLOAD_CANCELED:{
+                resultText = "Was Canceled";
                 break;
             }
             case UWUpdaterService.DOWNLOAD_FAILED:{
-
+                resultText = "Failed";
+                break;
             }
         }
+
+        Toast.makeText(getActivity().getApplicationContext(), "Download " + resultText, Toast.LENGTH_SHORT).show();
+        reloadData();
     }
 
 
     private void reloadData(){
-
+        listView.invalidateViews();
     }
 
-    private boolean prepForDownload(){
-        if (!NetWorkUtil.isConnected(getContext())) {
-            new AlertDialog.Builder(getContext())
+    private boolean canDownload(){
+        if (!NetWorkUtil.isConnected(getApplicationContext())) {
+            new AlertDialog.Builder(getApplicationContext())
                     .setTitle("Alert")
                     .setMessage("Failed connecting to the internet.")
                     .setPositiveButton("OK", null)
                     .create().show();
             return false;
         } else {
-            setupIntentFilter();
             return true;
         }
     }
 
-    @Override
-    public void doActionForText(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state) {
+    public void doAction(final VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state, final MediaType type) {
 
         switch (state){
             case DOWNLOAD_STATE_NONE:{
 
-                if (prepForDownload()) {
-                    Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
-                    downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
-                    getContext().startService(downloadIntent);
+                if (canDownload()) {
+                    viewHolder.setupForDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+                    downloadResource(viewModel, type);
                 }
                 break;
             }
             case DOWNLOAD_STATE_DOWNLOADED:{
 
+                new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("Please Confirm")
+                        .setMessage("Delete " + viewModel.getTitle() + "?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteResource(viewModel, type);
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .create().show();
                 break;
             }
             case DOWNLOAD_STATE_DOWNLOADING:{
 
+                new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("Please Confirm")
+                        .setMessage("Stop download?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                stopDownload(viewModel, type);
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .create().show();
                 break;
             }
         }
     }
 
-    @Override
-    public void doActionForAudio(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state) {
+    private void downloadResource(VersionViewModel viewModel, MediaType type){
 
-        switch (state) {
-            case DOWNLOAD_STATE_NONE: {
-
-                if (prepForDownload()){
-                    Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
-                    downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
-                    downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false);
-                    getContext().startService(downloadIntent);
-                }
+        switch (type){
+            case MEDIA_TYPE_TEXT:{
+                downloadText(viewModel);
                 break;
             }
-            case DOWNLOAD_STATE_DOWNLOADED:{
-
+            case MEDIA_TYPE_AUDIO:{
+                downloadAudio(viewModel);
                 break;
             }
-            case DOWNLOAD_STATE_DOWNLOADING:{
-
+            case MEDIA_TYPE_VIDEO:{
+                downloadVideo(viewModel);
                 break;
             }
         }
     }
 
-    @Override
-    public void doActionForVideo(VersionViewModel viewModel, VersionViewHolder viewHolder, DownloadState state) {
+    private void deleteResource(VersionViewModel viewModel, MediaType type){
 
-        switch (state){
-            case DOWNLOAD_STATE_NONE:{
-
-                if (prepForDownload()) {
-                    Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
-                    downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
-                    downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, true);
-                    getContext().startService(downloadIntent);
-                }
+        switch (type){
+            case MEDIA_TYPE_TEXT:{
+                deleteText(viewModel);
                 break;
             }
-            case DOWNLOAD_STATE_DOWNLOADED:{
+            case MEDIA_TYPE_AUDIO:{
+                deleteAudio(viewModel);
                 break;
             }
-            case DOWNLOAD_STATE_DOWNLOADING:{
-
+            case MEDIA_TYPE_VIDEO:{
+                deleteVideo(viewModel);
                 break;
             }
         }
+    }
+
+    private void stopDownload(VersionViewModel viewModel, MediaType type){
+
+        switch (type){
+            case MEDIA_TYPE_TEXT:{
+                break;
+            }
+            case MEDIA_TYPE_AUDIO:{
+                break;
+            }
+            case MEDIA_TYPE_VIDEO:{
+                break;
+            }
+        }
+    }
+
+    private void downloadText(VersionViewModel viewModel){
+
+        Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
+        downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+        getContext().startService(downloadIntent);
+    }
+
+    private void downloadAudio(final VersionViewModel viewModel){
+
+        AudioBook audioBook = viewModel.getVersion().getBooks().get(0).getAudioBook();
+        if(audioBook != null) {
+
+            BitrateFragment.newInstance(audioBook.getAudioChapters().get(0).getBitRates(),
+                    "Select Audio Bitrate", new BitrateFragment.BitrateFragmentListener() {
+                        @Override
+                        public void bitrateChosen(AudioBitrate bitrate) {
+                            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
+                            downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+                            downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false);
+                            getContext().startService(downloadIntent);
+                        }
+                    }).show(getActivity().getSupportFragmentManager(), "BitrateFragment");
+        }
+    }
+
+    private void downloadVideo(final VersionViewModel viewModel){
+
+        Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
+        downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+        downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, true);
+        getContext().startService(downloadIntent);
+    }
+
+    private void deleteText(VersionViewModel model){
+
+        final Version version = model.getVersion();
+        UWPreferenceDataManager.willDeleteVersion(getContext(), model.getVersion());
+        new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                UWPreferenceDataManager.willDeleteVersion(getContext(), version);
+                version.deleteContent(getContext());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                reloadData();
+            }
+        }.execute();
+    }
+
+    private void deleteAudio(VersionViewModel model){
+
+        final Version version = model.getVersion();
+        new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                version.deleteAudio(getContext());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                reloadData();
+            }
+        }.execute();
+    }
+
+    private void deleteVideo(VersionViewModel model){
+
     }
 
     @Override
@@ -334,6 +460,8 @@ private VersionSelectionFragmentListener listener;
     @Override
     public void showCheckingLevel(Version version, MediaType type) {
 
+        VersionInfoFragment.createFragment(version, type)
+                .show(getActivity().getSupportFragmentManager(), "VersionInfoFragment");
     }
 
     //endregion
@@ -389,6 +517,9 @@ private VersionSelectionFragmentListener listener;
     //endregion
 
 
+    private Context getApplicationContext(){
+        return getActivity().getApplicationContext();
+    }
     public interface VersionSelectionFragmentListener {
         /**
          * Called when the user selects a version
