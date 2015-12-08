@@ -28,7 +28,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="It Appears the app experienced a crash. If you would like to submit a crash report,
 tap submit to send the needed information. Optionally, you can also describe what you were doing when the crash occurred "
-            android:id="@+id/textView"
+            android:id="@+id/crash_text_view"
             android:textColor="#000"
             android:background="#2000"
             android:paddingBottom="10dp"/>

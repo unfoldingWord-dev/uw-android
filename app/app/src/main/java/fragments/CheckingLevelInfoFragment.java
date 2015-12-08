@@ -36,10 +36,9 @@ public class CheckingLevelInfoFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.verification_fragment, container, false);
 
-        TextView textView = (TextView) view.findViewById(R.id.textView);
-        String versionName = BuildConfig.VERSION_NAME;
+        TextView textView = (TextView) view.findViewById(R.id.version_text_view);
+        textView.setText(BuildConfig.VERSION_NAME);
 
-        textView.setText(versionName);
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.verification_fragment_layout);
         layout.setOnClickListener(new View.OnClickListener() {
             @Override

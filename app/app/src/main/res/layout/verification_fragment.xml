@@ -233,23 +233,23 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!--<LinearLayout-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_marginTop="2dp"-->
-        <!--android:padding="10dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="vertical"-->
-        <!--android:background="#fff">-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_marginTop="2dp"
+        android:padding="10dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#fff">
 
-        <!--<TextView-->
-            <!--android:gravity="center"-->
-            <!--android:id="@+id/textView"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:text="preliminary"-->
-            <!--android:textColor="#000" />-->
-    <!--</LinearLayout>-->
+        <TextView
+            android:gravity="center"
+            android:id="@+id/version_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="preliminary"
+            android:textColor="#000" />
+    </LinearLayout>
 
 
 </LinearLayout>

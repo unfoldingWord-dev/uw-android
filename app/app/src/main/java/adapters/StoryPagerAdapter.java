@@ -105,7 +105,7 @@ public class StoryPagerAdapter extends PagerAdapter {
 
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
             ImageView chapterImageView = (ImageView) view.findViewById(R.id.chapter_image_view);
-            chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.FIT_START);
+            chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.FIT_CENTER);
 //            chapterImageView.setAdjustViewBounds(true);
 
             TextView mainTextView = (TextView) view.findViewById(R.id.story_main_text_view);

@@ -22,6 +22,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
@@ -110,6 +111,8 @@ public class SettingsActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference("base_url"));
 //        this.view
         View view = View.inflate(getApplicationContext(), R.layout.verification_fragment, (LinearLayout) findViewById(R.id.activity_preference_base_layout));
+        TextView textView = (TextView) view.findViewById(R.id.version_text_view);
+        textView.setText(BuildConfig.VERSION_NAME);
     }
 
     /**
