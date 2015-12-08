@@ -79,7 +79,7 @@ public class UpdateMediaRunnable implements Runnable {
 
     private void saveMediaFile(String url, byte[] data, boolean isLast){
 
-        DataFileManager.saveDataForBook(updater.getApplicationContext(), book, data, MediaType.MEDIA_TYPE_AUDIO);
+        DataFileManager.saveDataForBook(updater.getApplicationContext(), book, data, MediaType.MEDIA_TYPE_AUDIO, url);
 
 //        try{
 //            FileOutputStream fos = updater.getApplicationContext().openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);

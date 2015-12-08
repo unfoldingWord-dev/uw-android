@@ -290,11 +290,12 @@ private VersionSelectionFragmentListener listener;
             }
             case DOWNLOAD_STATE_DOWNLOADED:{
 
-                View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+                String additionalText = (type == MediaType.MEDIA_TYPE_TEXT)? "\n\n*NOTE* All associated content will also be deleted" : "";
+                        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
                 ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Please Confirm");
                 new AlertDialog.Builder(getActivity())
                         .setCustomTitle(titleView)
-                        .setMessage("Delete " + viewModel.getTitle() + "?")
+                        .setMessage("Delete " + viewModel.getTitle() + "?"  + additionalText)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

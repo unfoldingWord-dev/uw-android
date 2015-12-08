@@ -500,6 +500,8 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
             book.deleteBookContent(context);
         }
         saveState = DownloadState.DOWNLOAD_STATE_NONE.ordinal();
+        DataFileManager.deleteContentForBook(context, this, MediaType.MEDIA_TYPE_TEXT);
+        deleteAudio(context);
         update();
     }
 

@@ -12,6 +12,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
@@ -19,11 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.AudioMarker;
+import model.DataFileManager;
 import model.DownloadState;
 import model.daoModels.AudioChapter;
 import model.daoModels.BibleChapter;
 import model.daoModels.StoryPage;
 import model.parsers.AudioMarkerParser;
+import model.parsers.MediaType;
 import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 
@@ -154,9 +157,11 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     public void prepareAudio(StoryPage page){
 
         AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
-        if(chapter != null && chapter.getAudioBook().getBook().getAudioSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal()){
-            File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
-            Uri uri = Uri.fromFile(audioFile);
+        if(DataFileManager.getStateOfContent(context, page.getStoriesChapter().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO) == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+//            File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
+//            Uri uri = Uri.fromFile(audioFile);
+            Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook().getVersion(),
+                    MediaType.MEDIA_TYPE_AUDIO, chapter.getDownloadedAudioUrl(context));
 
             List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);
             currentModel = page;

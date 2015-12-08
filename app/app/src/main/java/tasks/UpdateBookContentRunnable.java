@@ -111,9 +111,11 @@ public class UpdateBookContentRunnable implements Runnable{
 
         new VerificationUpdater(updater.getApplicationContext(), new VerificationUpdater.VerificationTaskListener() {
             @Override
-            public void verificationFinishedWithResult(byte[] text) {
+            public void verificationFinishedWithResult(byte[] text, String sigText) {
 
                 if (text != null) {
+                    DataFileManager.saveDataForBook(updater.getApplicationContext(), book, text, MediaType.MEDIA_TYPE_TEXT);
+                    DataFileManager.saveSignatureForBook(updater.getApplicationContext(), book, sigText.getBytes(), MediaType.MEDIA_TYPE_TEXT);
 
                     try {
                         UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(

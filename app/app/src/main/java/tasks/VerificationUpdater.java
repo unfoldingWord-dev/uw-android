@@ -35,11 +35,11 @@ public class VerificationUpdater {
             byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());
             String sigText = URLDownloadUtil.downloadString(book.getSignatureUrl());
             UWSigning.updateBookVerification(context, book, bookText, sigText);
-            listener.verificationFinishedWithResult(bookText);
+            listener.verificationFinishedWithResult(bookText, sigText);
         }
         catch (IOException e){
             e.printStackTrace();
-            listener.verificationFinishedWithResult(null);
+            listener.verificationFinishedWithResult(null, null);
         }
     }
 
@@ -48,6 +48,6 @@ public class VerificationUpdater {
          * Called when the Verification process is finished.
          * @param text byte array of the  text of the book that was verified
          */
-        void verificationFinishedWithResult(byte[] text);
+        void verificationFinishedWithResult(byte[] text, String sigText);
     }
 }
