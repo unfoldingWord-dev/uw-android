@@ -449,7 +449,9 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
             book.deleteBookContent(context);
         }
         DataFileManager.deleteContentForBook(context, this, MediaType.MEDIA_TYPE_TEXT);
-        deleteAudio(context);
+        if(hasAudio()) {
+            deleteAudio(context);
+        }
         update();
     }
 

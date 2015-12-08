@@ -24,6 +24,7 @@ import org.unfoldingword.mobile.R;
 
 import model.daoModels.Version;
 import model.parsers.MediaType;
+import signing.Status;
 import view.ViewContentHelper;
 
 /**
@@ -79,10 +80,16 @@ public class VersionInfoFragment extends DialogFragment {
 
     private void setupViews(View view){
 
+        boolean notText = type != MediaType.MEDIA_TYPE_TEXT;
+        int verificationStatus = version.getVerificationStatus();
+        if(notText){
+            verificationStatus = Status.ERROR.ordinal();
+        }
+
         ((TextView) view.findViewById(R.id.checking_entity_text_view)).setText(version.getStatusCheckingEntity());
         ((TextView) view.findViewById(R.id.version_text_view)).setText(version.getStatusVersion());;
         ((TextView) view.findViewById(R.id.publish_date_text_view)).setText(version.getStatusPublishDate());
-        ((TextView) view.findViewById(R.id.verification_text_view)).setText(version.getVerificationText());
+        ((TextView) view.findViewById(R.id.verification_text_view)).setText((notText)? "Cryptographic verification has not yet been added to media" : version.getVerificationText());
         ((TextView) view.findViewById(R.id.checking_level_explanation_text))
                 .setText(ViewContentHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
 
@@ -90,7 +97,6 @@ public class VersionInfoFragment extends DialogFragment {
                 .setImageResource(ViewContentHelper
                         .getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
 
-        int verificationStatus = version.getVerificationStatus();
         Button status = (Button) view.findViewById(R.id.verification_information_status);
         status.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
         status.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));

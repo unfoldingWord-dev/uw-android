@@ -57,6 +57,19 @@ public class VersionsAdapter implements ExpandableListAdapter {
 //        this.listener = listener;
     }
 
+    public int getIndexOfChosenVersion(){
+
+        int i = 0;
+        for (VersionViewModel model : models){
+            if(model.getVersion().getId() == selectedVersionId){
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+
     @Override
     public VersionViewModel getGroup(int groupPosition) {
         return models.get(groupPosition);

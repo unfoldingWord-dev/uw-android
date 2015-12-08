@@ -36,13 +36,13 @@
         />
 
     <ImageButton
+        android:padding="10dp"
         android:id="@+id/version_row_checking_level"
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="@drawable/basic_button_selector"
-        android:cropToPadding="true"
-        android:scaleType="center"
+        android:scaleType="centerInside"
         android:src="@drawable/level_one"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/version_row_download_button"

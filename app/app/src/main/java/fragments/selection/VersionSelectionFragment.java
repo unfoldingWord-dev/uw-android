@@ -182,6 +182,10 @@ private VersionSelectionFragmentListener listener;
 
         adapter = new VersionsAdapter(this, VersionViewModel.createModels(getContext(), chosenProject, this), (version != null)? version.getId() : -1);
         listView.setAdapter(adapter);
+        int selectedGroup = adapter.getIndexOfChosenVersion();
+        if(selectedGroup > -1) {
+            listView.expandGroup(selectedGroup);
+        }
 
 //        if(version != null) {
 //            Language language = version.getLanguage();
@@ -472,6 +476,7 @@ private VersionSelectionFragmentListener listener;
     public void resourceChosen(VersionViewModel.ResourceViewModel viewModel, Version version) {
 
         if(listener != null){
+            version.update();
             listener.versionWasSelected(version, isSecondVersion, viewModel.getType());
         }
     }

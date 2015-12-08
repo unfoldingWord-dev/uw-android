@@ -9,15 +9,19 @@
 package activity;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.LinearGradient;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
@@ -44,6 +48,11 @@ public class SettingsActivity extends PreferenceActivity {
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_preference);
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -78,6 +87,7 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+
         Preference versionPref = (Preference) findPreference("app_version");
         versionPref.setSummary(BuildConfig.VERSION_NAME);
 
@@ -98,6 +108,8 @@ public class SettingsActivity extends PreferenceActivity {
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("base_url"));
+//        this.view
+        View view = View.inflate(getApplicationContext(), R.layout.verification_fragment, (LinearLayout) findViewById(R.id.activity_preference_base_layout));
     }
 
     /**

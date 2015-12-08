@@ -3,25 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/light_gray"
+    android:background="#fff"
     android:minWidth="300dp"
     android:id="@+id/verification_fragment_layout">
 
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:background="@color/light_brown"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/intro_screen_title"
-        android:textColor="@color/white_mix_gary" />
+    <!--<TextView-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:background="#555"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:gravity="center"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/intro_screen_title"-->
+        <!--android:textColor="@color/white_mix_gary" />-->
 
     <FrameLayout
         android:layout_marginTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/light_brown"
+        android:background="#fff"
         android:padding="5dp">
 
         <LinearLayout
@@ -36,7 +36,7 @@
                 android:layout_marginTop="5dp"
                 android:lineSpacingMultiplier="1"
                 android:text="@string/about_text"
-                android:textColor="@color/white_mix_gary"
+                android:textColor="#000"
                 android:gravity="center_horizontal" />
 
             <LinearLayout
@@ -51,7 +51,7 @@
                     android:id="@+id/imageView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/level_one"
+                    android:src="@drawable/level_one_dark"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
@@ -62,7 +62,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:text="@string/level_one"
-                    android:textColor="@color/white_mix_gary" />
+                    android:textColor="#000" />
             </LinearLayout>
 
             <LinearLayout
@@ -77,7 +77,7 @@
                     android:id="@+id/imageView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/level_two"
+                    android:src="@drawable/level_two_dark"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
@@ -89,7 +89,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:text="@string/level_two"
-                    android:textColor="@color/white_mix_gary" />
+                    android:textColor="#000" />
             </LinearLayout>
 
             <LinearLayout
@@ -104,7 +104,7 @@
                     android:id="@+id/imageView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/level_three"
+                    android:src="@drawable/level_three_dark"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
@@ -116,7 +116,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:text="@string/level_three"
-                    android:textColor="@color/white_mix_gary" />
+                    android:textColor="#000" />
             </LinearLayout>
 
         </LinearLayout>
@@ -129,7 +129,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:clickable="false"
-        android:background="@color/light_brown"
+        android:background="#fff"
         android:layout_marginTop="2dp">
 
         <TextView
@@ -138,7 +138,7 @@
             android:text="@string/status_explanation"
             android:id="@+id/textView3"
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/white_mix_gary"/>
+            android:textColor="#000"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -172,7 +172,7 @@
                     android:id="@+id/verified_textView"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="5dp"
-                    android:textColor="@color/white_mix_gary"
+                    android:textColor="#000"
                     />
 
             </LinearLayout>
@@ -195,7 +195,7 @@
                     />
 
                 <TextView
-                    android:textColor="@color/white_mix_gary"
+                    android:textColor="#000"
                     android:paddingLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -212,7 +212,7 @@
 
                 <Button
                     android:text="@string/x_button_char"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#fff"
                     android:textSize="@dimen/verification_button_text_size"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -222,7 +222,7 @@
 
                 <TextView
                     android:paddingLeft="5dp"
-                    android:textColor="@color/white_mix_gary"
+                    android:textColor="#000"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_failed"
@@ -233,23 +233,23 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_marginTop="2dp"
-        android:padding="10dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/light_brown">
+    <!--<LinearLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--android:background="#fff">-->
 
-        <TextView
-            android:gravity="center"
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="preliminary"
-            android:textColor="@color/white_mix_gary" />
-    </LinearLayout>
+        <!--<TextView-->
+            <!--android:gravity="center"-->
+            <!--android:id="@+id/textView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:text="preliminary"-->
+            <!--android:textColor="#000" />-->
+    <!--</LinearLayout>-->
 
 
 </LinearLayout>

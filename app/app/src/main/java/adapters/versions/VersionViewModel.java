@@ -14,8 +14,10 @@ import model.DownloadState;
 import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
+import model.daoModels.Verification;
 import model.daoModels.Version;
 import model.parsers.MediaType;
+import signing.Status;
 import view.ViewContentHelper;
 
 /**
@@ -145,6 +147,9 @@ public class VersionViewModel {
         }
 
         public int getCheckingLevelImage(){
+            if(type == MediaType.MEDIA_TYPE_AUDIO || (type == MediaType.MEDIA_TYPE_TEXT && version.getVerificationStatus() != Status.VERIFIED.ordinal())){
+                return R.drawable.verify_fail;
+            }
             return ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel()));
         }
 

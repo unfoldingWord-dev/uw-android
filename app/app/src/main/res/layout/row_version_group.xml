@@ -14,7 +14,9 @@
         android:id="@+id/row_version_group_title"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/row_version_group_indicator"
+        android:layout_toStartOf="@+id/row_version_group_indicator"/>
 
     <ImageView
         android:layout_marginEnd="8dp"
