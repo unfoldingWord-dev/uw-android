@@ -14,11 +14,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.DataFileManager;
 import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 import services.UWUpdaterService;
 
 /**
@@ -84,7 +86,8 @@ public class UpdateBooksRunnable implements Runnable{
 
     private void updateChapters(Book parent){
 
-        if(parent.getVersion().getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal()) {
+        if(DataFileManager.getStateOfContent(updater.getApplicationContext(), parent.getVersion(), MediaType.MEDIA_TYPE_TEXT)
+                == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
             updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
         }
     }

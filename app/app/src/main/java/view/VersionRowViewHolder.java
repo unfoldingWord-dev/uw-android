@@ -106,8 +106,8 @@ public class VersionRowViewHolder {
         informationStatus.setBackgroundResource(RowStatusHelper.getColorForStatus(verificationStatus));
         informationStatus.setText(RowStatusHelper.getButtonTextForStatus(context, verificationStatus));
 
-        setupForAudioDownloadState(version.getAudioDownloadState(), version.hasAudio() && version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
-        setupForVideoDownloadState(version.getVideoDownloadState(), false);
+//        setupForAudioDownloadState(version.getAudioDownloadState(), version.hasAudio() && version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
+//        setupForVideoDownloadState(version.getVideoDownloadState(), false);
     }
 
     private void setupOnClickListeners(){
@@ -171,7 +171,7 @@ public class VersionRowViewHolder {
 
     private void setRowState(){
 
-        DownloadState state = DownloadState.createState(version.getSaveState());
+        DownloadState state = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
         boolean isDownloaded = (state == DownloadState.DOWNLOAD_STATE_DOWNLOADED);
         versionInformationHolder.setRowState(isDownloaded);
 

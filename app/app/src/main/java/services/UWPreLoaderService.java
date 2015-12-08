@@ -164,7 +164,6 @@ public class UWPreLoaderService extends UWUpdaterService {
                     .getVersionDao().queryBuilder().list();
 
             for(Version version : versions){
-                version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
                 version.update();
             }
 

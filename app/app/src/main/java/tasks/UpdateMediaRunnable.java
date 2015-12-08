@@ -48,10 +48,9 @@ public class UpdateMediaRunnable implements Runnable {
 
     private void updateBook(){
 
-        if(!isUpdatingVideo && !book.getAudioSaveStateEnum().equals(DownloadState.DOWNLOAD_STATE_DOWNLOADED) || isUpdatingVideo && !book.getVideoSaveState().equals(DownloadState.DOWNLOAD_STATE_DOWNLOADED)) {
+        if(!isUpdatingVideo) {
 
             if(!isUpdatingVideo){
-                book.setAudioSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
                 book.update();
             }
             int numberOfChapters = book.getAudioBook().getAudioChapters().size();

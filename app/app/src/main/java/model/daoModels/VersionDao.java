@@ -40,9 +40,8 @@ public class VersionDao extends AbstractDao<Version, Long> {
         public final static Property StatusSourceText = new Property(9, String.class, "statusSourceText", false, "STATUS_SOURCE_TEXT");
         public final static Property StatusSourceTextVersion = new Property(10, String.class, "statusSourceTextVersion", false, "STATUS_SOURCE_TEXT_VERSION");
         public final static Property StatusVersion = new Property(11, String.class, "statusVersion", false, "STATUS_VERSION");
-        public final static Property SaveState = new Property(12, Integer.class, "saveState", false, "SAVE_STATE");
-        public final static Property Modified = new Property(13, java.util.Date.class, "modified", false, "MODIFIED");
-        public final static Property LanguageId = new Property(14, long.class, "languageId", false, "LANGUAGE_ID");
+        public final static Property Modified = new Property(12, java.util.Date.class, "modified", false, "MODIFIED");
+        public final static Property LanguageId = new Property(13, long.class, "languageId", false, "LANGUAGE_ID");
     };
 
     private DaoSession daoSession;
@@ -74,9 +73,8 @@ public class VersionDao extends AbstractDao<Version, Long> {
                 "\"STATUS_SOURCE_TEXT\" TEXT," + // 9: statusSourceText
                 "\"STATUS_SOURCE_TEXT_VERSION\" TEXT," + // 10: statusSourceTextVersion
                 "\"STATUS_VERSION\" TEXT," + // 11: statusVersion
-                "\"SAVE_STATE\" INTEGER," + // 12: saveState
-                "\"MODIFIED\" INTEGER," + // 13: modified
-                "\"LANGUAGE_ID\" INTEGER NOT NULL );"); // 14: languageId
+                "\"MODIFIED\" INTEGER," + // 12: modified
+                "\"LANGUAGE_ID\" INTEGER NOT NULL );"); // 13: languageId
     }
 
     /** Drops the underlying database table. */
@@ -150,16 +148,11 @@ public class VersionDao extends AbstractDao<Version, Long> {
             stmt.bindString(12, statusVersion);
         }
  
-        Integer saveState = entity.getSaveState();
-        if (saveState != null) {
-            stmt.bindLong(13, saveState);
-        }
- 
         java.util.Date modified = entity.getModified();
         if (modified != null) {
-            stmt.bindLong(14, modified.getTime());
+            stmt.bindLong(13, modified.getTime());
         }
-        stmt.bindLong(15, entity.getLanguageId());
+        stmt.bindLong(14, entity.getLanguageId());
     }
 
     @Override
@@ -190,9 +183,8 @@ public class VersionDao extends AbstractDao<Version, Long> {
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // statusSourceText
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // statusSourceTextVersion
             cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // statusVersion
-            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // saveState
-            cursor.isNull(offset + 13) ? null : new java.util.Date(cursor.getLong(offset + 13)), // modified
-            cursor.getLong(offset + 14) // languageId
+            cursor.isNull(offset + 12) ? null : new java.util.Date(cursor.getLong(offset + 12)), // modified
+            cursor.getLong(offset + 13) // languageId
         );
         return entity;
     }
@@ -212,9 +204,8 @@ public class VersionDao extends AbstractDao<Version, Long> {
         entity.setStatusSourceText(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setStatusSourceTextVersion(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
         entity.setStatusVersion(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setSaveState(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
-        entity.setModified(cursor.isNull(offset + 13) ? null : new java.util.Date(cursor.getLong(offset + 13)));
-        entity.setLanguageId(cursor.getLong(offset + 14));
+        entity.setModified(cursor.isNull(offset + 12) ? null : new java.util.Date(cursor.getLong(offset + 12)));
+        entity.setLanguageId(cursor.getLong(offset + 13));
      }
     
     /** @inheritdoc */

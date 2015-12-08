@@ -270,10 +270,26 @@ public class FileUtil {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/" + context.getString(R.string.app_name) + "/temp");
         if(file.exists()){
-            final File to = new File(file.getAbsolutePath());
-            boolean success = file.renameTo(to);
-            success = file.delete();
+            deleteContents(file);
+            file.delete();
         }
+    }
+
+    public static boolean deleteContents(File dir) {
+        File[] files = dir.listFiles();
+        boolean success = true;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    success &= deleteContents(file);
+                }
+                if (!file.delete()) {
+                    Log.d(TAG, "Failed to delete " + file);
+                    success = false;
+                }
+            }
+        }
+        return success;
     }
 
     //endregion

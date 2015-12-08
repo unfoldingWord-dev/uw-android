@@ -61,15 +61,16 @@ public class AudioChapterParser extends UWDataParser{
 
         JSONObject jsonModel = new JSONObject();
 
-        jsonModel.put(BITRATE_JSON_KEY, model.getBitrateJson());
+        jsonModel.put(BITRATE_JSON_KEY, new JSONArray(model.getBitrateJson()));
         jsonModel.put(LENGTH_JSON_KEY, model.getLength());
+        jsonModel.put(CHAPTER_JSON_KEY, model.getChapter());
         jsonModel.put(SOURCE_JSON_KEY, model.getSource());
         jsonModel.put(SOURCE_SIGNATURE_JSON_KEY, model.getSourceSignature());
 
-        JSONObject parentModel = new JSONObject();
-        String chapter = (model.getChapter() < 10)? "0" + Integer.toString(model.getChapter()) : Integer.toString(model.getChapter());
-        parentModel.put(chapter, jsonModel);
+//        JSONObject parentModel = new JSONObject();
+//        String chapter = (model.getChapter() < 10)? "0" + Integer.toString(model.getChapter()) : Integer.toString(model.getChapter());
+//        parentModel.put(chapter, jsonModel);
 
-        return parentModel;
+        return jsonModel;
     }
 }

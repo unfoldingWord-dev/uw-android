@@ -23,7 +23,7 @@ public class AudioBookParser extends UWDataParser{
     private static final String CONTRIBUTORS_JSON_KEY = "contributors";
     private static final String REVISION_JSON_KEY = "rev";
     private static final String TEXT_VERSION_JSON_KEY = "txt_ver";
-    private static final String SOURCE_LIST_JSON_KEY = "src_list";
+    public static final String SOURCE_LIST_JSON_KEY = "src_list";
 
     public static AudioBook parseAudioBook(JSONObject jsonObject, Book parent) throws JSONException {
 

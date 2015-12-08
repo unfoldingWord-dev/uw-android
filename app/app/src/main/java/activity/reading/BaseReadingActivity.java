@@ -349,7 +349,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             Book book = getBook();
             if(book != null) {
             book.refresh();
-                audioPlayerViewGroup.handleDownloadState(book.getAudioSaveStateEnum());
+                audioPlayerViewGroup.handleDownloadState(DataFileManager.getStateOfContent(getApplicationContext(), book.getVersion(), MediaType.MEDIA_TYPE_TEXT));
             }
         }
 
@@ -478,9 +478,10 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     @Override
-    public void resourcesChosen(List<MediaType> types) {
+    public void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types) {
 
         shareVersion(types, getSharingVersion());
+        dialogFragment.dismiss();
     }
 
     private void shareVersion(List<MediaType> types, Version version){

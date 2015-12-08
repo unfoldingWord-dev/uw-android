@@ -76,7 +76,6 @@ public class UpdateBibleChaptersRunnable implements Runnable{
             i++;
         }
         updateModels(chapters);
-        parent.getVersion().setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
         parent.getVersion().update();
         updater.runnableFinished();
     }

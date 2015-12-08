@@ -170,12 +170,12 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
     @Override
     public void downloadWasPressed(VersionRowViewHolder holder, Version version) {
 
-        if(version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()) {
-            stopDownload(version);
-        }
-        else{
-            downloadRow(version);
-        }
+//        if(version.getSaveState() == DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal()) {
+//            stopDownload(version);
+//        }
+//        else{
+//            downloadRow(version);
+//        }
     }
 
     @Override
@@ -202,42 +202,42 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     private void downloadRow(final Version version){
 
-        if (!NetWorkUtil.isConnected(getContext())) {
-            new AlertDialog.Builder(getContext())
-                .setTitle("Alert")
-                .setMessage("Failed connecting to the internet.")
-                .setPositiveButton("OK", null)
-                .create().show();
-        } else {
-            setupIntentFilter();
-            version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
-            version.update();
-            Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
-            downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, version.getId());
-            getContext().startService(downloadIntent);
-            reload();
-        }
+//        if (!NetWorkUtil.isConnected(getContext())) {
+//            new AlertDialog.Builder(getContext())
+//                .setTitle("Alert")
+//                .setMessage("Failed connecting to the internet.")
+//                .setPositiveButton("OK", null)
+//                .create().show();
+//        } else {
+//            setupIntentFilter();
+//            version.setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADING.ordinal());
+//            version.update();
+//            Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
+//            downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, version.getId());
+//            getContext().startService(downloadIntent);
+//            reload();
+//        }
     }
 
     private void downloadMedia(VersionRowViewHolder holder, Version version, boolean isVideo){
 
-        if (!NetWorkUtil.isConnected(getContext())) {
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Alert")
-                    .setMessage("Failed connecting to the internet.")
-                    .setPositiveButton("OK", null)
-                    .create().show();
-        } else {
-            setupIntentFilter();
-            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
-            downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, version.getId());
-            downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, isVideo);
-            getContext().startService(downloadIntent);
-            if(!isVideo){
-                version.willDownloadAudio();
-                holder.setupForAudioDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING, false);
-            }
-        }
+//        if (!NetWorkUtil.isConnected(getContext())) {
+//            new AlertDialog.Builder(getContext())
+//                    .setTitle("Alert")
+//                    .setMessage("Failed connecting to the internet.")
+//                    .setPositiveButton("OK", null)
+//                    .create().show();
+//        } else {
+//            setupIntentFilter();
+//            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class);
+//            downloadIntent.putExtra(UWMediaDownloaderService.VERSION_PARAM, version.getId());
+//            downloadIntent.putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, isVideo);
+//            getContext().startService(downloadIntent);
+//            if(!isVideo){
+//                version.willDownloadAudio();
+//                holder.setupForAudioDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING, false);
+//            }
+//        }
     }
 
     private void deleteVersion(final Version version){
@@ -302,36 +302,36 @@ public class CollapsibleVersionAdapter extends AnimatedExpandableListView.Animat
 
     private void stopDownload(final Version version){
 
-        (new DialogFragment() {
-
-
-            @NonNull
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                // Use the Builder class for convenient dialog construction
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Stop download?")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-
-                                DownloadState state = DownloadState.createState(Version.getVersionForId(
-                                        version.getId(), DaoDBHelper.getDaoSession(getContext())).getSaveState());
-                                stopDownloadService(version);
-
-                                if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING ||
-                                        state == DownloadState.DOWNLOAD_STATE_ERROR) {new DeleteVersionTask().execute(version);
-                                }
-                            }
-                        })
-                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-
-                            }
-                        });
-                // Create the AlertDialog object and return it
-                return builder.create();
-            }
-        }).show(parentFragment.getFragmentManager(), "confirmAlert");
+//        (new DialogFragment() {
+//
+//
+//            @NonNull
+//            @Override
+//            public Dialog onCreateDialog(Bundle savedInstanceState) {
+//                // Use the Builder class for convenient dialog construction
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setMessage("Stop download?")
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//
+//                                DownloadState state = DownloadState.createState(Version.getVersionForId(
+//                                        version.getId(), DaoDBHelper.getDaoSession(getContext())).getSaveState());
+//                                stopDownloadService(version);
+//
+//                                if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADING ||
+//                                        state == DownloadState.DOWNLOAD_STATE_ERROR) {new DeleteVersionTask().execute(version);
+//                                }
+//                            }
+//                        })
+//                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//
+//                            }
+//                        });
+//                // Create the AlertDialog object and return it
+//                return builder.create();
+//            }
+//        }).show(parentFragment.getFragmentManager(), "confirmAlert");
     }
 
     private class DeleteVersionTask extends AsyncTask<Version, Void, Void> {

@@ -65,7 +65,7 @@ public class MyDaoGenerator {
 
         DaoHelperMethods.EntityInformation versionInfo =
                 new DaoHelperMethods.EntityInformation(ModelNames.VERSION, ModelNames.VERSION_STRING_ATTRIBUTES,
-                        ModelNames.VERSION_DATE_ATTRIBUTES, ModelNames.VERSION_INT_ATTRIBUTES);
+                        ModelNames.VERSION_DATE_ATTRIBUTES);
         Entity version = DaoHelperMethods.createEntity(schema, versionInfo);
         version.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
         DaoHelperMethods.createParentChildRelationship(
@@ -79,7 +79,7 @@ public class MyDaoGenerator {
 
         DaoHelperMethods.EntityInformation bookInfo =
                 new DaoHelperMethods.EntityInformation(ModelNames.BOOK, ModelNames.BOOK_STRING_ATTRIBUTES,
-                        ModelNames.BOOK_DATE_ATTRIBUTES, ModelNames.BOOK_INT_ATTRIBUTES);
+                        ModelNames.BOOK_DATE_ATTRIBUTES);
         Entity book = DaoHelperMethods.createEntity(schema, bookInfo);
         book.setSuperclass(UW_DATABASE_MODEL_PROTOCOL);
         DaoHelperMethods.createParentChildRelationship(

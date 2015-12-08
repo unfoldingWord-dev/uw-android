@@ -105,7 +105,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             /* Database does not exists create blank database */
             sqliteDatabase.close();
-//            populateWithPreload();
+            populateWithPreload();
         }
     }
 

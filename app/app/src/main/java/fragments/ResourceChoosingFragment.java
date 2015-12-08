@@ -67,6 +67,15 @@ public class ResourceChoosingFragment extends DialogFragment {
         return fragment;
     }
 
+    public static ResourceChoosingFragment newInstance(Version version, ResourceChoosingListener listener) {
+        Bundle args = new Bundle();
+        args.putSerializable(VERSION_PARAM, version);
+        ResourceChoosingFragment fragment = new ResourceChoosingFragment();
+        fragment.setArguments(args);
+        fragment.listener = listener;
+        return fragment;
+    }
+
     public ResourceChoosingFragment() {
         // Required empty public constructor
     }
@@ -127,17 +136,19 @@ public class ResourceChoosingFragment extends DialogFragment {
             }
             i++;
         }
-        listener.resourcesChosen(types);
+        listener.resourcesChosen(this, types);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            listener = (ResourceChoosingListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+        if(listener == null) {
+            try {
+                listener = (ResourceChoosingListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
         }
     }
 
@@ -195,7 +206,7 @@ public class ResourceChoosingFragment extends DialogFragment {
     }
 
     public interface ResourceChoosingListener {
-        void resourcesChosen(List<MediaType> types);
+        void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types);
     }
 
     @Override

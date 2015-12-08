@@ -62,7 +62,6 @@ public class UpdateStoryPagesRunnable implements Runnable{
             }
         }
         updatePages(pages);
-        parent.getBook().getVersion().setSaveState(DownloadState.DOWNLOAD_STATE_DOWNLOADED.ordinal());
         parent.getBook().getVersion().update();
         updater.runnableFinished();
     }

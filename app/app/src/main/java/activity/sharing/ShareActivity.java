@@ -10,6 +10,7 @@ package activity.sharing;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import adapters.VersionShareAdapter;
+import fragments.ResourceChoosingFragment;
 import model.DaoDBHelper;
 import model.SharingHelper;
 import model.daoModels.Version;
@@ -65,14 +67,32 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
     public void shareClicked(View view) {
 
-        Version version = selectionFragment.getSelectedVersion();
+        final Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
-            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<MediaType>()))
-                    .show(getSupportFragmentManager(), "TypeChoosingFragment");
 
-//            goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
+            if(version.hasVideo() || version.hasAudio()){
+                ResourceChoosingFragment.newInstance(version, new ResourceChoosingFragment.ResourceChoosingListener() {
+                    @Override
+                    public void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types) {
+                        shareVersion(types, version);
+                        dialogFragment.dismiss();
+                    }
+                }).show(getSupportFragmentManager(), "ResourceChoosingFragment");
+            }
+            else{
+                shareVersion(new ArrayList<MediaType>(), version);
+            }
+
+//            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<MediaType>()))
+//                    .show(getSupportFragmentManager(), "TypeChoosingFragment");
+
         }
+    }
 
+    private void shareVersion(List<MediaType> types, Version version){
+
+        TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, types))
+                .show(getSupportFragmentManager(), "TypeChoosingFragment");
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.util.List;
 import model.DaoDBHelper;
 import model.daoModels.LanguageLocale;
 import services.UWUpdaterService;
+import unfoldingword.DaoHelperMethods;
 
 /**
  * Created by PJ Fechner on 6/17/15.
@@ -34,6 +35,8 @@ public class UpdateLanguageLocaleRunnable implements Runnable{
     public UpdateLanguageLocaleRunnable(JSONArray jsonModels, UWUpdaterService updater) {
         this.jsonModels = jsonModels;
         this.updater = updater;
+
+        DaoDBHelper.getDaoSession(updater.getApplicationContext()).getLanguageLocaleDao().deleteAll();
     }
 
     @Override

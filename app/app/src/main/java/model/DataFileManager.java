@@ -2,13 +2,12 @@ package model;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
-
-import com.github.peejweej.androidsideloading.utilities.FileUtilities;
 
 import org.unfoldingword.mobile.R;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -74,7 +73,7 @@ public class DataFileManager {
     public static Uri getUri(Context context, Version version, MediaType type, String fileName){
 
         return Uri.fromFile(getFileForDownload(context, type, version, FileNameHelper.getSaveFileNameFromUrl(fileName)));
-}
+    }
 
     public static int getDownloadedBitrate(Context context, Version version, MediaType type){
 
@@ -114,28 +113,11 @@ public class DataFileManager {
 
         File desiredFolder = getFileForDownload(context, type, version);
         if(desiredFolder.exists()){
-            if(deleteContents(desiredFolder)) {
+            if(FileUtil.deleteContents(desiredFolder)) {
                 return desiredFolder.delete();
             }
         }
         return false;
-    }
-
-    public static boolean deleteContents(File dir) {
-        File[] files = dir.listFiles();
-        boolean success = true;
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    success &= deleteContents(file);
-                }
-                if (!file.delete()) {
-                    Log.d(TAG, "Failed to delete " + file);
-                    success = false;
-                }
-            }
-        }
-        return success;
     }
 
     private static DownloadState verifyStateForContent(Version version, MediaType type, File folder){
@@ -191,7 +173,7 @@ public class DataFileManager {
     public static Uri createUriForSideLoad(Context context, Version version, List<MediaType> types){
 
         FileUtil.clearTemporaryFiles(context);
-        saveTempFileForSideLoading(context, version.getAsPreloadJson(context).toString().getBytes(), "text.json");
+        saveTempFileForSideLoading(context, version.getAsPreloadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(version));
         for(MediaType type : types){
             if(type == MediaType.MEDIA_TYPE_AUDIO){
                 int bitRate = getDownloadedBitrate(context, version, MediaType.MEDIA_TYPE_AUDIO);
@@ -201,7 +183,6 @@ public class DataFileManager {
         File outFile = new File(context.getFilesDir()
                 + "/" + context.getString(R.string.app_name) + "/temp");
 
-
         return compressFiles(version, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
     }
 
@@ -209,7 +190,8 @@ public class DataFileManager {
 
         for(Book book : version.getBooks()){
             for(AudioChapter chapter : book.getAudioBook().getAudioChapters()){
-                saveAudioForPreload(context, version, chapter, bitRate);
+                saveAudioForSideLoad(context, version, chapter, bitRate);
+//                saveAudioSignatureForSideLoad(context, version, chapter, bitRate);
             }
         }
     }
@@ -245,11 +227,106 @@ public class DataFileManager {
         }
     }
 
-    private static void saveAudioForPreload(Context context, Version version, AudioChapter audioChapter, int bitRate){
+    private static void unzipFiles(File archive, File newFile){
+        try {
+            ZipFile zipfile = new ZipFile(archive);
+            int entries = zipfile.size();
+            int total = 0;
+
+            for (Enumeration<?> e = zipfile.entries(); e.hasMoreElements();) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                unzipEntry(zipfile, entry, newFile);
+            }
+            zipfile.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void unzipEntry(ZipFile zipfile, ZipEntry entry,
+                            File outputDir) throws IOException {
+
+        if(!outputDir.exists()){
+            outputDir.mkdirs();
+        }
+//        if (entry.isDirectory()) {
+//            outputDir.mkdirs();
+//            createDir(new File(outputDir, entry.getName()));
+//            return;
+//        }
+
+        File outputFile = new File(outputDir, entry.getName());
+        if (!outputFile.exists()) {
+            outputFile.createNewFile();
+        }
+
+        BufferedInputStream inputStream = new
+                BufferedInputStream(zipfile
+                .getInputStream(entry));
+        BufferedOutputStream outputStream = new BufferedOutputStream(
+                new FileOutputStream(outputFile));
+
+        try{
+            copy(inputStream, outputStream);
+        }
+        finally{
+            outputStream.close();
+            inputStream.close();
+        }
+    }
+
+    public static int copy(BufferedInputStream in, BufferedOutputStream out) {
+        byte[] buffer = new byte[1024];
+
+        int count = 0, n = 0;
+        try {
+            while ((n = in.read(buffer, 0, 1024)) != (-1)) {
+                out.write(buffer, 0, n);
+                count += n;
+            }
+            out.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return count;
+    }
+
+    public static Uri uncompressSideLoadedFiles(Context context, File currentFile){
+
+        FileUtil.clearTemporaryFiles(context);
+        File outFile = new File(context.getFilesDir()
+                + "/" + context.getString(R.string.app_name) + "/temp/sideload");
+
+        unzipFiles(currentFile, outFile);
+        return Uri.fromFile(outFile);
+    }
+
+
+    private static void saveAudioForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){
 
         Uri fileUri = getUri(context, version, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitRate));
         File newFile = new File(FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME).getPath());
         FileUtil.copyFile(fileUri, Uri.fromFile(new File(newFile, FileNameHelper.getShareAudioFileName(audioChapter, bitRate))));
+    }
+
+    private static void saveAudioSignatureForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){
+
+        Uri fileUri = getUri(context, version, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getSignatureUrl(bitRate));
+        File newFile = new File(FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME).getPath());
+        FileUtil.copyFile(fileUri, Uri.fromFile(new File(newFile, FileNameHelper.getShareAudioSignatureFileName(audioChapter, bitRate))));
     }
 
     private static void saveTempFileForSideLoading(Context context, byte[] file, String fileName) {
