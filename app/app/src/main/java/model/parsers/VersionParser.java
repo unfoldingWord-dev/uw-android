@@ -9,23 +9,29 @@
 package model.parsers;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+
+import com.google.gson.JsonObject;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import model.DataFileManager;
 import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.Language;
 import model.daoModels.Version;
 import utils.FileNameHelper;
+import utils.FileUtil;
 import utils.UWFileUtils;
 
 /**
@@ -160,8 +166,11 @@ public class VersionParser extends UWDataParser{
 
         for(Book book : version.getBooks()){
             try {
-                sourcesObject.put(book.getSourceUrl(), UWFileUtils.loadSource(book.getSourceUrl(), context));
-                sourcesObject.put(book.getSignatureUrl(), UWFileUtils.loadSource(book.getSignatureUrl(), context));
+                Uri sourceUri = DataFileManager.getUri(context, book.getVersion(), MediaType.MEDIA_TYPE_TEXT, book.getSourceUrl());
+                Uri signatureUri = DataFileManager.getUri(context, book.getVersion(), MediaType.MEDIA_TYPE_TEXT, book.getSignatureUrl());
+
+                sourcesObject.put(book.getSourceUrl(), FileUtil.getStringFromFile(new File(sourceUri.getPath())));
+                sourcesObject.put(book.getSignatureUrl(), FileUtil.getStringFromFile(new File(signatureUri.getPath())));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -169,7 +178,6 @@ public class VersionParser extends UWDataParser{
         }
         return sourcesObject;
     }
-
 
 
     //endregion

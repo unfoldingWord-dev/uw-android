@@ -37,7 +37,6 @@ import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
-import enums.ResourceType;
 import fragments.BitrateFragment;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ChapterSelectionFragment;
@@ -474,17 +473,17 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             ResourceChoosingFragment.newInstance(version).show(getSupportFragmentManager(), "ResourceChoosingFragment");
         }
         else{
-            shareVersion(new ArrayList<ResourceType>(), version);
+            shareVersion(new ArrayList<MediaType>(), version);
         }
     }
 
     @Override
-    public void resourcesChosen(List<ResourceType> types) {
+    public void resourcesChosen(List<MediaType> types) {
 
         shareVersion(types, getSharingVersion());
     }
 
-    private void shareVersion(List<ResourceType> types, Version version){
+    private void shareVersion(List<MediaType> types, Version version){
 
         TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, types))
                 .show(getSupportFragmentManager(), "TypeChoosingFragment");

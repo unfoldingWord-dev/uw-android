@@ -26,13 +26,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 
 /**
  * Created by Fechner on 12/31/14.
  */
 public class FileUtil {
 
-    private static final String TAG = "FileLoader";
+    private static final String TAG = "FileUtil";
 
     //region Out Methodsœ
     /**
@@ -193,10 +194,39 @@ public class FileUtil {
     public static Uri createTemporaryFile(Context context, byte[] bytes, String fileName){
 
         clearTemporaryFiles(context);
-        String directory = Environment.getExternalStorageDirectory().getAbsolutePath()
+        String directory = context.getFilesDir()
                 + "/" + context.getString(R.string.app_name) + "/temp";
 
         return saveFile(bytes, directory, fileName);
+    }
+
+    public static Uri createTemporaryFile(Context context, byte[] bytes, String folderName, String fileName){
+
+        String directory = context.getFilesDir()
+                + "/" + context.getString(R.string.app_name) + "/temp/" + folderName;
+
+        return saveFile(bytes, directory, fileName);
+    }
+
+    public static Uri getUriForTempDir(Context context, String folderName){
+
+        String directory = context.getFilesDir()
+                + "/" + context.getString(R.string.app_name) + "/temp/" + folderName;
+        return Uri.fromFile(new File(directory));
+    }
+
+    public static void copyFile(Uri originalDir, Uri newDir){
+
+        try {
+            File source = new File(originalDir.getPath());
+            FileChannel src = new FileInputStream(source).getChannel();
+            FileChannel dst = new FileOutputStream(new File(newDir.getPath())).getChannel();
+            dst.transferFrom(src, 0, src.size());
+            src.close();
+            dst.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static Uri createTemporaryFile(Context context, CharSequence fileSequence, String fileName){
@@ -271,7 +301,7 @@ public class FileUtil {
             return resultString;
         }
         catch (IOException e){
-            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
+            Log.e(TAG, "getJSONStringFromApplicationFiles IOException: " + e.toString());
             return null;
         }
     }
@@ -291,7 +321,7 @@ public class FileUtil {
             return resultString;
         }
         catch (IOException e){
-            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
+            Log.e(TAG, "getJSONStringFromAssets IOException: " + e.toString());
             return null;
         }
     }
@@ -305,7 +335,7 @@ public class FileUtil {
             return resultString;
         }
         catch (IOException e){
-            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
+            Log.e(TAG, "getStringFromFile IOException: " + e.toString());
             return null;
         }
     }
@@ -325,7 +355,7 @@ public class FileUtil {
             return bytes;
         }
         catch (IOException e){
-            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
+            Log.e(TAG, "getbytesFromFile IOException: " + e.toString());
             return null;
         }
     }

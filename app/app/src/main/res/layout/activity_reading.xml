@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ddd"
+            android:textColor="#fff"
             android:text="@string/no_selected_version_text"
             android:layout_gravity="center"
             android:textAlignment="center"

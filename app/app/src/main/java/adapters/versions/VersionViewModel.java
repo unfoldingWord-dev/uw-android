@@ -108,7 +108,7 @@ public class VersionViewModel {
 
                 case MEDIA_TYPE_AUDIO: return R.drawable.audio_icon;
 
-                case MEDIA_TYPE_VIDEO: return R.drawable.video_icone;
+                case MEDIA_TYPE_VIDEO: return R.drawable.video_icon;
 
                 default: return -1;
             }

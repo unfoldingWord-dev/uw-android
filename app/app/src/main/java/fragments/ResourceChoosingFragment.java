@@ -33,8 +33,8 @@ import adapters.ResourceChoosingAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import enums.ResourceType;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -118,7 +118,7 @@ public class ResourceChoosingFragment extends DialogFragment {
 
     @OnClick(R.id.resource_choosing_continue_button) protected void endDialog(){
 
-        List<ResourceType> types = new ArrayList<>();
+        List<MediaType> types = new ArrayList<>();
         int i = 0;
         for (ResourceChoosingAdapter.ResourceChoosingAdapterProtocol item : adapter.getObjects()){
 
@@ -160,12 +160,12 @@ public class ResourceChoosingFragment extends DialogFragment {
         List<ResourceChoosingAdapter.ResourceChoosingAdapterProtocol> data = new ArrayList<>();
 
         if(version.hasAudio()){
-            ResourceType type = ResourceType.RESOURCE_TYPE_AUDIO;
-            data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), ResourceType.getTitle(type), type));
+            MediaType type = MediaType.MEDIA_TYPE_AUDIO;
+            data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), type.getTitle(), type));
         }
         if(version.hasVideo()){
-            ResourceType type = ResourceType.RESOURCE_TYPE_VIDEO;
-            data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), ResourceType.getTitle(type), type));
+            MediaType type = MediaType.MEDIA_TYPE_VIDEO;
+            data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), type.getTitle(), type));
         }
         return data;
     }
@@ -174,10 +174,10 @@ public class ResourceChoosingFragment extends DialogFragment {
 
         private Context context;
         private String name;
-        private ResourceType type;
+        private MediaType type;
 
 
-        public SimpleResourceChoosingObject(Context context, String name, ResourceType type) {
+        public SimpleResourceChoosingObject(Context context, String name, MediaType type) {
             this.context = context;
             this.name = name;
             this.type = type;
@@ -185,7 +185,7 @@ public class ResourceChoosingFragment extends DialogFragment {
 
         @Override
         public Drawable getImage() {
-            return context.getResources().getDrawable(ResourceType.getImageResourceForType(type));
+            return context.getResources().getDrawable(MediaType.getImageResourceForType(type));
         }
 
         @Override
@@ -195,7 +195,7 @@ public class ResourceChoosingFragment extends DialogFragment {
     }
 
     public interface ResourceChoosingListener {
-        void resourcesChosen(List<ResourceType> types);
+        void resourcesChosen(List<MediaType> types);
     }
 
     @Override

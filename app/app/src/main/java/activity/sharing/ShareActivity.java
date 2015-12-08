@@ -24,10 +24,10 @@ import java.util.List;
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import adapters.VersionShareAdapter;
-import enums.ResourceType;
 import model.DaoDBHelper;
 import model.SharingHelper;
 import model.daoModels.Version;
+import model.parsers.MediaType;
 
 public class ShareActivity extends UWBaseActivity implements VersionShareAdapter.VersionAdapterListener {
 
@@ -67,7 +67,7 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
         Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
-            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<ResourceType>()))
+            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<MediaType>()))
                     .show(getSupportFragmentManager(), "TypeChoosingFragment");
 
 //            goToNextActivity(SharingHelper.getIntentForSharing(getApplicationContext(), version));
