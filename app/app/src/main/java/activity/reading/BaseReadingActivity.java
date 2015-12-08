@@ -465,8 +465,14 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             setupAudioPlayer();
         }
 
-        audioPlayerViewGroup.handleDownloadState(DataFileManager.getStateOfContent(getApplicationContext(), getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO));
         audioPlayerLayout.setVisibility((visible) ? View.VISIBLE : View.GONE);
+        DataFileManager.getStateOfContent(getApplicationContext(), getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+            @Override
+            public void foundDownloadState(DownloadState state) {
+                audioPlayerViewGroup.handleDownloadState(state);
+            }
+        });
+
     }
 
     private void shareVersion(){

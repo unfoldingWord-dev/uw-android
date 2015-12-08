@@ -84,12 +84,16 @@ public class UpdateBooksRunnable implements Runnable{
         }).execute(jsonObject);
     }
 
-    private void updateChapters(Book parent){
+    private void updateChapters(final Book parent){
 
-        if(DataFileManager.getStateOfContent(updater.getApplicationContext(), parent.getVersion(), MediaType.MEDIA_TYPE_TEXT)
-                == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
-            updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
-        }
+        DataFileManager.getStateOfContent(updater.getApplicationContext(), parent.getVersion(), MediaType.MEDIA_TYPE_TEXT, new DataFileManager.GetDownloadStateResponse() {
+            @Override
+            public void foundDownloadState(DownloadState state) {
+                if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
+                    updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
+                }
+            }
+        });
     }
 
     private void updateMedia(JSONObject bookJson, Book book){

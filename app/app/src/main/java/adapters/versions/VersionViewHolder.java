@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import model.DataFileManager;
 import model.DownloadState;
 
 /**
@@ -67,7 +68,7 @@ public class VersionViewHolder {
         titleTextView.setText(model.getTitle());
         checkingLevelImage.setImageResource(model.getCheckingLevelImage());
         setupForDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
-        model.getDownloadState(new VersionViewModel.GetDownloadStateResponse() {
+        model.getDownloadState(new DataFileManager.GetDownloadStateResponse() {
             @Override
             public void foundDownloadState(DownloadState state) {
                 setupForDownloadState(state);

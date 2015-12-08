@@ -154,19 +154,26 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
         }
     }
 
-    public void prepareAudio(StoryPage page){
+    public void prepareAudio(final StoryPage page){
 
-        AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
-        if(DataFileManager.getStateOfContent(context, page.getStoriesChapter().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO) == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+
+        DataFileManager.getStateOfContent(context, page.getStoriesChapter().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+            @Override
+            public void foundDownloadState(DownloadState state) {
+                AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
+                if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
 //            File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
 //            Uri uri = Uri.fromFile(audioFile);
-            Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook().getVersion(),
-                    MediaType.MEDIA_TYPE_AUDIO, chapter.getDownloadedAudioUrl(context));
+                    Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook().getVersion(),
+                            MediaType.MEDIA_TYPE_AUDIO, chapter.getDownloadedAudioUrl(context));
 
-            List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);
-            currentModel = page;
-            setupAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
-        }
+                    List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);
+                    currentModel = page;
+                    setupAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
+                }
+            }
+        });
+
     }
 
     private void setupAudio(Uri audioUri, AudioMarker marker){
