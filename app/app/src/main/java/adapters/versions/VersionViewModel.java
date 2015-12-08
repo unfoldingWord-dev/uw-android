@@ -116,21 +116,9 @@ public class VersionViewModel {
             }
         }
 
-        public void getDownloadState(final GetDownloadStateResponse response){
+        public void getDownloadState(final DataFileManager.GetDownloadStateResponse response){
 
-            new AsyncTask<Context, DownloadState, DownloadState>(){
-                @Override
-                protected DownloadState doInBackground(Context... params) {
-                    return DataFileManager.getStateOfContent(params[0], version, type);
-                }
-
-                @Override
-                protected void onPostExecute(DownloadState downloadState) {
-                    super.onPostExecute(downloadState);
-                    response.foundDownloadState(downloadState);
-                }
-            }.execute(context);
-
+            DataFileManager.getStateOfContent(context, version, type, response);
         }
 
         public String getTitle(){
@@ -156,7 +144,7 @@ public class VersionViewModel {
         public void doActionOnModel(final VersionViewHolder viewHolder){
 
 
-            getDownloadState(new GetDownloadStateResponse() {
+            getDownloadState(new DataFileManager.GetDownloadStateResponse() {
                 @Override
                 public void foundDownloadState(DownloadState state) {
                     doAction(type, viewHolder, state);
@@ -167,7 +155,7 @@ public class VersionViewModel {
         public void itemClicked(final VersionViewHolder viewHolder){
 
             final ResourceViewModel viewModel = this;
-            getDownloadState(new GetDownloadStateResponse() {
+            getDownloadState(new DataFileManager.GetDownloadStateResponse() {
                 @Override
                 public void foundDownloadState(DownloadState state) {
                     if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
@@ -182,10 +170,6 @@ public class VersionViewModel {
         public void checkingLevelClicked(){
             showCheckingLevel(type);
         }
-    }
-
-    public interface GetDownloadStateResponse{
-        void foundDownloadState(DownloadState state);
     }
 
     public interface VersionViewModelListener{

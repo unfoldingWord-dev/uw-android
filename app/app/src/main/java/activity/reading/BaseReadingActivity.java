@@ -349,7 +349,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             Book book = getBook();
             if(book != null) {
             book.refresh();
-                audioPlayerViewGroup.handleDownloadState(DataFileManager.getStateOfContent(getApplicationContext(), book.getVersion(), MediaType.MEDIA_TYPE_TEXT));
+                DataFileManager.getStateOfContent(getApplicationContext(), book.getVersion(), MediaType.MEDIA_TYPE_TEXT, new DataFileManager.GetDownloadStateResponse() {
+                    @Override
+                    public void foundDownloadState(DownloadState state) {
+                        audioPlayerViewGroup.handleDownloadState(state);
+                    }
+                });
             }
         }
 
@@ -400,7 +405,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 Toast.makeText(context, "Download Complete", Toast.LENGTH_SHORT).show();
                 Book book = getBook();
                 book.refresh();
-                audioPlayerViewGroup.handleDownloadState(DataFileManager.getStateOfContent(context, book.getVersion(), MediaType.MEDIA_TYPE_AUDIO));
+                DataFileManager.getStateOfContent(context, book.getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+                    @Override
+                    public void foundDownloadState(DownloadState state) {
+                        audioPlayerViewGroup.handleDownloadState(state);
+                    }
+                });
             }
         };
     }

@@ -2,6 +2,7 @@ package model;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.unfoldingword.mobile.R;
@@ -32,8 +33,11 @@ import utils.FileUtil;
  */
 public class DataFileManager {
 
-    private static final String TAG = "DataFileManager";
+    public interface GetDownloadStateResponse{
+        void foundDownloadState(DownloadState state);
+    }
 
+    private static final String TAG = "DataFileManager";
     private static final String TEMP_FILE_FOLDER_NAME = "sideload";
 
     private static final int FILES_PER_TEXT = 2;
@@ -58,17 +62,30 @@ public class DataFileManager {
         FileUtil.saveFile(getFileForDownload(context, type, book.getVersion(), FileNameHelper.getSaveFileNameFromUrl(url)), data);
     }
 
-    public static DownloadState getStateOfContent(Context context, Version version, MediaType type){
+    public static void getStateOfContent(final Context context, final Version version, final MediaType type, final GetDownloadStateResponse response){
 
-        File mediaFolder = getFileForDownload(context, type, version);
-        if(!mediaFolder.exists()){
-            return DownloadState.DOWNLOAD_STATE_NONE;
-        }
-        else {
-            return verifyStateForContent(version, type, mediaFolder);
-        }
+        new AsyncTask<Void, DownloadState, DownloadState>(){
+
+            @Override
+            protected DownloadState doInBackground(Void... params) {
+                File mediaFolder = getFileForDownload(context, type, version);
+                if(!mediaFolder.exists()){
+                    return DownloadState.DOWNLOAD_STATE_NONE;
+                }
+                else {
+                    return verifyStateForContent(version, type, mediaFolder);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(DownloadState downloadState) {
+                super.onPostExecute(downloadState);
+                response.foundDownloadState(downloadState);
+            }
+        }.execute();
+
+
     }
-
 
     public static Uri getUri(Context context, Version version, MediaType type, String fileName){
 
@@ -96,10 +113,8 @@ public class DataFileManager {
         return -1;
     }
 
-    public static boolean isNumeric(String str)
-    {
-        try
-        {
+    public static boolean isNumeric(String str) {
+        try {
             int d = Integer.parseInt(str);
         }
         catch(NumberFormatException nfe)

@@ -20,6 +20,8 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
+import model.DaoDBHelper;
+import model.daoModels.LanguageLocale;
 import model.daoModels.Version;
 
 /**
@@ -69,13 +71,22 @@ public class VersionShareAdapter extends ArrayAdapter<Version> {
             holder = (ViewHolderForGroup) view.getTag();
         }
 
-        holder.titleTextView.setText(currentItem.getTitle());
+        holder.titleTextView.setText(getTitle(currentItem));
         holder.position = pos;
 
         view.setOnClickListener(new KeyboardsAdapterRowClickListener(pos, holder));
         holder.completedImageView.setImageResource((pos == chosenIndex) ? R.drawable.checkbox_selected : R.drawable.checkbox);
 
         return view;
+    }
+
+    public String getTitle(Version version){
+        return  getLanguageName(context, version) + " (" + version.getLanguage().getLanguageAbbreviation() + ") - " + version.getName();
+    }
+
+    private String getLanguageName(Context context, Version version){
+        LanguageLocale languageLocale = LanguageLocale.getLocalForKey(version.getLanguage().getLanguageAbbreviation(), DaoDBHelper.getDaoSession(context));
+        return  (languageLocale != null)? languageLocale.getLanguageName() : "";
     }
 
     public Version getSelectedVersion(){
