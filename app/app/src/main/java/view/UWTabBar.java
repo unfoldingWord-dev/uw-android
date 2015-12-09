@@ -99,7 +99,7 @@ public class UWTabBar {
     private ImageButton createButton(int index, int imageResource, float weight){
 
         ImageButton button = new ImageButton(context);
-        button.setBackgroundColor(Color.parseColor("#00000000"));
+        button.setBackgroundResource(R.drawable.basic_button_selector);
         button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, weight));
         int padding = getButtonPadding();

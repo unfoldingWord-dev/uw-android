@@ -74,7 +74,7 @@ public class VersionRowViewHolder {
         versionInfoLayout = (LinearLayout) baseView.findViewById(R.id.version_information_layout);
         infoFrame = (FrameLayout) baseView.findViewById(R.id.info_image_frame);
         status = (Button) baseView.findViewById(R.id.verification_status);
-        informationStatus = (Button) baseView.findViewById(R.id.verification_information_status);
+//        informationStatus = (Button) baseView.findViewById(R.id.verification_information_status);
         downloadFrame = (FrameLayout) baseView.findViewById(R.id.download_status_frame);
         downloadProgressBar = (ProgressBar) baseView.findViewById(R.id.download_progress_bar);
 

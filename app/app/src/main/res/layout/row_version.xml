@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainLinearLayout"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="50dp"
     android:background="@drawable/white_button_selector"
     android:orientation="horizontal">
 
     <ImageView
-        android:layout_width="50dp"
+        android:layout_width="40dp"
         android:layout_height="match_parent"
         android:id="@+id/version_row_resource_type_image"
         android:src="@drawable/audio_active"
@@ -32,13 +32,13 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         />
 
     <ImageButton
-        android:padding="10dp"
+        android:padding="5dp"
         android:id="@+id/version_row_checking_level"
-        android:layout_width="50dp"
+        android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="@drawable/basic_button_selector"
@@ -57,7 +57,7 @@
         android:layout_marginRight="8dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_width="50dp"
+        android:layout_width="40dp"
         android:layout_height="match_parent"
         android:id="@+id/version_row_download_button"
         android:clickable="true"
@@ -68,8 +68,8 @@
         <ProgressBar
             android:id="@+id/version_row_download_progress_bar"
             style="@style/ProgressBar.Spinner.Indeterminate.Small"
-            android:layout_width="@dimen/version_selection_button_size"
-            android:layout_height="@dimen/version_selection_button_size"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:max="200"
             android:visibility="invisible"
@@ -80,7 +80,7 @@
             android:layout_gravity="center"
             android:id="@+id/version_download_image"
             android:src="@drawable/download_icon"
-            android:layout_width="@dimen/version_selection_button_size"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
             />
 

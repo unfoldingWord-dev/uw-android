@@ -44,7 +44,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     private List<BibleChapter> chapters;
     private ChaptersAdapter adapter;
 
-    private int selectedRow = -1;
+    private int selectedIndex = -1;
 
     //region setup
     /**
@@ -94,7 +94,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         for(BibleChapter row : chapters) {
             dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getNumber()));
             if(row.getId().equals(currentChapter.getId())){
-                selectedRow = chapters.indexOf(row);
+                selectedIndex = chapters.indexOf(row);
             }
         }
 
@@ -116,9 +116,10 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         }
 
         listView.setOnItemClickListener(this);
-        adapter = new ChaptersAdapter(getContext(), data, this, selectedRow);
+        adapter = new ChaptersAdapter(getContext(), data, this, selectedIndex);
         listView.setAdapter(adapter);
-        listView.setSelection((selectedRow > 5) ? selectedRow - 3 : 0);
+        int indexToScroll = (selectedIndex > 3)? selectedIndex - 3 : 0;
+        listView.setSelection(indexToScroll);
     }
 
     /**

@@ -8,6 +8,7 @@
 
 package activity.readingSelection;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.unfoldingword.mobile.R;
@@ -27,6 +28,9 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
 
     public static final String PROJECT_PARAM = "PROJECT_PARAM";
     public static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
+
+    public static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
+
 
     private boolean isSecondVersion = false;
 
@@ -63,6 +67,8 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
     public void versionWasSelected(Version version, boolean isSecondVersion, MediaType mediaType) {
         UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
         handleBack();
+
+        setResult(1, new Intent());
     }
 
 }

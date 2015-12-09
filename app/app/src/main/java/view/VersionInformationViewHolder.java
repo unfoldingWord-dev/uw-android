@@ -38,14 +38,14 @@ public class VersionInformationViewHolder {
 
         this.titleView = (TextView) parent.findViewById(R.id.version_information_title_view);
         this.statusImageButton = (Button) parent.findViewById(R.id.verification_status);
-        this.verificationTextView = (TextView) parent.findViewById(R.id.verification_text_view);
-        this.checkingEntityTextView = (TextView) parent.findViewById(R.id.checking_entity_text_view);
-        this.checkingLevelTitle = (TextView) parent.findViewById(R.id.version_verification_title);
-
-        this.checkingLevelImage = (ImageView) parent.findViewById(R.id.checking_level_image);
-        this.checkingLevelTextView = (TextView) parent.findViewById(R.id.checking_level_explanation_text);
-        this.versionTextView = (TextView) parent.findViewById(R.id.version_text_view);
-        this.publishDateTextView = (TextView) parent.findViewById(R.id.publish_date_text_view);
+//        this.verificationTextView = (TextView) parent.findViewById(R.id.verification_text_view);
+//        this.checkingEntityTextView = (TextView) parent.findViewById(R.id.checking_entity_text_view);
+//        this.checkingLevelTitle = (TextView) parent.findViewById(R.id.version_verification_title);
+//
+//        this.checkingLevelImage = (ImageView) parent.findViewById(R.id.checking_level_image);
+//        this.checkingLevelTextView = (TextView) parent.findViewById(R.id.checking_level_explanation_text);
+//        this.versionTextView = (TextView) parent.findViewById(R.id.version_text_view);
+//        this.publishDateTextView = (TextView) parent.findViewById(R.id.publish_date_text_view);
     }
 
     public void setInfoForVersion(Context context, Version version){

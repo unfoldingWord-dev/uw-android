@@ -206,6 +206,7 @@ public class UWReadingToolbarViewGroup {
         chapterParams.addRule((!isMinni && !hasTwoVersions) ? RelativeLayout.CENTER_IN_PARENT : RelativeLayout.CENTER_HORIZONTAL);
         chapterParams.height = getSizeForDp((!isMinni && !hasTwoVersions)? 50 : 25);
         chapterParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        chapterTextView.setMaxLines((isMinni)? 1 : 2);
 
         if(isMinni || hasTwoVersions){
             chapterParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);

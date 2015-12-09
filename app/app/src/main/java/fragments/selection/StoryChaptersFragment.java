@@ -40,7 +40,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     private ChapterSelectionFragmentListener mListener = null;
 
-    protected ListView mListView = null;
+    protected ListView listView = null;
     private TextView titleTextView;
 
     private boolean showTitle = false;
@@ -120,13 +120,16 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
         if (chapterModels != null) {
 
-            mListView = (ListView) view.findViewById(R.id.generalList);
-            mListView.setOnItemClickListener(this);
+            listView = (ListView) view.findViewById(R.id.generalList);
+            listView.setOnItemClickListener(this);
 
             StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getContext(), false);
 
             int selectedIndex = (page != null)? Integer.parseInt(page.getStoriesChapter().getNumber()) - 1 : -1;
-            mListView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
+            listView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
+
+            int indexToScroll = (selectedIndex > 3)? selectedIndex - 3 : 0;
+            listView.setSelection(indexToScroll);
         }
     }
 

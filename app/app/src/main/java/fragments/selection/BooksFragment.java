@@ -38,7 +38,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
     protected ListView listView = null;
 
     private List<Book> books;
-    private int selectedRow = -1;
+    private int selectedIndex = -1;
 
     //region setup
 
@@ -93,9 +93,10 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
         listView.setOnItemClickListener(this);
 
-        ChaptersAdapter adapter = new ChaptersAdapter(getContext(), data, this, selectedRow);
+        ChaptersAdapter adapter = new ChaptersAdapter(getContext(), data, this, selectedIndex);
         listView.setAdapter(adapter);
-        listView.setSelection((selectedRow > 5) ? selectedRow - 3 : 0);
+        int indexToScroll = (selectedIndex > 3)? selectedIndex - 3 : 0;
+        listView.setSelection(indexToScroll);
     }
 
     protected List<GeneralRowInterface> setupData(){
@@ -111,7 +112,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
         for(Book row : books) {
             dataList.add(new GeneralRowInterface.BasicGeneralRowInterface(row.getUniqueSlug(), row.getTitle()));
             if(row.getId() == currentBookId){
-                selectedRow = books.indexOf(row);
+                selectedIndex = books.indexOf(row);
             }
         }
 

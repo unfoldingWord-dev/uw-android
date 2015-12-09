@@ -71,7 +71,6 @@ public class UpdateBooksRunnable implements Runnable{
                 if(model instanceof Book) {
 
                     UWDatabaseModel shouldContinueUpdate = new BookSaveOrUpdater(updater.getApplicationContext()).start(model);
-//                            Log.d(TAG, "Book created");
                     if(shouldContinueUpdate != null){
                         updateChapters((Book) shouldContinueUpdate);
                         updateMedia(jsonObject, (Book) shouldContinueUpdate);

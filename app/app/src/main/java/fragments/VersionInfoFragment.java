@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import signing.Status;
@@ -39,6 +41,25 @@ public class VersionInfoFragment extends DialogFragment {
     private Version version;
     private MediaType type;
 
+
+
+    @Bind(R.id.version_information_checking_level_image)
+    ImageView checkingLevelImage;
+
+    @Bind(R.id.version_information_checking_level_text)
+    TextView checkingLevelText;
+
+    @Bind(R.id.version_information_resource_type_image)
+    ImageView resourceTypeImage;
+
+    @Bind(R.id.version_information_verification_information_status)
+    Button versionVerificationButton;
+
+    @Bind(R.id.version_information_verification_text_view)
+    TextView versionVerificationTextView;
+
+    @Bind(R.id.version_information_main_info_text_view)
+    TextView versionAuthenticationMainTextView;
     //region setup
 
     /**
@@ -74,32 +95,8 @@ public class VersionInfoFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.version_information_view, container, false);
 
-        setupViews(view);
+        new VersionInfoViewHolder(view, version, type);
         return view;
-    }
-
-    private void setupViews(View view){
-
-        boolean notText = type != MediaType.MEDIA_TYPE_TEXT;
-        int verificationStatus = version.getVerificationStatus();
-        if(notText){
-            verificationStatus = Status.ERROR.ordinal();
-        }
-
-        ((TextView) view.findViewById(R.id.checking_entity_text_view)).setText(version.getStatusCheckingEntity());
-        ((TextView) view.findViewById(R.id.version_text_view)).setText(version.getStatusVersion());;
-        ((TextView) view.findViewById(R.id.publish_date_text_view)).setText(version.getStatusPublishDate());
-        ((TextView) view.findViewById(R.id.verification_text_view)).setText((notText)? "Cryptographic verification has not yet been added to media" : version.getVerificationText());
-        ((TextView) view.findViewById(R.id.checking_level_explanation_text))
-                .setText(ViewContentHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
-
-        ((ImageView) view.findViewById(R.id.checking_level_image))
-                .setImageResource(ViewContentHelper
-                        .getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
-
-        Button status = (Button) view.findViewById(R.id.verification_information_status);
-        status.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
-        status.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));
     }
 
     @NonNull
@@ -110,5 +107,56 @@ public class VersionInfoFragment extends DialogFragment {
         return dialog;
     }
 
-    //endregion
+     //endregion
+
+    public static class VersionInfoViewHolder{
+
+        @Bind(R.id.version_information_checking_level_image)
+        ImageView checkingLevelImage;
+
+        @Bind(R.id.version_information_checking_level_text)
+        TextView checkingLevelText;
+
+        @Bind(R.id.version_information_resource_type_image)
+        ImageView resourceTypeImage;
+
+        @Bind(R.id.version_information_verification_information_status)
+        Button versionVerificationButton;
+
+        @Bind(R.id.version_information_verification_text_view)
+        TextView versionVerificationTextView;
+
+        @Bind(R.id.version_information_main_info_text_view)
+        TextView versionAuthenticationMainTextView;
+
+        public VersionInfoViewHolder(View view, Version version,MediaType type){
+            ButterKnife.bind(this, view);
+            updateViews(version, type);
+        }
+
+        private void updateViews(Version version, MediaType type){
+
+            boolean notText = type != MediaType.MEDIA_TYPE_TEXT;
+            int verificationStatus = version.getVerificationStatus();
+            if(notText){
+                verificationStatus = Status.ERROR.ordinal();
+            }
+
+            versionVerificationTextView.setText((notText) ? "Cryptographic verification has not yet been added to media" : version.getVerificationText());
+            checkingLevelText.setText(ViewContentHelper.getCheckingLevelText(Integer.parseInt(version.getStatusCheckingLevel())));
+            checkingLevelImage.setImageResource(ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
+            resourceTypeImage.setImageResource(MediaType.getImageResourceForType((notText) ? MediaType.MEDIA_TYPE_AUDIO : MediaType.MEDIA_TYPE_TEXT));
+
+            versionVerificationButton.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
+            versionVerificationButton.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));
+
+            versionAuthenticationMainTextView.setText(getMainVerificationText(version));
+        }
+
+        private static String getMainVerificationText(Version version){
+
+            return "Version: " + version.getStatusVersion() + "\n\nPublished: " + version.getStatusPublishDate()
+                    + "\n\nAuthentication: " + version.getStatusCheckingEntity();
+        }
+    }
 }

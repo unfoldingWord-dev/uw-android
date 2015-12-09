@@ -72,6 +72,8 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
         holder.chapterScreenImageView.setImageBitmap(getBitmapFromAsset("images/" + path));
         holder.chapterNameTextView.setText(positionModel.getTitle());
         holder.referenceTextView.setText(positionModel.getRef());
+
+        holder.chapterNameTextView.setTextColor(context.getResources().getColor((selectedPosition == position)? R.color.primary : R.color.black));
         return convertView;
     }
 

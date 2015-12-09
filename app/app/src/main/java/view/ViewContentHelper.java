@@ -155,7 +155,7 @@ public class ViewContentHelper {
     public static int getColorForSelection(boolean selected){
 
         if(selected){
-            return R.color.cyan;
+            return R.color.primary;
         }
         else {
             return R.color.black;

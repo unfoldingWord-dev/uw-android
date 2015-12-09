@@ -35,6 +35,7 @@ public enum MediaType {
     public static int getImageResourceForType(MediaType type){
 
         switch (type){
+            case MEDIA_TYPE_TEXT: return R.drawable.reading_icon;
             case MEDIA_TYPE_AUDIO: return R.drawable.audio_icon;
             case MEDIA_TYPE_VIDEO: return R.drawable.video_icon;
             default: return -1;

@@ -114,14 +114,14 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     public void play(){
         if(mediaPlayer != null) {
             mediaPlayer.start();
-            updatePlayPause();
+            notifyPlay();
         }
     }
 
     public void pause(){
         if(mediaPlayer != null){
             mediaPlayer.pause();
-            updatePlayPause();
+            notifyPause();
         }
     }
 
