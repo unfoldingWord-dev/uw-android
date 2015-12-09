@@ -394,6 +394,11 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                         getApplicationContext().startService(downloadIntent);
                         fragment.dismiss();
                     }
+
+                    @Override
+                    public void dismissed() {
+
+                    }
                 }).show(getSupportFragmentManager(), "BitrateFragment");
 
 
@@ -468,17 +473,20 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(audioPlayerViewGroup == null){
             setupAudioPlayer();
         }
-        if(!getBook().getVersion().hasAudio()){
+        if(getBook() != null && !getBook().getVersion().hasAudio()){
             visible = false;
         }
 
+
         audioPlayerLayout.setVisibility((visible) ? View.VISIBLE : View.GONE);
-        DataFileManager.getStateOfContent(getApplicationContext(), getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
-            @Override
-            public void foundDownloadState(DownloadState state) {
-                audioPlayerViewGroup.handleDownloadState(state);
-            }
-        });
+        if(getBook() != null) {
+            DataFileManager.getStateOfContent(getApplicationContext(), getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
+                    audioPlayerViewGroup.handleDownloadState(state);
+                }
+            });
+        }
         showingAudio = visible;
     }
 

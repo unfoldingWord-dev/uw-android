@@ -363,6 +363,10 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
      */
     public void deleteBookContent(Context context){
 
+        for(Verification verification : getVerifications()){
+            verification.delete();
+        }
+
         if(getStoryChapters() != null){
             for(StoriesChapter chapter : storyChapters){
                 chapter.delete();
@@ -388,6 +392,11 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
      * @return the verification status of this book
      */
     public int getVerificationStatus(){
+        refresh();
+        update();
+        if(getVerifications() == null || getVerifications().size() < 1){
+            return 2;
+        }
 
         int status = 0;
         for(Verification verification : getVerifications()){
@@ -403,12 +412,7 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
      */
     public String getVerificationText(){
 
-        int status = 0;
-        for(Verification verification : getVerifications()){
-            if(verification.getStatus() > status){
-                status = verification.getStatus();
-            }
-        }
+        int status = getVerificationStatus();
 
         return ViewContentHelper.getTextForStatus(Status.statusFromInt(status), title);
     }

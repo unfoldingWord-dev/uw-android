@@ -37,6 +37,7 @@ import fragments.BitrateFragment;
 import fragments.VersionInfoFragment;
 import model.AudioBitrate;
 import model.DaoDBHelper;
+import model.DataFileManager;
 import model.DownloadState;
 import model.daoModels.AudioBook;
 import model.daoModels.BibleChapter;
@@ -394,8 +395,12 @@ private VersionSelectionFragmentListener listener;
 
     private void downloadText(VersionViewModel viewModel){
 
+        downloadText(viewModel.getVersion().getId());
+    }
+
+    private void downloadText(long versionId){
         Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
-        downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, viewModel.getVersion().getId());
+        downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, versionId);
         getContext().startService(downloadIntent);
     }
 
@@ -403,6 +408,16 @@ private VersionSelectionFragmentListener listener;
 
         AudioBook audioBook = viewModel.getVersion().getBooks().get(0).getAudioBook();
         if(audioBook != null) {
+
+            DataFileManager.getStateOfContent(getApplicationContext(), viewModel.getVersion(), MediaType.MEDIA_TYPE_TEXT, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
+                    if(state == DownloadState.DOWNLOAD_STATE_NONE){
+                        downloadText(viewModel.getVersion().getId());
+                        reloadData();
+                    }
+                }
+            });
 
             BitrateFragment.newInstance(audioBook.getAudioChapters().get(0).getBitRates(),
                     "Select Audio Bitrate", new BitrateFragment.BitrateFragmentListener() {
@@ -416,8 +431,15 @@ private VersionSelectionFragmentListener listener;
                             getContext().startService(downloadIntent);
                             fragment.dismiss();
                         }
+
+                        @Override
+                        public void dismissed() {
+                            reloadData();
+                        }
                     }).show(getActivity().getSupportFragmentManager(), "BitrateFragment");
         }
+
+
     }
 
     private void downloadVideo(final VersionViewModel viewModel){

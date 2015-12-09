@@ -98,10 +98,12 @@ public class BitrateFragment extends DialogFragment {
     }
 
     public void cancelClicked() {
+        listener.dismissed();
         dismiss();
     }
 
     public interface BitrateFragmentListener {
         void bitrateChosen(DialogFragment fragment, AudioBitrate bitrate);
+        void dismissed();
     }
 }

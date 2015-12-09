@@ -246,7 +246,7 @@ public class Verification extends model.UWDatabaseModel  implements java.io.Seri
      * @param session Session to use
      * @return List of verifications for the passed book id
      */
-    static public List<Verification> getModelForBookId(long bookId, DaoSession session){
+    static public List<Verification> getModelsForBookId(long bookId, DaoSession session){
 
         VerificationDao dao = session.getVerificationDao();
         return dao.queryBuilder()

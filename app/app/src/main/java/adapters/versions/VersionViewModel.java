@@ -134,10 +134,15 @@ public class VersionViewModel {
             }
         }
 
-        public int getCheckingLevelImage(){
+        public int getVerifiedCheckingLevelImage(){
             if(type == MediaType.MEDIA_TYPE_AUDIO || (type == MediaType.MEDIA_TYPE_TEXT && version.getVerificationStatus() != Status.VERIFIED.ordinal())){
                 return R.drawable.verify_fail;
             }
+            return ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel()));
+        }
+
+        public int getCheckingLevelImage(){
+
             return ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel()));
         }
 

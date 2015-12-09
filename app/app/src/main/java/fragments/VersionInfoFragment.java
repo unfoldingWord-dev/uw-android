@@ -9,6 +9,7 @@
 package fragments;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -24,6 +25,8 @@ import org.unfoldingword.mobile.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import model.DataFileManager;
+import model.DownloadState;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import signing.Status;
@@ -95,7 +98,7 @@ public class VersionInfoFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.version_information_view, container, false);
 
-        new VersionInfoViewHolder(view, version, type);
+        new VersionInfoViewHolder(getActivity().getApplicationContext(), view, version, type);
         return view;
     }
 
@@ -129,17 +132,20 @@ public class VersionInfoFragment extends DialogFragment {
         @Bind(R.id.version_information_main_info_text_view)
         TextView versionAuthenticationMainTextView;
 
-        public VersionInfoViewHolder(View view, Version version,MediaType type){
+        public VersionInfoViewHolder(Context context, View view, Version version,MediaType type){
             ButterKnife.bind(this, view);
-            updateViews(version, type);
+            updateViews(context, version, type);
         }
 
-        private void updateViews(Version version, MediaType type){
+        private void updateViews(Context context, Version version, MediaType type){
 
             boolean notText = type != MediaType.MEDIA_TYPE_TEXT;
-            int verificationStatus = version.getVerificationStatus();
+            final int verificationStatus;
             if(notText){
                 verificationStatus = Status.ERROR.ordinal();
+            }
+            else{
+                verificationStatus = version.getVerificationStatus();
             }
 
             versionVerificationTextView.setText((notText) ? "Cryptographic verification has not yet been added to media" : version.getVerificationText());
@@ -147,10 +153,20 @@ public class VersionInfoFragment extends DialogFragment {
             checkingLevelImage.setImageResource(ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel())));
             resourceTypeImage.setImageResource(MediaType.getImageResourceForType((notText) ? MediaType.MEDIA_TYPE_AUDIO : MediaType.MEDIA_TYPE_TEXT));
 
-            versionVerificationButton.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
-            versionVerificationButton.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));
-
             versionAuthenticationMainTextView.setText(getMainVerificationText(version));
+            versionVerificationButton.setVisibility(View.INVISIBLE);
+
+            DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
+                    if (state == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
+                        versionVerificationButton.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));
+                        versionVerificationButton.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
+                        versionVerificationButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
         }
 
         private static String getMainVerificationText(Version version){

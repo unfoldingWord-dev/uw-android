@@ -66,14 +66,15 @@ public class VersionViewHolder {
         this.viewModel = model;
         resourceImage.setImageResource(model.getImageResource());
         titleTextView.setText(model.getTitle());
-        checkingLevelImage.setImageResource(model.getCheckingLevelImage());
         setupForDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+        checkingLevelImage.setVisibility(View.INVISIBLE);
         model.getDownloadState(new DataFileManager.GetDownloadStateResponse() {
             @Override
             public void foundDownloadState(DownloadState state) {
                 setupForDownloadState(state);
             }
         });
+
     }
 
     public void setupForDownloadState(DownloadState state){
@@ -82,21 +83,26 @@ public class VersionViewHolder {
             case DOWNLOAD_STATE_DOWNLOADING:{
                 downloadingImageView.setVisibility(View.INVISIBLE);
                 loadingProgressBar.setVisibility(View.VISIBLE);
+                checkingLevelImage.setImageResource(viewModel.getCheckingLevelImage());
                 break;
             }
             case DOWNLOAD_STATE_DOWNLOADED:{
                 downloadingImageView.setVisibility(View.VISIBLE);
                 loadingProgressBar.setVisibility(View.GONE);
                 downloadingImageView.setImageResource(R.drawable.trash_can_icon);
+                checkingLevelImage.setImageResource(viewModel.getVerifiedCheckingLevelImage());
                 break;
             }
             default:{
                 downloadingImageView.setVisibility(View.VISIBLE);
                 loadingProgressBar.setVisibility(View.GONE);
                 downloadingImageView.setImageResource(R.drawable.download_icon);
+                checkingLevelImage.setImageResource(viewModel.getCheckingLevelImage());
                 break;
             }
         }
+
+        checkingLevelImage.setVisibility(View.VISIBLE);
     }
 
     private void rowClicked(){

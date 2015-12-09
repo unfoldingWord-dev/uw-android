@@ -43,7 +43,7 @@ public class UWSigning {
 
         ArrayList<Verification> verifications = getVerifications(context, text, sigData);
         if(verifications  != null) {
-            updateBookVerifications(context, verifications, book.getId());
+            updateBookVerifications(context, verifications, book);
         }
     }
 
@@ -100,15 +100,18 @@ public class UWSigning {
         return null;
     }
 
-    private static void updateBookVerifications(Context context, List<Verification> newModels, long bookId){
+    private static void updateBookVerifications(Context context, List<Verification> newModels, Book book){
 
-        List<Verification> currentVerifications = Verification.getModelForBookId(bookId, DaoDBHelper.getDaoSession(context));
+        long bookId = book.getId();
+        List<Verification> currentVerifications = Verification.getModelsForBookId(bookId, DaoDBHelper.getDaoSession(context));
 
         for(Verification oldModel : currentVerifications){
             oldModel.delete();
         }
 
         for(Verification newModel : newModels){
+            newModel.setBook(book);
+            newModel.setBookId(bookId);
             newModel.insertModel(DaoDBHelper.getDaoSession(context));
         }
     }
