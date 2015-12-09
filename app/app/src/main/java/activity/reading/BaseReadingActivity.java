@@ -100,6 +100,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     private boolean isMini = false;
     private boolean isDiglot = false;
 
+
+    private boolean showingAudio = false;
+
     //region Abstract Methods
 
     /**
@@ -362,6 +365,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         tabBar.getButton(1).setEnabled(hasVideo);
         tabBar.getButton(1).setClickable(hasVideo);
         tabBar.setImageAtIndex((hasVideo) ? R.drawable.video_normal : R.drawable.video_disabled, 1);
+        setAudioPlayerVisibility(showingAudio);
     }
 
     private void setupAudioPlayer(){
@@ -464,6 +468,9 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(audioPlayerViewGroup == null){
             setupAudioPlayer();
         }
+        if(!getBook().getVersion().hasAudio()){
+            visible = false;
+        }
 
         audioPlayerLayout.setVisibility((visible) ? View.VISIBLE : View.GONE);
         DataFileManager.getStateOfContent(getApplicationContext(), getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
@@ -472,7 +479,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 audioPlayerViewGroup.handleDownloadState(state);
             }
         });
-
+        showingAudio = visible;
     }
 
     private void shareVersion(){
@@ -541,11 +548,25 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 //            fragment.show(ft, VERSION_FRAGMENT_ID);
 //        }
 //        else {
-            startActivity(new Intent(this, VersionSelectionActivity.class).putExtra(
+            startActivityForResult(new Intent(this, VersionSelectionActivity.class).putExtra(
                     VersionSelectionActivity.PROJECT_PARAM, getProject())
-                    .putExtra(VersionSelectionActivity.IS_SECOND_VERSION_PARAM, isSecondVersion));
+                    .putExtra(VersionSelectionActivity.IS_SECOND_VERSION_PARAM, isSecondVersion), 1);
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
 //        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data != null && data.getExtras() != null && data.getExtras().containsKey(VersionSelectionActivity.MEDIA_TYPE_PARAM)){
+            MediaType type = (MediaType) data.getExtras().getSerializable(VersionSelectionActivity.MEDIA_TYPE_PARAM);
+
+            switch (type){
+                case MEDIA_TYPE_AUDIO:{
+                    setAudioPlayerVisibility(true);
+                }
+            }
+        }
     }
 
     /**

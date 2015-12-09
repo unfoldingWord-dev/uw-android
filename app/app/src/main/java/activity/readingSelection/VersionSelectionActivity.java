@@ -29,7 +29,7 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
     public static final String PROJECT_PARAM = "PROJECT_PARAM";
     public static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
 
-    public static final String IS_SECOND_VERSION_PARAM = "IS_SECOND_VERSION_PARAM";
+    public static final String MEDIA_TYPE_PARAM = "basic_button_selector";
 
 
     private boolean isSecondVersion = false;
@@ -66,9 +66,9 @@ public class VersionSelectionActivity extends UWBaseActivity implements VersionS
     @Override
     public void versionWasSelected(Version version, boolean isSecondVersion, MediaType mediaType) {
         UWPreferenceDataManager.selectedVersion(getApplicationContext(), version, isSecondVersion);
+        setResult(1, getIntent().putExtra(MEDIA_TYPE_PARAM, mediaType));
         handleBack();
 
-        setResult(1, new Intent());
     }
 
 }

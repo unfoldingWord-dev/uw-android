@@ -3,11 +3,12 @@ package model.parsers;
 import org.unfoldingword.mobile.R;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Created by Fechner on 11/23/15.
  */
-public enum MediaType {
+public enum MediaType implements Serializable{
 
     MEDIA_TYPE_NONE(0), MEDIA_TYPE_TEXT(1), MEDIA_TYPE_AUDIO(2), MEDIA_TYPE_VIDEO(3);
     int num;
