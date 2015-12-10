@@ -55,6 +55,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP FIELDS - put your custom fields here
     static private final String TAG = "Version";
+    private int verificationStatus = -1;
     // KEEP FIELDS END
 
     public Version() {
@@ -394,16 +395,21 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
      */
     public int getVerificationStatus(){
 
-        int status = 0;
+        if(verificationStatus > -1){
+            return verificationStatus;
+        }
+        else {
+            verificationStatus = 0;
 
-        for(Book book : getBooks()){
+            for (Book book : getBooks()) {
 
-            int bookStatus = book.getVerificationStatus();
-            if(bookStatus > status){
-                status = bookStatus;
+                int bookStatus = book.getVerificationStatus();
+                if (bookStatus > verificationStatus) {
+                    verificationStatus = bookStatus;
+                }
             }
         }
-        return status;
+        return verificationStatus;
     }
 
     /**

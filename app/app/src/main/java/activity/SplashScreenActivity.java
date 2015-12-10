@@ -38,9 +38,14 @@ public class SplashScreenActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        setUI();
-        registerPreloadReceiver();
+        setPreferences();
         initializeDB();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerPreloadReceiver();
     }
 
     private void registerPreloadReceiver(){
@@ -63,7 +68,7 @@ public class SplashScreenActivity extends Activity {
     /**
      * Default Initialization of components
      */
-    private void setUI() {
+    private void setPreferences() {
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
     }
 

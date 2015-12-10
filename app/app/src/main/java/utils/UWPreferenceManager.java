@@ -114,10 +114,10 @@ public class UWPreferenceManager {
     public static final List<String> BIBLE_TEXT_SIZES = Arrays.asList("10", "12", "14", "16", "18", "20");
     private static final String BIBLE_TEXT_SIZE_INDEX = "BIBLE_TEXT_SIZE_INDEX";
     public static String getBibleTextSize(Context context){
-        return BIBLE_TEXT_SIZES.get(android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE_INDEX, 3));
+        return BIBLE_TEXT_SIZES.get(android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE_INDEX, 2));
     }
     public static int getBibleTextSizeIndex(Context context){
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE_INDEX, 3);
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE_INDEX, 2);
     }
     public static void setBibleTextSize(Context context, int newValue){
         android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(BIBLE_TEXT_SIZE_INDEX, newValue).commit();

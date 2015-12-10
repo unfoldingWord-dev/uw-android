@@ -418,6 +418,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                     @Override
                     public void foundDownloadState(DownloadState state) {
                         audioPlayerViewGroup.handleDownloadState(state);
+                        update();
                     }
                 });
             }

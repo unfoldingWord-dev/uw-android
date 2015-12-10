@@ -1,7 +1,6 @@
 package adapters.versions;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import org.unfoldingword.mobile.R;
 
@@ -14,7 +13,6 @@ import model.DownloadState;
 import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
-import model.daoModels.Verification;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import signing.Status;
@@ -83,7 +81,6 @@ public class VersionViewModel {
     }
 
     private void doAction(MediaType type, VersionViewHolder viewHolder, DownloadState state){
-
         this.listener.doAction(this, viewHolder, state, type);
     }
 
@@ -97,6 +94,7 @@ public class VersionViewModel {
 
     public class ResourceViewModel{
 
+        private DownloadState state = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
         private MediaType type;
 
         public ResourceViewModel(MediaType type) {
@@ -121,9 +119,34 @@ public class VersionViewModel {
             }
         }
 
+
         public void getDownloadState(final DataFileManager.GetDownloadStateResponse response){
 
-            DataFileManager.getStateOfContent(context, version, type, response);
+            DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState newState) {
+                    state = newState;
+                    if(response != null) {
+                        response.foundDownloadState(newState);
+                    }
+                }
+            });
+        }
+
+
+        public void getDownloadStateAsync(final DataFileManager.GetDownloadStateResponse response){
+
+            response.foundDownloadState(state);
+
+            DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState newState) {
+                    state = newState;
+                    if(response != null) {
+                        response.foundDownloadState(newState);
+                    }
+                }
+            });
         }
 
         public String getTitle(){
@@ -153,7 +176,6 @@ public class VersionViewModel {
 
         public void doActionOnModel(final VersionViewHolder viewHolder){
 
-
             getDownloadState(new DataFileManager.GetDownloadStateResponse() {
                 @Override
                 public void foundDownloadState(DownloadState state) {
@@ -165,13 +187,12 @@ public class VersionViewModel {
         public void itemClicked(final VersionViewHolder viewHolder){
 
             final ResourceViewModel viewModel = this;
-            getDownloadState(new DataFileManager.GetDownloadStateResponse() {
+            getDownloadStateAsync(new DataFileManager.GetDownloadStateResponse() {
                 @Override
                 public void foundDownloadState(DownloadState state) {
-                    if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+                    if (state == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
                         itemChosen(viewModel);
-                    }
-                    else {
+                    } else {
                         doAction(type, viewHolder, state);
                     }
                 }

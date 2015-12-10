@@ -1,7 +1,5 @@
 package adapters.versions;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -64,17 +62,14 @@ public class VersionViewHolder {
     public void updateViews(VersionViewModel.ResourceViewModel model){
 
         this.viewModel = model;
-        resourceImage.setImageResource(model.getImageResource());
-        titleTextView.setText(model.getTitle());
-        setupForDownloadState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
-        checkingLevelImage.setVisibility(View.INVISIBLE);
-        model.getDownloadState(new DataFileManager.GetDownloadStateResponse() {
+        model.getDownloadStateAsync(new DataFileManager.GetDownloadStateResponse() {
             @Override
             public void foundDownloadState(DownloadState state) {
                 setupForDownloadState(state);
             }
         });
-
+        resourceImage.setImageResource(model.getImageResource());
+        titleTextView.setText(model.getTitle());
     }
 
     public void setupForDownloadState(DownloadState state){
@@ -88,14 +83,14 @@ public class VersionViewHolder {
             }
             case DOWNLOAD_STATE_DOWNLOADED:{
                 downloadingImageView.setVisibility(View.VISIBLE);
-                loadingProgressBar.setVisibility(View.GONE);
+                loadingProgressBar.setVisibility(View.INVISIBLE);
                 downloadingImageView.setImageResource(R.drawable.trash_can_icon);
                 checkingLevelImage.setImageResource(viewModel.getVerifiedCheckingLevelImage());
                 break;
             }
             default:{
                 downloadingImageView.setVisibility(View.VISIBLE);
-                loadingProgressBar.setVisibility(View.GONE);
+                loadingProgressBar.setVisibility(View.INVISIBLE);
                 downloadingImageView.setImageResource(R.drawable.download_icon);
                 checkingLevelImage.setImageResource(viewModel.getCheckingLevelImage());
                 break;

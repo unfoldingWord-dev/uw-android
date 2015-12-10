@@ -81,7 +81,6 @@ public class StoryReadingActivity extends BaseReadingActivity {
         List<Project> projects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
 
         for(Project project : projects){
-
             if(project.getUniqueSlug().equalsIgnoreCase("obs")){
                 return project;
             }

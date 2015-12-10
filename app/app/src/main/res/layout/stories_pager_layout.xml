@@ -60,7 +60,7 @@
                         android:textColor="@color/black"
                         android:textSize="@dimen/story_reading_text_size"
                         android:textStyle="normal"
-                        />
+                        android:phoneNumber="true" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
