@@ -91,8 +91,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 23 Platform (1)" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="butterknife-7.0.1" level="project" />
     <orderEntry type="library" exported="" name="greendao-generator-2.0.0" level="project" />
+    <orderEntry type="library" exported="" name="butterknife-7.0.1" level="project" />
     <orderEntry type="library" exported="" name="android-iconify-2.0.7" level="project" />
     <orderEntry type="library" exported="" name="android-comboseekbar-b66191a" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
@@ -103,8 +103,8 @@
     <orderEntry type="library" exported="" name="android-iconify-fontawesome-2.0.7" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="prov-1.51.0.0" level="project" />
-    <orderEntry type="library" exported="" name="greendao-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="guava-base-r03" level="project" />
+    <orderEntry type="library" exported="" name="greendao-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="bluetoothspp-1.0.0" level="project" />

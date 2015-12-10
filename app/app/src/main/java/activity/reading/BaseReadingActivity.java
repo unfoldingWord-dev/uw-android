@@ -22,15 +22,18 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
+import com.infteh.comboseekbar.ComboSeekBar;
 
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import activity.AnimationParadigm;
@@ -120,14 +123,17 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     abstract protected Version getSharingVersion();
 
     /**
-     * signal to make the reading text larger
+     * @return the options for text sizes
      */
-    abstract protected void makeTextLarger();
+    abstract protected List<String> getTextSizeOptions();
+
+    abstract protected int getCurrentTextSizeIndex();
 
     /**
-     * signal to make the reading text smaller
+     * should set the text size, chosen by the text slide
+     * @param index index of the option chosen
      */
-    abstract protected void makeTextSmaller();
+    abstract protected void setNewTextSize(int index);
 
     /**
      * @return View data for the toolbar
@@ -155,20 +161,17 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         secondaryReadingLayout = (FrameLayout) findViewById(R.id.secondary_reading_fragment_frame);
         errorView = findViewById(R.id.no_version_layout);
 
-        findViewById(R.id.larger_text_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makeTextLarger();
-            }
-        });
+        ComboSeekBar seekBar = (ComboSeekBar) findViewById(R.id.seek_bar);
 
-        findViewById(R.id.smaller_text_button).setOnClickListener(new View.OnClickListener() {
+        List<String> seekBarStep = Arrays.asList("", "", "", "", "", "");
+        seekBar.setAdapter(seekBarStep);
+        seekBar.setSelection(getCurrentTextSizeIndex());
+        seekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                makeTextSmaller();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setNewTextSize(position);
             }
         });
-        findViewById(R.id.reading_text_options).setVisibility(View.GONE);
     }
 
     public void updateToolbar(ReadingToolbarViewData data){
@@ -295,18 +298,18 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
     }
 
-    protected void setTextLargerDisabled(boolean disabled){
-
-        findViewById(R.id.larger_text_button).setClickable(!disabled);
-        findViewById(R.id.larger_text_button).setEnabled(!disabled);
-
-    }
-
-    protected void setTextSmallerDisabled(boolean disabled){
-
-        findViewById(R.id.smaller_text_button).setClickable(!disabled);
-        findViewById(R.id.smaller_text_button).setEnabled(!disabled);
-    }
+//    protected void setTextLargerDisabled(boolean disabled){
+//
+//        findViewById(R.id.larger_text_button).setClickable(!disabled);
+//        findViewById(R.id.larger_text_button).setEnabled(!disabled);
+//
+//    }
+//
+//    protected void setTextSmallerDisabled(boolean disabled){
+//
+//        findViewById(R.id.smaller_text_button).setClickable(!disabled);
+//        findViewById(R.id.smaller_text_button).setEnabled(!disabled);
+//    }
 
     private void setupTabBar(){
 
@@ -400,9 +403,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
                     }
                 }).show(getSupportFragmentManager(), "BitrateFragment");
-
-
-
     }
 
     private BroadcastReceiver receiver;

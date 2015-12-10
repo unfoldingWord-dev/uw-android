@@ -90,25 +90,41 @@ public class StoryReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected void makeTextLarger() {
-
-        updateTextSize(UWPreferenceManager.getStoriesTextSize(getApplicationContext()) + 1);
+    protected int getCurrentTextSizeIndex() {
+        return UWPreferenceManager.getStoriesTextSizeIndex(getApplicationContext());
     }
 
     @Override
-    protected void makeTextSmaller() {
-
-        updateTextSize(UWPreferenceManager.getStoriesTextSize(getApplicationContext()) - 1);
+    protected List<String> getTextSizeOptions() {
+        return UWPreferenceManager.STORIES_TEXT_SIZES;
     }
 
-    private void updateTextSize(int textSize){
+    @Override
+    protected void setNewTextSize(int index) {
+        updateTextSize(index);
+    }
 
-        UWPreferenceManager.setStoriesTextSize(getApplicationContext(), textSize);
+//    @Override
+//    protected void makeTextLarger() {
+//
+//        updateTextSize(UWPreferenceManager.getStoriesTextSize(getApplicationContext()) + 1);
+//    }
+//
+//    @Override
+//    protected void makeTextSmaller() {
+//
+//        updateTextSize(UWPreferenceManager.getStoriesTextSize(getApplicationContext()) - 1);
+//    }
+
+    private void updateTextSize(int index){
+
+        UWPreferenceManager.setStoriesTextSize(getApplicationContext(), index);
+        int textSize = Integer.parseInt(UWPreferenceManager.getStoriesTextSize(getApplicationContext()));
         if(readingFragment != null){
             readingFragment.setTextSize(textSize);
         }
-        setTextLargerDisabled((textSize >= HIGH_TEXT_SIZE_LIMIT));
-        setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
+//        setTextLargerDisabled((textSize >= HIGH_TEXT_SIZE_LIMIT));
+//        setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
     }
 
     protected void updateReadingView() {
@@ -121,7 +137,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
                 readingFragment.update();
             }
             else {
-                this.readingFragment = StoryReadingFragment.newInstance(UWPreferenceManager.getStoriesTextSize(getApplicationContext()));
+                this.readingFragment = StoryReadingFragment.newInstance(Integer.parseInt(UWPreferenceManager.getStoriesTextSize(getApplicationContext())));
                 getSupportFragmentManager().beginTransaction().add(readingLayout.getId(), readingFragment, "StoryReadingFragment").commit();
             }
         }

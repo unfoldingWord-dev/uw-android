@@ -5,5 +5,5 @@ package view;
  */
 public class TextSizeSelectionViewGroup {
 
-    
+
 }

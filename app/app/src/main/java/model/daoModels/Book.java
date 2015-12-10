@@ -393,7 +393,6 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
      */
     public int getVerificationStatus(){
         refresh();
-        update();
         if(getVerifications() == null || getVerifications().size() < 1){
             return 2;
         }

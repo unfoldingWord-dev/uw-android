@@ -1,39 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="#f6f6f6"
+    android:layout_height="wrap_content"
+    android:background="@color/primary"
     android:gravity="center"
     >
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#aaa"/>
+        android:background="#555"/>
 
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:weightSum="10">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Smaller"
-            android:id="@+id/smaller_text_button"
-            android:background="@drawable/basic_button_selector"
-            android:textColor="#000"/>
+        <TextView
+            android:textStyle="bold"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="A"
+            android:textColor="#fff"
+            android:id="@+id/small_a_text_view"
+            />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Larger"
-            android:id="@+id/larger_text_button"
-            android:background="@drawable/basic_button_selector"
-            android:textColor="#000"/>
+        <com.infteh.comboseekbar.ComboSeekBar
+            android:layout_toLeftOf="@+id/large_a_text_view"
+            android:layout_toStartOf="@+id/large_a_text_view"
+            android:layout_toRightOf="@+id/small_a_text_view"
+            android:layout_toEndOf="@id/small_a_text_view"
+            xmlns:cbs="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            cbs:textSize="12sp"
+            cbs:multiline="false"
+            android:id="@+id/seek_bar"
+            />
 
-    </LinearLayout>
+        <TextView
+            android:textStyle="bold"
+            android:layout_gravity="right|end"
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="A"
+            android:textColor="#fff"
+            android:id="@+id/large_a_text_view"
+            android:gravity="end|right" />
 
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#fff"/>
 
 </LinearLayout>

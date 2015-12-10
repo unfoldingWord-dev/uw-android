@@ -13,6 +13,9 @@ import android.preference.PreferenceManager;
 
 import org.unfoldingword.mobile.R;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by Fechner on 3/25/15.
  */
@@ -108,20 +111,29 @@ public class UWPreferenceManager {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(LANGUAGES_DOWNLOAD_URL_KEY,  context.getResources().getString(R.string.languages_json_url));
     }
 
-    private static final String BIBLE_TEXT_SIZE = "BIBLE_TEXT_SIZE";
-    public static int getBibleTextSize(Context context){
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE, 14);
+    public static final List<String> BIBLE_TEXT_SIZES = Arrays.asList("10", "12", "14", "16", "18", "20");
+    private static final String BIBLE_TEXT_SIZE_INDEX = "BIBLE_TEXT_SIZE_INDEX";
+    public static String getBibleTextSize(Context context){
+        return BIBLE_TEXT_SIZES.get(android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE_INDEX, 3));
+    }
+    public static int getBibleTextSizeIndex(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(BIBLE_TEXT_SIZE_INDEX, 3);
     }
     public static void setBibleTextSize(Context context, int newValue){
-        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(BIBLE_TEXT_SIZE, newValue).commit();
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(BIBLE_TEXT_SIZE_INDEX, newValue).commit();
     }
 
-    private static final String STORIES_TEXT_SIZE = "STORIES_TEXT_SIZE";
-    public static int getStoriesTextSize(Context context){
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(STORIES_TEXT_SIZE, 20);
+    public static final List<String> STORIES_TEXT_SIZES = Arrays.asList("14", "16", "18", "20", "22", "24");
+    private static final String STORIES_TEXT_SIZE_INDEX = "STORIES_TEXT_SIZE_INDEX";
+
+    public static String getStoriesTextSize(Context context) {
+        return STORIES_TEXT_SIZES.get(android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(STORIES_TEXT_SIZE_INDEX, 3));
+    }
+    public static int getStoriesTextSizeIndex(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getInt(STORIES_TEXT_SIZE_INDEX, 3);
     }
     public static void setStoriesTextSize(Context context, int newValue){
-        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(STORIES_TEXT_SIZE, newValue).commit();
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(STORIES_TEXT_SIZE_INDEX, newValue).commit();
     }
 
 }

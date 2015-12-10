@@ -99,21 +99,37 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     @Override
-    protected void makeTextLarger() {
-
-        updateTextSize(UWPreferenceManager.getBibleTextSize(getApplicationContext()) + 1);
+    protected int getCurrentTextSizeIndex() {
+        return UWPreferenceManager.getBibleTextSizeIndex(getApplicationContext());
     }
 
     @Override
-    protected void makeTextSmaller() {
-
-        updateTextSize(UWPreferenceManager.getBibleTextSize(getApplicationContext()) - 1);
-
+    protected List<String> getTextSizeOptions() {
+        return UWPreferenceManager.BIBLE_TEXT_SIZES;
     }
 
-    private void updateTextSize(int textSize){
+    @Override
+    protected void setNewTextSize(int index) {
+        updateTextSize(index);
+    }
 
-        UWPreferenceManager.setBibleTextSize(getApplicationContext(), textSize);
+//    @Override
+//    protected void makeTextLarger() {
+//
+//        updateTextSize(UWPreferenceManager.getBibleTextSize(getApplicationContext()) + 1);
+//    }
+//
+//    @Override
+//    protected void makeTextSmaller() {
+//
+//        updateTextSize(UWPreferenceManager.getBibleTextSize(getApplicationContext()) - 1);
+//
+//    }
+
+    private void updateTextSize(int index){
+
+        UWPreferenceManager.setBibleTextSize(getApplicationContext(), index);
+        int textSize = Integer.parseInt(UWPreferenceManager.getBibleTextSize(getApplicationContext()));
         if(readingFragment != null){
             readingFragment.setTextSize(textSize);
         }
@@ -121,8 +137,8 @@ public class ReadingActivity extends BaseReadingActivity {
             secondaryReadingFragment.setTextSize(textSize);
         }
 
-        setTextLargerDisabled((textSize >= HIGH_TEXT_SIZE_LIMIT));
-        setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
+//        setTextLargerDisabled((textSize >= HIGH_TEXT_SIZE_LIMIT));
+//        setTextSmallerDisabled(textSize <= LOW_TEXT_SIZE_LIMIT);
     }
 
     private BibleReadingFragment createReadingFragment(FrameLayout layout, boolean secondLayout){
@@ -134,7 +150,7 @@ public class ReadingActivity extends BaseReadingActivity {
             return fragment;
         }
         else {
-            BibleReadingFragment fragment = BibleReadingFragment.newInstance(secondLayout, UWPreferenceManager.getBibleTextSize(getApplicationContext()));
+            BibleReadingFragment fragment = BibleReadingFragment.newInstance(secondLayout, Integer.parseInt(UWPreferenceManager.getBibleTextSize(getApplicationContext())));
             getSupportFragmentManager().beginTransaction().add(layout.getId(), fragment, "BibleReadingFragment" + layout.getId()).commit();
             return fragment;
         }

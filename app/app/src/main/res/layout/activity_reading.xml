@@ -79,7 +79,8 @@
         <include android:id="@+id/reading_text_options"
             layout="@layout/text_options_view"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             />
 
         <include
@@ -92,7 +93,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="#aaa"/>
+            android:background="#555"/>
 
         <RelativeLayout
             android:layout_width="match_parent"

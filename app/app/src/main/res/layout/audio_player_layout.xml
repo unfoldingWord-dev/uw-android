@@ -19,11 +19,11 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/gray_button_selector"
+            android:background="@drawable/primary_color_button_selector"
             android:layout_centerInParent="true"
             android:text="Download Audio"
             android:id="@+id/reading_audio_download_button"
-            android:textColor="#000"
+            android:textColor="#fff"
             />
 
         <LinearLayout
