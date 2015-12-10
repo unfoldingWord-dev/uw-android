@@ -127,7 +127,7 @@ public class InitialScreenActivity extends UWBaseActivity{
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                if (intent.getAction().equals(URLUtils.BROAD_CAST_DOWN_COMP)) {
+                if (intent.getAction().equals(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED)) {
                     Toast.makeText(context, "Update complete", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context, "Update error", Toast.LENGTH_SHORT).show();
@@ -154,8 +154,7 @@ public class InitialScreenActivity extends UWBaseActivity{
     private void registerUpdateReceiver(){
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(URLUtils.BROAD_CAST_DOWN_COMP);
-        filter.addAction(URLUtils.BROAD_CAST_DOWN_ERROR);
+        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
 
         if(updateReceiver == null) {
             updateReceiver = createReceiver();

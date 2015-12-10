@@ -57,6 +57,13 @@ public class VersionsAdapter implements ExpandableListAdapter {
 //        this.listener = listener;
     }
 
+    public void updateModels(){
+
+        for(VersionViewModel model : models){
+            model.updateContent();
+        }
+    }
+
     public int getIndexOfChosenVersion(){
 
         int i = 0;

@@ -120,10 +120,10 @@ public class UWUpdaterService extends Service {
                     long lastModified = json.getLong(MODIFIED_JSON_KEY);
 
                     long currentUpdated = UWPreferenceManager.getLastUpdatedDate(getApplicationContext());
-//                    if(lastModified > currentUpdated) {
+                    if(lastModified > currentUpdated) {
                         UWPreferenceManager.setLastUpdatedDate(getApplicationContext(), lastModified);
                         addRunnable(new UpdateProjectsRunnable(json.getJSONArray(PROJECTS_JSON_KEY), getThis()));
-//                    }
+                    }
                     runnableFinished();
                 } catch (JSONException e){
                     e.printStackTrace();

@@ -40,11 +40,16 @@ public class VersionViewModel {
         }
         return models;
     }
+
     public VersionViewModel(Context context, Version version, VersionViewModelListener listener) {
         this.listener = listener;
         this.context = context;
         this.version = version;
         setupResources();
+    }
+
+    public void updateContent(){
+        version = Version.getVersionForId(version.getId(), DaoDBHelper.getDaoSession(context));
     }
 
     private void setupResources(){

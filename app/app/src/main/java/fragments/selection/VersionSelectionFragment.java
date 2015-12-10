@@ -266,6 +266,7 @@ private VersionSelectionFragmentListener listener;
 
 
     private void reloadData(){
+        adapter.updateModels();
         listView.invalidateViews();
     }
 
@@ -382,6 +383,7 @@ private VersionSelectionFragmentListener listener;
 
         switch (type){
             case MEDIA_TYPE_TEXT:{
+                deleteText(viewModel);
                 break;
             }
             case MEDIA_TYPE_AUDIO:{
@@ -438,8 +440,6 @@ private VersionSelectionFragmentListener listener;
                         }
                     }).show(getActivity().getSupportFragmentManager(), "BitrateFragment");
         }
-
-
     }
 
     private void downloadVideo(final VersionViewModel viewModel){
