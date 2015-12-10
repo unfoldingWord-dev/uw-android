@@ -44,12 +44,13 @@
 
     <RelativeLayout
         android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/no_version_layout"
         android:visibility="visible"
-        android:background="@color/gray"
+        android:background="#fff"
         >
 
         <Button

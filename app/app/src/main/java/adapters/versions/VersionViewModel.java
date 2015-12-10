@@ -48,6 +48,9 @@ public class VersionViewModel {
 
     public void updateContent(){
         version = Version.getVersionForId(version.getId(), DaoDBHelper.getDaoSession(context));
+        for(ResourceViewModel model : resources){
+            model.setState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+        }
     }
 
     private void setupResources(){
@@ -119,6 +122,9 @@ public class VersionViewModel {
             }
         }
 
+        public void setState(DownloadState state) {
+            this.state = state;
+        }
 
         public void getDownloadState(final DataFileManager.GetDownloadStateResponse response){
 
@@ -132,7 +138,6 @@ public class VersionViewModel {
                 }
             });
         }
-
 
         public void getDownloadStateAsync(final DataFileManager.GetDownloadStateResponse response){
 

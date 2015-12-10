@@ -230,6 +230,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(getBook() == null){
             errorView.setVisibility(View.VISIBLE);
             findViewById(R.id.tab_bar_view).setVisibility(View.INVISIBLE);
+            setAudioPlayerVisibility(false);
         }
         else {
             findViewById(R.id.tab_bar_view).setVisibility(View.VISIBLE);

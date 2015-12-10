@@ -408,29 +408,30 @@ private VersionSelectionFragmentListener listener;
 
     private void downloadAudio(final VersionViewModel viewModel){
 
-        AudioBook audioBook = viewModel.getVersion().getBooks().get(0).getAudioBook();
+        final AudioBook audioBook = viewModel.getVersion().getBooks().get(0).getAudioBook();
         if(audioBook != null) {
-
-            DataFileManager.getStateOfContent(getApplicationContext(), viewModel.getVersion(), MediaType.MEDIA_TYPE_TEXT, new DataFileManager.GetDownloadStateResponse() {
-                @Override
-                public void foundDownloadState(DownloadState state) {
-                    if(state == DownloadState.DOWNLOAD_STATE_NONE){
-                        downloadText(viewModel.getVersion().getId());
-                        reloadData();
-                    }
-                }
-            });
 
             BitrateFragment.newInstance(audioBook.getAudioChapters().get(0).getBitRates(),
                     "Select Audio Bitrate", new BitrateFragment.BitrateFragmentListener() {
                         @Override
-                        public void bitrateChosen(DialogFragment fragment, AudioBitrate bitrate) {
+                        public void bitrateChosen(DialogFragment fragment, final AudioBitrate bitrate) {
 
-                            Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class)
-                            .putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId())
-                            .putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false)
-                            .putExtra(UWMediaDownloaderService.BITRATE_PARAM, bitrate);
-                            getContext().startService(downloadIntent);
+                            DataFileManager.getStateOfContent(getApplicationContext(), viewModel.getVersion(), MediaType.MEDIA_TYPE_TEXT, new DataFileManager.GetDownloadStateResponse() {
+                                @Override
+                                public void foundDownloadState(DownloadState state) {
+                                    if(state == DownloadState.DOWNLOAD_STATE_NONE){
+                                        for(VersionViewModel.ResourceViewModel model : viewModel.getResources()){
+                                            if(model.getType() == MediaType.MEDIA_TYPE_TEXT){
+                                                model.setState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+                                                downloadText(viewModel.getVersion().getId());
+                                                reloadData();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    downloadAudio(viewModel, bitrate);
+                                }
+                            });
                             fragment.dismiss();
                         }
 
@@ -438,8 +439,17 @@ private VersionSelectionFragmentListener listener;
                         public void dismissed() {
                             reloadData();
                         }
-                    }).show(getActivity().getSupportFragmentManager(), "BitrateFragment");
+            }).show(getActivity().getSupportFragmentManager(), "BitrateFragment");
         }
+    }
+
+    private void downloadAudio(final VersionViewModel viewModel, AudioBitrate bitrate){
+
+                Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class)
+                        .putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId())
+                        .putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false)
+                        .putExtra(UWMediaDownloaderService.BITRATE_PARAM, bitrate);
+                getContext().startService(downloadIntent);
     }
 
     private void downloadVideo(final VersionViewModel viewModel){
