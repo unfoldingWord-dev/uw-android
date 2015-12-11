@@ -3,6 +3,7 @@ package model;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.unfoldingword.mobile.R;
@@ -21,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import de.greenrobot.common.io.FileUtils;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;
@@ -185,14 +187,17 @@ public class DataFileManager {
         return new File(getPath(context, mediaType, version), fileName);
     }
 
+    @Nullable
     public static Uri createUriForSideLoad(Context context, Version version, List<MediaType> types){
 
         FileUtil.clearTemporaryFiles(context);
-        saveTempFileForSideLoading(context, version.getAsPreloadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(version));
+        saveTempFileForSideLoading(context, version.getAsSideLoadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(version));
         for(MediaType type : types){
             if(type == MediaType.MEDIA_TYPE_AUDIO){
                 int bitRate = getDownloadedBitrate(context, version, MediaType.MEDIA_TYPE_AUDIO);
-                saveAudioFilesForPreload(context, version, bitRate);
+                if(!saveAudioFilesForPreload(context, version, bitRate)){
+                    return null;
+                }
             }
         }
         File outFile = new File(context.getFilesDir()
@@ -201,14 +206,19 @@ public class DataFileManager {
         return compressFiles(version, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
     }
 
-    private static void saveAudioFilesForPreload(Context context, Version version, int bitRate){
+    private static boolean saveAudioFilesForPreload(Context context, Version version, int bitRate){
 
+        boolean success = true;
         for(Book book : version.getBooks()){
             for(AudioChapter chapter : book.getAudioBook().getAudioChapters()){
-                saveAudioForSideLoad(context, version, chapter, bitRate);
+
+                if(!saveAudioForSideLoad(context, version, chapter, bitRate)){
+                    success = false;
+                }
 //                saveAudioSignatureForSideLoad(context, version, chapter, bitRate);
             }
         }
+        return success;
     }
 
     private static Uri compressFiles( Version version, Uri filesUri, Uri newFile){
@@ -330,11 +340,23 @@ public class DataFileManager {
     }
 
 
-    private static void saveAudioForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){
+    private static boolean saveAudioForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){
 
-        Uri fileUri = getUri(context, version, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitRate));
+        File file = new File(getUri(context, version, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitRate)).getPath());
         File newFile = new File(FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME).getPath());
-        FileUtil.copyFile(fileUri, Uri.fromFile(new File(newFile, FileNameHelper.getShareAudioFileName(audioChapter, bitRate))));
+        newFile = new File(newFile, FileNameHelper.getShareAudioFileName(audioChapter, bitRate));
+
+        try {
+            if(!newFile.exists()){
+                newFile.createNewFile();
+            }
+            FileUtils.copyFile(file, newFile);
+            return true;
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private static void saveAudioSignatureForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){

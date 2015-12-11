@@ -130,7 +130,7 @@ public class VersionParser extends UWDataParser{
 
         try {
             JSONObject languageJson = LanguageParser.getLanguageAsJson(version.getLanguage(), true);
-            languageJson.put(LanguageParser.VERSION_JSON_KEY, new JSONArray().put(VersionParser.getVersionAsJson(version)));
+            languageJson.put(LanguageParser.VERSION_JSON_KEY, new JSONArray().put(getVersionAsJson(version)));
 
             JSONObject projectJson = ProjectParser.getProjectAsJson(version.getLanguage().getProject(), true);
             projectJson.put(ProjectParser.LANGUAGES_JSON_KEY, new JSONArray().put(languageJson));
@@ -167,7 +167,7 @@ public class VersionParser extends UWDataParser{
                     try {
                         sourcesObject.put(book.getSourceUrl(), new String(file, "UTF-8"));
                         sourcesObject.put(book.getSignatureUrl(), FileUtil.getStringFromFile(new File(signatureUri.getPath())));
-                        Log.i(TAG, "added sharing file to JSON " + ++i + " of " + length);
+//                        Log.i(TAG, "added sharing file to JSON " + ++i + " of " + length);
                     }
                     catch (UnsupportedEncodingException e){
                         e.printStackTrace();

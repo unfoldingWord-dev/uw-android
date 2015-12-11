@@ -267,7 +267,7 @@ public class FileUtil {
 
     public static void clearTemporaryFiles(Context context){
 
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+        File file = new File(context.getFilesDir().getAbsolutePath()
                 + "/" + context.getString(R.string.app_name) + "/temp");
         if(file.exists()){
             deleteContents(file);

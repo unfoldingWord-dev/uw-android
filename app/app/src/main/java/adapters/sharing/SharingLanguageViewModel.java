@@ -13,6 +13,7 @@ import model.DaoDBHelper;
 import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
+import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
 
 /**
@@ -56,17 +57,19 @@ public class SharingLanguageViewModel implements Comparable<SharingLanguageViewM
                 }
 
                 for(Version version : language.getVersions()){
-                    versionMap.get(language.getLanguageAbbreviation()).add(version);
+                    if(version.isDownloaded()) {
+                        versionMap.get(language.getLanguageAbbreviation()).add(version);
+                    }
                 }
             }
         }
 
         List<SharingLanguageViewModel> models = new ArrayList<>();
 
-        for (Map.Entry<String, List<Version>> entry : versionMap.entrySet())
-        {
-            models.add(new SharingLanguageViewModel(getTitle(context, entry.getKey()), entry.getValue()));
-            System.out.println(entry.getKey() + "/" + entry.getValue());
+        for (Map.Entry<String, List<Version>> entry : versionMap.entrySet()) {
+            if(entry.getValue().size() > 0) {
+                models.add(new SharingLanguageViewModel(getTitle(context, entry.getKey()), entry.getValue()));
+            }
         }
         Collections.sort(models);
         return models;

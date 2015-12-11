@@ -20,9 +20,6 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import adapters.versions.VersionTitleViewHolder;
-import adapters.versions.VersionViewHolder;
-import adapters.versions.VersionViewModel;
 import model.daoModels.Version;
 
 /**
@@ -135,7 +132,7 @@ public class SharingAdapter implements ExpandableListAdapter {
 
             LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.row_version_share_selection, parent, false);
+            convertView = inflater.inflate(R.layout.row_share_version_selection, parent, false);
             holder = new SharingAdapterVersionViewGroup(convertView);
             convertView.setTag(holder);
         }

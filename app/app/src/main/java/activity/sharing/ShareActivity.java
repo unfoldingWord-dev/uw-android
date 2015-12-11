@@ -8,10 +8,13 @@
 
 package activity.sharing;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
+import android.widget.TextView;
 
 import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
 import com.github.peejweej.androidsideloading.model.SideLoadInformation;
@@ -26,6 +29,8 @@ import activity.UWBaseActivity;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ShareSelectionFragment;
 import model.DaoDBHelper;
+import model.DataFileManager;
+import model.DownloadState;
 import model.SharingHelper;
 import model.daoModels.Project;
 import model.daoModels.Version;
@@ -70,21 +75,27 @@ public class ShareActivity extends UWBaseActivity {
         final Version version = selectionFragment.getSelectedVersion();
         if(version != null) {
 
-            if(version.hasVideo() || version.hasAudio()){
-                ResourceChoosingFragment.newInstance(version, new ResourceChoosingFragment.ResourceChoosingListener() {
-                    @Override
-                    public void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types) {
-                        shareVersion(types, version);
-                        dialogFragment.dismiss();
-                    }
-                }).show(getSupportFragmentManager(), "ResourceChoosingFragment");
-            }
-            else{
-                shareVersion(new ArrayList<MediaType>(), version);
-            }
+            DataFileManager.getStateOfContent(getApplicationContext(), version, MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
 
-//            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<MediaType>()))
-//                    .show(getSupportFragmentManager(), "TypeChoosingFragment");
+                    if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+
+                        ResourceChoosingFragment.newInstance(version, new ResourceChoosingFragment.ResourceChoosingListener() {
+                            @Override
+                            public void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types) {
+                                shareVersion(types, version);
+                                dialogFragment.dismiss();
+                            }
+                        }).show(getSupportFragmentManager(), "ResourceChoosingFragment");
+
+                    }
+                    else{
+                        shareVersion(new ArrayList<MediaType>(), version);
+                    }
+
+                }
+            });
         }
     }
 
@@ -95,13 +106,32 @@ public class ShareActivity extends UWBaseActivity {
             @Override
             public void informationLoaded(SideLoadInformation information) {
 
-                TypeChoosingFragment.constructFragment(information)
-                        .show(getSupportFragmentManager(), "TypeChoosingFragment");
-
+                if(information != null) {
+                    TypeChoosingFragment.constructFragment(information)
+                            .show(getSupportFragmentManager(), "TypeChoosingFragment");
+                }
+                else{
+                    showFailedAlert();
+                }
                 setLoadingFragmentVisibility(false, "", true);
             }
         });
+    }
 
+    private void showFailedAlert(){
+
+        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Sharing Failure");
+        new AlertDialog.Builder(this)
+                .setCustomTitle(titleView)
+                .setMessage("Sharing failed. Please try again")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create().show();
     }
 
     @Override

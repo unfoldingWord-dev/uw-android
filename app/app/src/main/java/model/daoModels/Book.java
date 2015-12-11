@@ -317,6 +317,12 @@ public class Book extends model.UWDatabaseModel  implements java.io.Serializable
 
     // KEEP METHODS - put your custom methods here
 
+
+    public boolean isDownloaded(){
+
+        return ((getStoryChapters() != null && getStoryChapters().size() > 0) || (getBibleChapters() != null && getBibleChapters().size() > 0));
+    }
+
     @Override
     public void insertModel(DaoSession session) {
         session.getBookDao().insert(this);

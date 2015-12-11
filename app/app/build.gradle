@@ -75,4 +75,5 @@ dependencies {
     compile 'com.github.PeeJWeeJ:AndroidSideLoading:betatest'
     compile 'com.github.karabaralex:android-comboseekbar:b66191a'
     compile 'de.greenrobot:java-common:2.2.0'
+    compile 'de.greenrobot:eventbus:2.4.0'
 }

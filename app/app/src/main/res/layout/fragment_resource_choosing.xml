@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="fragments.ResourceChoosingFragment"
     android:orientation="vertical"
     android:layout_marginLeft="15dp"
-    android:layout_marginStart="15dp"
-    >
+    android:layout_marginStart="15dp">
 
 
     <TextView
@@ -23,9 +23,11 @@
         android:textColor="#000"/>
 
     <TextView
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
         android:layout_marginTop="10dp"
         android:textColor="#000"
-        android:gravity="center"
+        android:gravity="left|start"
         android:height="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +58,9 @@
 
         <Button
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
             android:background="@drawable/basic_button_selector"
             android:textColor="@color/primary"
             style="?android:attr/buttonStyleSmall"
@@ -65,6 +69,6 @@
             android:text="Continue"
             android:id="@+id/resource_choosing_continue_button"
             />
-    </LinearLayout>
 
+    </LinearLayout>
 </LinearLayout>

@@ -276,6 +276,9 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
 
     // KEEP METHODS - put your custom methods here
 
+    public boolean isDownloaded(){
+        return getBooks().get(0).isDownloaded();
+    }
 
     public boolean hasAudio(){
 
@@ -465,7 +468,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
      * @param context Context to use
      * @return JSONObject with all data necessary for sharing or saving this version
      */
-    public JSONObject getAsPreloadJson(Context context){
+    public JSONObject getAsSideLoadJson(Context context){
         return VersionParser.getAsSideLoadJson(context, this);
     }
 

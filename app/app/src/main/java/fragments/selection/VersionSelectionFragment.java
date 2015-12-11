@@ -297,7 +297,7 @@ private VersionSelectionFragmentListener listener;
             case DOWNLOAD_STATE_DOWNLOADED:{
 
                 String additionalText = (type == MediaType.MEDIA_TYPE_TEXT)? "\n\n*NOTE* All associated content will also be deleted" : "";
-                        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+                View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
                 ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Please Confirm");
                 new AlertDialog.Builder(getActivity())
                         .setCustomTitle(titleView)
@@ -571,7 +571,6 @@ private VersionSelectionFragmentListener listener;
 //    }
 
     //endregion
-
 
     private Context getApplicationContext(){
         return getActivity().getApplicationContext();

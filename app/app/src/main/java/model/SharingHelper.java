@@ -58,7 +58,12 @@ public class SharingHelper {
 
                 Uri fileUri = DataFileManager.createUriForSideLoad(context, version, types);
 
-                return getShareInformation(fileUri, getFileNameForVersion(version));
+                if(fileUri == null){
+                    return null;
+                }
+                else {
+                    return getShareInformation(fileUri, getFileNameForVersion(version));
+                }
             }
 
             @Override
@@ -75,8 +80,8 @@ public class SharingHelper {
 
 //    private static Uri getFileForVersion(Context context, Version version){
 //
-//        FileUtilities.compressText(version.getAsPreloadJson(context).toString());
-//        return FileUtil.createTemporaryFile(context, FileUtilities.compressText(version.getAsPreloadJson(context).toString()), getFileNameForVersion(version));
+//        FileUtilities.compressText(version.getAsSideLoadJson(context).toString());
+//        return FileUtil.createTemporaryFile(context, FileUtilities.compressText(version.getAsSideLoadJson(context).toString()), getFileNameForVersion(version));
 //    }
 
     public static String getFileNameForVersion(Version version){
