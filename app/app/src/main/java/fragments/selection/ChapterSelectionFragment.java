@@ -145,27 +145,24 @@ public class ChapterSelectionFragment extends DialogFragment implements BooksFra
         }
         tabHost.addTab(newTab("Book", R.id.books_tab));
         tabHost.addTab(newTab("Chapter", R.id.chapters_tab));
-        tabHost.getTabWidget().getChildAt(0).setBackgroundColor(getResources().getColor(R.color.primary_button_light));
-        tabHost.getTabWidget().getChildAt(1).setBackgroundColor(getResources().getColor(R.color.clear));
+        tabHost.getTabWidget().getChildAt(0).setBackgroundColor(getResources().getColor(R.color.primary));
+        tabHost.getTabWidget().getChildAt(1).setBackgroundColor(getResources().getColor(R.color.tab_unselected));
 
         for(int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
 
             TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
-            tv.setTextColor(getActivity().getResources().getColor(R.color.white));
+            tv.setTextColor(getActivity().getResources().getColor((i == 0) ? R.color.white : R.color.white));
         }
 
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
                 int tab = tabHost.getCurrentTab();
-                tabHost.getTabWidget().getChildAt(0).setBackgroundColor(getResources().getColor(R.color.clear));
-                tabHost.getTabWidget().getChildAt(1).setBackgroundColor(getResources().getColor(R.color.clear));
-                tabHost.getTabWidget().getChildAt(tab).setBackgroundColor(getResources().getColor(R.color.primary_button_light));
 
                 for(int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
-
+                    tabHost.getTabWidget().getChildAt(i).setBackgroundColor(getResources().getColor((tab == i)? R.color.primary : R.color.tab_unselected));
                     TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
-                    tv.setTextColor(getActivity().getResources().getColor((i == tab)? R.color.white : R.color.light_gray));
+                    tv.setTextColor(getActivity().getResources().getColor((i == tab)? R.color.white : R.color.white));
                 }
             }
         });

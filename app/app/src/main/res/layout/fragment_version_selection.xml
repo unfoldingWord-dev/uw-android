@@ -18,10 +18,10 @@
         android:gravity="center" />
 
     <ExpandableListView
-        android:groupIndicator="@drawable/basic_button_selector"
         android:id="@+id/versions_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:groupIndicator="@drawable/basic_button_selector"
         android:childDivider="@color/light_gray"
         android:dividerHeight="2dp"
         android:divider="@color/light_gray"

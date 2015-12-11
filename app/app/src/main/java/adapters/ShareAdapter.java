@@ -46,7 +46,7 @@ public class ShareAdapter extends ArrayAdapter<String> {
             view = inflater.inflate(R.layout.row_share, parent, false);
 
             holder.labelTextView = (TextView) view.findViewById(R.id.share_label);
-            holder.iconView = (ImageView) view.findViewById(R.id.share_icon);
+            holder.iconView = (ImageView) view.findViewById(R.id.share_check_icon);
 
             view.setTag(holder);
         } else {

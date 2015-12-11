@@ -9,7 +9,8 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
-    <color name="primary_button_light">#6cb3ac</color>z
+    <color name="primary_button_light">#6cb3ac</color>
+    <color name="tab_unselected">#80cbc4</color>
 
 
 

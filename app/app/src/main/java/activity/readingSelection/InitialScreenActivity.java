@@ -50,7 +50,6 @@ import model.daoModels.Project;
 import services.UWSideLoaderService;
 import services.UWUpdaterService;
 import utils.NetWorkUtil;
-import utils.URLUtils;
 import utils.UWPreferenceManager;
 import view.UWTabBar;
 

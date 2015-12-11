@@ -11,12 +11,11 @@ package activity.sharing;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.View;
 
 import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
+import com.github.peejweej.androidsideloading.model.SideLoadInformation;
 
-import org.json.JSONObject;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
@@ -24,19 +23,20 @@ import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
-import adapters.VersionShareAdapter;
 import fragments.ResourceChoosingFragment;
+import fragments.selection.ShareSelectionFragment;
 import model.DaoDBHelper;
 import model.SharingHelper;
+import model.daoModels.Project;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 
-public class ShareActivity extends UWBaseActivity implements VersionShareAdapter.VersionAdapterListener {
+public class ShareActivity extends UWBaseActivity {
 
     private static final String TAG = "ShareActivity";
     private ShareSelectionFragment selectionFragment;
 
-    Version[] versions;
+    private Project[] projects;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +53,14 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
     }
 
     private void setupData(){
-        List<Version> versionsList = Version.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
-        versions = new Version[versionsList.size()];
-        versionsList.toArray(versions);
+        List<Project> projectList = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+        projects = new Project[projectList.size()];
+        projectList.toArray(projects);
     }
 
     private void addFragment(){
 
-        selectionFragment = ShareSelectionFragment.newInstance(versions);
+        selectionFragment = ShareSelectionFragment.newInstance(projects);
 
         getSupportFragmentManager().beginTransaction().add(R.id.share_fragment_frame, selectionFragment).commit();
     }
@@ -85,14 +85,23 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
 
 //            TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, new ArrayList<MediaType>()))
 //                    .show(getSupportFragmentManager(), "TypeChoosingFragment");
-
         }
     }
 
     private void shareVersion(List<MediaType> types, Version version){
 
-        TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, types))
-                .show(getSupportFragmentManager(), "TypeChoosingFragment");
+        setLoadingFragmentVisibility(true, "Preparing Sharable Version", false);
+        SharingHelper.getShareInformation(getApplicationContext(), version, types, new SharingHelper.SideLoadInformationResponse() {
+            @Override
+            public void informationLoaded(SideLoadInformation information) {
+
+                TypeChoosingFragment.constructFragment(information)
+                        .show(getSupportFragmentManager(), "TypeChoosingFragment");
+
+                setLoadingFragmentVisibility(false, "", true);
+            }
+        });
+
     }
 
     @Override
@@ -100,8 +109,8 @@ public class ShareActivity extends UWBaseActivity implements VersionShareAdapter
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void rowSelectedOrDeselected() {
-//        int numOfKeyboards = selectionFragment.getSelectedVersion().size();
-    }
+//    @Override
+//    public void rowSelectedOrDeselected() {
+////        int numOfKeyboards = selectionFragment.getSelectedVersion().size();
+//    }
 }

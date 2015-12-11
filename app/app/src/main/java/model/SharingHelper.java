@@ -11,6 +11,7 @@ package model;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 
 import com.github.peejweej.androidsideloading.activities.SideLoadActivity;
 import com.github.peejweej.androidsideloading.activities.SideShareActivity;
@@ -48,11 +49,28 @@ public class SharingHelper {
         return new SideLoadInformation(fileName, fileUri);
     }
 
-    public static SideLoadInformation getShareInformation(Context context, Version version, List<MediaType> types){
+    public static void getShareInformation(final Context context, final Version version,
+                                           final List<MediaType> types, final SideLoadInformationResponse response){
 
-        Uri fileUri = DataFileManager.createUriForSideLoad(context, version, types);
+        new AsyncTask<Void, Void, SideLoadInformation>(){
+            @Override
+            protected SideLoadInformation doInBackground(Void... params) {
 
-        return getShareInformation(fileUri, getFileNameForVersion(version));
+                Uri fileUri = DataFileManager.createUriForSideLoad(context, version, types);
+
+                return getShareInformation(fileUri, getFileNameForVersion(version));
+            }
+
+            @Override
+            protected void onPostExecute(SideLoadInformation information) {
+                super.onPostExecute(information);
+                response.informationLoaded(information);
+            }
+        }.execute();
+    }
+
+    public interface SideLoadInformationResponse{
+        void informationLoaded(SideLoadInformation information);
     }
 
 //    private static Uri getFileForVersion(Context context, Version version){
@@ -69,8 +87,8 @@ public class SharingHelper {
         return new Intent(context, SideLoadActivity.class).putExtra(SideLoadActivity.SIDE_LOAD_INFORMATION_PARAM, getLoadInformation());
     }
 
-    public static Intent getIntentForSharing(Context context, Version version){
-
-        return new Intent(context, SideShareActivity.class).putExtra(SideShareActivity.SIDE_LOAD_INFORMATION_PARAM, getShareInformation(context, version, new ArrayList<MediaType>()));
-    }
+//    public static Intent getIntentForSharing(Context context, Version version){
+//
+//        return new Intent(context, SideShareActivity.class).putExtra(SideShareActivity.SIDE_LOAD_INFORMATION_PARAM, getShareInformation(context, version, new ArrayList<MediaType>()));
+//    }
 }

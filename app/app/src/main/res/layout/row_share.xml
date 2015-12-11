@@ -19,15 +19,15 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_toRightOf="@+id/share_icon"
-        android:layout_toEndOf="@+id/share_icon"
+        android:layout_toRightOf="@+id/share_check_icon"
+        android:layout_toEndOf="@+id/share_check_icon"
         />
 
     <ImageView
         android:gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
-        android:id="@+id/share_icon"
+        android:id="@+id/share_check_icon"
         android:layout_height="30dp"
         android:layout_width="30dp"
         android:textColor="#000"

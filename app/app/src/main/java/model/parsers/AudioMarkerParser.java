@@ -64,7 +64,7 @@ public class AudioMarkerParser {
 
     private static byte[] getHeaderBytes(File file){
 
-        byte[] audioBytes = FileUtil.getbytesFromFile(file);
+        byte[] audioBytes = FileUtil.getBytesFromFile(file);
         if(audioBytes == null){
             return null;
         }

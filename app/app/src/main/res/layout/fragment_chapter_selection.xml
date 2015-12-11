@@ -16,6 +16,7 @@
         />
 
     <TabHost
+        android:background="#fff"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/tabHost"
@@ -27,14 +28,17 @@
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#fff"/>
+
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal|top"
-                android:background="#eee">
-
-            </TabWidget>
+                />
 
             <FrameLayout
                 android:layout_width="match_parent"

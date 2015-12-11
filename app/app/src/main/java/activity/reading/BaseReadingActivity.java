@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.github.peejweej.androidsideloading.fragments.TypeChoosingFragment;
+import com.github.peejweej.androidsideloading.model.SideLoadInformation;
 import com.infteh.comboseekbar.ComboSeekBar;
 
 import org.unfoldingword.mobile.R;
@@ -519,8 +520,16 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void shareVersion(List<MediaType> types, Version version){
 
-        TypeChoosingFragment.constructFragment(SharingHelper.getShareInformation(getApplicationContext(), version, types))
-                .show(getSupportFragmentManager(), "TypeChoosingFragment");
+        setLoadingFragmentVisibility(true, "Preparing Sharable Version", false);
+        SharingHelper.getShareInformation(getApplicationContext(), version, types, new SharingHelper.SideLoadInformationResponse() {
+            @Override
+            public void informationLoaded(SideLoadInformation information) {
+                TypeChoosingFragment.constructFragment(information)
+                        .show(getSupportFragmentManager(), "TypeChoosingFragment");
+                setLoadingFragmentVisibility(false, "Preparing Sharable Version", true);
+            }
+        });
+
     }
 
     private void toggleTextSizeVisibility(){

@@ -12,27 +12,19 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.google.gson.JsonObject;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import model.DataFileManager;
-import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.Language;
 import model.daoModels.Version;
-import utils.FileNameHelper;
 import utils.FileUtil;
-import utils.UWFileUtils;
 
 /**
  * Created by PJ Fechner on 6/22/15.
@@ -163,13 +155,24 @@ public class VersionParser extends UWDataParser{
 
         JSONObject sourcesObject = new JSONObject();
 
+        int length = version.getBooks().size();
+        int i = 0;
         for(Book book : version.getBooks()){
             try {
                 Uri sourceUri = DataFileManager.getUri(context, book.getVersion(), MediaType.MEDIA_TYPE_TEXT, book.getSourceUrl());
                 Uri signatureUri = DataFileManager.getUri(context, book.getVersion(), MediaType.MEDIA_TYPE_TEXT, book.getSignatureUrl());
 
-                sourcesObject.put(book.getSourceUrl(), FileUtil.getStringFromFile(new File(sourceUri.getPath())));
-                sourcesObject.put(book.getSignatureUrl(), FileUtil.getStringFromFile(new File(signatureUri.getPath())));
+                byte[] file = FileUtil.getBytesFromFile(new File(sourceUri.getPath()));
+                if(file != null) {
+                    try {
+                        sourcesObject.put(book.getSourceUrl(), new String(file, "UTF-8"));
+                        sourcesObject.put(book.getSignatureUrl(), FileUtil.getStringFromFile(new File(signatureUri.getPath())));
+                        Log.i(TAG, "added sharing file to JSON " + ++i + " of " + length);
+                    }
+                    catch (UnsupportedEncodingException e){
+                        e.printStackTrace();
+                    }
+                }
             }
             catch (JSONException e){
                 e.printStackTrace();

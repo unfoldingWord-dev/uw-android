@@ -27,9 +27,7 @@ import java.util.ListIterator;
 
 import model.daoModels.Book;
 import model.daoModels.DaoMaster;
-import model.daoModels.Version;
 import model.parsers.MediaType;
-import tasks.UpdateAndVerifyBookRunnable;
 import unfoldingword.ModelNames;
 import utils.FileNameHelper;
 import utils.FileUtil;
@@ -120,7 +118,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             String databasePath = DB_PATH + DB_NAME;
 
             File databaseInputFile = new File(databasePath);
-            byte[] bytes = FileUtil.getbytesFromFile(databaseInputFile);
+            byte[] bytes = FileUtil.getBytesFromFile(databaseInputFile);
             FileUtil.saveFileToSdCard(context, bytes, DB_NAME);
         }
     }

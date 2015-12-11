@@ -30,7 +30,7 @@
 
     <Button
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:background="@drawable/gray_button_selector"
+        android:background="@drawable/primary_color_button_selector"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:layout_margin="0dp"

@@ -344,19 +344,16 @@ public class FileUtil {
 
     public static String getStringFromFile(File file){
 
-        try{
-            FileInputStream fileStream = new FileInputStream(file);
-
-            String resultString = getStringFromInputStream(fileStream, file.getName()).toString();
-            return resultString;
+        byte[] bytes = getBytesFromFile(file);
+        if(bytes != null) {
+            return new String(bytes);
         }
-        catch (IOException e){
-            Log.e(TAG, "getStringFromFile IOException: " + e.toString());
+        else{
             return null;
         }
     }
 
-    public static byte[] getbytesFromFile(File file){
+    public static byte[] getBytesFromFile(File file){
 
         try{
             FileInputStream fileStream = new FileInputStream(file);
@@ -371,7 +368,7 @@ public class FileUtil {
             return bytes;
         }
         catch (IOException e){
-            Log.e(TAG, "getbytesFromFile IOException: " + e.toString());
+            Log.e(TAG, "getBytesFromFile IOException: " + e.toString());
             return null;
         }
     }

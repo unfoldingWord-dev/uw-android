@@ -15,7 +15,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.github.peejweej.androidsideloading.utilities.FileUtilities;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +29,6 @@ import java.util.List;
 
 import model.DaoDBHelper;
 import model.DataFileManager;
-import model.DownloadState;
 import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
@@ -342,10 +340,10 @@ public class UWSideLoaderService extends UWUpdaterService {
 
         if(sourceFile.exists()) {
             DataFileManager.saveDataForBook(getApplicationContext(), audioChapter.getAudioBook().getBook(),
-                    FileUtil.getbytesFromFile(sourceFile), MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitrate));
+                    FileUtil.getBytesFromFile(sourceFile), MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitrate));
 
 //            DataFileManager.saveSignatureForBook(getApplicationContext(), audioChapter.getAudioBook().getBook(),
-//                    FileUtil.getbytesFromFile(signatureFile), MediaType.MEDIA_TYPE_AUDIO, audioChapter.getSignatureUrl(bitrate));
+//                    FileUtil.getBytesFromFile(signatureFile), MediaType.MEDIA_TYPE_AUDIO, audioChapter.getSignatureUrl(bitrate));
         }
     }
 

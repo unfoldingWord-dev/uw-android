@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="45dp"
     android:background="@drawable/basic_button_selector"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:paddingLeft="20dp"
+    android:paddingStart="20dp">
 
 
     <TextView
-        android:layout_toLeftOf="@+id/keyboard_selection_checkbox_image"
-        android:layout_toStartOf="@+id/keyboard_selection_checkbox_image"
+        android:layout_toLeftOf="@+id/share_selection_checkbox_image"
+        android:layout_toStartOf="@+id/share_selection_checkbox_image"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="8dp"
@@ -18,7 +20,7 @@
         android:textColor="#000"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/keyboard_selection_title" />
+        android:id="@+id/share_selection_title" />
 
     <ImageView
         android:layout_alignParentRight="true"
@@ -29,7 +31,7 @@
         android:layout_marginEnd="10dp"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/keyboard_selection_checkbox_image"
+        android:id="@+id/share_selection_checkbox_image"
         android:src="@drawable/checkbox_selector"/>
 
 </RelativeLayout>
