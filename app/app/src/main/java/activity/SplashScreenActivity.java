@@ -16,10 +16,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.unfoldingword.mobile.R;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import activity.readingSelection.InitialScreenActivity;
 import model.DaoDBHelper;

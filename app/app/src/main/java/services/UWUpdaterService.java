@@ -13,10 +13,17 @@ import android.content.Intent;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Process;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import model.daoModels.Version;
+import model.parsers.MediaType;
 import tasks.JsonDownloadTask;
 import tasks.UpdateProjectsRunnable;
 import utils.UWPreferenceManager;
@@ -31,6 +38,8 @@ public class UWUpdaterService extends Service {
 
     public static final String BROAD_CAST_DOWNLOAD_ENDED = "org.unfoldingword.mobile.BROAD_CAST_DOWNLOAD_ENDED";
     public static final String DOWNLOAD_RESULT_PARAM = "DOWNLOAD_RESULT_PARAM";
+    public static final String DOWNLOAD_RESULT_VERSION_PARAM = "DOWNLOAD_RESULT_VERSION_PARAM";
+    public static final String DOWNLOAD_RESULT_MEDIA_TYPE_PARAM = "DOWNLOAD_RESULT_MEDIA_TYPE_PARAM";
     public static final int DOWNLOAD_SUCCESS = 0;
     public static final int DOWNLOAD_FAILED = -1;
     public static final int DOWNLOAD_CANCELED = 1;
@@ -38,6 +47,8 @@ public class UWUpdaterService extends Service {
     public static final String MODIFIED_JSON_KEY = "mod";
 
     int numberPending = 0;
+
+    private Map<Long, Map<MediaType, AtomicInteger>> versionDownloadTracker = new HashMap<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -75,6 +86,19 @@ public class UWUpdaterService extends Service {
         UpdateManager.addRunnable(runnable, index);
     }
 
+    synchronized public void addRunnable(Runnable runnable, Version version, MediaType mediaType){
+
+        if(!versionDownloadTracker.containsKey(version.getId())){
+            versionDownloadTracker.put(version.getId(), new HashMap<MediaType, AtomicInteger>());
+        }
+        if(!versionDownloadTracker.get(version.getId()).containsKey(mediaType)){
+            versionDownloadTracker.get(version.getId()).put(mediaType, new AtomicInteger(1));
+        }
+        int num = versionDownloadTracker.get(version.getId()).get(mediaType).incrementAndGet();
+        UpdateManager.addRunnable(runnable, version.getId());
+
+    }
+
     /**
      * Should be called when a runnable finishes running.
      */
@@ -85,6 +109,49 @@ public class UWUpdaterService extends Service {
         if(numberPending == 0){
             stopService();
         }
+    }
+
+    /**
+     *
+     * @param version version of runnable
+     * @param type media type of runnable
+     * @return true if the process should continue
+     */
+    public boolean runnableFinished(Version version, MediaType type, boolean success){
+
+        boolean result = false;
+        if(!versionDownloadTracker.containsKey(version.getId())){
+        }
+        else if(!success){
+            versionDownloadTracker.get(version.getId()).get(type).set(-1);
+            int numLeft = versionDownloadTracker.get(version.getId()).get(type).decrementAndGet();
+            if(numLeft == 0){
+                Log.d(TAG, "Version runnable failed: " + numLeft + " finished for Version: "  + version.getSlug() + " Media Type: " + type.toString());
+                downloadFinished(version, type);
+            };
+            Log.e(TAG, "Version download failed runnable number: " + " finished for Version: " + version.getSlug() + " Media Type: " + type.toString());
+        }
+        else{
+            int numLeft = versionDownloadTracker.get(version.getId()).get(type).decrementAndGet();
+            if(numLeft == 0){
+                Log.d(TAG, "Version runnable number: " + numLeft + " finished for Version: "  + version.getSlug() + " Media Type: " + type.toString());
+                downloadFinished(version, type);
+            };
+            Log.d(TAG, "Version runnable number: " + numLeft + " finished for Version: " + version.getSlug() + " Media Type: " + type.toString());
+            result = true;
+        }
+        runnableFinished();
+        return result;
+    }
+
+    public void downloadFinished(Version version, MediaType type, boolean success){
+        versionDownloadTracker.get(version.getId()).remove(type);
+
+        getApplicationContext().sendBroadcast(
+                new Intent(BROAD_CAST_DOWNLOAD_ENDED)
+                        .putExtra(DOWNLOAD_RESULT_PARAM, DOWNLOAD_SUCCESS)
+                        .putExtra(DOWNLOAD_RESULT_VERSION_PARAM, version.getId())
+                        .putExtra(DOWNLOAD_RESULT_MEDIA_TYPE_PARAM, type));
     }
 
     protected void stopService(){

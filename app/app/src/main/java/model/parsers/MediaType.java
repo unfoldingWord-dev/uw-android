@@ -51,9 +51,31 @@ public enum MediaType implements Serializable{
             case MEDIA_TYPE_VIDEO:
                 return "Video";
             case MEDIA_TYPE_TEXT:
+                return "Text";
             default:
                 return "";
         }
     }
 
+    private String getName(){
+        switch (this) {
+            case MEDIA_TYPE_AUDIO:
+                return "MEDIA_TYPE_AUDIO";
+            case MEDIA_TYPE_VIDEO:
+                return "MEDIA_TYPE_VIDEO";
+            case MEDIA_TYPE_TEXT:
+                return "MEDIA_TYPE_TEXT";
+            case MEDIA_TYPE_NONE:
+                return "MEDIA_TYPE_NONE";
+            default:
+                return "";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "MediaType{" +
+                getName() +
+                '}';
+    }
 }

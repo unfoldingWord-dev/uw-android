@@ -11,7 +11,9 @@ package services;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -41,7 +43,8 @@ public class UpdateManager {
     private static final int MAXIMUM_POOL_SIZE = 8;
 
     // A managed pool of background decoder threads
-    private final List<ThreadPoolExecutor> updateThreadPools;
+    private final Map<Long, ThreadPoolExecutor> updateThreadPools;
+    private static final int unRelatedQueueId = -1;
 
     /**
      * NOTE: This is the number of total available cores. On current versions of
@@ -56,32 +59,72 @@ public class UpdateManager {
     /**
      * Will add the passed runnable to the thread pool
      * @param runnable runnable to add
-     * @param index as-yet unimplemented possible multi-pool management param.
+     * @param id id associate with this threadpool
      */
-    static public void addRunnable(Runnable runnable, int index){
+    static public void addRunnable(Runnable runnable, long id){
 //        Log.d(TAG, "Runnable will be added to index: " + index);
-        getInstance().getPoolAtIndex(0).execute(runnable);
+        getInstance().getPoolForId(id).execute(runnable);
+    }
+
+    /**
+     * Will add the passed runnable to the thread pool
+     * @param runnable runnable to add
+     */
+    static public void addRunnable(Runnable runnable){
+//        Log.d(TAG, "Runnable will be added to index: " + index);
+        addRunnable(runnable, unRelatedQueueId);
+    }
+
+    static public void haltQueue(long id){
+
+        getInstance().haltQueueForId(id);
+    }
+
+    static public boolean queueIsActive(long id){
+
+        return getInstance().isQueueActive(id);
     }
 
     private static UpdateManager getInstance() {
+        if(ourInstance == null){
+            ourInstance = new UpdateManager();
+        }
+
         return ourInstance;
     }
 
     private UpdateManager() {
-        updateThreadPools = new ArrayList<>();
-        updateThreadPools.add(getNewThreadExecutor());
+        updateThreadPools = new HashMap<>();
     }
 
-    private ThreadPoolExecutor getPoolAtIndex(int index){
+    private boolean isQueueActive(long id){
+        return updateThreadPools.get(id).getQueue().size() > 0;
+    }
 
-        if(index >= updateThreadPools.size()){
-            updateThreadPools.add(getNewThreadExecutor());
-            return getPoolAtIndex(index);
+    private int haltQueueForId(long id){
+
+        if(!updateThreadPools.containsKey(id)){
+            return 0;
         }
         else{
-            return updateThreadPools.get(index);
+            return updateThreadPools.get(id).shutdownNow().size();
         }
     }
+        /**
+         * @param id id of the ThreadPool to use
+         * @return ThreadPool matching the passed id
+         */
+        private ThreadPoolExecutor getPoolForId(long id){
+
+        if(!updateThreadPools.containsKey(id)){
+            updateThreadPools.put(id, getNewThreadExecutor());
+            return updateThreadPools.get(id);
+        }
+        else{
+            return updateThreadPools.get(id);
+        }
+    }
+
     private ThreadPoolExecutor getNewThreadExecutor(){
         return new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
                 KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, new LinkedBlockingQueue<Runnable>());
