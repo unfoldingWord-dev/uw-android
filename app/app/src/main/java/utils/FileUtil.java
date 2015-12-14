@@ -194,24 +194,21 @@ public class FileUtil {
     public static Uri createTemporaryFile(Context context, byte[] bytes, String fileName){
 
         clearTemporaryFiles(context);
-        String directory = context.getFilesDir()
-                + "/" + context.getString(R.string.app_name) + "/temp";
+        String directory = getTempStorageDir(context);
 
         return saveFile(bytes, directory, fileName);
     }
 
     public static Uri createTemporaryFile(Context context, byte[] bytes, String folderName, String fileName){
 
-        String directory = context.getFilesDir()
-                + "/" + context.getString(R.string.app_name) + "/temp/" + folderName;
+        String directory = getTempStorageDir(context) + "/" + folderName;
 
         return saveFile(bytes, directory, fileName);
     }
 
     public static Uri getUriForTempDir(Context context, String folderName){
 
-        String directory = context.getFilesDir()
-                + "/" + context.getString(R.string.app_name) + "/temp/" + folderName;
+        String directory = getTempStorageDir(context) + "/" + folderName;
         return Uri.fromFile(new File(directory));
     }
 
@@ -229,14 +226,18 @@ public class FileUtil {
         }
     }
 
+    public static String getTempStorageDir(Context context){
+        return Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/" + context.getString(R.string.app_name) + "/temp";
+    }
+
     public static Uri createTemporaryFile(Context context, CharSequence fileSequence, String fileName){
 
         clearTemporaryFiles(context);
 //        Log.i(TAG, "Attempting to save temporary file named:" + fileName);
 
         try {
-            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/" + context.getString(R.string.app_name) + "/temp", fileName);
+            File file = new File(getTempStorageDir(context), fileName);
 
             if (!file.exists()) {
                 boolean madeDirs = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -267,8 +268,7 @@ public class FileUtil {
 
     public static void clearTemporaryFiles(Context context){
 
-        File file = new File(context.getFilesDir().getAbsolutePath()
-                + "/" + context.getString(R.string.app_name) + "/temp");
+        File file = new File(getTempStorageDir(context));
         if(file.exists()){
             deleteContents(file);
             file.delete();

@@ -21,6 +21,7 @@ import com.github.peejweej.androidsideloading.model.SideLoadVerifier;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +57,14 @@ public class SharingHelper {
             @Override
             protected SideLoadInformation doInBackground(Void... params) {
 
-                Uri fileUri = DataFileManager.createUriForSideLoad(context, version, types);
+                Uri fileUri = DataFileManager.createUriForSideLoad(context, version, types, getFileNameForVersion(version));
 
                 if(fileUri == null){
                     return null;
                 }
                 else {
+                    String filePath = Uri.fromFile(new File(fileUri.getPath())).getPath();
+                    String fileFullPath = Uri.fromFile(new File(fileUri.getEncodedPath())).getEncodedPath();
                     return getShareInformation(fileUri, getFileNameForVersion(version));
                 }
             }

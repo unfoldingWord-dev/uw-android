@@ -72,7 +72,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.github.PeeJWeeJ:AndroidSideLoading:betatest'
+    compile 'com.github.PeeJWeeJ:AndroidSideLoading:test'
     compile 'com.github.karabaralex:android-comboseekbar:b66191a'
     compile 'de.greenrobot:java-common:2.2.0'
     compile 'de.greenrobot:eventbus:2.4.0'
