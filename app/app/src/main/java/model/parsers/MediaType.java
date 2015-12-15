@@ -57,7 +57,7 @@ public enum MediaType implements Serializable{
         }
     }
 
-    private String getName(){
+    public String getName(){
         switch (this) {
             case MEDIA_TYPE_AUDIO:
                 return "MEDIA_TYPE_AUDIO";
