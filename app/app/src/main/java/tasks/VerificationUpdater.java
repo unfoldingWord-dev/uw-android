@@ -29,7 +29,7 @@ public class VerificationUpdater {
         this.listener = listener;
     }
 
-    protected void execute(Book book) {
+    public void execute(Book book) {
 
         try {
             byte[] bookText = URLDownloadUtil.downloadBytes(book.getSourceUrl());

@@ -8,24 +8,15 @@
 
 package services;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import model.AudioBitrate;
 import model.DaoDBHelper;
-import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.daoModels.Version;
-import tasks.BytesDownloadTask;
-import tasks.UpdateBookContentRunnable;
-import tasks.UpdateMediaRunnable;
-import utils.FileNameHelper;
+import model.parsers.MediaType;
+import runnables.UpdateMediaRunnable;
 
 /**
  * Created by PJ fechner
@@ -54,16 +45,14 @@ public class UWMediaDownloaderService extends UWUpdaterService {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if(intent != null && intent.getExtras() != null) {
-            numberPending++;
             long versionId = intent.getExtras().getLong(VERSION_PARAM);
             boolean isVideo = intent.getExtras().getBoolean(IS_VIDEO_PARAM);
             AudioBitrate bitrate = (AudioBitrate) intent.getExtras().getSerializable(BITRATE_PARAM);
             Version version = Version.getVersionForId(versionId, DaoDBHelper.getDaoSession(getApplicationContext()));
 
             for (Book book : version.getBooks()) {
-                addRunnable(new UpdateMediaRunnable(false, book, this, bitrate), 2);
+                addRunnable(new UpdateMediaRunnable(false, book, this, bitrate), version, MediaType.MEDIA_TYPE_AUDIO);
             }
-            runnableFinished();
         }
 
         return START_STICKY;

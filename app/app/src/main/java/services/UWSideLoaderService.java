@@ -41,7 +41,7 @@ import model.parsers.LanguageParser;
 import model.parsers.MediaType;
 import model.parsers.ProjectParser;
 import model.parsers.VersionParser;
-import tasks.UpdateAndVerifyBookRunnable;
+import runnables.UpdateAndVerifyBookRunnable;
 import utils.FileNameHelper;
 import utils.FileUtil;
 import utils.UWPreferenceDataManager;
@@ -157,7 +157,7 @@ public class UWSideLoaderService extends UWUpdaterService {
 //                        saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
 
                         UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(book, getThis(), text, signature);
-                        addRunnable(runnable, 1);
+                        addRunnable(runnable, book.getVersion(), MediaType.MEDIA_TYPE_TEXT);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,12 +16,12 @@ import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import model.DataFileManager;
 import model.daoModels.Book;
 import model.parsers.MediaType;
 import services.UWUpdaterService;
+import tasks.VerificationUpdater;
 import utils.FileNameHelper;
 import utils.URLDownloadUtil;
 
@@ -31,7 +31,7 @@ import utils.URLDownloadUtil;
  */
 public class UpdateBookContentRunnable implements Runnable{
 
-    private static final String TAG = "UpdateBookCntntRunnable";
+    private static final String TAG = "UpdateBookCtntRunnable";
     public static final String CHAPTERS_JSON_KEY = "chapters";
     private UWUpdaterService updater;
     private Book book;
@@ -69,7 +69,8 @@ public class UpdateBookContentRunnable implements Runnable{
         }
 
         if(bookText == null || bookText.length < 1){
-            updater.runnableFinished();
+            updater.runnableFinished(parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
+            return;
         }
         else if(sigText == null){
             sigText = "";
@@ -86,25 +87,9 @@ public class UpdateBookContentRunnable implements Runnable{
 //            }
 
             UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(parent, updater, bookText, sigText);
-            updater.addRunnable(runnable, 4);
+            updater.addRunnable(runnable, parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
         }
-        updater.runnableFinished();
-    }
-
-
-    private void saveFile(byte[] bytes, String url){
-
-        try{
-            FileOutputStream fos = updater.getApplicationContext()
-                    .openFileOutput(FileNameHelper.getSaveFileNameFromUrl(url), Context.MODE_PRIVATE);
-            fos.write(bytes);
-            fos.close();
-            Log.i(TAG, "File Saved");
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            Log.e(TAG, "Error when saving USFM");
-        }
+        updater.runnableFinished(parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
     }
 
     private void updateStories(final Book parent){
@@ -120,8 +105,8 @@ public class UpdateBookContentRunnable implements Runnable{
                     try {
                         UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
                                 new JSONObject(new String(text)).getJSONArray(CHAPTERS_JSON_KEY), updater, parent);
-                        updater.addRunnable(runnable, 5);
-                        updater.runnableFinished();
+                        updater.addRunnable(runnable, parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
+                        updater.runnableFinished(parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

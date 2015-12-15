@@ -27,13 +27,12 @@ import java.util.ListIterator;
 
 import model.DaoDBHelper;
 import model.DataFileManager;
-import model.DownloadState;
 import model.daoModels.Book;
 import model.daoModels.Version;
 import model.parsers.MediaType;
-import tasks.UpdateAndVerifyBookRunnable;
-import tasks.UpdateLanguageLocaleRunnable;
-import tasks.UpdateProjectsRunnable;
+import runnables.UpdateAndVerifyBookRunnable;
+import runnables.UpdateLanguageLocaleRunnable;
+import runnables.UpdateProjectsRunnable;
 import utils.FileNameHelper;
 import utils.UWPreferenceManager;
 
@@ -116,7 +115,7 @@ public class UWPreLoaderService extends UWUpdaterService {
                 String jsonString = loadDbFile(getApplicationContext().getResources().getString(R.string.preloaded_locales_file_name));
                 JSONArray locales = new JSONArray(jsonString);
                 UWPreferenceManager.setHasDownloadedLocales(getApplicationContext(), true);
-                addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
+                addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()));
             }
             catch (JSONException e){
                 e.printStackTrace();
@@ -153,7 +152,7 @@ public class UWPreLoaderService extends UWUpdaterService {
 //                    saveFile(signature.getBytes("UTF-8"), book.getSignatureUrl());
 
                     UpdateAndVerifyBookRunnable runnable = new UpdateAndVerifyBookRunnable(book, getThis(), text, signature);
-                    addRunnable(runnable, 1);
+                    addRunnable(runnable, book.getVersion(), MediaType.MEDIA_TYPE_TEXT);
                 }
                 catch (IOException e){
                     e.printStackTrace();

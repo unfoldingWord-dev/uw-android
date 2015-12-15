@@ -19,6 +19,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import model.parsers.MediaType;
+
 /**
  * Created by PJ Fechner on 8/21/15.
  * Class to manage a thread pool in order to make full use of all cores during a data update.
@@ -36,15 +38,17 @@ public class UpdateManager {
     static {
         KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
     }
-    // Sets the initial threadpool size to 8
+    // Sets the initial thread pool size to 8
     private static final int CORE_POOL_SIZE = 8;
 
-    // Sets the maximum threadpool size to 8
+    // Sets the maximum thread pool size to 8
     private static final int MAXIMUM_POOL_SIZE = 8;
 
     // A managed pool of background decoder threads
-    private final Map<Long, ThreadPoolExecutor> updateThreadPools;
+    private final Map<Long, Map<MediaType, ThreadPoolExecutor>> updateThreadPools;
     private static final int unRelatedQueueId = -1;
+    private static final MediaType unrelatedMediaType = MediaType.MEDIA_TYPE_NONE;
+
 
     /**
      * NOTE: This is the number of total available cores. On current versions of
@@ -56,14 +60,17 @@ public class UpdateManager {
 
     private static UpdateManager ourInstance = new UpdateManager();
 
+
+    //region adding
+
     /**
      * Will add the passed runnable to the thread pool
      * @param runnable runnable to add
      * @param id id associate with this threadpool
      */
-    static public void addRunnable(Runnable runnable, long id){
+    synchronized static public void addRunnable(Runnable runnable, long id, MediaType type){
 //        Log.d(TAG, "Runnable will be added to index: " + index);
-        getInstance().getPoolForId(id).execute(runnable);
+        getInstance().getPool(id, type).execute(runnable);
     }
 
     /**
@@ -72,17 +79,29 @@ public class UpdateManager {
      */
     static public void addRunnable(Runnable runnable){
 //        Log.d(TAG, "Runnable will be added to index: " + index);
-        addRunnable(runnable, unRelatedQueueId);
+        addRunnable(runnable, unRelatedQueueId, unrelatedMediaType);
     }
 
-    static public void haltQueue(long id){
+    //endregion
 
-        getInstance().haltQueueForId(id);
+    static public void haltQueue(){
+
+        getInstance().forceHaltQueue(unRelatedQueueId, unrelatedMediaType);
     }
 
-    static public boolean queueIsActive(long id){
+    static synchronized public void haltQueue(long id, MediaType type){
 
-        return getInstance().isQueueActive(id);
+        getInstance().forceHaltQueue(id, type);
+    }
+
+    static public boolean queueIsActive(){
+
+        return queueIsActive(unRelatedQueueId, unrelatedMediaType);
+    }
+
+    static public boolean queueIsActive(long id, MediaType type){
+
+        return getInstance().isQueueActive(id, type);
     }
 
     private static UpdateManager getInstance() {
@@ -97,36 +116,68 @@ public class UpdateManager {
         updateThreadPools = new HashMap<>();
     }
 
-    private boolean isQueueActive(long id){
-        return updateThreadPools.get(id).getQueue().size() > 0;
+    private boolean isQueueActive(long id, MediaType type){
+        if(!updateThreadPools.containsKey(id) || !updateThreadPools.get(id).containsKey(type)){
+            Log.d(TAG, "queue isn't active because there it doesn't exist in the pool");
+            return false;
+        }
+        int active = updateThreadPools.get(id).get(type).getActiveCount();
+        Log.d(TAG, "queue with number active: " + active + " for id: " + id + " and type: " + type.toString());
+        return  active > 1;
     }
 
-    private int haltQueueForId(long id){
+    private int forceHaltQueue(long id, MediaType type){
 
-        if(!updateThreadPools.containsKey(id)){
-            return 0;
+        if(!updateThreadPools.containsKey(id) || !updateThreadPools.get(id).containsKey(type)){
+            return -1;
         }
         else{
-            return updateThreadPools.get(id).shutdownNow().size();
+            int numberHalted = updateThreadPools.get(id).get(type).shutdownNow().size();
+            updateThreadPools.get(id).remove(type);
+            return numberHalted;
         }
     }
-        /**
-         * @param id id of the ThreadPool to use
-         * @return ThreadPool matching the passed id
-         */
-        private ThreadPoolExecutor getPoolForId(long id){
+
+    public static long getActiveNumber(){
+
+        long total = 0;
+        for (Map.Entry<Long, Map<MediaType, ThreadPoolExecutor>> versionEntry : getInstance().updateThreadPools.entrySet()) {
+
+            for(Map.Entry<MediaType, ThreadPoolExecutor> typeEntry : versionEntry.getValue().entrySet()){
+                total += typeEntry.getValue().getTaskCount();
+            }
+        }
+        return total;
+    }
+
+    public static void haltAllThreads(){
+
+        for (Map.Entry<Long, Map<MediaType, ThreadPoolExecutor>> versionEntry : getInstance().updateThreadPools.entrySet()) {
+
+            for(Map.Entry<MediaType, ThreadPoolExecutor> typeEntry : versionEntry.getValue().entrySet()){
+                typeEntry.getValue().shutdownNow();
+            }
+        }
+        ourInstance = null;
+    }
+
+    /**
+     * @param id id of the ThreadPool to use
+     * @return ThreadPool matching the passed id
+     */
+    private synchronized ThreadPoolExecutor getPool(long id, MediaType type){
 
         if(!updateThreadPools.containsKey(id)){
-            updateThreadPools.put(id, getNewThreadExecutor());
-            return updateThreadPools.get(id);
+            updateThreadPools.put(id, new HashMap<MediaType, ThreadPoolExecutor>());
         }
-        else{
-            return updateThreadPools.get(id);
+        if(!updateThreadPools.get(id).containsKey(type)){
+            updateThreadPools.get(id).put(type, getNewThreadExecutor());
         }
+        return updateThreadPools.get(id).get(type);
     }
 
     private ThreadPoolExecutor getNewThreadExecutor(){
-        return new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
+        return new ThreadPoolExecutor((NUMBER_OF_CORES < 2)? 2 : NUMBER_OF_CORES, (NUMBER_OF_CORES < 2)? 2 : NUMBER_OF_CORES,
                 KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, new LinkedBlockingQueue<Runnable>());
     }
 }

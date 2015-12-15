@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 
@@ -22,6 +22,8 @@ import model.daoModels.DaoSession;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
+import tasks.ModelSaveOrUpdater;
 
 /**
  * Created by PJ Fechner on 6/17/15.
@@ -76,7 +78,7 @@ public class UpdateBooksRunnable implements Runnable{
                         updateMedia(jsonObject, (Book) shouldContinueUpdate);
                     }
                     if(isLast){
-                        updater.runnableFinished();
+                        updater.runnableFinished(parent, MediaType.MEDIA_TYPE_TEXT);
                     }
                 }
             }
@@ -89,7 +91,7 @@ public class UpdateBooksRunnable implements Runnable{
             @Override
             public void foundDownloadState(DownloadState state) {
                 if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
-                    updater.addRunnable(new UpdateBookContentRunnable(parent, updater), 3);
+                    updater.addRunnable(new UpdateBookContentRunnable(parent, updater), parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
                 }
             }
         });
@@ -105,7 +107,7 @@ public class UpdateBooksRunnable implements Runnable{
         }
     }
 
-    private class BookSaveOrUpdater extends ModelSaveOrUpdater{
+    private class BookSaveOrUpdater extends ModelSaveOrUpdater {
 
         public BookSaveOrUpdater(Context context) {
             super(context);

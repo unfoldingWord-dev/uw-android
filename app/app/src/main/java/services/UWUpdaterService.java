@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.greenrobot.event.EventBus;
+import eventbusmodels.DownloadCancelEvent;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import tasks.JsonDownloadTask;
-import tasks.UpdateProjectsRunnable;
+import runnables.UpdateProjectsRunnable;
 import utils.UWPreferenceManager;
 
 /**
@@ -46,9 +48,9 @@ public class UWUpdaterService extends Service {
     public static final String PROJECTS_JSON_KEY = "cat";
     public static final String MODIFIED_JSON_KEY = "mod";
 
-    int numberPending = 0;
-
-    private Map<Long, Map<MediaType, AtomicInteger>> versionDownloadTracker = new HashMap<>();
+//    int numberPending = 0;
+//
+    private Map<Long, Map<MediaType, AtomicInteger>> downloadTracker = new HashMap<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,37 +68,77 @@ public class UWUpdaterService extends Service {
         super.onCreate();
     }
 
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+
+    }
+
     /**
      * Adds a runnable to the Update Manager pool
      * @param runnable runnable to add
      */
     synchronized public void addRunnable(Runnable runnable){
 
-        numberPending++;
-        UpdateManager.addRunnable(runnable, 0);
+        UpdateManager.addRunnable(runnable);
+        addToDownloadTracker(-1, MediaType.MEDIA_TYPE_NONE);
+        Log.d(TAG, "added runnable");
+    }
+
+    synchronized public void addRunnable(Runnable runnable, Version version, MediaType type){
+
+        UpdateManager.addRunnable(runnable, version.getId(), type);
+        addToDownloadTracker(version.getId(), type);
+        Log.d(TAG, "added runnable for version: " + version.getId() + " And mediaType: " + type.toString());
+    }
+
+    private void addToDownloadTracker(long id, MediaType type){
+
+        if(!downloadTracker.containsKey(id)){
+            downloadTracker.put(id, new HashMap<MediaType, AtomicInteger>());
+        }
+        if(!downloadTracker.get(id).containsKey(type)){
+            downloadTracker.get(id).put(type, new AtomicInteger(0));
+        }
+        int runnableNumber = downloadTracker.get(id).get(type).incrementAndGet();
+        Log.d(TAG, "added runnable for version: " + id + " And mediaType: " + type.toString());
     }
 
     /**
-     * Adds a runnable to the Update Manager pool
-     * @param runnable runnable to add
-     * @param index as-yet unimplemented possibility for multiple thread pools.
+     * @param id
+     * @param type
+     * @return true if remaining is > 0
      */
-    synchronized public void addRunnable(Runnable runnable, int index){
-        numberPending++;
-        UpdateManager.addRunnable(runnable, index);
+    private boolean decrementDownloadTracker(long id, MediaType type){
+
+        if(!downloadTracker.containsKey(id) || !downloadTracker.get(id).containsKey(type)){
+            Log.d(TAG, "tracker number doesn't exist for: " + id + " And mediaType: " + type.toString());
+            return false;
+        }
+        else{
+            int numberLeft = downloadTracker.get(id).get(type).decrementAndGet();
+            Log.d(TAG, "tracker decremented to: " + numberLeft + " for version: " + id + " And mediaType: " + type.toString());
+            return numberLeft > 0;
+        }
     }
 
-    synchronized public void addRunnable(Runnable runnable, Version version, MediaType mediaType){
-
-        if(!versionDownloadTracker.containsKey(version.getId())){
-            versionDownloadTracker.put(version.getId(), new HashMap<MediaType, AtomicInteger>());
+    private void resetDownloadTracker(long id, MediaType type){
+        if(downloadTracker.containsKey(id)){
+            downloadTracker.remove(id);
         }
-        if(!versionDownloadTracker.get(version.getId()).containsKey(mediaType)){
-            versionDownloadTracker.get(version.getId()).put(mediaType, new AtomicInteger(1));
-        }
-        int num = versionDownloadTracker.get(version.getId()).get(mediaType).incrementAndGet();
-        UpdateManager.addRunnable(runnable, version.getId());
+    }
 
+    private boolean isActive(){
+
+        int total = 0;
+        for (Map.Entry<Long, Map<MediaType, AtomicInteger>> versionEntry : downloadTracker.entrySet()) {
+
+            for(Map.Entry<MediaType, AtomicInteger> typeEntry : versionEntry.getValue().entrySet()){
+                total += typeEntry.getValue().get();
+            }
+        }
+        return total > 0;
     }
 
     /**
@@ -104,73 +146,116 @@ public class UWUpdaterService extends Service {
      */
     public void runnableFinished(){
 
-        numberPending--;
-//        Log.d(TAG, "a runnable was finished. current Number: " + numberPending);
-        if(numberPending == 0){
-            stopService();
+        if(!decrementDownloadTracker(-1, MediaType.MEDIA_TYPE_NONE)){
+            downloadFinished(DOWNLOAD_SUCCESS);
+
+            if(UpdateManager.getActiveNumber() < 1){
+                stopService();
+            }
         }
+        Log.d(TAG, "runnable finished");
     }
 
     /**
      *
      * @param version version of runnable
      * @param type media type of runnable
-     * @return true if the process should continue
      */
-    public boolean runnableFinished(Version version, MediaType type, boolean success){
+    public void runnableFinished(Version version, MediaType type){
 
-        boolean result = false;
-        if(!versionDownloadTracker.containsKey(version.getId())){
+        if(!decrementDownloadTracker(version.getId(), type)){
+            downloadFinished(version, type, DOWNLOAD_SUCCESS);
+
+            if(!isActive()){
+                stopService();
+            }
         }
-        else if(!success){
-            versionDownloadTracker.get(version.getId()).get(type).set(-1);
-            int numLeft = versionDownloadTracker.get(version.getId()).get(type).decrementAndGet();
-            if(numLeft == 0){
-                Log.d(TAG, "Version runnable failed: " + numLeft + " finished for Version: "  + version.getSlug() + " Media Type: " + type.toString());
-                downloadFinished(version, type);
-            };
-            Log.e(TAG, "Version download failed runnable number: " + " finished for Version: " + version.getSlug() + " Media Type: " + type.toString());
-        }
-        else{
-            int numLeft = versionDownloadTracker.get(version.getId()).get(type).decrementAndGet();
-            if(numLeft == 0){
-                Log.d(TAG, "Version runnable number: " + numLeft + " finished for Version: "  + version.getSlug() + " Media Type: " + type.toString());
-                downloadFinished(version, type);
-            };
-            Log.d(TAG, "Version runnable number: " + numLeft + " finished for Version: " + version.getSlug() + " Media Type: " + type.toString());
-            result = true;
-        }
-        runnableFinished();
-        return result;
+
+        Log.d(TAG, "runnable finished for version: " + version.getId() + " And mediaType: " + type.toString());
     }
 
-    public void downloadFinished(Version version, MediaType type, boolean success){
-        versionDownloadTracker.get(version.getId()).remove(type);
+    public void runnableFailed(){
+        downloadFinished(DOWNLOAD_FAILED);
+    }
+
+    public void runnableFailed(Version version, MediaType type){
+        downloadFinished(version, type, DOWNLOAD_FAILED);
+    }
+
+    public void downloadFinished(int success){
+        UpdateManager.haltQueue();
+        resetDownloadTracker(-1, MediaType.MEDIA_TYPE_NONE);
 
         getApplicationContext().sendBroadcast(
                 new Intent(BROAD_CAST_DOWNLOAD_ENDED)
-                        .putExtra(DOWNLOAD_RESULT_PARAM, DOWNLOAD_SUCCESS)
+                        .putExtra(DOWNLOAD_RESULT_PARAM, success));
+    }
+
+    public void downloadFinished(Version version, MediaType type, int success){
+        UpdateManager.haltQueue(version.getId(), type);
+        resetDownloadTracker(version.getId(), type);
+
+        getApplicationContext().sendBroadcast(
+                new Intent(BROAD_CAST_DOWNLOAD_ENDED)
+                        .putExtra(DOWNLOAD_RESULT_PARAM, success)
                         .putExtra(DOWNLOAD_RESULT_VERSION_PARAM, version.getId())
                         .putExtra(DOWNLOAD_RESULT_MEDIA_TYPE_PARAM, type));
     }
 
+    private void haltDownload(Version version, MediaType type){
+        UpdateManager.haltQueue(version.getId(), type);
+        downloadFinished(DOWNLOAD_CANCELED);
+        if(!isActive()){
+            stopService();
+        }
+    }
+
+    private void haltDownload(){
+        UpdateManager.haltQueue();
+        downloadFinished(DOWNLOAD_CANCELED);
+        if(!isActive()){
+            stopService();
+        }
+    }
+
+    private void haltAllDownloads(){
+        downloadFinished(DOWNLOAD_CANCELED);
+        stopService();
+    }
+
     protected void stopService(){
-        getApplicationContext().sendBroadcast(
-                new Intent(BROAD_CAST_DOWNLOAD_ENDED)
-                    .putExtra(DOWNLOAD_RESULT_PARAM, DOWNLOAD_SUCCESS));
+        UpdateManager.haltAllThreads();
+        EventBus.getDefault().unregister(this);
         this.stopSelf();
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         addRunnable(new UpdateRunnable());
+        EventBus.getDefault().register(this);
         return START_STICKY;
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
+    }
+
+    public void onEventBackgroundThread(DownloadCancelEvent event){
+
+        if(event.type == null || event.version == null){
+            if(event.haltAll){
+                haltAllDownloads();
+            }
+            else {
+                haltDownload();
+            }
+        }
+        else{
+            haltDownload(event.version, event.type);
+        }
     }
 
     class UpdateRunnable implements Runnable {
@@ -198,25 +283,6 @@ public class UWUpdaterService extends Service {
                 }
                 }
             }).execute(UWPreferenceManager.getDataDownloadUrl(getApplicationContext()));
-
-//            new JsonDownloadTask(new JsonDownloadTask.DownloadTaskListener() {
-//                @Override
-//                public void downloadFinishedWithJson(String jsonString) {
-//
-//                try{
-//                    JSONArray locales = new JSONArray(jsonString);
-//                    addRunnable(new UpdateLanguageLocaleRunnable(locales, getThis()), 10);
-//                    runnableFinished();
-//
-//                }catch (JSONException e){
-//                    e.printStackTrace();
-//                    runnableFinished();
-//                }
-//
-//                }
-//            }).execute(UWPreferenceManager.getLanguagesDownloadUrl(getApplicationContext()));
         }
     }
-
-
 }

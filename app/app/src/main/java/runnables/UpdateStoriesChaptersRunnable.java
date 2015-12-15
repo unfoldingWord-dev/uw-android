@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 
@@ -18,7 +18,10 @@ import model.UWDatabaseModel;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
 import model.daoModels.StoriesChapter;
+import model.parsers.MediaType;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
+import tasks.ModelSaveOrUpdater;
 
 /**
  * Created by PJ Fechner on 6/17/15.
@@ -72,7 +75,7 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
                             updatePages(jsonObject, (StoriesChapter) shouldContinueUpdate);
                         }
                         if(lastModel){
-                            updater.runnableFinished();
+                            updater.runnableFinished(parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
                         }
                     }
                 }
@@ -84,14 +87,14 @@ public class UpdateStoriesChaptersRunnable implements Runnable{
         try{
             JSONArray pages = project.getJSONArray(FRAMES_JSON_KEY);
             UpdateStoryPagesRunnable runnable = new UpdateStoryPagesRunnable(pages, updater, pageParent);
-            updater.addRunnable(runnable, 6);
+            updater.addRunnable(runnable, parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
         }
         catch (JSONException e){
             e.printStackTrace();
         }
     }
 
-    private class StoriesChapterSaveOrUpdater extends ModelSaveOrUpdater{
+    private class StoriesChapterSaveOrUpdater extends ModelSaveOrUpdater {
 
         public StoriesChapterSaveOrUpdater(Context context) {
             super(context);

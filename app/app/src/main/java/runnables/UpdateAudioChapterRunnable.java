@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 
@@ -17,9 +17,11 @@ import org.json.JSONObject;
 import model.UWDatabaseModel;
 import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
-import model.daoModels.Book;
 import model.daoModels.DaoSession;
+import model.parsers.MediaType;
+import tasks.ModelCreator;
 import services.UWUpdaterService;
+import tasks.ModelSaveOrUpdater;
 
 /**
  * Created by PJ Fechner on 6/17/15.
@@ -72,14 +74,14 @@ public class UpdateAudioChapterRunnable implements Runnable{
 //                        updateAudioChapters((AudioBook) shouldContinueUpdate);
 //                    }
                     if(isLast){
-                        updater.runnableFinished();
+                        updater.runnableFinished(parent.getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO);
                     }
                 }
             }
         }).execute(jsonObject);
     }
 
-    private class AudioChapterSaveOrUpdater extends ModelSaveOrUpdater{
+    private class AudioChapterSaveOrUpdater extends ModelSaveOrUpdater {
 
         public AudioChapterSaveOrUpdater(Context context) {
             super(context);

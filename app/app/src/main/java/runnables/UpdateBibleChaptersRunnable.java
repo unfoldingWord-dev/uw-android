@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import org.json.JSONException;
 
@@ -21,6 +21,7 @@ import model.daoModels.BibleChapter;
 import model.daoModels.BibleChapterDao;
 import model.daoModels.Book;
 import model.parsers.BibleChapterParser;
+import model.parsers.MediaType;
 import model.parsers.USFMParser;
 import services.UWUpdaterService;
 
@@ -77,7 +78,7 @@ public class UpdateBibleChaptersRunnable implements Runnable{
         }
         updateModels(chapters);
         parent.getVersion().update();
-        updater.runnableFinished();
+        updater.runnableFinished(parent.getVersion(), MediaType.MEDIA_TYPE_TEXT);
     }
 
     private List<BibleChapter> updateModels(List<BibleChapter> chapters){

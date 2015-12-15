@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,11 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.DaoDBHelper;
-import model.DownloadState;
 import model.UWDatabaseModel;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.StoryPageDao;
+import model.parsers.MediaType;
+import tasks.ModelCreator;
 import services.UWUpdaterService;
 
 /**
@@ -63,7 +64,7 @@ public class UpdateStoryPagesRunnable implements Runnable{
         }
         updatePages(pages);
         parent.getBook().getVersion().update();
-        updater.runnableFinished();
+        updater.runnableFinished(parent.getBook().getVersion(), MediaType.MEDIA_TYPE_TEXT);
     }
 
     private StoryPage updateModel(final JSONObject jsonObject){

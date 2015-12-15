@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,23 +18,24 @@ import org.json.JSONObject;
 import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.Language;
-import model.daoModels.Version;
+import model.daoModels.Project;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
+import tasks.ModelSaveOrUpdater;
 
 /**
  * Created by PJ Fechner on 6/17/15.
- * Runnable for updating Versions
+ * runnable for updating Languages
  */
-public class UpdateVersionsRunnable implements Runnable{
+public class UpdateLanguagesRunnable implements Runnable{
 
-    private static final String TAG = "UpdateVersionsRunnable";
-    public static final String BOOKS_JSON_KEY = "toc";
-
+    private static final String TAG = "UpdateLanguagesRunnable";
+    public static final String VERSIONS_JSON_KEY = "vers";
     private JSONArray jsonModels;
     private UWUpdaterService updater;
-    private Language parent;
+    private Project parent;
 
-    public UpdateVersionsRunnable(JSONArray jsonModels, UWUpdaterService updater, Language parent) {
+    public UpdateLanguagesRunnable(JSONArray jsonModels, UWUpdaterService updater, Project parent) {
         this.jsonModels = jsonModels;
         this.updater = updater;
         this.parent = parent;
@@ -59,49 +60,51 @@ public class UpdateVersionsRunnable implements Runnable{
         }
     }
 
-    private void updateModel(final JSONObject jsonObject, final boolean isLast){
+    private void updateModel(final JSONObject jsonModel, final boolean isLast){
 
-        new ModelCreator(new Version(), parent, new ModelCreator.ModelCreationListener() {
+        new ModelCreator(new Language(), parent, new ModelCreator.ModelCreationListener() {
             @Override
             public void modelWasCreated(UWDatabaseModel model) {
 
-                if(model instanceof Version) {
+                if(model instanceof Language) {
 
-                    UWDatabaseModel shouldContinueUpdate = new VersionSaveOrUpdater(updater.getApplicationContext()).start(model);
+                    UWDatabaseModel shouldContinueUpdate = new LanguageSaveOrUpdater(updater.getApplicationContext()).start(model);
 
-                    Log.d(TAG, "version created");
+                    Log.d(TAG, "language created");
+
                     if(shouldContinueUpdate != null){
-                        updateBooks(jsonObject, (Version) shouldContinueUpdate);
+                        updateVersions(jsonModel, (Language) shouldContinueUpdate);
                     }
                     if(isLast){
                         updater.runnableFinished();
                     }
                 }
             }
-        }).execute(jsonObject);
+        }).execute(jsonModel);
     }
 
-    private void updateBooks(JSONObject project, Version parent){
+    private void updateVersions(JSONObject language, Language parent){
 
         try{
-            JSONArray languages = project.getJSONArray(BOOKS_JSON_KEY);
-            UpdateBooksRunnable runnable = new UpdateBooksRunnable(languages, updater, parent);
-            updater.addRunnable(runnable, 2);
+            JSONArray versions = language.getJSONArray(VERSIONS_JSON_KEY);
+            UpdateVersionsRunnable runnable = new UpdateVersionsRunnable(versions, updater, parent);
+            updater.addRunnable(runnable);
         }
         catch (JSONException e){
             e.printStackTrace();
         }
     }
 
-    private class VersionSaveOrUpdater extends ModelSaveOrUpdater{
+    private class LanguageSaveOrUpdater extends ModelSaveOrUpdater {
 
-        public VersionSaveOrUpdater(Context context) {
+        public LanguageSaveOrUpdater(Context context) {
             super(context);
         }
 
         @Override
         protected UWDatabaseModel getExistingModel(String slug, DaoSession session) {
-            return Version.getModelForUniqueSlug(slug, session);
+            return Language.getModelForUniqueSlug(slug, session);
         }
     }
+
 }

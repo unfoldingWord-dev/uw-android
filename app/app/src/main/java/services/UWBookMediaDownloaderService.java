@@ -14,7 +14,7 @@ import android.os.IBinder;
 import model.AudioBitrate;
 import model.DaoDBHelper;
 import model.daoModels.Book;
-import tasks.UpdateMediaRunnable;
+import runnables.UpdateMediaRunnable;
 
 /**
  * Created by PJ fechner

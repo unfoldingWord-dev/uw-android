@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import model.daoModels.Book;
+import model.parsers.MediaType;
 import services.UWUpdaterService;
 import signing.UWSigning;
 
@@ -59,15 +60,15 @@ public class UpdateAndVerifyBookRunnable implements Runnable{
             if(book.getSourceUrl().contains("usfm")){
                 UpdateBibleChaptersRunnable runnable = new UpdateBibleChaptersRunnable(
                         text, updater, book);
-                updater.addRunnable(runnable, 0);
-                updater.runnableFinished();
+                updater.addRunnable(runnable, book.getVersion(), MediaType.MEDIA_TYPE_TEXT);
+                updater.runnableFinished(book.getVersion(), MediaType.MEDIA_TYPE_TEXT);
             }
             else{
                 try {
                     UpdateStoriesChaptersRunnable runnable = new UpdateStoriesChaptersRunnable(
                             new JSONObject(new String(text)).getJSONArray(UpdateBookContentRunnable.CHAPTERS_JSON_KEY), updater, book);
-                    updater.addRunnable(runnable, 7);
-                    updater.runnableFinished();
+                    updater.addRunnable(runnable, book.getVersion(), MediaType.MEDIA_TYPE_TEXT);
+                    updater.runnableFinished(book.getVersion(), MediaType.MEDIA_TYPE_TEXT);
                 }
                 catch (JSONException e){
                     e.printStackTrace();

@@ -6,11 +6,10 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,8 +17,10 @@ import model.UWDatabaseModel;
 import model.daoModels.AudioBook;
 import model.daoModels.Book;
 import model.daoModels.DaoSession;
-import model.daoModels.Version;
+import model.parsers.MediaType;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
+import tasks.ModelSaveOrUpdater;
 
 /**
  * Created by PJ Fechner on 6/17/15.
@@ -67,7 +68,7 @@ public class UpdateAudioBookRunnable implements Runnable{
                         parent.getAudioBook();
                         updateAudioChapters(jsonObject, audioBook);
                     }
-                    updater.runnableFinished();
+                    updater.runnableFinished(parent.getVersion(), MediaType.MEDIA_TYPE_AUDIO);
                 }
             }
         }).execute(jsonObject);
@@ -76,14 +77,14 @@ public class UpdateAudioBookRunnable implements Runnable{
     private void updateAudioChapters(JSONObject audioBook, AudioBook parent){
 
         try {
-            updater.addRunnable(new UpdateAudioChapterRunnable(audioBook.getJSONArray(SOURCES_JSON_KEY), updater, parent), 3);
+            updater.addRunnable(new UpdateAudioChapterRunnable(audioBook.getJSONArray(SOURCES_JSON_KEY), updater, parent), parent.getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO);
         }
         catch (JSONException e){
             e.printStackTrace();
         }
     }
 
-    private class AudioBookSaveOrUpdater extends ModelSaveOrUpdater{
+    private class AudioBookSaveOrUpdater extends ModelSaveOrUpdater {
 
         public AudioBookSaveOrUpdater(Context context) {
             super(context);

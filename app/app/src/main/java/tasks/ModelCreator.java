@@ -50,7 +50,7 @@ public class ModelCreator{
         return (parentOrNull != null)? dbModel.setupModelFromJson(obj, parentOrNull) : dbModel.setupModelFromJson(obj);
     }
 
-    interface ModelCreationListener {
+    public interface ModelCreationListener {
         /**
          * Called when the model is finished being created
          * @param model model that was created

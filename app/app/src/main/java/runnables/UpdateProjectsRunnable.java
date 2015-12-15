@@ -6,7 +6,7 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package tasks;
+package runnables;
 
 import android.content.Context;
 import android.util.Log;
@@ -19,6 +19,8 @@ import model.UWDatabaseModel;
 import model.daoModels.DaoSession;
 import model.daoModels.Project;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
+import tasks.ModelSaveOrUpdater;
 
 /**
  * Created by PJ Fechner on 6/17/15.
@@ -85,7 +87,7 @@ public class UpdateProjectsRunnable implements Runnable{
         try{
             JSONArray languages = project.getJSONArray(LANGUAGES_JSON_KEY);
             UpdateLanguagesRunnable runnable = new UpdateLanguagesRunnable(languages, updater, parentProject);
-            updater.addRunnable(runnable, 1);
+            updater.addRunnable(runnable);
         }
         catch (JSONException e){
             e.printStackTrace();
@@ -93,7 +95,7 @@ public class UpdateProjectsRunnable implements Runnable{
     }
 
 
-    private class ProjectSaveOrUpdater extends ModelSaveOrUpdater{
+    private class ProjectSaveOrUpdater extends ModelSaveOrUpdater {
 
         public ProjectSaveOrUpdater(Context context) {
             super(context);
