@@ -188,7 +188,7 @@ public class DataFileManager {
     }
 
     @Nullable
-    public static Uri createUriForSideLoad(Context context, Version version, List<MediaType> types){
+    public static Uri createUriForSideLoad(Context context, Version version, List<MediaType> types, String fileName){
 
         FileUtil.clearTemporaryFiles(context);
         saveTempFileForSideLoading(context, version.getAsSideLoadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(version));
@@ -200,10 +200,10 @@ public class DataFileManager {
                 }
             }
         }
-        File outFile = new File(context.getFilesDir()
-                + "/" + context.getString(R.string.app_name) + "/temp");
+        File outFile = new File(FileUtil.getTempStorageDir(context));
 
-        return compressFiles(version, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
+        Uri compressedFile = compressFiles(version, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
+        return compressedFile;
     }
 
     private static boolean saveAudioFilesForPreload(Context context, Version version, int bitRate){
