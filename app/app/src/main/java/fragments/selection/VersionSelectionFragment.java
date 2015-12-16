@@ -117,7 +117,31 @@ private VersionSelectionFragmentListener listener;
     }
 
     public void onEventMainThread(DownloadingVersionsEvent event){
+
         Log.d(TAG, "Received Event: " + event.toString());
+
+        // need to wait for the event to finish calling before reloading the list
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                try{
+                    synchronized (this){
+                        wait(500);
+                    }
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                reloadData();
+            }
+        }.execute();
+
     }
 
     public void onEventMainThread(DownloadResult event){
@@ -379,13 +403,14 @@ private VersionSelectionFragmentListener listener;
 
     private void downloadText(VersionViewModel viewModel){
 
-        downloadText(viewModel.getVersion().getId());
+        downloadText(viewModel.getVersion());
     }
 
-    private void downloadText(long versionId){
+    private void downloadText(Version version){
         Intent downloadIntent = new Intent(getContext(), UWVersionDownloaderService.class);
-        downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, versionId);
+        downloadIntent.putExtra(UWVersionDownloaderService.VERSION_PARAM, version.getId());
         getContext().startService(downloadIntent);
+        EventBus.getDefault().postSticky(DownloadingVersionsEvent.forceGetEventAdding(version, MediaType.MEDIA_TYPE_TEXT));
     }
 
     private void downloadAudio(final VersionViewModel viewModel){
@@ -404,8 +429,7 @@ private VersionSelectionFragmentListener listener;
                                     if(state == DownloadState.DOWNLOAD_STATE_NONE){
                                         for(VersionViewModel.ResourceViewModel model : viewModel.getResources()){
                                             if(model.getType() == MediaType.MEDIA_TYPE_TEXT){
-                                                downloadText(viewModel.getVersion().getId());
-                                                reloadData();
+                                                downloadText(viewModel.getVersion());
                                                 break;
                                             }
                                         }
@@ -426,11 +450,12 @@ private VersionSelectionFragmentListener listener;
 
     private void downloadAudio(final VersionViewModel viewModel, AudioBitrate bitrate){
 
-                Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class)
-                        .putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId())
-                        .putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false)
-                        .putExtra(UWMediaDownloaderService.BITRATE_PARAM, bitrate);
-                getContext().startService(downloadIntent);
+        Intent downloadIntent = new Intent(getContext(), UWMediaDownloaderService.class)
+                .putExtra(UWMediaDownloaderService.VERSION_PARAM, viewModel.getVersion().getId())
+                .putExtra(UWMediaDownloaderService.IS_VIDEO_PARAM, false)
+                .putExtra(UWMediaDownloaderService.BITRATE_PARAM, bitrate);
+        getContext().startService(downloadIntent);
+        EventBus.getDefault().postSticky(DownloadingVersionsEvent.forceGetEventAdding(viewModel.getVersion(), MediaType.MEDIA_TYPE_AUDIO));
     }
 
     private void downloadVideo(final VersionViewModel viewModel){

@@ -1,6 +1,7 @@
 package adapters.versions;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.unfoldingword.mobile.R;
 
@@ -49,9 +50,9 @@ public class VersionViewModel {
 
     public void updateContent(){
         version = Version.getVersionForId(version.getId(), DaoDBHelper.getDaoSession(context));
-        for(ResourceViewModel model : resources){
-            model.setState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
-        }
+//        for(ResourceViewModel model : resources){
+//            model.setState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
+//        }
     }
 
     private void setupResources(){
@@ -98,6 +99,7 @@ public class VersionViewModel {
 
     public class ResourceViewModel{
 
+        private static final String TAG = "ResourceViewModel";
         private DownloadState state = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
         private MediaType type;
 
@@ -149,21 +151,23 @@ public class VersionViewModel {
         public void getDownloadStateAsync(final DataFileManager.GetDownloadStateResponse response){
 
             if(isInLoadingEvent()){
+                Log.d(TAG, "is in loading event");
                 state = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
                 response.foundDownloadState(state);
-                return;
             }
-            response.foundDownloadState(state);
-
-            DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
-                @Override
-                public void foundDownloadState(DownloadState newState) {
-                    state = newState;
-                    if(response != null) {
-                        response.foundDownloadState(newState);
+            else {
+                Log.d(TAG, "isn't loading event");
+                response.foundDownloadState(state);
+                DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
+                    @Override
+                    public void foundDownloadState(DownloadState newState) {
+                        state = newState;
+                        if (response != null) {
+                            response.foundDownloadState(newState);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         private boolean isInLoadingEvent(){
@@ -221,6 +225,15 @@ public class VersionViewModel {
         }
         public void checkingLevelClicked(){
             showCheckingLevel(type);
+        }
+
+
+        @Override
+        public String toString() {
+            return "ResourceViewModel{" +
+                    "state=" + state.toString() +
+                    ", type=" + type.toString() +
+                    '}';
         }
     }
 

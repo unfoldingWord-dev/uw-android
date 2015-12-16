@@ -70,8 +70,11 @@ public class DataFileManager {
 
             @Override
             protected DownloadState doInBackground(Void... params) {
+
+                Log.d(TAG, "started checking of content state asynctask");
                 File mediaFolder = getFileForDownload(context, type, version);
                 if(!mediaFolder.exists()){
+                    Log.d(TAG, "Media folder didn't exist");
                     return DownloadState.DOWNLOAD_STATE_NONE;
                 }
                 else {
@@ -142,15 +145,19 @@ public class DataFileManager {
         int expectedSize = getCountForMediaType(version, type);
         int numberOfFiles = folder.listFiles().length;
         if (expectedSize < 1) {
+            Log.d(TAG, "expected size is < 1");
             return DownloadState.DOWNLOAD_STATE_NONE;
         }
         else if(expectedSize > numberOfFiles){
+            Log.d(TAG, "expected size is " + expectedSize + " but number of files is " + numberOfFiles);
             return DownloadState.DOWNLOAD_STATE_DOWNLOADING;
         }
         else if (expectedSize == numberOfFiles) {
+            Log.d(TAG, "expected size is good!");
             return DownloadState.DOWNLOAD_STATE_DOWNLOADED;
         }
         else{
+            Log.d(TAG, "error that shouldn't happen");
             return DownloadState.DOWNLOAD_STATE_ERROR;
         }
     }

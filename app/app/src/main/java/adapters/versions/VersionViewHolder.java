@@ -1,5 +1,6 @@
 package adapters.versions;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -59,13 +60,14 @@ public class VersionViewHolder {
         return viewModel;
     }
 
-    public void updateViews(VersionViewModel.ResourceViewModel model){
+    public void updateViews(final VersionViewModel.ResourceViewModel model){
 
         this.viewModel = model;
         model.getDownloadStateAsync(new DataFileManager.GetDownloadStateResponse() {
             @Override
             public void foundDownloadState(DownloadState state) {
                 setupForDownloadState(state);
+                Log.d(TAG, "updated Views for model: " + model.toString() + "to download state: " + state.toString());
             }
         });
         resourceImage.setImageResource(model.getImageResource());

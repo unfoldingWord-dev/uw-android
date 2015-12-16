@@ -1,6 +1,7 @@
 package eventbusmodels;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import model.parsers.MediaType;
  */
 public class DownloadingVersionsEvent {
 
+    private static final String TAG = "DownloadingVrsionsEvent";
     private Map<String, DownloadTrackingModel> models;
 
     public DownloadingVersionsEvent() {
@@ -49,6 +51,7 @@ public class DownloadingVersionsEvent {
             return false;
         }
         else{
+            Log.d(TAG, "checked if version: " + version.getSlug() + " : " + type.toString() + " Is on event: " + event.toString());
             return event.getModels().containsKey(getKey(version, type));
         }
 
@@ -66,6 +69,15 @@ public class DownloadingVersionsEvent {
             event = new DownloadingVersionsEvent();
         }
         return (event.addModel(version, type))? event : null;
+    }
+
+    public static DownloadingVersionsEvent forceGetEventAdding(Version version, MediaType type){
+
+        DownloadingVersionsEvent event = EventBus.getDefault().getStickyEvent(DownloadingVersionsEvent.class);
+        if(event == null){
+            event = new DownloadingVersionsEvent();
+        }
+        return event;
     }
 
     @Nullable

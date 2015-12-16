@@ -38,4 +38,27 @@ public enum DownloadState {
             }
         }
     }
+
+    private String getAsString(){
+
+        switch (this){
+            case DOWNLOAD_STATE_NONE:{
+                return "DOWNLOAD_STATE_NONE";
+            }
+            case DOWNLOAD_STATE_DOWNLOADING:{
+                return "DOWNLOAD_STATE_DOWNLOADING";
+            }
+            case DOWNLOAD_STATE_DOWNLOADED:{
+                return "DOWNLOAD_STATE_DOWNLOADED";
+            }
+            default:{
+                return "DOWNLOAD_STATE_ERROR";
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadState{" + getAsString() + "}";
+    }
 }
