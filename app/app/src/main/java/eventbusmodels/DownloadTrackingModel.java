@@ -15,4 +15,13 @@ public class DownloadTrackingModel {
         this.type = type;
         this.version = version;
     }
+
+
+    @Override
+    public String toString() {
+        return "DownloadTrackingModel{" +
+                "type=" + type.toString() +
+                ", version=" + version.getSlug() +
+                '}';
+    }
 }

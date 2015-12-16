@@ -7,6 +7,7 @@ import org.unfoldingword.mobile.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import eventbusmodels.DownloadingVersionsEvent;
 import model.DaoDBHelper;
 import model.DataFileManager;
 import model.DownloadState;
@@ -128,6 +129,12 @@ public class VersionViewModel {
 
         public void getDownloadState(final DataFileManager.GetDownloadStateResponse response){
 
+            if(isInLoadingEvent()){
+                state = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
+                response.foundDownloadState(state);
+                return;
+            }
+
             DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
                 @Override
                 public void foundDownloadState(DownloadState newState) {
@@ -141,6 +148,11 @@ public class VersionViewModel {
 
         public void getDownloadStateAsync(final DataFileManager.GetDownloadStateResponse response){
 
+            if(isInLoadingEvent()){
+                state = DownloadState.DOWNLOAD_STATE_DOWNLOADING;
+                response.foundDownloadState(state);
+                return;
+            }
             response.foundDownloadState(state);
 
             DataFileManager.getStateOfContent(context, version, type, new DataFileManager.GetDownloadStateResponse() {
@@ -152,6 +164,10 @@ public class VersionViewModel {
                     }
                 }
             });
+        }
+
+        private boolean isInLoadingEvent(){
+            return DownloadingVersionsEvent.containsModel(version, type);
         }
 
         public String getTitle(){

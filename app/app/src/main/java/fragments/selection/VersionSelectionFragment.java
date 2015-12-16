@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,9 @@ import org.unfoldingword.mobile.R;
 import adapters.versions.VersionViewHolder;
 import adapters.versions.VersionViewModel;
 import adapters.versions.VersionsAdapter;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.DownloadResult;
+import eventbusmodels.DownloadingVersionsEvent;
 import fragments.BitrateFragment;
 import fragments.VersionInfoFragment;
 import model.AudioBitrate;
@@ -55,7 +59,7 @@ import utils.UWPreferenceManager;
  * Fragment for users to select a new version
  */
 public class VersionSelectionFragment extends DialogFragment implements VersionViewModel.VersionViewModelListener {
-    private static final String TAG = "VersionSelectionFragment";
+    private static final String TAG = "VersionSelectionFragmnt";
 
     private static final String CHOSEN_PROJECT = "CHOSEN_PROJECT";
     private static final String SHOW_TITLE_PARAM = "SHOW_TITLE_PARAM";
@@ -101,6 +105,26 @@ private VersionSelectionFragmentListener listener;
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    public void onEventMainThread(DownloadingVersionsEvent event){
+        Log.d(TAG, "Received Event: " + event.toString());
+    }
+
+    public void onEventMainThread(DownloadResult event){
+        downloadEnded(event);
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -126,7 +150,6 @@ private VersionSelectionFragmentListener listener;
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver();
         if(!showProjectTitle){
             titleTextView.setVisibility(View.GONE);
         }
@@ -139,7 +162,6 @@ private VersionSelectionFragmentListener listener;
     @Override
     public void onPause() {
         super.onPause();
-        unregisterReceiver();
     }
 
     @NonNull
@@ -171,14 +193,6 @@ private VersionSelectionFragmentListener listener;
     protected void prepareListView(View view){
 
         listView = (ExpandableListView) view.findViewById(R.id.versions_list);
-//        listView.setOnGroupClickListener(getOnGroupClickListener());
-
-//        listView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-//            @Override
-//            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-//                return false;
-//            }
-//        });
         Version version = getVersion();
 
         adapter = new VersionsAdapter(this, VersionViewModel.createModels(getContext(), chosenProject, this), (version != null)? version.getId() : -1);
@@ -187,14 +201,6 @@ private VersionSelectionFragmentListener listener;
         if(selectedGroup > -1) {
             listView.expandGroup(selectedGroup);
         }
-
-//        if(version != null) {
-//            Language language = version.getLanguage();
-//            int expandedIndex = language.getProject().getLanguages().indexOf(language);
-//            if(expandedIndex > -1){
-//                listView.expandGroup(expandedIndex);
-//            }
-//        }
     }
 
     private Version getVersion(){
@@ -218,43 +224,19 @@ private VersionSelectionFragmentListener listener;
         return null;
     }
 
-    private void registerReceiver(){
-        if(receiver == null) {
-            receiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-
-                    if (intent.getExtras() != null && intent.getExtras().containsKey(UWUpdaterService.DOWNLOAD_RESULT_PARAM)) {
-                        downloadEnded(intent.getExtras().getInt(UWUpdaterService.DOWNLOAD_RESULT_PARAM));
-                    }
-                }
-            };
-        }
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
-        getActivity().getApplicationContext().registerReceiver(receiver, filter);
-    }
-
-    private void unregisterReceiver(){
-        if(receiver != null){
-            getActivity().getApplicationContext().unregisterReceiver(receiver);
-            receiver = null;
-        }
-    }
-
-    private void downloadEnded(int result){
+    private void downloadEnded(DownloadResult result){
 
         String resultText = "";
         switch (result){
-            case UWUpdaterService.DOWNLOAD_SUCCESS:{
+            case DOWNLOAD_RESULT_SUCCESS:{
                 resultText = "Succeeded";
                 break;
             }
-            case UWUpdaterService.DOWNLOAD_CANCELED:{
+            case DOWNLOAD_RESULT_CANCELED:{
                 resultText = "Was Canceled";
                 break;
             }
-            case UWUpdaterService.DOWNLOAD_FAILED:{
+            case DOWNLOAD_RESULT_FAILED:{
                 resultText = "Failed";
                 break;
             }
@@ -422,7 +404,6 @@ private VersionSelectionFragmentListener listener;
                                     if(state == DownloadState.DOWNLOAD_STATE_NONE){
                                         for(VersionViewModel.ResourceViewModel model : viewModel.getResources()){
                                             if(model.getType() == MediaType.MEDIA_TYPE_TEXT){
-                                                model.setState(DownloadState.DOWNLOAD_STATE_DOWNLOADING);
                                                 downloadText(viewModel.getVersion().getId());
                                                 reloadData();
                                                 break;
@@ -519,58 +500,6 @@ private VersionSelectionFragmentListener listener;
         VersionInfoFragment.createFragment(version, type)
                 .show(getActivity().getSupportFragmentManager(), "VersionInfoFragment");
     }
-
-    //endregion
-
-    //region listeners
-
-//    private ExpandableListView.OnGroupClickListener getOnGroupClickListener(){
-//
-//        return new ExpandableListView.OnGroupClickListener() {
-//
-//            @Override
-//            public boolean onGroupClick(ExpandableListView parent, View v, final int groupPosition, long id) {
-//                // We call collapseGroupWithAnimation(int) and
-//                // expandGroupWithAnimation(int) to animate group
-//                // expansion/collapse.
-//                if(!showProjectTitle) {
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (listView.isGroupExpanded(groupPosition)) {
-//                                listView.collapseGroupWithAnimation(groupPosition);
-//                            } else {
-//                                listView.expandGroupWithAnimation(groupPosition);
-//                            }
-//                        }
-//                    });
-//                    return true;
-//                }
-//                else {
-//                    return false;
-//                }
-//            }
-//        };
-//    }
-
-//    private VersionsAdapter.VersionAdapterListener getAdapterListener(){
-//
-//        return new VersionsAdapter.VersionAdapterListener(){
-//            @Override
-//            public void versionWasSelected(Version version) {
-//                if(listener != null){
-//                    listener.versionWasSelected(version, isSecondVersion);
-//                }
-//            }
-//
-//            @Override
-//            public void isLoading(boolean loading) {
-//                ((UWBaseActivity) getActivity()).setLoadingFragmentVisibility(loading, "Deleting...", false);
-//            }
-//        };
-//    }
-
-    //endregion
 
     private Context getApplicationContext(){
         return getActivity().getApplicationContext();

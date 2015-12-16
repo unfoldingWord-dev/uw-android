@@ -12,7 +12,6 @@ package activity.reading;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,6 +40,8 @@ import activity.AnimationParadigm;
 import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.DownloadResult;
 import fragments.BitrateFragment;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ChapterSelectionFragment;
@@ -57,7 +58,6 @@ import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import services.UWBookMediaDownloaderService;
-import services.UWUpdaterService;
 import singletons.UWAudioPlayer;
 import utils.UWPreferenceDataAccessor;
 import view.AudioPlayerViewGroup;
@@ -154,6 +154,52 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(getBook() == null){
             gotoVersionSelection(false);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    public void onEventMainThread(DownloadResult event){
+        downloadEnded(event);
+    }
+
+    private void downloadEnded(DownloadResult result){
+
+        String resultText = "";
+        switch (result){
+            case DOWNLOAD_RESULT_SUCCESS:{
+                resultText = "Succeeded";
+                break;
+            }
+            case DOWNLOAD_RESULT_CANCELED:{
+                resultText = "Was Canceled";
+                break;
+            }
+            case DOWNLOAD_RESULT_FAILED:{
+                resultText = "Failed";
+                break;
+            }
+        }
+
+        Toast.makeText(this, "Download " + resultText, Toast.LENGTH_SHORT).show();
+        Book book = getBook();
+        book.refresh();
+        DataFileManager.getStateOfContent(getApplicationContext(), book.getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+            @Override
+            public void foundDownloadState(DownloadState state) {
+                audioPlayerViewGroup.handleDownloadState(state);
+                update();
+            }
+        });
     }
 
     protected void setupViews(){
@@ -391,7 +437,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                     @Override
                     public void bitrateChosen(DialogFragment fragment, AudioBitrate bitrate) {
 
-                        setupIntentFilter();
                         Intent downloadIntent = new Intent(getApplicationContext(), UWBookMediaDownloaderService.class);
                         downloadIntent.putExtra(UWBookMediaDownloaderService.BOOK_ID_PARAM, getBook().getId());
                         downloadIntent.putExtra(UWBookMediaDownloaderService.IS_VIDEO_PARAM, false);
@@ -407,7 +452,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 }).show(getSupportFragmentManager(), "BitrateFragment");
     }
 
-    private BroadcastReceiver receiver;
     private BroadcastReceiver createBroadcastReceiver() {
 
         return new BroadcastReceiver() {
@@ -425,13 +469,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                 });
             }
         };
-    }
-
-    private void setupIntentFilter(){
-        receiver = createBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
-        getApplicationContext().registerReceiver(receiver, filter);
     }
 
     private void setAudioButtonState(boolean isPlaying){

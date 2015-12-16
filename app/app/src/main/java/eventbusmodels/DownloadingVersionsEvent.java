@@ -1,7 +1,8 @@
 package eventbusmodels;
 
+import android.support.annotation.Nullable;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
@@ -25,40 +26,73 @@ public class DownloadingVersionsEvent {
         return models;
     }
 
-    private void addModel(Version version, MediaType type){
-        getModels().put(getKey(version, type), new DownloadTrackingModel(version, type));
+    /**
+     * @param version
+     * @param type
+     * @return true if the model was added
+     */
+    private boolean addModel(Version version, MediaType type){
+
+        DownloadTrackingModel model = getModels().put(getKey(version, type), new DownloadTrackingModel(version, type));
+        return (model == null);
     }
 
-    private void removeModel(Version version, MediaType type){
+    private boolean removeModel(Version version, MediaType type){
 
-        getModels().remove(getKey(version, type));
+        return (getModels().remove(getKey(version, type)) != null);
     }
 
-    private boolean containsModel(Version version, MediaType type){
-        return getModels().containsKey(getKey(version, type));
+    public static boolean containsModel(Version version, MediaType type){
+
+        DownloadingVersionsEvent event = EventBus.getDefault().getStickyEvent(DownloadingVersionsEvent.class);
+        if(event == null){
+            return false;
+        }
+        else{
+            return event.getModels().containsKey(getKey(version, type));
+        }
+
     }
 
     private static String getKey(Version version, MediaType type){
         return version.getSlug() + type.getName();
     }
 
+    @Nullable
     public static DownloadingVersionsEvent getEventAdding(Version version, MediaType type){
 
         DownloadingVersionsEvent event = EventBus.getDefault().getStickyEvent(DownloadingVersionsEvent.class);
         if(event == null){
             event = new DownloadingVersionsEvent();
         }
-        event.addModel(version, type);
-        return event;
+        return (event.addModel(version, type))? event : null;
     }
 
+    @Nullable
     public static DownloadingVersionsEvent getEventRemoving(Version version, MediaType type){
 
         DownloadingVersionsEvent event = EventBus.getDefault().getStickyEvent(DownloadingVersionsEvent.class);
         if(event == null){
             return new DownloadingVersionsEvent();
         }
-        event.removeModel(version, type);
-        return event;
+        return (event.removeModel(version, type))? event : null;
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadingVersionsEvent{" +
+                "models=" + getModelsAsString(models) +
+                '}';
+    }
+
+    private static String getModelsAsString(Map<String, DownloadTrackingModel> models){
+
+        String text = "{";
+        if(models != null) {
+            for (Map.Entry<String, DownloadTrackingModel> entry : models.entrySet()) {
+                text += "\n{" + entry.getKey() + " : " + entry.getValue().toString() + "}";
+            }
+        }
+        return text + "}";
     }
 }

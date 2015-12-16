@@ -118,11 +118,11 @@ public class UpdateManager {
 
     private boolean isQueueActive(long id, MediaType type){
         if(!updateThreadPools.containsKey(id) || !updateThreadPools.get(id).containsKey(type)){
-            Log.d(TAG, "queue isn't active because there it doesn't exist in the pool");
+//            Log.d(TAG, "queue isn't active because there it doesn't exist in the pool");
             return false;
         }
         int active = updateThreadPools.get(id).get(type).getActiveCount();
-        Log.d(TAG, "queue with number active: " + active + " for id: " + id + " and type: " + type.toString());
+//        Log.d(TAG, "queue with number active: " + active + " for id: " + id + " and type: " + type.toString());
         return  active > 1;
     }
 

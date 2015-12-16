@@ -43,6 +43,8 @@ import activity.sharing.ShareActivity;
 import adapters.ShareAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.InitialPageAdapter;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.DownloadResult;
 import fragments.CheckingLevelInfoFragment;
 import model.DaoDBHelper;
 import model.SharingHelper;
@@ -72,10 +74,6 @@ public class InitialScreenActivity extends UWBaseActivity{
     private InitialPageAdapter adapter;
     private List<Project> mProjects = null;
     private UWTabBar tabBar;
-    /**
-     * This broadcast for When the update is completed
-     */
-    private BroadcastReceiver updateReceiver;
 
     //region Activity Overrides
 
@@ -97,9 +95,23 @@ public class InitialScreenActivity extends UWBaseActivity{
     @Override
     protected void onPause() {
 
-        unregisterUpdateReceiver();
-
         super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    public void onEventMainThread(DownloadResult event){
+        downloadEnded(event);
     }
 
     @Override
@@ -121,45 +133,27 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     //region Receiver Handling
 
-    private BroadcastReceiver createReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
+    private void downloadEnded(DownloadResult result){
 
-                if (intent.getAction().equals(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED)) {
-                    Toast.makeText(context, "Update complete", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Update error", Toast.LENGTH_SHORT).show();
-                }
-                updateLayout.setVisibility(View.GONE);
-                reload();
+        String resultText = "";
+        switch (result){
+            case DOWNLOAD_RESULT_SUCCESS:{
+                resultText = "Succeeded";
+                break;
             }
-        };
-    }
-
-    private void unregisterUpdateReceiver(){
-
-        if(updateReceiver != null) {
-            try {
-                getApplicationContext().unregisterReceiver(updateReceiver);
+            case DOWNLOAD_RESULT_CANCELED:{
+                resultText = "Was Canceled";
+                break;
             }
-            catch (IllegalArgumentException e){
-                e.printStackTrace();
+            case DOWNLOAD_RESULT_FAILED:{
+                resultText = "Failed";
+                break;
             }
         }
-        updateReceiver = null;
-    }
 
-    private void registerUpdateReceiver(){
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UWUpdaterService.BROAD_CAST_DOWNLOAD_ENDED);
-
-        if(updateReceiver == null) {
-            updateReceiver = createReceiver();
-        }
-
-        registerReceiver(updateReceiver, filter);
+        Toast.makeText(this, "Download " + resultText, Toast.LENGTH_SHORT).show();
+        updateLayout.setVisibility(View.GONE);
+        reload();
     }
 
     //endregion
@@ -240,8 +234,6 @@ public class InitialScreenActivity extends UWBaseActivity{
 //            });
 
             listview.addHeaderView(mview1);
-
-            registerUpdateReceiver();
         }
     }
 
