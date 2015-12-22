@@ -10,11 +10,11 @@
     <string name="checking_level">Checking Level :</string>
     <string name="version">Version : </string>
     <string name="publish_date">Publish Date :</string>
-    <string name="about_text">We use a three-level, Church-centric approach for identifying the fidelity of translated Biblical content :</string>
+    <string name="about_text">We use a three-level Church-based authority scale that reflects the unfoldingWord Statement of Faith and Translation Guidelines.</string>
     <string name="finish">Finish</string>
-    <string name="level_one">Level 1: internal — Translator (or team) affirms that translation is in line with Statement of Faith and Translation Guidelines.</string>
-    <string name="level_two">Level 2: external — Translation is independently checked and confirmed by three church leaders not on the translation team.</string>
-    <string name="level_three">Level 3: authenticated — Translation is checked and confirmed by leadership of at least three Church networks with native speakers of the language, or a translation consultant in coordination with a Church network.</string>
+    <string name="level_one">Authority Level 1: Affirmation by Translation Team — Determined by the Church-based translation team.</string>
+    <string name="level_two">Authority Level 2: Affirmation by Community — Determined by the agreement of pastors/elders who are members of different Church networks in the language group (community &amp; church).</string>
+    <string name="level_three">Authority Level 3: Affirmation by Church Leadership — Determined by the leadership of Church networks with a presence in the people group that speaks the language.</string>
 
     <string name="selected_language">"SELECTED_LANGUAGE"</string>
 

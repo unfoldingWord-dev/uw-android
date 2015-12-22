@@ -393,6 +393,7 @@ private VersionSelectionFragmentListener listener;
                 break;
             }
             case MEDIA_TYPE_AUDIO:{
+                deleteAudio(viewModel);
                 break;
             }
             case MEDIA_TYPE_VIDEO:{

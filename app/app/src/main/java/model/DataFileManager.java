@@ -51,7 +51,7 @@ public class DataFileManager {
     }
 
     public static void saveDataForBook(Context context, Book book, byte[] data, MediaType type, String url){
-        FileUtil.saveFile(getFileForDownload(context, type, book.getVersion(), FileNameHelper.getSaveFileNameFromUrl(url)), data);
+        FileUtil.saveFile(getFileForDownload(context, type, book.getVersion(), FileNameHelper.getSaveFileName(context, book, type, url)), data);
     }
 
     public static void saveSignatureForBook(Context context, Book book, byte[] data, MediaType type){
@@ -61,7 +61,7 @@ public class DataFileManager {
 
     public static void saveSignatureForBook(Context context, Book book, byte[] data, MediaType type, String url){
 
-        FileUtil.saveFile(getFileForDownload(context, type, book.getVersion(), FileNameHelper.getSaveFileNameFromUrl(url)), data);
+        FileUtil.saveFile(getFileForDownload(context, type, book.getVersion(), FileNameHelper.getSaveFileName(context, book, type, url)), data);
     }
 
     public static void getStateOfContent(final Context context, final Version version, final MediaType type, final GetDownloadStateResponse response){
@@ -71,7 +71,7 @@ public class DataFileManager {
             @Override
             protected DownloadState doInBackground(Void... params) {
 
-                Log.d(TAG, "started checking of content state asynctask");
+//                Log.d(TAG, "started checking of content state asynctask");
                 File mediaFolder = getFileForDownload(context, type, version);
                 if(!mediaFolder.exists()){
                     Log.d(TAG, "Media folder didn't exist");
@@ -92,9 +92,9 @@ public class DataFileManager {
 
     }
 
-    public static Uri getUri(Context context, Version version, MediaType type, String fileName){
+    public static Uri getUri(Context context, Book book, MediaType type, String fileUrl){
 
-        return Uri.fromFile(getFileForDownload(context, type, version, FileNameHelper.getSaveFileNameFromUrl(fileName)));
+        return Uri.fromFile(getFileForDownload(context, type, book.getVersion(), FileNameHelper.getSaveFileName(context, book, type, fileUrl)));
     }
 
     public static int getDownloadedBitrate(Context context, Version version, MediaType type){
@@ -143,21 +143,22 @@ public class DataFileManager {
     private static DownloadState verifyStateForContent(Version version, MediaType type, File folder){
 
         int expectedSize = getCountForMediaType(version, type);
-        int numberOfFiles = folder.listFiles().length;
+        File[] files = folder.listFiles();
+        int numberOfFiles = files.length;
         if (expectedSize < 1) {
-            Log.d(TAG, "expected size is < 1");
+//            Log.d(TAG, "expected size is < 1");
             return DownloadState.DOWNLOAD_STATE_NONE;
         }
         else if(expectedSize > numberOfFiles){
-            Log.d(TAG, "expected size is " + expectedSize + " but number of files is " + numberOfFiles);
+//            Log.d(TAG, "expected size is " + expectedSize + " but number of files is " + numberOfFiles);
             return DownloadState.DOWNLOAD_STATE_DOWNLOADING;
         }
         else if (expectedSize == numberOfFiles) {
-            Log.d(TAG, "expected size is good!");
+//            Log.d(TAG, "expected size is good!");
             return DownloadState.DOWNLOAD_STATE_DOWNLOADED;
         }
         else{
-            Log.d(TAG, "error that shouldn't happen");
+            Log.e(TAG, "error, file were larger than expected. that shouldn't happen");
             return DownloadState.DOWNLOAD_STATE_ERROR;
         }
     }
@@ -219,7 +220,7 @@ public class DataFileManager {
         for(Book book : version.getBooks()){
             for(AudioChapter chapter : book.getAudioBook().getAudioChapters()){
 
-                if(!saveAudioForSideLoad(context, version, chapter, bitRate)){
+                if(!saveAudioForSideLoad(context, book, chapter, bitRate)){
                     success = false;
                 }
 //                saveAudioSignatureForSideLoad(context, version, chapter, bitRate);
@@ -347,9 +348,9 @@ public class DataFileManager {
     }
 
 
-    private static boolean saveAudioForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){
+    private static boolean saveAudioForSideLoad(Context context, Book book, AudioChapter audioChapter, int bitRate){
 
-        File file = new File(getUri(context, version, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitRate)).getPath());
+        File file = new File(getUri(context, book, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getAudioUrl(bitRate)).getPath());
         File newFile = new File(FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME).getPath());
         newFile = new File(newFile, FileNameHelper.getShareAudioFileName(audioChapter, bitRate));
 
@@ -368,7 +369,7 @@ public class DataFileManager {
 
     private static void saveAudioSignatureForSideLoad(Context context, Version version, AudioChapter audioChapter, int bitRate){
 
-        Uri fileUri = getUri(context, version, MediaType.MEDIA_TYPE_AUDIO, audioChapter.getSignatureUrl(bitRate));
+        Uri fileUri = getUri(context, audioChapter.getAudioBook().getBook(), MediaType.MEDIA_TYPE_AUDIO, audioChapter.getSignatureUrl(bitRate));
         File newFile = new File(FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME).getPath());
         FileUtil.copyFile(fileUri, Uri.fromFile(new File(newFile, FileNameHelper.getShareAudioSignatureFileName(audioChapter, bitRate))));
     }

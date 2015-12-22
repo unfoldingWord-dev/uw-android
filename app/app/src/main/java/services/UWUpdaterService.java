@@ -151,10 +151,10 @@ public class UWUpdaterService extends Service {
      */
     public void runnableFinished(){
 
-        if(!decrementDownloadTracker(-1, MediaType.MEDIA_TYPE_NONE)){
+        if(!decrementDownloadTracker(-1, MediaType.MEDIA_TYPE_NONE) && !isActive()){
             downloadFinished(DownloadResult.DOWNLOAD_RESULT_SUCCESS);
 
-            if(UpdateManager.getActiveNumber() < 1){
+            if(!isActive()){
                 stopService();
             }
         }

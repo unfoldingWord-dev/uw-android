@@ -159,8 +159,8 @@ public class VersionParser extends UWDataParser{
         int i = 0;
         for(Book book : version.getBooks()){
             try {
-                Uri sourceUri = DataFileManager.getUri(context, book.getVersion(), MediaType.MEDIA_TYPE_TEXT, book.getSourceUrl());
-                Uri signatureUri = DataFileManager.getUri(context, book.getVersion(), MediaType.MEDIA_TYPE_TEXT, book.getSignatureUrl());
+                Uri sourceUri = DataFileManager.getUri(context, book, MediaType.MEDIA_TYPE_TEXT, book.getSourceUrl());
+                Uri signatureUri = DataFileManager.getUri(context, book, MediaType.MEDIA_TYPE_TEXT, book.getSignatureUrl());
 
                 byte[] file = FileUtil.getBytesFromFile(new File(sourceUri.getPath()));
                 if(file != null) {

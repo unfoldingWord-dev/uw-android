@@ -45,6 +45,7 @@ import adapters.selectionAdapters.GeneralRowInterface;
 import adapters.selectionAdapters.InitialPageAdapter;
 import de.greenrobot.event.EventBus;
 import eventbusmodels.DownloadResult;
+import eventbusmodels.DownloadingVersionsEvent;
 import fragments.CheckingLevelInfoFragment;
 import model.DaoDBHelper;
 import model.SharingHelper;
@@ -111,7 +112,22 @@ public class InitialScreenActivity extends UWBaseActivity{
     }
 
     public void onEventMainThread(DownloadResult event){
-        downloadEnded(event);
+
+        DownloadingVersionsEvent versionsEvent = EventBus.getDefault().getStickyEvent(DownloadingVersionsEvent.class);
+        if(versionsEvent == null || versionsEvent.getModels().size() < 1 ){
+            downloadEnded(event);
+            reload();
+            updateLayout.setVisibility(View.GONE);
+        }
+    }
+
+    public void onEventMainThread(DownloadingVersionsEvent event){
+
+        Log.i(TAG, "download ended size: " + event.getModels().size());
+        if(event.getModels().size() < 1){
+            reload();
+            updateLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -152,8 +168,6 @@ public class InitialScreenActivity extends UWBaseActivity{
         }
 
         Toast.makeText(this, "Download " + resultText, Toast.LENGTH_SHORT).show();
-        updateLayout.setVisibility(View.GONE);
-        reload();
     }
 
     //endregion

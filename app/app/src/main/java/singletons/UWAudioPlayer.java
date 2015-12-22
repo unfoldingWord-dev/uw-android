@@ -27,6 +27,7 @@ import model.daoModels.BibleChapter;
 import model.daoModels.StoryPage;
 import model.parsers.AudioMarkerParser;
 import model.parsers.MediaType;
+import utils.FileNameHelper;
 import utils.UWFileUtils;
 import utils.UWPreferenceDataAccessor;
 
@@ -164,7 +165,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
                 if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
 //            File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
 //            Uri uri = Uri.fromFile(audioFile);
-                    Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook().getVersion(),
+                    Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook(),
                             MediaType.MEDIA_TYPE_AUDIO, chapter.getDownloadedAudioUrl(context));
 
                     List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);

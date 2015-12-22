@@ -294,8 +294,11 @@ public class AudioChapter extends model.UWDatabaseModel  implements java.io.Seri
 
     public String getDownloadedAudioUrl(Context context){
 
-        int bitrate = DataFileManager.getDownloadedBitrate(context, getAudioBook().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO);
-        return getAudioUrl(bitrate);
+        return getAudioUrl(getBitrate(context));
+    }
+
+    public int getBitrate(Context context){
+        return DataFileManager.getDownloadedBitrate(context, getAudioBook().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO);
     }
 
     public String getAudioUrl(int bitrate){

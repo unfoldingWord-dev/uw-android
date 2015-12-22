@@ -6,6 +6,8 @@ import android.util.Log;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import eventbusmodels.DownloadingVersionsEvent;
@@ -23,7 +25,7 @@ import view.ViewContentHelper;
 /**
  * Created by Fechner on 12/1/15.
  */
-public class VersionViewModel {
+public class VersionViewModel implements Comparable<VersionViewModel>{
 
     private Context context;
     private VersionViewModelListener listener;
@@ -38,6 +40,7 @@ public class VersionViewModel {
                 models.add(new VersionViewModel(context, version, listener));
             }
         }
+        Collections.sort(models);
         return models;
     }
 
@@ -95,6 +98,11 @@ public class VersionViewModel {
 
     private void showCheckingLevel(MediaType type){
         this.listener.showCheckingLevel(version, type);
+    }
+
+    @Override
+    public int compareTo(VersionViewModel another) {
+        return version.getLanguage().getLanguageAbbreviation().compareTo(another.version.getLanguage().getLanguageAbbreviation());
     }
 
     public class ResourceViewModel{
@@ -226,6 +234,7 @@ public class VersionViewModel {
         public void checkingLevelClicked(){
             showCheckingLevel(type);
         }
+
 
 
         @Override
