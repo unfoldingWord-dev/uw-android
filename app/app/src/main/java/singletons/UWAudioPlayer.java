@@ -12,29 +12,25 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.util.Log;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+import eventbusmodels.BiblePagingEvent;
+import eventbusmodels.StoriesPagingEvent;
 import model.AudioMarker;
 import model.DataFileManager;
 import model.DownloadState;
 import model.daoModels.AudioChapter;
-import model.daoModels.BibleChapter;
 import model.daoModels.StoryPage;
 import model.parsers.AudioMarkerParser;
 import model.parsers.MediaType;
-import utils.FileNameHelper;
-import utils.UWFileUtils;
-import utils.UWPreferenceDataAccessor;
 
 /**
  * Created by Fechner on 10/5/15.
  */
-public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener, UWPreferenceDataAccessor.PreferencesStoryPageChangedListener {
+public class UWAudioPlayer {
 
     private static final String TAG = "UWAudioPlayer";
 
@@ -58,9 +54,26 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     private UWAudioPlayer(Context context) {
 
         this.context = context;
-        UWPreferenceDataAccessor.addBibleChapterListener(this);
-        UWPreferenceDataAccessor.addStoryPageListener(this);
         listeners = new ArrayList<>();
+        registerEventListeners();
+    }
+
+    private void registerEventListeners(){
+        EventBus.getDefault().register(this);
+    }
+
+    public void unregisterEventListeners(){
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEventMainThread(BiblePagingEvent event){
+
+
+    }
+
+    public void onEventMainThread(StoriesPagingEvent event){
+
+        prepareAudio(event.mainStoryPage);
     }
 
     public void addListener(UWAudioPlayerListener listener){
@@ -79,8 +92,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
 
     public void reset(){
 
-        UWPreferenceDataAccessor.removeBibleChapterListener(this);
-        UWPreferenceDataAccessor.removeStoryPageListener(this);
+        unregisterEventListeners();
         resetMediaPLayer();
         ourInstance = null;
     }
@@ -156,7 +168,6 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
     }
 
     public void prepareAudio(final StoryPage page){
-
 
         DataFileManager.getStateOfContent(context, page.getStoriesChapter().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
             @Override
@@ -260,8 +271,8 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
         StoryPage newPage = currentModel.getNextStoryPage();
 
         if(newPage != null){
-            UWPreferenceDataAccessor.changedToNewStoriesPage(context, newPage, false);
-            UWPreferenceDataAccessor.getOurInstance().updateStoryListeners();
+            StoriesPagingEvent event = StoriesPagingEvent.getStickyEvent(context);
+            EventBus.getDefault().postSticky(new StoriesPagingEvent(newPage, event.secondaryStoryPage));
         }
     }
 
@@ -272,7 +283,7 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
             protected  Void doInBackground(Void... params) {
                 try {
                     synchronized (this) {
-                        wait(100);
+                        wait(500);
                     }
                 }
                 catch (InterruptedException e){
@@ -287,16 +298,6 @@ public class UWAudioPlayer implements UWPreferenceDataAccessor.PreferencesBibleC
                 updatePlayProgress(true);
             }
         }.execute();
-    }
-
-    @Override
-    public void bibleChapterChanged(BibleChapter mainChapter, BibleChapter secondaryChapter) {
-
-    }
-
-    @Override
-    public void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage) {
-        prepareAudio(mainPage);
     }
 
     public interface UWAudioPlayerListener{

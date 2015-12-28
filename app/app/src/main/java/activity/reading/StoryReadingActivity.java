@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 
 import java.util.List;
 
+import eventbusmodels.StoriesPagingEvent;
 import fragments.Reading.StoryReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.Book;
@@ -44,7 +45,8 @@ public class StoryReadingActivity extends BaseReadingActivity {
 
     @Override
     protected Version getSharingVersion() {
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
+
+        StoryPage page = getMainPage();
         if(page != null){
             return page.getStoriesChapter().getBook().getVersion();
         }
@@ -58,7 +60,7 @@ public class StoryReadingActivity extends BaseReadingActivity {
         super.update();
         updateReadingView();
 
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
+        StoryPage page = getMainPage();
         if(page != null){
             UWAudioPlayer.getInstance(getApplicationContext()).prepareAudio(page);
         }
@@ -72,8 +74,12 @@ public class StoryReadingActivity extends BaseReadingActivity {
     @Override
     protected Book getBook() {
 
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getApplicationContext(), false);
+        StoryPage page = getMainPage();
         return(page != null)? page.getStoriesChapter().getBook() : null;
+    }
+
+    private StoryPage getMainPage(){
+        return StoriesPagingEvent.getStickyEvent(getApplicationContext()).mainStoryPage;
     }
 
     @Override

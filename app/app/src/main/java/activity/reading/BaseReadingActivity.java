@@ -41,7 +41,9 @@ import activity.UWBaseActivity;
 import activity.readingSelection.BookSelectionActivity;
 import activity.readingSelection.VersionSelectionActivity;
 import de.greenrobot.event.EventBus;
+import eventbusmodels.BiblePagingEvent;
 import eventbusmodels.DownloadResult;
+import eventbusmodels.StoriesPagingEvent;
 import fragments.BitrateFragment;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ChapterSelectionFragment;
@@ -75,8 +77,6 @@ import view.UWTabBar;
 public abstract class BaseReadingActivity extends UWBaseActivity implements
         ReadingFragmentListener,
         UWReadingToolbarViewGroup.UWReadingToolbarListener,
-        UWPreferenceDataAccessor.PreferencesStoryPageChangedListener,
-        UWPreferenceDataAccessor.PreferencesBibleChapterChangedListener,
         UWAudioPlayer.UWAudioPlayerListener,
         ResourceChoosingFragment.ResourceChoosingListener
 {
@@ -170,6 +170,16 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     public void onEventMainThread(DownloadResult event){
         downloadEnded(event);
+    }
+
+    public void onEventMainThread(BiblePagingEvent event){
+
+        updateToolbar(new ReadingToolbarViewBibleModel(event.mainChapter, event.secondaryChapter));
+
+    }
+
+    public void onEventMainThread(StoriesPagingEvent event){
+        updateToolbar(new ReadingToolbarViewStoriesModel(event.mainStoryPage, event.secondaryStoryPage));
     }
 
     private void downloadEnded(DownloadResult result){
@@ -287,8 +297,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void registerForListeners(){
-        UWPreferenceDataAccessor.addBibleChapterListener(this);
-        UWPreferenceDataAccessor.addStoryPageListener(this);
         UWAudioPlayer.getInstance(getApplicationContext()).addListener(this);
     }
 
@@ -304,8 +312,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     }
 
     private void unregisterListeners(){
-        UWPreferenceDataAccessor.removeBibleChapterListener(this);
-        UWPreferenceDataAccessor.removeStoryPageListener(this);
         UWAudioPlayer.getInstance(getApplicationContext()).removeListener(this);
     }
 
@@ -725,18 +731,4 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     //endregion
 
-    //region dataChangeListeners
-
-    @Override
-    public void bibleChapterChanged(BibleChapter mainChapter, BibleChapter secondaryChapter) {
-        updateToolbar(new ReadingToolbarViewBibleModel(mainChapter, secondaryChapter));
-    }
-
-    @Override
-    public void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage) {
-        updateToolbar(new ReadingToolbarViewStoriesModel(mainPage, secondaryPage));
-    }
-
-
-    //endregion
 }

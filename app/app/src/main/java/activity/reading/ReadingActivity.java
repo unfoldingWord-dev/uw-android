@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
+import eventbusmodels.BiblePagingEvent;
 import fragments.Reading.BibleReadingFragment;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
@@ -55,7 +56,7 @@ public class ReadingActivity extends BaseReadingActivity {
     }
 
     private BibleChapter getActiveChapter(){
-        return UWPreferenceDataAccessor.getCurrentBibleChapter(getApplicationContext(), false);
+        return BiblePagingEvent.getStickyEvent(getApplicationContext()).mainChapter;
     }
 
     @Override

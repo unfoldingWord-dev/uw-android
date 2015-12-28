@@ -10,6 +10,8 @@ package utils;
 
 import android.content.Context;
 
+import eventbusmodels.BiblePagingEvent;
+import eventbusmodels.StoriesPagingEvent;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
@@ -102,7 +104,8 @@ public class UWPreferenceDataManager {
 
     public static void setNewStoriesVersion(Context context, Version newVersion, boolean isSecond) {
 
-        StoryPage currentPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, isSecond);
+        StoriesPagingEvent currentEvent = StoriesPagingEvent.getStickyEvent(context);
+        StoryPage currentPage = (isSecond)? currentEvent.secondaryStoryPage : currentEvent.mainStoryPage;
 
         if(currentPage == null){
             StoryPage page = newVersion.getBooks().get(0).getStoryChapters().get(0).getStoryPages().get(0);
@@ -123,7 +126,9 @@ public class UWPreferenceDataManager {
 
         changedToStoryPage(context, newPage.getId(), isSecond);
 
-        StoryPage otherPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, !isSecond);
+        StoriesPagingEvent currentEvent = StoriesPagingEvent.getStickyEvent(context);
+        StoryPage otherPage = (isSecond)? currentEvent.mainStoryPage : currentEvent.secondaryStoryPage;
+
         if(otherPage != null) {
             Version version = otherPage.getStoriesChapter().getBook().getVersion();
             DaoSession session = DaoDBHelper.getDaoSession(context);
@@ -134,7 +139,7 @@ public class UWPreferenceDataManager {
         }
     }
 
-    private static void changedToStoryPage(Context context, long id, boolean isSecond){
+    public static void changedToStoryPage(Context context, long id, boolean isSecond){
 
         if(isSecond){
             UWPreferenceManager.setSelectedStoryPageSecondary(context, id);
@@ -155,38 +160,29 @@ public class UWPreferenceDataManager {
 
     private static void willDeleteStoryVersion(Context context, Version version){
 
-        StoryPage currentPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, false);
-        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, true);
+        StoriesPagingEvent currentEvent = StoriesPagingEvent.getStickyEvent(context);
 
-        if(currentPage == null || secondaryPage == null){
-            return;
+        boolean samePage = currentEvent.mainStoryPage.getId().equals(currentEvent.secondaryStoryPage.getId());
+
+        if(currentEvent.mainStoryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
+            UWPreferenceManager.setSelectedStoryPage(context, (samePage) ? -1 : currentEvent.secondaryStoryPage.getId());
         }
-
-        boolean samePage = currentPage.getId().equals(secondaryPage.getId());
-
-        if(currentPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
-            UWPreferenceManager.setSelectedStoryPage(context, (samePage) ? -1 : secondaryPage.getId());
-        }
-        if(secondaryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
-            UWPreferenceManager.setSelectedStoryPageSecondary(context, (samePage) ? -1 : currentPage.getId());
+        if(currentEvent.secondaryStoryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){
+            UWPreferenceManager.setSelectedStoryPageSecondary(context, (samePage) ? -1 : currentEvent.mainStoryPage.getId());
         }
     }
 
     private static void willDeleteBibleVersion(Context context, Version version){
 
-        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, false);
-        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, true);
+        BiblePagingEvent currentEvent = BiblePagingEvent.getStickyEvent(context);
 
-        if(currentChapter == null || secondaryChapter == null){
-            return;
-        }
-        boolean sameChapter = currentChapter.getId().equals(secondaryChapter.getId());
+        boolean sameChapter = currentEvent.mainChapter.getId().equals(currentEvent.secondaryChapter.getId());
 
-        if(currentChapter.getBook().getVersionId() == (version.getId())){
-            UWPreferenceManager.setSelectedBibleChapter(context, (sameChapter) ? -1 : secondaryChapter.getId());
+        if(currentEvent.mainChapter.getBook().getVersionId() == (version.getId())){
+            UWPreferenceManager.setSelectedBibleChapter(context, (sameChapter) ? -1 : currentEvent.secondaryChapter.getId());
         }
-        if(secondaryChapter.getBook().getVersionId() == (version.getId())){
-            UWPreferenceManager.setSelectedBibleChapterSecondary(context, (sameChapter) ? -1 : currentChapter.getId());
+        if(currentEvent.secondaryChapter.getBook().getVersionId() == (version.getId())){
+            UWPreferenceManager.setSelectedBibleChapterSecondary(context, (sameChapter) ? -1 : currentEvent.mainChapter.getId());
         }
     }
 }
