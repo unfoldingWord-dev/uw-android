@@ -21,11 +21,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
 import activity.reading.BaseReadingActivity;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
@@ -80,6 +84,10 @@ public class StoryPagerAdapter extends PagerAdapter {
         return mainChapter;
     }
 
+    public StoriesChapter getSecondChapter() {
+        return secondChapter;
+    }
+
     public void setTextSize(int textSize){
         this.textSize = textSize;
         notifyDataSetChanged();
@@ -119,7 +127,8 @@ public class StoryPagerAdapter extends PagerAdapter {
             String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
-            chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
+            Picasso.with(context).load("file:///android_asset/images/" + path).into(chapterImageView);
+//            chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
             setupPageForDiglot(view.findViewById(R.id.middle_separator), secondaryTextView);
         }
         ((ViewPager) container).addView(view);
@@ -220,15 +229,12 @@ public class StoryPagerAdapter extends PagerAdapter {
             mainChapter = nextChapter;
             getCount();
 
-            UWPreferenceDataManager.setNewStoriesPage(context, mainChapter.getStoryPages().get(0), false);
+            StoriesPagingEvent event = StoriesPagingEvent.getStickyEvent(context);
 
-            StoryPage newSecondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, true);
-            if(newSecondaryPage != null) {
-                secondChapter = newSecondaryPage.getStoriesChapter();
-            }
+            secondChapter = event.secondaryStoryPage.getStoriesChapter().getBook().getStoriesChapterForNumber(nextChapter.getNumber());
+            EventBus.getDefault().postSticky(new StoriesPagingEvent(nextChapter.getStoryPages().get(0), secondChapter.getStoryPages().get(0)));
             notifyDataSetChanged();
             ((ViewPager) this.container).setCurrentItem(0);
-            context.getApplicationContext().sendBroadcast(new Intent(BaseReadingActivity.SCROLLED_PAGE));
         }
     }
 

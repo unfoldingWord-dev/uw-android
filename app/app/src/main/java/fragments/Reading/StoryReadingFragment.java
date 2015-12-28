@@ -22,6 +22,9 @@ import org.unfoldingword.mobile.R;
 import java.util.List;
 
 import adapters.StoryPagerAdapter;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.BiblePagingEvent;
+import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
 import view.ReadingDoubleTapHandler;
@@ -31,7 +34,7 @@ import view.ReadingDoubleTapHandler;
  * Use the {@link StoryReadingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener, UWPreferenceDataAccessor.PreferencesStoryPageChangedListener{
+public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHandler.ReadingDoubleTapHandlerListener{
 
     private static final String TEXT_SIZE_PARAM = "TEXT_SIZE_PARAM";
 
@@ -64,15 +67,28 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        UWPreferenceDataAccessor.addStoryPageListener(this);
+    public void onStart() {
+        super.onStart();
+        registerEventListeners();
+    }
+
+    private void registerEventListeners() {
+        EventBus.getDefault().register(this);
+    }
+
+    public void unregisterEventListeners() {
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEventMainThread(StoriesPagingEvent event) {
+
+        update(event.mainStoryPage, event.secondaryStoryPage, true);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        UWPreferenceDataAccessor.removeStoryPageListener(this);
+    public void onStop() {
+        super.onStop();
+        unregisterEventListeners();
     }
 
     public void setTextSize(int textSize){
@@ -93,9 +109,12 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
 
     public void update(){
 
-        StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
-        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
-        update(mainPage, secondaryPage, false);
+        StoriesPagingEvent pagingEvent = getPagingEvent();
+        update(pagingEvent.mainStoryPage, pagingEvent.secondaryStoryPage, false);
+    }
+
+    private StoriesPagingEvent getPagingEvent() {
+        return StoriesPagingEvent.getStickyEvent(getActivity().getApplicationContext());
     }
 
     private void update(StoryPage mainPage, StoryPage secondaryPage, boolean animateScroll){
@@ -119,8 +138,10 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
 
     private void setupPager(View view){
 
-        StoryPage mainPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), false);
-        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(getActivity().getApplicationContext(), true);
+        StoriesPagingEvent event = getPagingEvent();
+
+        final StoryPage mainPage = event.mainStoryPage;
+        StoryPage secondaryPage = event.secondaryStoryPage;
 
         if(mainPage != null && secondaryPage != null) {
             adapter = new StoryPagerAdapter(getActivity(), mainPage.getStoriesChapter(), secondaryPage.getStoriesChapter(), textSize);
@@ -154,16 +175,12 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
                 List<StoryPage> pages = adapter.getMainChapter().getStoryPages();
 
                 if (position < pages.size()) {
-                    StoryPage model = pages.get(position);
-                    UWPreferenceDataAccessor.changedToNewStoriesPage(getActivity().getApplicationContext(), model, false);
+                    StoryPage mainModel = pages.get(position);
+                    StoryPage secondaryModel = adapter.getSecondChapter().getStoryPages().get(position);
+                    EventBus.getDefault().postSticky(new StoriesPagingEvent(mainModel, secondaryModel));
                 }
             }
         });
-    }
-
-    @Override
-    public void storyPageChanged(StoryPage mainPage, StoryPage secondaryPage) {
-        update(mainPage, secondaryPage, true);
     }
 
     @Override

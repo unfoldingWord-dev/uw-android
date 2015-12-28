@@ -10,6 +10,7 @@ package view;
 
 import android.content.Context;
 
+import eventbusmodels.BiblePagingEvent;
 import model.daoModels.BibleChapter;
 import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
@@ -33,9 +34,8 @@ public class ReadingToolbarViewBibleModel implements ReadingToolbarViewData {
 
     private void setup(Context context){
 
-        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, false);
-        BibleChapter secondaryChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(context, true);
-        setup(currentChapter, secondaryChapter);
+        BiblePagingEvent event = BiblePagingEvent.getStickyEvent(context);
+        setup(event.mainChapter, event.secondaryChapter);
     }
 
     private void setup(BibleChapter currentChapter, BibleChapter secondaryChapter){

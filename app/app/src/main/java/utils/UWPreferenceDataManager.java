@@ -10,6 +10,7 @@ package utils;
 
 import android.content.Context;
 
+import de.greenrobot.event.EventBus;
 import eventbusmodels.BiblePagingEvent;
 import eventbusmodels.StoriesPagingEvent;
 import model.DaoDBHelper;
@@ -93,7 +94,7 @@ public class UWPreferenceDataManager {
         }
 
         changedToBibleChapter(context, requestedChapter.getId(), isSecond);
-
+        EventBus.getDefault().postSticky(UWPreferenceDataAccessor.getSharedInstance(context).createBiblePagingEvent());
 //        if(isSecond) {
 //            setSelectedBibleChapterSecondary(context, requestedChapter.getId());
 //        }
@@ -120,6 +121,7 @@ public class UWPreferenceDataManager {
         StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber());
         StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
         changedToStoryPage(context, newPage.getId(), isSecond);
+        EventBus.getDefault().postSticky(UWPreferenceDataAccessor.getSharedInstance(context).createStoriesPagingEvent());
     }
 
     public static void setNewStoriesPage(Context context, StoryPage newPage, boolean isSecond) {

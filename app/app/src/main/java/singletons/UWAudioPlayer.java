@@ -34,6 +34,8 @@ public class UWAudioPlayer {
 
     private static final String TAG = "UWAudioPlayer";
 
+    private static final int REFRESH_TIME_IN_MILLI = 200;
+
     private static UWAudioPlayer ourInstance;
     public static UWAudioPlayer getInstance(Context context) {
 
@@ -59,7 +61,7 @@ public class UWAudioPlayer {
     }
 
     private void registerEventListeners(){
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this, 1);
     }
 
     public void unregisterEventListeners(){
@@ -68,10 +70,9 @@ public class UWAudioPlayer {
 
     public void onEventMainThread(BiblePagingEvent event){
 
-
     }
 
-    public void onEventMainThread(StoriesPagingEvent event){
+    public void onEvent(StoriesPagingEvent event){
 
         prepareAudio(event.mainStoryPage);
     }
@@ -128,6 +129,7 @@ public class UWAudioPlayer {
         if(mediaPlayer != null) {
             mediaPlayer.start();
             notifyPlay();
+            updatePlayProgress(true);
         }
     }
 
@@ -169,23 +171,25 @@ public class UWAudioPlayer {
 
     public void prepareAudio(final StoryPage page){
 
-        DataFileManager.getStateOfContent(context, page.getStoriesChapter().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
-            @Override
-            public void foundDownloadState(DownloadState state) {
-                AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
-                if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
+        if(currentModel == null || !page.getId().equals(currentModel.getId())) {
+
+            DataFileManager.getStateOfContent(context, page.getStoriesChapter().getBook().getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+                @Override
+                public void foundDownloadState(DownloadState state) {
+                    AudioChapter chapter = page.getStoriesChapter().getAudioForChapter();
+                    if (state == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
 //            File audioFile = UWFileUtils.loadSourceFile(chapter.getAudioUrl(), context);
 //            Uri uri = Uri.fromFile(audioFile);
-                    Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook(),
-                            MediaType.MEDIA_TYPE_AUDIO, chapter.getDownloadedAudioUrl(context));
+                        Uri uri = DataFileManager.getUri(context, page.getStoriesChapter().getBook(),
+                                MediaType.MEDIA_TYPE_AUDIO, chapter.getDownloadedAudioUrl(context));
 
-                    List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);
-                    currentModel = page;
-                    setupAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
+                        List<AudioMarker> markers = AudioMarkerParser.createAudioMarkers(uri, chapter.getLength() * 1000);
+                        currentModel = page;
+                        setupAudio(uri, markers.get(Integer.parseInt(page.getNumber()) - 1));
+                    }
                 }
-            }
-        });
-
+            });
+        }
     }
 
     private void setupAudio(Uri audioUri, AudioMarker marker){
@@ -236,7 +240,12 @@ public class UWAudioPlayer {
         }
         else {
             updateListeners(duration, currentPosition);
-            waitAndUpdatePlayProgress();
+            if(isPlaying()) {
+                waitAndUpdatePlayProgress();
+            }
+            else{
+                notifyPause();
+            }
         }
     }
 
@@ -283,7 +292,7 @@ public class UWAudioPlayer {
             protected  Void doInBackground(Void... params) {
                 try {
                     synchronized (this) {
-                        wait(500);
+                        wait(REFRESH_TIME_IN_MILLI);
                     }
                 }
                 catch (InterruptedException e){

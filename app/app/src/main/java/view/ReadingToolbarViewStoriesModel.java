@@ -10,6 +10,7 @@ package view;
 
 import android.content.Context;
 
+import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
 
@@ -32,10 +33,8 @@ public class ReadingToolbarViewStoriesModel implements ReadingToolbarViewData {
 
     private void setup(Context context){
 
-        StoryPage currentPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, false);
-        StoryPage secondaryPage = UWPreferenceDataAccessor.getCurrentStoryPage(context, true);
-
-        setup(currentPage, secondaryPage);
+        StoriesPagingEvent event = StoriesPagingEvent.getStickyEvent(context);
+        setup(event.mainStoryPage, event.secondaryStoryPage);
     }
 
     private void setup(StoryPage currentPage, StoryPage secondaryPage){

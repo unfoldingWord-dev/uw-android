@@ -9,6 +9,7 @@
 package view;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -171,6 +172,7 @@ public class ViewContentHelper {
     public static Bitmap getBitmapFromAsset(Context context, String strName)
     {
         AssetManager assetManager = context.getAssets();
+
         InputStream input;
         try {
             input = assetManager.open(strName);

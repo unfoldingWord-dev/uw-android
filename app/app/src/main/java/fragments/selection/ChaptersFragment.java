@@ -23,6 +23,9 @@ import java.util.List;
 
 import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.BiblePagingEvent;
+import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceDataAccessor;
@@ -75,7 +78,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     private void setupData(){
-        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
+        BibleChapter currentChapter = BiblePagingEvent.getStickyEvent(getActivity().getApplicationContext()).mainChapter;
 
         if(currentChapter != null) {
             chapters = currentChapter.getBook().getBibleChapters(true);
@@ -84,7 +87,7 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
 
     protected List<GeneralRowInterface> getData(){
 
-        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
+        BibleChapter currentChapter = BiblePagingEvent.getStickyEvent(getActivity().getApplicationContext()).mainChapter;
         List<GeneralRowInterface> dataList = new ArrayList<>();
 
         if(currentChapter == null){
@@ -139,7 +142,14 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowIndex) {
 
-        UWPreferenceDataManager.changedToBibleChapter(getContext(), chapters.get(position).getId(), false);
+        BiblePagingEvent event = BiblePagingEvent.getStickyEvent(getActivity().getApplicationContext());
+
+        BibleChapter newChapter = chapters.get(position);
+        BibleChapter secondaryNewChapter = event.secondaryChapter.getBook().getVersion()
+                .getBookForBookSlug(newChapter.getBook().getSlug(), DaoDBHelper.getDaoSession(getActivity().getApplicationContext()))
+                .getBibleChapterForNumber(newChapter.getNumber());
+
+        EventBus.getDefault().postSticky(new BiblePagingEvent(newChapter, secondaryNewChapter));
         if(listener != null) {
             listener.chapterWasSelected();
         }

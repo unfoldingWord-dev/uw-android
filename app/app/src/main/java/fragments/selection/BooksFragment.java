@@ -23,6 +23,8 @@ import java.util.List;
 
 import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
+import eventbusmodels.BiblePagingEvent;
+import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import utils.UWPreferenceDataAccessor;
@@ -101,7 +103,7 @@ public class BooksFragment extends Fragment implements AdapterView.OnItemClickLi
 
     protected List<GeneralRowInterface> setupData(){
 
-        BibleChapter currentChapter = UWPreferenceDataAccessor.getCurrentBibleChapter(getContext(), false);
+        BibleChapter currentChapter = BiblePagingEvent.getStickyEvent(getActivity().getApplicationContext()).mainChapter;
         if(currentChapter == null){
             return null;
         }

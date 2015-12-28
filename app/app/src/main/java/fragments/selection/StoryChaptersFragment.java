@@ -26,6 +26,8 @@ import org.unfoldingword.mobile.R;
 import java.util.List;
 
 import adapters.selectionAdapters.StoriesChapterAdapter;
+import de.greenrobot.event.EventBus;
+import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
@@ -123,7 +125,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
             listView = (ListView) view.findViewById(R.id.generalList);
             listView.setOnItemClickListener(this);
 
-            StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getContext(), false);
+            StoryPage page = StoriesPagingEvent.getStickyEvent(getActivity().getApplicationContext()).mainStoryPage;
 
             int selectedIndex = (page != null)? Integer.parseInt(page.getStoriesChapter().getNumber()) - 1 : -1;
             listView.setAdapter(new StoriesChapterAdapter(getContext(), chapterModels, selectedIndex));
@@ -148,7 +150,7 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
 
     protected List<StoriesChapter> getData(){
 
-        StoryPage page = UWPreferenceDataAccessor.getCurrentStoryPage(getContext(), false);
+        StoryPage page = StoriesPagingEvent.getStickyEvent(getActivity().getApplicationContext()).mainStoryPage;
         if(page != null) {
             return page.getStoriesChapter().getBook().getStoryChapters();
         }
@@ -167,6 +169,12 @@ public class StoryChaptersFragment extends DialogFragment implements AdapterView
         Object itemAtPosition = adapterView.getItemAtPosition(position);
         if (itemAtPosition instanceof StoriesChapter) {
             StoriesChapter model = (StoriesChapter) itemAtPosition;
+            StoryPage newPage = model.getStoryPages().get(0);
+
+            StoriesPagingEvent event = StoriesPagingEvent.getStickyEvent(getActivity().getApplicationContext());
+            StoryPage newSecondPage = event.secondaryStoryPage.getStoriesChapter().getBook().getStoriesChapterForNumber(model.getNumber()).getStoryPageForNumber(newPage.getNumber());
+
+            EventBus.getDefault().postSticky(new StoriesPagingEvent(newPage, newSecondPage));
 
             UWPreferenceDataManager.setNewStoriesPage(getContext(), model.getStoryPages().get(0), false);
             mListener.chapterWasSelected();
