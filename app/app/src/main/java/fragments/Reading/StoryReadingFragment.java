@@ -26,6 +26,7 @@ import de.greenrobot.event.EventBus;
 import eventbusmodels.BiblePagingEvent;
 import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoryPage;
+import singletons.UWAudioPlayer;
 import utils.UWPreferenceDataAccessor;
 import view.ReadingDoubleTapHandler;
 
@@ -177,7 +178,9 @@ public class StoryReadingFragment extends Fragment implements ReadingDoubleTapHa
                 if (position < pages.size()) {
                     StoryPage mainModel = pages.get(position);
                     StoryPage secondaryModel = adapter.getSecondChapter().getStoryPages().get(position);
-                    EventBus.getDefault().postSticky(new StoriesPagingEvent(mainModel, secondaryModel));
+                    StoriesPagingEvent event = new StoriesPagingEvent(mainModel, secondaryModel);
+                    UWAudioPlayer.getInstance(getContext()).onEvent(event);
+                    EventBus.getDefault().postSticky(event);
                 }
             }
         });

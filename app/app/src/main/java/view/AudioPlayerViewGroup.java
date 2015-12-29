@@ -87,13 +87,36 @@ public class AudioPlayerViewGroup implements UWAudioPlayer.UWAudioPlayerListener
             }
         });
 
-        seekBar.setOnTouchListener(new View.OnTouchListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            private boolean wasPlaying = false;
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                wasPlaying = UWAudioPlayer.getInstance(context).isPlaying();
+                UWAudioPlayer.getInstance(context).pause();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
                 seekChange();
-                return false;
+                if(wasPlaying) {
+                    UWAudioPlayer.getInstance(context).play();
+                    wasPlaying = false;
+                }
             }
         });
+//        seekBar.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                seekChange();
+//                return false;
+//            }
+//        });
         UWAudioPlayer.getInstance(context).addListener(this);
     }
 

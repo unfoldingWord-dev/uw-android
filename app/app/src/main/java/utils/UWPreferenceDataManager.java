@@ -113,14 +113,14 @@ public class UWPreferenceDataManager {
             long newPageId = page.getId();
             changedToStoryPage(context, newPageId, isSecond);
             changedToStoryPage(context, newPageId, !isSecond);
-            return;
         }
-
-        DaoSession session = DaoDBHelper.getDaoSession(context);
-        Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
-        StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber());
-        StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
-        changedToStoryPage(context, newPage.getId(), isSecond);
+        else {
+            DaoSession session = DaoDBHelper.getDaoSession(context);
+            Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
+            StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber());
+            StoryPage newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
+            changedToStoryPage(context, newPage.getId(), isSecond);
+        }
         EventBus.getDefault().postSticky(UWPreferenceDataAccessor.getSharedInstance(context).createStoriesPagingEvent());
     }
 
