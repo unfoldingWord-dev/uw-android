@@ -126,6 +126,11 @@ public class UWPreferenceDataManager {
 
     public static void setNewStoriesPage(Context context, StoryPage newPage, boolean isSecond) {
 
+        if (newPage == null) {
+            changedToStoryPage(context, -1, isSecond);
+            changedToStoryPage(context, -1, !isSecond);
+            return;
+        }
         changedToStoryPage(context, newPage.getId(), isSecond);
 
         StoriesPagingEvent currentEvent = StoriesPagingEvent.getStickyEvent(context);
@@ -164,6 +169,9 @@ public class UWPreferenceDataManager {
 
         StoriesPagingEvent currentEvent = StoriesPagingEvent.getStickyEvent(context);
 
+        if(currentEvent.mainStoryPage == null){
+            return;
+        }
         boolean samePage = currentEvent.mainStoryPage.getId().equals(currentEvent.secondaryStoryPage.getId());
 
         if(currentEvent.mainStoryPage.getStoriesChapter().getBook().getVersionId() == (version.getId())){

@@ -286,7 +286,11 @@ public class UWSideLoaderService extends UWUpdaterService {
     private AudioBook sideLoadAudioBook(JSONObject json, Book parent){
 
         AudioBook model = new AudioBook();
+
         model = (AudioBook) model.setupModelFromJson(json, parent);
+        if (model == null){
+            return null;
+        }
 
         AudioBook oldModel = AudioBook.getModelForUniqueSlug(model.getUniqueSlug(),
                 DaoDBHelper.getDaoSession(getApplicationContext()));

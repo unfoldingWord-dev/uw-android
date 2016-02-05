@@ -203,7 +203,7 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
      */
     public void setLoadingFragmentVisibility(final boolean visible, final String loadingText, final boolean cancelable){
 
-        runOnUiThread(new Runnable() {
+         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (!visible) {
