@@ -196,7 +196,7 @@ public class VersionViewModel implements Comparable<VersionViewModel>{
         }
 
         public int getVerifiedCheckingLevelImage(){
-            if(type == MediaType.MEDIA_TYPE_AUDIO || (type == MediaType.MEDIA_TYPE_TEXT && version.getVerificationStatus() != Status.VERIFIED.ordinal())){
+            if((type == MediaType.MEDIA_TYPE_TEXT && version.getVerificationStatus() != Status.VERIFIED.ordinal())){
                 return R.drawable.verify_fail;
             }
             return ViewContentHelper.getDarkCheckingLevelImageResource(Integer.parseInt(version.getStatusCheckingLevel()));

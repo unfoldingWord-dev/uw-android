@@ -39,8 +39,10 @@ public class USFMParser {
 
     private static final String QS_REGEX = "\\\\(qs)\\d?\\ .*\\\\qs\\*";
 
+    private static final Pattern SP_REGEX = Pattern.compile("\\\\sp.*");
+    private static final Pattern ADD_REGEX = Pattern.compile("\\\\add.*\\\\add\\*", Pattern.DOTALL);
     private static final Pattern FOOTNOTE_REGEX = Pattern.compile("(\\\\f)(\\s+)((.*)(\\n*)){1,5}(\\\\f[*])");
-    private static final Pattern FOOTNOTE_TEXT_REGEX = Pattern.compile("(\\\\f.)(\\s)*(\\+)(\\s)(\\\\ft)*\\s*(.)*\\n(\\\\fqa)");
+    private static final Pattern FOOTNOTE_TEXT_REGEX = Pattern.compile("\\\\f.*\\\\f\\*", Pattern.DOTALL);
     private static final Pattern FOOTNOTE_VERSE_REGEX = Pattern.compile("\\\\fqa.*\\\\f[*]");
 
     private static final Pattern SINGLE_CHAPTER_BOOK_NAME_REGEX = Pattern.compile("\\\\cl.(.*)");
@@ -111,6 +113,8 @@ public class USFMParser {
         footnoteNumber = 1;
 
         chapter = handleDs(chapter);
+        chapter = handleSPs(chapter);
+        chapter = handleAdds(chapter);
         chapter = handleQSelahs(chapter);
         chapter = replaceQs(chapter);
         chapter = replaceVerseTags(chapter);
@@ -164,6 +168,50 @@ public class USFMParser {
     private String handleQSelahs(String text){
 
         return text.replaceAll(QS_REGEX, "<span class=\"selah\">Selah<br/></span></br>");
+    }
+
+    private String handleSPs(String text) {
+
+        Matcher spMatcher = SP_REGEX.matcher(text);
+
+        ArrayList<String> spText = new ArrayList<>();
+        while (spMatcher.find()) {
+            spText.add(spMatcher.group(0));
+        }
+
+        if (spText.isEmpty()) {
+            return text;
+        }
+
+        for (String spString : spText) {
+
+            String spLessString = spString.replace("\\sp ", "<br/><p class=\"sp\">") + "</p><br/>";
+            text = text.replace(spString, spLessString);
+        }
+
+        return text;
+    }
+
+    private String handleAdds(String text) {
+
+        Matcher addMatcher = ADD_REGEX.matcher(text);
+
+        ArrayList<String> addText = new ArrayList<>();
+        while (addMatcher.find()) {
+            addText.add(addMatcher.group(0));
+        }
+
+        if (addText.isEmpty()) {
+            return text;
+        }
+
+        for (String addString : addText) {
+
+            String addLessString = addString.replace("\\add ", "[").replace(" \\add*", "]");
+            text = text.replace(addString, addLessString);
+        }
+
+        return text;
     }
 
     private String handleDs(String text){
@@ -238,8 +286,8 @@ public class USFMParser {
             for(String footnote : verseText){
                 String footnoteText = findFootnoteText(footnote);
                 String footnoteNumberText = "<sup class=\"footnote-number\">" + Integer.toString(this.footnoteNumber) + "</sup>";
-                String footnoteVerse = findFootnoteVerseText(footnote) + footnoteNumberText;
-                text = text.replace(footnote, footnoteVerse);
+//                String footnoteVerse = findFootnoteVerseText(footnote) + footnoteNumberText;
+                text = text.replace(footnote, footnoteNumberText);
                 text = text + "<p class=\"footnote\">" + footnoteNumberText + footnoteText  + "</p>";
                 footnoteNumber++;
             }
@@ -280,7 +328,7 @@ public class USFMParser {
 
         if(verseText.size() > 0){
             for(String footnote : verseText){
-                footnote = footnote.replaceAll("(\\\\f.)(\\s)*(\\+)(\\s)(\\\\ft)*\\s*", "");
+                footnote = footnote.replaceAll("\\\\f(\\w|\\+|\\*|\\s\\W)*", "");
                 footnote = footnote.replaceAll("\\\\fqa", "");
                 return footnote;
             }
@@ -309,5 +357,25 @@ public class USFMParser {
         text = text.replace("\\m ", "");
         text = text.replace("\\q ", "");
         return text;
+    }
+
+    public static String getTextCss(int textSize, String textDirection){
+
+        String css = "<style type=\"text/css\">\n" +
+                ".selah {text-align: right; font-style: italic; float: right; padding-right: 1em;}\n" +
+                ".verse { font-size: 9pt}\n" +
+                ".q, .q1, .q2 { margin:0; display: block; padding:0;}\n" +
+                ".q, .q1 { padding-left: 1em; }\n" +
+                ".q2 { padding-left: 2em; }\n" +
+                ".q3 { padding-left: 3em; }\n" +
+                ".d {font-style: italic; text-align: center; padding: 0px; line-height: 0.9; font-size: " + Integer.toString(textSize - 2) + "pt; width: 90%; padding: 0 5% 0 5%;}\n" +
+                "p { width:96%; font-size: " + Integer.toString(textSize) + "pt; text-align: justify; line-height: 1.3; padding:5px; unicode-bidi:bidi-override; direction:" +
+                textDirection + ";}\n" +
+                ".footnote {font-size: 11pt;}\n" +
+                "sup {font-size: 9pt;}\n" +
+                "sp {font-style: italic;}\n" +
+
+                "</style>\n";
+        return css;
     }
 }

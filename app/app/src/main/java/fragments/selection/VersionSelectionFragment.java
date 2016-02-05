@@ -35,8 +35,10 @@ import adapters.versions.VersionViewHolder;
 import adapters.versions.VersionViewModel;
 import adapters.versions.VersionsAdapter;
 import de.greenrobot.event.EventBus;
+import eventbusmodels.BiblePagingEvent;
 import eventbusmodels.DownloadResult;
 import eventbusmodels.DownloadingVersionsEvent;
+import eventbusmodels.StoriesPagingEvent;
 import fragments.BitrateFragment;
 import fragments.VersionInfoFragment;
 import model.AudioBitrate;
@@ -46,6 +48,7 @@ import model.DownloadState;
 import model.daoModels.AudioBook;
 import model.daoModels.BibleChapter;
 import model.daoModels.Project;
+import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import services.UWMediaDownloaderService;
@@ -209,7 +212,7 @@ private VersionSelectionFragmentListener listener;
 
         titleTextView = (TextView) view.findViewById(R.id.version_selection_text_view);
         titleTextView.setText(chosenProject.getTitle());
-        titleTextView.setVisibility((showProjectTitle)? View.VISIBLE : View.GONE);
+        titleTextView.setVisibility((showProjectTitle) ? View.VISIBLE : View.GONE);
 
         prepareListView(view);
     }
@@ -217,9 +220,9 @@ private VersionSelectionFragmentListener listener;
     protected void prepareListView(View view){
 
         listView = (ExpandableListView) view.findViewById(R.id.versions_list);
-        Version version = getVersion();
+        long versionId = getVersionId();
 
-        adapter = new VersionsAdapter(this, VersionViewModel.createModels(getContext(), chosenProject, this), (version != null)? version.getId() : -1);
+        adapter = new VersionsAdapter(this, VersionViewModel.createModels(getContext(), chosenProject, this), versionId);
         listView.setAdapter(adapter);
         int selectedGroup = adapter.getIndexOfChosenVersion();
         if(selectedGroup > -1) {
@@ -227,25 +230,21 @@ private VersionSelectionFragmentListener listener;
         }
     }
 
-    private Version getVersion(){
+    private long getVersionId() {
 
-        if(chosenProject.isBibleStories()){
-            long pageId = UWPreferenceManager.getSelectedStoryPage(getContext());
-            if(pageId > -1) {
-                return DaoDBHelper.getDaoSession(getContext()).getStoryPageDao()
-                        .load(UWPreferenceManager.getSelectedStoryPage(getContext()))
-                        .getStoriesChapter().getBook().getVersion();
-            }
-        }
-        else{
-            long chapterId = UWPreferenceManager.getSelectedBibleChapter(getContext());
-            if(chapterId > -1) {
-                return BibleChapter.getModelForId(chapterId, DaoDBHelper.getDaoSession(getContext()))
-                        .getBook().getVersion();
-            }
-        }
+        if (chosenProject.isBibleStories()) {
 
-        return null;
+            StoriesPagingEvent event = StoriesPagingEvent.getStickyEvent(getApplicationContext());
+            StoryPage page = isSecondVersion ? event.secondaryStoryPage : event.mainStoryPage;
+
+            return (page != null) ? page.getStoriesChapter().getBook().getVersionId() : -1;
+        } else {
+
+            BiblePagingEvent event = BiblePagingEvent.getStickyEvent(getApplicationContext());
+            BibleChapter chapter = isSecondVersion ? event.secondaryChapter : event.mainChapter;
+
+            return (chapter != null) ? chapter.getBook().getVersionId() : -1;
+        }
     }
 
     private void downloadEnded(DownloadResult result){

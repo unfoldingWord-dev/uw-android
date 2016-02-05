@@ -137,7 +137,7 @@ public class VersionInfoFragment extends DialogFragment {
             updateViews(context, version, type);
         }
 
-        private void updateViews(Context context, Version version, MediaType type){
+        private void updateViews(Context context, Version version, final MediaType type){
 
             boolean notText = type != MediaType.MEDIA_TYPE_TEXT;
             final int verificationStatus;
@@ -163,6 +163,10 @@ public class VersionInfoFragment extends DialogFragment {
                         versionVerificationButton.setText(ViewContentHelper.getVerificationButtonTextForStatus(verificationStatus));
                         versionVerificationButton.setBackgroundResource(ViewContentHelper.getDrawableForStatus(verificationStatus));
                         versionVerificationButton.setVisibility(View.VISIBLE);
+                    }
+                    if (type != MediaType.MEDIA_TYPE_TEXT) {
+                        versionVerificationButton.setVisibility(View.INVISIBLE);
+                        versionVerificationTextView.setVisibility(View.INVISIBLE);
                     }
                 }
             });
