@@ -22,6 +22,12 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
+import activity.StatementOfFaithActivity;
+import activity.TranslationGuidlinesActivity;
+import activity.UWBaseActivity;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Created by Fechner on 8/18/15.
  * Dialogue fragment for showing the checking level info
@@ -35,7 +41,7 @@ public class CheckingLevelInfoFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.verification_fragment, container, false);
-
+        ButterKnife.bind(this, view);
         TextView textView = (TextView) view.findViewById(R.id.version_text_view);
         textView.setText(BuildConfig.VERSION_NAME);
 
@@ -43,7 +49,9 @@ public class CheckingLevelInfoFragment extends DialogFragment {
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDialog().dismiss();
+                if (getDialog() != null) {
+                    getDialog().dismiss();
+                }
             }
         });
         return view;
@@ -55,5 +63,13 @@ public class CheckingLevelInfoFragment extends DialogFragment {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return dialog;
+    }
+
+    @OnClick(R.id.translation_guidelines_button) void showGuidelinesDialog() {
+        ((UWBaseActivity) getActivity()).goToNewActivity(TranslationGuidlinesActivity.class);
+    }
+
+    @OnClick(R.id.statement_of_faith_button) void showStatementOfFaithDialog() {
+        ((UWBaseActivity) getActivity()).goToNewActivity(StatementOfFaithActivity.class);
     }
 }

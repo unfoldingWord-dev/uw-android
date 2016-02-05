@@ -8,12 +8,14 @@
 
 package activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -364,6 +366,20 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     }
     //endregion
 
+    public void showAlert(String title, String message){
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
+
     //region Toolbar Listener
 
     @Override
@@ -379,7 +395,6 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     public void rightButtonClicked() {
 
     }
-
     //endregion
 }
 

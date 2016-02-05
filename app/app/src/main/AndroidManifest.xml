@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.unfoldingword.mobile"
-    >
+    package="org.unfoldingword.mobile">
+
+    <uses-sdk tools:overrideLibrary="com.joanzapata.android.iconify, com.joanzapata.iconify.fontawesome" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -15,36 +16,31 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
-    <uses-sdk tools:overrideLibrary="com.joanzapata.android.iconify, com.joanzapata.iconify.fontawesome"/>
-
     <application
         android:name="application.UWApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-
+        android:theme="@style/AppTheme">
         <activity
-            android:screenOrientation="portrait"
             android:name="activity.SplashScreenActivity"
             android:configChanges="orientation"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="activity.readingSelection.InitialScreenActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
-
         <activity
             android:name="activity.SimpleVideoPlayerActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.Light"/>
-
+            android:theme="@android:style/Theme.Light" />
         <activity
             android:name="activity.readingSelection.BookSelectionActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -60,19 +56,16 @@
         <activity
             android:name="activity.reading.ReadingActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/MainTheme"/>
-
+            android:theme="@style/MainTheme" />
         <activity
             android:name="activity.reading.StoryReadingActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme" />
-
         <activity
             android:name="activity.sharing.LoadActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme">
-
-            <intent-filter android:label="@string/app_name" >
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -83,17 +76,19 @@
                     android:pathPattern=".*\\.ufw"
                     android:scheme="content" />
             </intent-filter>
-            <!--<intent-filter android:label="unfoldingWord" >-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
+            <!-- <intent-filter android:label="unfoldingWord" > -->
+            <!-- <action android:name="android.intent.action.VIEW" /> -->
 
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <!--<data-->
-                    <!--android:mimeType="*/*"-->
-                    <!--android:pathPattern=".*\\.ufw"-->
-                    <!--android:scheme="file" />-->
-            <!--</intent-filter>-->
-            <intent-filter android:label="@string/app_name" >
+            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+
+
+            <!-- <data -->
+            <!-- android:mimeType="*/*" -->
+            <!-- android:pathPattern=".*\\.ufw" -->
+            <!-- android:scheme="file" /> -->
+            <!-- </intent-filter> -->
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -102,7 +97,7 @@
                 <data android:host="*" />
                 <data android:pathPattern=".*\\.ufw" />
             </intent-filter>
-            <intent-filter android:label="@string/app_name" >
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -113,28 +108,37 @@
                     android:pathPattern=".*\\.ufw"
                     android:scheme="file" />
             </intent-filter>
-            </activity>
-
+        </activity>
         <activity
             android:name="activity.sharing.ShareActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme" />
-
         <activity
             android:name="activity.SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
-
+            android:label="@string/title_activity_settings"></activity>
         <activity
             android:name="com.door43.tools.reporting.BugReporterActivity"
-            android:theme="@style/Theme.AppCompat.Light"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            >
-
+            android:theme="@style/Theme.AppCompat.Light">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="activity.readingSelection.InitialScreenActivity" />
         </activity>
+
+        <activity
+            android:name="activity.CustomSettingsActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/MainTheme" />
+
+        <activity
+            android:name="activity.StatementOfFaithActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/MainTheme" />
+
+        <activity
+            android:name="activity.TranslationGuidlinesActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/MainTheme" />
 
         <service android:name="services.UWUpdaterService" />
         <service android:name="services.UWVersionDownloaderService" />
@@ -142,6 +146,7 @@
         <service android:name="services.UWSideLoaderService" />
         <service android:name="services.UWMediaDownloaderService" />
         <service android:name="services.UWBookMediaDownloaderService" />
+
 
     </application>
 

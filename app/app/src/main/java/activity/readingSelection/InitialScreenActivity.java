@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import activity.AnimationParadigm;
+import activity.CustomSettingsActivity;
 import activity.SettingsActivity;
 import activity.UWBaseActivity;
 import activity.reading.ReadingActivity;
@@ -190,7 +191,9 @@ public class InitialScreenActivity extends UWBaseActivity{
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position != 0) {
                     startReadingActivity(mProjects.get(position - 1));
+                }
                 }
             });
             setupRefreshButton();
@@ -306,7 +309,7 @@ public class InitialScreenActivity extends UWBaseActivity{
 
     private void goToSettings(){
 
-        goToNewActivity(SettingsActivity.class);
+        goToNewActivity(CustomSettingsActivity.class);
     }
 
     private void startReadingActivity(Project project){
