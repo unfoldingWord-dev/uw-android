@@ -10,6 +10,7 @@ import de.greenrobot.dao.DaoException;
 import model.UWDatabaseModel;
 import org.json.JSONObject;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 // KEEP INCLUDES END
 /**
  * Entity mapped to table "BIBLE_CHAPTER".
@@ -229,11 +230,17 @@ public class BibleChapter extends model.UWDatabaseModel  implements java.io.Seri
      * @param session session to us
      * @return unique BibleChapter with passed id
      */
+    @Nullable
     static public BibleChapter getModelForId(long id, DaoSession session) {
 
-        return session.getBibleChapterDao().queryBuilder()
-                .where(BibleChapterDao.Properties.Id.eq(id))
-                .unique();
+        if(id < 0) {
+            return null;
+        }
+        else {
+            return session.getBibleChapterDao().queryBuilder()
+                    .where(BibleChapterDao.Properties.Id.eq(id))
+                    .unique();
+        }
     }
 
     //endregion
