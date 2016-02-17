@@ -97,12 +97,6 @@ public class UWPreferenceDataManager {
 
         changedToBibleChapter(context, requestedChapter.getId(), isSecond);
         EventBus.getDefault().postSticky(UWPreferenceDataAccessor.getSharedInstance(context).createBiblePagingEvent());
-//        if(isSecond) {
-//            setSelectedBibleChapterSecondary(context, requestedChapter.getId());
-//        }
-//        else{
-//            setSelectedBibleChapter(context, requestedChapter.getId());
-//        }
     }
 
     public static void setNewStoriesVersion(Context context, Version newVersion, boolean isSecond) {

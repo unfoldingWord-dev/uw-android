@@ -57,8 +57,8 @@
             >
 
             <TextView
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:gravity="center"
                 android:id="@+id/reading_toolbar_chapter_text"
                 android:layout_width="wrap_content"
@@ -68,13 +68,10 @@
                 android:ellipsize="end"
                 android:textStyle="normal"
                 android:textAllCaps="false"
-                android:textSize="@dimen/actionbar_title_font_size"
                 android:textColor="#fff"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_marginRight="1dp"
-                android:layout_marginEnd="1dp"
-                android:paddingLeft="2dp"
-                android:paddingStart="2dp" />
+                android:layout_marginEnd="1dp" />
 
             <ImageView
                 android:paddingLeft="0dp"
@@ -114,7 +111,6 @@
                 android:text="UWB"
                 android:textStyle="normal"
                 android:textAllCaps="false"
-                android:textSize="@dimen/actionbar_title_font_size"
                 android:textColor="#fff"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_marginRight="2dp"
@@ -172,7 +168,6 @@
                 android:text="Galations 3"
                 android:textStyle="normal"
                 android:textAllCaps="false"
-                android:textSize="@dimen/actionbar_title_font_size"
                 android:textColor="#fff"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_marginRight="2dp"

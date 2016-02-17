@@ -183,14 +183,16 @@ public class UWReadingToolbarViewGroup {
 
     private void setViewVisibilities(){
 
-        leftButton.setVisibility((isMinni) ? View.GONE : View.VISIBLE);
+
         rightButtonPlaceholder.setVisibility((!isMinni && hasTwoVersions) ? View.INVISIBLE : View.GONE);
 
         if(hasTwoVersions){
             secondaryVersionLayout.setVisibility((isValidToDisplay(viewData.getSecondaryVersionText())) ? View.VISIBLE : View.INVISIBLE);
+            leftButton.setVisibility((isMinni) ? View.GONE : View.VISIBLE);
         }
         else{
             secondaryVersionLayout.setVisibility(View.GONE);
+            leftButton.setVisibility((isMinni) ? View.INVISIBLE : View.VISIBLE);
         }
     }
 
@@ -215,10 +217,12 @@ public class UWReadingToolbarViewGroup {
         if(!isMinni && !hasTwoVersions){
             chapterParams.addRule(getSDKSafeRightOf(), leftButton.getId());
             chapterParams.addRule(getSDKSafeLeftOf(), mainVersionLayout.getId());
+            chapterParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         }
         else if (!hasTwoVersions && isMinni){
             chapterParams.addRule(getSDKSafeLeftOf(), mainVersionLayout.getId());
             chapterParams.addRule(getSDKSafeAlignParentLeft());
+            chapterParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         }
         else if( hasTwoVersions && isMinni){
             chapterParams.addRule(getSDKSafeRightOf(), secondaryVersionLayout.getId());
