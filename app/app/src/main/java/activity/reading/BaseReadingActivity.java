@@ -536,7 +536,15 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         showingAudio = visible;
     }
 
+//    @Override
+//    public void storagePermissionWasGranted() {
+//        shareVersion();
+//    }
     private void shareVersion(){
+
+        if(!verifyOrRequestStoragePermissions()) {
+            return;
+        }
 
         Version sharingVersion = getSharingVersion();
         if(sharingVersion != null) {

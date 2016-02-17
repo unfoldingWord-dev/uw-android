@@ -8,10 +8,13 @@
 
 package singletons;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.view.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -314,5 +317,45 @@ public class UWAudioPlayer {
         void update(long duration, long progress);
         void started();
         void paused();
+    }
+
+
+    public static class RemoteControlReceiver extends BroadcastReceiver {
+        static boolean clickedHeadPhone = false;
+
+        public RemoteControlReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+                KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+
+                if (event != null) {
+                    int keyCode = event.getKeyCode();
+                    if(keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_HEADSETHOOK) {
+
+                        if(keyCode == KeyEvent.KEYCODE_HEADSETHOOK){
+                            clickedHeadPhone = !clickedHeadPhone;
+                            if(clickedHeadPhone){
+                                return;
+                            }
+                        }
+
+                        if(ourInstance != null) {
+                            ourInstance.togglePlay();
+                        }
+//                        if (player != null) {
+//                            if(player.isPlaying()) {
+//                                player.pause();
+//                            } else {
+//                                player.start();
+//                            }
+//                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -8,12 +8,17 @@
 
 package activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -368,15 +373,20 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
 
     public void showAlert(String title, String message){
 
+        showAlert(title, message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    public void showAlert(String title, String message, DialogInterface.OnClickListener clickListener){
+
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss", clickListener);
         alertDialog.show();
     }
 
@@ -396,6 +406,81 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
 
     }
     //endregion
+
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     */
+
+    /**
+     *
+     * @return true if app has storage permissions
+     */
+    public boolean verifyOrRequestStoragePermissions() {
+        if (!verifyStoragePermissions()) {
+            askForStoragePermission();
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    public boolean verifyStoragePermissions() {
+        return permissionIsAllowed(Manifest.permission.WRITE_EXTERNAL_STORAGE) && permissionIsAllowed(Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
+    private boolean permissionIsAllowed(String permissionID) {
+        return ContextCompat.checkSelfPermission(this, permissionID) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public void askForStoragePermission() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            showAlert("Storage Permission", "Allow access to external storage if you would like to share or receive Versions directly from another device", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    askForStoragePermission();
+                }
+            });
+        }
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            showAlert("Storage Permission", "Allow access to external storage if you would like to share or receive Versions directly from another device", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    askForStoragePermission();
+                }
+            });
+        }
+        else{
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    storagePermissionWasGranted();
+                }
+            }
+        }
+    }
+
+    public void storagePermissionWasGranted() { }
 }
 
 

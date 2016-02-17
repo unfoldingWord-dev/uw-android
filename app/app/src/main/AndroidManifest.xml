@@ -8,13 +8,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name="application.UWApplication"
@@ -36,7 +37,41 @@
         <activity
             android:name="activity.readingSelection.InitialScreenActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/MainTheme" />
+            android:theme="@style/MainTheme" >
+
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.ufw"
+                    android:scheme="content" />
+            </intent-filter>
+
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.ufw" />
+            </intent-filter>
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.ufw"
+                    android:scheme="file" />
+            </intent-filter>
+            </activity>
         <activity
             android:name="activity.SimpleVideoPlayerActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -61,61 +96,50 @@
             android:name="activity.reading.StoryReadingActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme" />
-        <activity
-            android:name="activity.sharing.LoadActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/MainTheme">
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.VIEW" />
+        <!--<activity-->
+            <!--android:name="activity.sharing.LoadActivity"-->
+            <!--android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"-->
+            <!--android:theme="@style/MainTheme">-->
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
 
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:mimeType="application/octet-stream"
-                    android:pathPattern=".*\\.ufw"
-                    android:scheme="content" />
-            </intent-filter>
-            <!-- <intent-filter android:label="unfoldingWord" > -->
-            <!-- <action android:name="android.intent.action.VIEW" /> -->
+                <!--<data-->
+                    <!--android:mimeType="application/octet-stream"-->
+                    <!--android:pathPattern=".*\\.ufw"-->
+                    <!--android:scheme="content" />-->
+            <!--</intent-filter>-->
 
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
 
-            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
 
+                <!--<data android:scheme="file" />-->
+                <!--<data android:host="*" />-->
+                <!--<data android:pathPattern=".*\\.ufw" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
 
-            <!-- <data -->
-            <!-- android:mimeType="*/*" -->
-            <!-- android:pathPattern=".*\\.ufw" -->
-            <!-- android:scheme="file" /> -->
-            <!-- </intent-filter> -->
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.VIEW" />
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="file" />
-                <data android:host="*" />
-                <data android:pathPattern=".*\\.ufw" />
-            </intent-filter>
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data
-                    android:host="*"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\\.ufw"
-                    android:scheme="file" />
-            </intent-filter>
-        </activity>
+                <!--<data-->
+                    <!--android:host="*"-->
+                    <!--android:mimeType="*/*"-->
+                    <!--android:pathPattern=".*\\.ufw"-->
+                    <!--android:scheme="file" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
         <activity
             android:name="activity.sharing.ShareActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/MainTheme" />
         <activity
             android:name="activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings"/>
         <activity
             android:name="com.door43.tools.reporting.BugReporterActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
@@ -139,6 +163,14 @@
             android:name="activity.TranslationGuidlinesActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
+
+        <receiver android:name="singletons.UWAudioPlayer$RemoteControlReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.intent.action.ACTION_AUDIO_BECOMING_NOISY"/>
+            </intent-filter>
+        </receiver>
+
 
         <service android:name="services.UWUpdaterService" />
         <service android:name="services.UWVersionDownloaderService" />

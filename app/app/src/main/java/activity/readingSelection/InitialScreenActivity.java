@@ -84,6 +84,10 @@ public class InitialScreenActivity extends UWBaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial_list);
         setupViews();
+        Uri uri = getIntent().getData();
+        if(uri != null) {
+            loadVersion(uri);
+        }
     }
 
     @Override
@@ -330,7 +334,16 @@ public class InitialScreenActivity extends UWBaseActivity{
         UWPreferenceManager.setIsFirstLaunch(getApplicationContext(), false);
     }
 
+//    @Override
+//    public void storagePermissionWasGranted() {
+//        startSharing();
+//    }
+
     private void startSharing(){
+
+        if(!verifyOrRequestStoragePermissions()) {
+            return;
+        }
 
         View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
         ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText("Select Share Method");
