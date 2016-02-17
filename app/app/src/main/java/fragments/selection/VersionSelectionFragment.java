@@ -466,16 +466,17 @@ private VersionSelectionFragmentListener listener;
         getContext().startService(downloadIntent);
     }
 
-    private void deleteText(VersionViewModel model){
+    private void deleteText(final VersionViewModel model){
 
-        final Version version = model.getVersion();
-        UWPreferenceDataManager.willDeleteVersion(getContext(), model.getVersion());
+
         new AsyncTask<Void, Void, Void>(){
 
             @Override
             protected Void doInBackground(Void... params) {
+                final Version version = model.getVersion();
                 UWPreferenceDataManager.willDeleteVersion(getContext(), version);
                 version.deleteContent(getContext());
+                refreshData();
                 return null;
             }
 
@@ -487,14 +488,16 @@ private VersionSelectionFragmentListener listener;
         }.execute();
     }
 
-    private void deleteAudio(VersionViewModel model){
+    private void deleteAudio(final VersionViewModel model){
 
-        final Version version = model.getVersion();
+
         new AsyncTask<Void, Void, Void>(){
 
             @Override
             protected Void doInBackground(Void... params) {
+                Version version = model.getVersion();
                 version.deleteAudio(getContext());
+                refreshData();
                 return null;
             }
 
@@ -508,6 +511,11 @@ private VersionSelectionFragmentListener listener;
 
     private void deleteVideo(VersionViewModel model){
 
+    }
+
+    private void refreshData() {
+        BiblePagingEvent.refreshPagingEvent(getApplicationContext());
+        StoriesPagingEvent.refreshPagingEvent(getApplicationContext());
     }
 
     @Override

@@ -20,6 +20,7 @@ public class StoriesPagingEvent {
     }
 
     public static StoriesPagingEvent getStickyEvent(Context context){
+
         StoriesPagingEvent event = EventBus.getDefault().getStickyEvent(StoriesPagingEvent.class);
         if(event == null){
             event = UWPreferenceDataAccessor.getSharedInstance(context).createStoriesPagingEvent();
@@ -29,5 +30,10 @@ public class StoriesPagingEvent {
         else{
             return event;
         }
+    }
+
+    public static void refreshPagingEvent(Context context) {
+        StoriesPagingEvent event = UWPreferenceDataAccessor.getSharedInstance(context).createStoriesPagingEvent();
+        EventBus.getDefault().postSticky(event);
     }
 }

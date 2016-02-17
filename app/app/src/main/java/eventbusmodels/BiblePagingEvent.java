@@ -31,6 +31,10 @@ public class BiblePagingEvent {
         else{
             return event;
         }
+    }
 
+    public static void refreshPagingEvent(Context context) {
+        BiblePagingEvent event = UWPreferenceDataAccessor.getSharedInstance(context).createBiblePagingEvent();
+        EventBus.getDefault().postSticky(event);
     }
 }
