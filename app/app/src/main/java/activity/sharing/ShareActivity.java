@@ -22,7 +22,10 @@ import com.github.peejweej.androidsideloading.model.SideLoadInformation;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
@@ -72,37 +75,41 @@ public class ShareActivity extends UWBaseActivity {
 
     public void shareClicked(View view) {
 
-        final Version version = selectionFragment.getSelectedVersion();
-        if(version != null) {
+        final List<Version> versions = selectionFragment.getSelectedVersions();
+        if(versions != null) {
 
-            DataFileManager.getStateOfContent(getApplicationContext(), version, MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+            DataFileManager.getStateOfContent(getApplicationContext(), versions, MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
                 @Override
                 public void foundDownloadState(DownloadState state) {
 
                     if(state == DownloadState.DOWNLOAD_STATE_DOWNLOADED){
 
-                        ResourceChoosingFragment.newInstance(version, new ResourceChoosingFragment.ResourceChoosingListener() {
+                        ResourceChoosingFragment.newInstance(versions.toArray(new Version[versions.size()]), new ResourceChoosingFragment.ResourceChoosingListener() {
+
                             @Override
-                            public void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types) {
-                                shareVersion(types, version);
+                            public void resourcesChosen(DialogFragment dialogFragment, Map<Version, List<MediaType>> sharingChoices) {
+                                shareVersions(sharingChoices);
                                 dialogFragment.dismiss();
                             }
                         }).show(getSupportFragmentManager(), "ResourceChoosingFragment");
 
                     }
                     else{
-                        shareVersion(new ArrayList<MediaType>(), version);
+                        Map<Version, List<MediaType>> shareInfo = new HashMap<Version, List<MediaType>>();
+                        for(Version version : versions) {
+                            shareInfo.put(version, Arrays.asList(MediaType.MEDIA_TYPE_TEXT));
+                        }
+                        shareVersions(shareInfo);
                     }
-
                 }
             });
         }
     }
 
-    private void shareVersion(List<MediaType> types, Version version){
+    private void shareVersions(Map<Version, List<MediaType>> versions){
 
         setLoadingFragmentVisibility(true, "Preparing Sharable Version", false);
-        SharingHelper.getShareInformation(getApplicationContext(), version, types, new SharingHelper.SideLoadInformationResponse() {
+        SharingHelper.getShareInformation(getApplicationContext(), versions, new SharingHelper.SideLoadInformationResponse() {
             @Override
             public void informationLoaded(SideLoadInformation information) {
 

@@ -107,27 +107,24 @@ public class FileUtil {
 //        }
     }
 
-    public static Uri saveFile(File file, byte[] bytes){
+    public static Uri saveFile(File file, byte[] bytes) {
 
         Log.d(TAG, "Saving file: " + file.getPath());
-        file.getParentFile().mkdirs();
-
-        try{
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
+        boolean madeDirs = file.getParentFile().mkdirs();
+        FileOutputStream fos;
+        try {
+            boolean createdFile = file.createNewFile();
+            fos = new FileOutputStream(file);
             fos.write(bytes);
             fos.close();
-//            Log.i(TAG, "File Saved");
+            Log.i(TAG, "File Saved");
             return Uri.fromFile(file);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-//            Log.e(TAG, "Error when saving file");
+            Log.e(TAG, "Error when saving file");
             return null;
-
         }
     }
-
     public static void saveFile(CharSequence fileSequence, String dirName, String fileName){
 
         Log.i(TAG, "Attempting to save file named:" + fileName);
@@ -271,7 +268,9 @@ public class FileUtil {
         File file = new File(getTempStorageDir(context));
         if(file.exists()){
             deleteContents(file);
-            file.delete();
+            if(!file.delete()) {
+                Log.d(TAG, "Failed to delete " + file);
+            }
         }
     }
 
@@ -283,6 +282,7 @@ public class FileUtil {
                 if (file.isDirectory()) {
                     success &= deleteContents(file);
                 }
+
                 if (!file.delete()) {
                     Log.d(TAG, "Failed to delete " + file);
                     success = false;

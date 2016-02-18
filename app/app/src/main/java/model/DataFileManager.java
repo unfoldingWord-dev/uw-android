@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -71,7 +72,6 @@ public class DataFileManager {
             @Override
             protected DownloadState doInBackground(Void... params) {
 
-//                Log.d(TAG, "started checking of content state asynctask");
                 File mediaFolder = getFileForDownload(context, type, version);
                 if(!mediaFolder.exists()){
                     Log.d(TAG, "Media folder didn't exist");
@@ -88,9 +88,36 @@ public class DataFileManager {
                 response.foundDownloadState(downloadState);
             }
         }.execute();
-
-
     }
+
+    public static void getStateOfContent(final Context context, final List<Version> versions, final MediaType type, final GetDownloadStateResponse response){
+
+        new AsyncTask<Void, DownloadState, DownloadState>(){
+
+            @Override
+            protected DownloadState doInBackground(Void... params) {
+
+//                Log.d(TAG, "started checking of content state asynctask");
+                for(Version version : versions) {
+                    File mediaFolder = getFileForDownload(context, type, version);
+                    if (mediaFolder.exists() && verifyStateForContent(version, type, mediaFolder) == DownloadState.DOWNLOAD_STATE_DOWNLOADED) {
+                        // version had that type of media
+                        return DownloadState.DOWNLOAD_STATE_DOWNLOADED;
+                    }
+                }
+
+                return DownloadState.DOWNLOAD_STATE_NONE;
+            }
+
+            @Override
+            protected void onPostExecute(DownloadState downloadState) {
+                super.onPostExecute(downloadState);
+                response.foundDownloadState(downloadState);
+            }
+        }.execute();
+    }
+
+
 
     public static Uri getUri(Context context, Book book, MediaType type, String fileUrl){
 
@@ -195,22 +222,48 @@ public class DataFileManager {
         return new File(getPath(context, mediaType, version), fileName);
     }
 
-    @Nullable
-    public static Uri createUriForSideLoad(Context context, Version version, List<MediaType> types, String fileName){
+//    @Nullable
+//    public static Uri createUriForSideLoad(Context context, Version version, List<MediaType> types, String fileName){
+//
+//        FileUtil.clearTemporaryFiles(context);
+//        saveTempFileForSideLoading(context, version.getAsSideLoadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(version));
+//        for(MediaType type : types){
+//            if(type == MediaType.MEDIA_TYPE_AUDIO){
+//                int bitRate = getDownloadedBitrate(context, version, MediaType.MEDIA_TYPE_AUDIO);
+//                if(!saveAudioFilesForPreload(context, version, bitRate)){
+//                    return null;
+//                }
+//            }
+//        }
+//        File outFile = new File(FileUtil.getTempStorageDir(context));
+//
+//        Uri compressedFile = compressFiles(version, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
+//        return compressedFile;
+//    }
+
+    public static Uri createUriForSideLoad(Context context, Map<Version, List<MediaType>> versions, String fileName) {
 
         FileUtil.clearTemporaryFiles(context);
-        saveTempFileForSideLoading(context, version.getAsSideLoadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(version));
-        for(MediaType type : types){
-            if(type == MediaType.MEDIA_TYPE_AUDIO){
-                int bitRate = getDownloadedBitrate(context, version, MediaType.MEDIA_TYPE_AUDIO);
-                if(!saveAudioFilesForPreload(context, version, bitRate)){
-                    return null;
+
+        for(Map.Entry<Version, List<MediaType>> entry : versions.entrySet()) {
+
+            for (MediaType type : entry.getValue()) {
+                if (type == MediaType.MEDIA_TYPE_AUDIO) {
+                    int bitRate = getDownloadedBitrate(context, entry.getKey(), MediaType.MEDIA_TYPE_AUDIO);
+                    if (!saveAudioFilesForPreload(context, entry.getKey(), bitRate)) {
+                        return null;
+                    }
+                }
+                else if(type == MediaType.MEDIA_TYPE_TEXT) {
+                    if(saveTempFileForSideLoading(context, entry.getKey().getAsSideLoadJson(context).toString().getBytes(), FileNameHelper.getShareTextFileName(entry.getKey())) == null){
+                        return null;
+                    }
                 }
             }
         }
         File outFile = new File(FileUtil.getTempStorageDir(context));
 
-        Uri compressedFile = compressFiles(version, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
+        Uri compressedFile = compressFiles(fileName, FileUtil.getUriForTempDir(context, TEMP_FILE_FOLDER_NAME), Uri.fromFile(outFile));
         return compressedFile;
     }
 
@@ -229,9 +282,9 @@ public class DataFileManager {
         return success;
     }
 
-    private static Uri compressFiles( Version version, Uri filesUri, Uri newFile){
+    private static Uri compressFiles(String fileName, Uri filesUri, Uri newFile){
 
-        File outFile = new File(newFile.getPath(), SharingHelper.getFileNameForVersion(version));
+        File outFile = new File(newFile.getPath(), fileName);
         zipFolder(new File(filesUri.getPath()), outFile);
         return Uri.fromFile(outFile);
     }
@@ -374,8 +427,7 @@ public class DataFileManager {
         FileUtil.copyFile(fileUri, Uri.fromFile(new File(newFile, FileNameHelper.getShareAudioSignatureFileName(audioChapter, bitRate))));
     }
 
-    private static void saveTempFileForSideLoading(Context context, byte[] file, String fileName) {
-
-        FileUtil.createTemporaryFile(context, file, TEMP_FILE_FOLDER_NAME, fileName);
+    private static Uri saveTempFileForSideLoading(Context context, byte[] file, String fileName) {
+        return FileUtil.createTemporaryFile(context, file, TEMP_FILE_FOLDER_NAME, fileName);
     }
 }

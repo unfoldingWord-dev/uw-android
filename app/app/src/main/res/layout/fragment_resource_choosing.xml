@@ -5,44 +5,54 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="fragments.ResourceChoosingFragment"
     android:orientation="vertical"
+    android:minWidth="300dp"
     android:layout_marginLeft="15dp"
-    android:layout_marginStart="15dp">
-
-
-    <TextView
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:minWidth="200dp"
-        android:gravity="start|left|center_vertical|"
-        android:height="40dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Large Text"
-        android:id="@+id/resource_choosing_title_view"
-        android:textColor="#000"/>
-
-    <TextView
-        android:paddingLeft="10dp"
-        android:paddingStart="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="#000"
-        android:gravity="left|start"
-        android:height="40dp"
+    android:layout_marginStart="15dp"
+    >
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Medium Text"
-        android:id="@+id/resource_choosing_sub_title_view"
-        />
+        android:orientation="vertical"
+        >
 
-    <ListView
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:id="@+id/resource_choosing_list_view"/>
+        <TextView
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:minWidth="300dp"
+            android:gravity="start|left|center_vertical|"
+            android:height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/resource_choosing_title_view"
+            android:textColor="#000"/>
+
+        <TextView
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000"
+            android:gravity="left|start"
+            android:height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Medium Text"
+            android:id="@+id/resource_choosing_sub_title_view"
+            />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="200dp"
+            android:id="@+id/resource_choosing_list_view"/>
+
+    </LinearLayout>
 
     <LinearLayout
-        android:gravity="right|end"
+        android:id="@+id/button_layout"
+        android:gravity="right|end|bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">

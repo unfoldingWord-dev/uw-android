@@ -33,9 +33,10 @@ public class ShareSelectionFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String PROJECTS_PARAM = "PROJECTS_PARAM";
 
-    private Version selectedVersion;
+    private List<Version> selectedVersions;
 
     private ExpandableListView listView;
+    private SharingAdapter adapter;
 
     public static ShareSelectionFragment newInstance(Project[] versions) {
         ShareSelectionFragment fragment = new ShareSelectionFragment();
@@ -73,13 +74,8 @@ public class ShareSelectionFragment extends Fragment {
         List<SharingLanguageViewModel> data = getData();
 
         if(data != null) {
-            listView.setAdapter(new SharingAdapter(this, data, new SharingAdapter.SharingAdapterListener() {
-                @Override
-                public void versionChosen(Version version) {
-                    selectedVersion = version;
-                    listView.invalidateViews();
-                }
-            }));
+            adapter = new SharingAdapter(this, data);
+            listView.setAdapter(adapter);
         }
     }
 
@@ -91,8 +87,8 @@ public class ShareSelectionFragment extends Fragment {
     }
 
 
-    public Version getSelectedVersion(){
+    public List<Version> getSelectedVersions(){
 
-        return selectedVersion;
+        return adapter.getSelectedVersions();
     }
 }

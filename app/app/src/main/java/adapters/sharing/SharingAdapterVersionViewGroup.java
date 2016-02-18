@@ -25,6 +25,12 @@ public class SharingAdapterVersionViewGroup {
     @Bind(R.id.share_selection_checkbox_image)
     ImageView checkMarkImageView;
 
+    public int section;
+    public int row;
+    public boolean isChecked = false;
+
+    private SharingAdapterVersionViewGroupListener listener;
+
     public SharingAdapterVersionViewGroup(View view) {
         baseView = view;
         ButterKnife.bind(this, view);
@@ -34,24 +40,35 @@ public class SharingAdapterVersionViewGroup {
         return version;
     }
 
-    public void updateWithVersion(final Version version, final SharingAdapterVersionViewGroupListener listener){
+    public void updateWithVersion(final Version version, int section, int row, final SharingAdapterVersionViewGroupListener listener){
         this.version = version;
+        this.listener = listener;
+        this.section = section;
+        this.row = row;
         titleTextView.setText(version.getName());
 
         baseView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.clicked(version);
+                wasClicked();
             }
         });
     }
+    private void wasClicked() {
+        toggleChecked();
+        listener.clicked(this);
+    }
 
+    private void toggleChecked(){
+        setChecked(!isChecked);
+    }
     public void setChecked(boolean checked){
+        this.isChecked = checked;
         checkMarkImageView.setImageResource((checked) ? R.drawable.check_box_checked : R.drawable.check_box_empty);
     }
 
     public interface SharingAdapterVersionViewGroupListener{
 
-        void clicked(Version version);
+        void clicked(SharingAdapterVersionViewGroup viewGroup);
     }
 }

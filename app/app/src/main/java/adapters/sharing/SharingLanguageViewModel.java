@@ -22,7 +22,6 @@ import model.daoModels.Version;
 public class SharingLanguageViewModel implements Comparable<SharingLanguageViewModel> {
 
     private String title;
-
     private List<Version> versions = new ArrayList<>();
 
 

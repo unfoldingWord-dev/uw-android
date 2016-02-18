@@ -27,6 +27,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import model.daoModels.Version;
+import model.parsers.MediaType;
 
 //import android.widget.IconTextView;
 
@@ -143,7 +145,9 @@ public class ResourceChoosingAdapter extends ArrayAdapter<ResourceChoosingAdapte
 
     public interface ResourceChoosingAdapterProtocol {
 
+        Version getVersion();
         String getName();
         Drawable getImage();
+        MediaType getType();
     }
 }

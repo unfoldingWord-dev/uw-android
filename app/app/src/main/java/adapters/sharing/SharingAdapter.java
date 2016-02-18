@@ -18,6 +18,7 @@ import android.widget.ExpandableListAdapter;
 
 import org.unfoldingword.mobile.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.daoModels.Version;
@@ -30,21 +31,29 @@ public class SharingAdapter implements ExpandableListAdapter {
 
 //    private final static String TAG = "CollapseVersionAdapter";
 
-    private SharingAdapterListener listener;
+//    private SharingAdapterListener listener;
     private Fragment parentFragment;
 
     private List<SharingLanguageViewModel> models;
-//    private VersionAdapterListener listener;
-    private long selectedVersionId;
-
-    private Version selectedVersion;
+    private List<List<Boolean>> selectionList = new ArrayList<>();
 
     //region setup
 
-    public SharingAdapter(Fragment fragment, List<SharingLanguageViewModel> models, SharingAdapterListener listener) {
+    public SharingAdapter(Fragment fragment, List<SharingLanguageViewModel> models) {
         this.parentFragment = fragment;
         this.models = models;
-        this.listener = listener;
+        seedSelectionList();
+    }
+
+    private void seedSelectionList(){
+
+        for( SharingLanguageViewModel model : models) {
+            List<Boolean> selections = new ArrayList<>();
+            for(int i = 0; i < model.getVersions().size(); i++ ) {
+                selections.add(i, false);
+            }
+            selectionList.add(selections);
+        }
     }
 
     @Override
@@ -140,16 +149,30 @@ public class SharingAdapter implements ExpandableListAdapter {
             holder = (SharingAdapterVersionViewGroup) convertView.getTag();
         }
 
-        holder.updateWithVersion(getChild(groupPosition, childPosition), new SharingAdapterVersionViewGroup.SharingAdapterVersionViewGroupListener() {
+        holder.updateWithVersion(getChild(groupPosition, childPosition), groupPosition, childPosition, new SharingAdapterVersionViewGroup.SharingAdapterVersionViewGroupListener() {
+
             @Override
-            public void clicked(Version version) {
-                selectedVersion = version;
-                listener.versionChosen(version);
+            public void clicked(SharingAdapterVersionViewGroup viewGroup) {
+                selectionList.get(viewGroup.section).set(viewGroup.row, viewGroup.isChecked);
             }
         });
 
-        holder.setChecked(selectedVersion != null && holder.getVersion().getId().equals(selectedVersion.getId()));
+        holder.setChecked(selectionList.get(groupPosition).get(childPosition));
         return convertView;
+    }
+
+    public List<Version> getSelectedVersions() {
+
+        List<Version> versions = new ArrayList<>();
+        for(int i = 0; i < selectionList.size(); i++) {
+            List<Boolean> list = selectionList.get(i);
+            for(int j = 0; j < list.size(); j++){
+                if(list.get(j)) {
+                    versions.add(models.get(i).getVersions().get(j));
+                }
+            }
+        }
+        return versions;
     }
 
     //endregion
@@ -204,8 +227,8 @@ public class SharingAdapter implements ExpandableListAdapter {
 
     //endregion
 
-    public interface SharingAdapterListener{
-        void versionChosen(Version version);
-    }
+//    public interface SharingAdapterListener{
+//        void versionChosen(Version version);
+//    }
 }
 

@@ -27,7 +27,11 @@ import android.widget.TextView;
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import adapters.ResourceChoosingAdapter;
 import butterknife.Bind;
@@ -54,15 +58,14 @@ public class ResourceChoosingFragment extends DialogFragment {
     @Bind(R.id.resource_choosing_cancel_button) Button cancelButton;
     @Bind(R.id.resource_choosing_continue_button) Button continueButton;
 
-    private Version version;
+    private Version[] versions;
     private ResourceChoosingAdapter adapter;
-
     private ResourceChoosingListener listener;
 
-    public static ResourceChoosingFragment newInstance(Version version) {
+    public static ResourceChoosingFragment newInstance(Version[] versions) {
         ResourceChoosingFragment fragment = new ResourceChoosingFragment();
         Bundle args = new Bundle();
-        args.putSerializable(VERSION_PARAM, version);
+        args.putSerializable(VERSION_PARAM, versions);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,6 +73,15 @@ public class ResourceChoosingFragment extends DialogFragment {
     public static ResourceChoosingFragment newInstance(Version version, ResourceChoosingListener listener) {
         Bundle args = new Bundle();
         args.putSerializable(VERSION_PARAM, version);
+        ResourceChoosingFragment fragment = new ResourceChoosingFragment();
+        fragment.setArguments(args);
+        fragment.listener = listener;
+        return fragment;
+    }
+
+    public static ResourceChoosingFragment newInstance(Version[] versions, ResourceChoosingListener listener) {
+        Bundle args = new Bundle();
+        args.putSerializable(VERSION_PARAM, versions);
         ResourceChoosingFragment fragment = new ResourceChoosingFragment();
         fragment.setArguments(args);
         fragment.listener = listener;
@@ -84,7 +96,17 @@ public class ResourceChoosingFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            version = (Version) getArguments().getSerializable(VERSION_PARAM);
+            Object[] baseObjects = (Object[]) getArguments().getSerializable(VERSION_PARAM);
+            if (baseObjects != null) {
+                Version[] parsedVersions = new Version[baseObjects.length];
+                for(int i = 0; i < baseObjects.length; i++) {
+                    parsedVersions[i] = (Version) baseObjects[i];
+                }
+                versions = parsedVersions;
+            }
+            else{
+                versions = new Version[0];
+            }
         }
     }
 
@@ -100,7 +122,8 @@ public class ResourceChoosingFragment extends DialogFragment {
 
     private void setupView(){
 
-        titleView.setText("Sharing " + version.getName());
+        String text = (versions.length == 1) ? versions[0].getName() : "Versions";
+        titleView.setText("Sharing " + text);
         subTitleView.setText("Choose Optional Resources");
 
         adapter = new ResourceChoosingAdapter(getContext(), getData());
@@ -126,17 +149,7 @@ public class ResourceChoosingFragment extends DialogFragment {
     }
 
     @OnClick(R.id.resource_choosing_continue_button) protected void endDialog(){
-
-        List<MediaType> types = new ArrayList<>();
-        int i = 0;
-        for (ResourceChoosingAdapter.ResourceChoosingAdapterProtocol item : adapter.getObjects()){
-
-            if(adapter.hasSelectedIndex(i)){
-                types.add( ((SimpleResourceChoosingObject) item).type);
-            }
-            i++;
-        }
-        listener.resourcesChosen(this, types);
+        sendChoiceInformation();
     }
 
     @Override
@@ -170,13 +183,15 @@ public class ResourceChoosingFragment extends DialogFragment {
 
         List<ResourceChoosingAdapter.ResourceChoosingAdapterProtocol> data = new ArrayList<>();
 
-        if(version.hasAudio()){
-            MediaType type = MediaType.MEDIA_TYPE_AUDIO;
-            data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), type.getTitle(), type));
-        }
-        if(version.hasVideo()){
-            MediaType type = MediaType.MEDIA_TYPE_VIDEO;
-            data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), type.getTitle(), type));
+        for(Version version : versions) {
+            if (version.hasAudio()) {
+                MediaType type = MediaType.MEDIA_TYPE_AUDIO;
+                data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), version, version.getTitle() + " " + type.getTitle(), type));
+            }
+            if (version.hasVideo()) {
+                MediaType type = MediaType.MEDIA_TYPE_VIDEO;
+                data.add(new SimpleResourceChoosingObject(getActivity().getApplicationContext(), version, version.getTitle() + " " + type.getTitle(), type));
+            }
         }
         return data;
     }
@@ -184,11 +199,13 @@ public class ResourceChoosingFragment extends DialogFragment {
     private class SimpleResourceChoosingObject implements ResourceChoosingAdapter.ResourceChoosingAdapterProtocol{
 
         private Context context;
+        private Version version;
         private String name;
         private MediaType type;
 
 
-        public SimpleResourceChoosingObject(Context context, String name, MediaType type) {
+        public SimpleResourceChoosingObject(Context context, Version version, String name, MediaType type) {
+            this.version = version;
             this.context = context;
             this.name = name;
             this.type = type;
@@ -203,10 +220,42 @@ public class ResourceChoosingFragment extends DialogFragment {
         public String getName() {
             return name;
         }
+
+        @Override
+        public Version getVersion() {
+            return version;
+        }
+
+        @Override
+        public MediaType getType() {
+            return type;
+        }
+    }
+
+    private void sendChoiceInformation() {
+
+        Map<Version, List<MediaType>> types = new HashMap<>();
+
+        for(Version version: versions){
+            types.put(version, Arrays.asList(MediaType.MEDIA_TYPE_TEXT));
+        }
+        int i = 0;
+        for (ResourceChoosingAdapter.ResourceChoosingAdapterProtocol item : adapter.getObjects()){
+
+            if(adapter.hasSelectedIndex(i)){
+                ArrayList<MediaType> specifiedTypes = new ArrayList<>();
+                List<MediaType> currentTypes = types.get(item.getVersion());
+                specifiedTypes.addAll(currentTypes);
+                specifiedTypes.add(item.getType());
+                types.put(item.getVersion(), specifiedTypes);
+            }
+            i++;
+        }
+        listener.resourcesChosen(this, types);
     }
 
     public interface ResourceChoosingListener {
-        void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types);
+        void resourcesChosen(DialogFragment dialogFragment, Map<Version, List<MediaType>> sharingChoices);
     }
 
     @Override

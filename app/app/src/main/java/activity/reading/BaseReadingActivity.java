@@ -34,7 +34,9 @@ import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import activity.AnimationParadigm;
 import activity.UWBaseActivity;
@@ -203,7 +205,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         Toast.makeText(this, "Download " + resultText, Toast.LENGTH_SHORT).show();
         Book book = getBook();
         book.refresh();
-        DataFileManager.getStateOfContent(getApplicationContext(), book.getVersion(), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
+        DataFileManager.getStateOfContent(getApplicationContext(), Arrays.asList(book.getVersion()), MediaType.MEDIA_TYPE_AUDIO, new DataFileManager.GetDownloadStateResponse() {
             @Override
             public void foundDownloadState(DownloadState state) {
                 audioPlayerViewGroup.handleDownloadState(state);
@@ -308,7 +310,6 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         }
 
         unregisterListeners();
-        UWAudioPlayer.getInstance(getApplicationContext()).reset();
     }
 
     private void unregisterListeners(){
@@ -320,6 +321,12 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
         if(!isSharing) {
             super.onBackPressed(isSharing);
         }
+    }
+
+    @Override
+    protected void handleBack() {
+        super.handleBack();
+        UWAudioPlayer.getInstance(getApplicationContext()).reset();
     }
 
     @Override
@@ -554,25 +561,32 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
 
     private void shareVersion(Version version){
 
-        if(version.hasVideo() || version.hasAudio()){
-            ResourceChoosingFragment.newInstance(version).show(getSupportFragmentManager(), "ResourceChoosingFragment");
+        setLoadingFragmentVisibility(true, "Preparing...", false);
+        if(version.hasVideo() || (version.hasAudio())){
+
+            Version[] versions = {version};
+            setLoadingFragmentVisibility(false, "", false);
+            ResourceChoosingFragment.newInstance(versions).show(getSupportFragmentManager(), "ResourceChoosingFragment");
         }
         else{
-            shareVersion(new ArrayList<MediaType>(), version);
+            Map<Version, List<MediaType>> sharingChoices = new HashMap<>();
+            sharingChoices.put(version, Arrays.asList(MediaType.MEDIA_TYPE_TEXT));
+            setLoadingFragmentVisibility(false, "", false);
+            shareVersion(sharingChoices);
         }
     }
 
-    @Override
-    public void resourcesChosen(DialogFragment dialogFragment, List<MediaType> types) {
 
-        shareVersion(types, getSharingVersion());
+    @Override
+    public void resourcesChosen(DialogFragment dialogFragment, Map<Version, List<MediaType>> sharingChoices) {
+        shareVersion(sharingChoices);
         dialogFragment.dismiss();
     }
 
-    private void shareVersion(List<MediaType> types, Version version){
+    private void shareVersion(Map<Version, List<MediaType>> sharingChoices){
 
         setLoadingFragmentVisibility(true, "Preparing Sharable Version", false);
-        SharingHelper.getShareInformation(getApplicationContext(), version, types, new SharingHelper.SideLoadInformationResponse() {
+        SharingHelper.getShareInformation(getApplicationContext(), sharingChoices, new SharingHelper.SideLoadInformationResponse() {
             @Override
             public void informationLoaded(SideLoadInformation information) {
                 TypeChoosingFragment.constructFragment(information)
@@ -623,6 +637,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
                     .putExtra(VersionSelectionActivity.IS_SECOND_VERSION_PARAM, isSecondVersion), 1);
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
 //        }
+        UWAudioPlayer.getInstance(getApplicationContext()).reset();
     }
 
     @Override
@@ -652,6 +667,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
             startActivity(new Intent(getApplicationContext(), BookSelectionActivity.class).putExtra(BookSelectionActivity.PROJECT_PARAM, getProject()));
             overridePendingTransition(R.anim.enter_from_bottom, R.anim.enter_center);
         }
+        UWAudioPlayer.getInstance(getApplicationContext()).reset();
     }
 
     //endregion

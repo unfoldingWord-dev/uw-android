@@ -24,6 +24,7 @@ import model.parsers.MediaType;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Fechner on 8/24/15.
@@ -50,22 +51,22 @@ public class SharingHelper {
         return new SideLoadInformation(fileName, fileUri);
     }
 
-    public static void getShareInformation(final Context context, final Version version,
-                                           final List<MediaType> types, final SideLoadInformationResponse response){
+    public static void getShareInformation(final Context context, final Map<Version, List<MediaType>> versions, final SideLoadInformationResponse response){
 
         new AsyncTask<Void, Void, SideLoadInformation>(){
             @Override
             protected SideLoadInformation doInBackground(Void... params) {
 
-                Uri fileUri = DataFileManager.createUriForSideLoad(context, version, types, getFileNameForVersion(version));
+                String fileName = (versions.size() == 1) ? getFileNameForVersion((Version) versions.keySet().toArray()[0]) : getGenericFileName();
+                Uri fileUri = DataFileManager.createUriForSideLoad(context, versions, fileName);
 
                 if(fileUri == null){
                     return null;
                 }
                 else {
-                    String filePath = Uri.fromFile(new File(fileUri.getPath())).getPath();
-                    String fileFullPath = Uri.fromFile(new File(fileUri.getEncodedPath())).getEncodedPath();
-                    return getShareInformation(fileUri, getFileNameForVersion(version));
+//                    String filePath = Uri.fromFile(new File(fileUri.getPath())).getPath();
+//                    String fileFullPath = Uri.fromFile(new File(fileUri.getEncodedPath())).getEncodedPath();
+                    return getShareInformation(fileUri, fileName);
                 }
             }
 
@@ -93,6 +94,10 @@ public class SharingHelper {
 
     public static Intent getIntentForLoading(Context context){
         return new Intent(context, SideLoadActivity.class).putExtra(SideLoadActivity.SIDE_LOAD_INFORMATION_PARAM, getLoadInformation());
+    }
+
+    public static String getGenericFileName() {
+        return "UnfoldingWord Versions" + FILE_EXTENSION;
     }
 
 //    public static Intent getIntentForSharing(Context context, Version version){
