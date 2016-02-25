@@ -114,12 +114,14 @@ public class UWPreferenceDataManager {
             DaoSession session = DaoDBHelper.getDaoSession(context);
             Book book = newVersion.getBookForBookSlug(currentPage.getStoriesChapter().getBook().getSlug(), session);
 
-            StoryPage newPage;
+            StoryPage newPage = null;
             if(book != null){
                 StoriesChapter newChapter = book.getStoriesChapterForNumber(currentPage.getStoriesChapter().getNumber());
-                newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
+                if (newChapter != null) {
+                    newPage = newChapter.getStoryPageForNumber(currentPage.getNumber());
+                }
             }
-            else{
+            else if (newPage == null) {
                 newPage =  newVersion.getBooks().get(0).getStoryChapters().get(0).getStoryPages().get(0);
             }
 
