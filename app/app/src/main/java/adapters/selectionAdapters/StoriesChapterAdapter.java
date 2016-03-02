@@ -45,6 +45,7 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
         this.selectedPosition = selectedPosition;
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
