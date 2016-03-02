@@ -48,7 +48,6 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
-    useLibrary 'org.apache.http.legacy'
 }
 
 repositories {
@@ -76,4 +75,5 @@ dependencies {
     compile 'de.greenrobot:java-common:2.2.0'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.github.PeeJWeeJ:AndroidSideLoading:layout_fix3'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
 }

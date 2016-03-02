@@ -13,17 +13,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-
-import java.io.InputStream;
-
 public class AsyncImageLoader extends AsyncTask<String, Integer, Bitmap> {
 
 	private static String network_response;
@@ -110,39 +99,13 @@ public class AsyncImageLoader extends AsyncTask<String, Integer, Bitmap> {
 
 	public static Bitmap downloadImage(String url) {
 
-		HttpParams htParams = new BasicHttpParams();
-		/**
-		 * You can also add timeouts to the settings menu in a real project
-		 */
-		HttpConnectionParams.setConnectionTimeout(htParams, 10000);
-		HttpConnectionParams.setSoTimeout(htParams, 10000);
-		HttpGet get = new HttpGet(url);
-		DefaultHttpClient client;
-		try {
-//			if (doAcceptAllSSL)
-//				client = (DefaultHttpClient) SSLErrorPreventer
-//						.setAcceptAllSSL(new DefaultHttpClient(hparams));
-//			else
-				client = new DefaultHttpClient(htParams);
-			HttpResponse response = null;
-//			if (doUseCookie) {
-//				CookieStore store = client.getCookieStore();
-//				HttpContext ctx = new BasicHttpContext();
-//				store.addCookie(Utils.sessionCookie);
-//				ctx.setAttribute(ClientContext.COOKIE_STORE, store);
-//			}
-			response = client.execute(get);
-			network_response = response.getStatusLine().toString();
-//			MainActivity.tmpResponseForUIDownload = network_response;
-			HttpEntity responseEntity = response.getEntity();
-			BufferedHttpEntity httpEntity = new BufferedHttpEntity(
-					responseEntity);
-			InputStream imageStream = httpEntity.getContent();
+		byte[] imageBytes = URLDownloadUtil.downloadBytes(url);
 
-			return BitmapFactory.decodeStream(imageStream);
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		if(imageBytes != null) {
+			Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+			return image;
+		}
+		else{
 			return null;
 		}
 	}
