@@ -13,7 +13,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import org.apache.commons.io.IOUtils;
+import com.google.common.io.ByteStreams;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -189,7 +190,7 @@ public class UWPreLoaderService extends UWUpdaterService {
         // Open your local model.db as the input stream
         InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
 
-        byte[] file = IOUtils.toByteArray(inputStream);
+        byte[] file = ByteStreams.toByteArray(inputStream);
         return file;
     }
 
@@ -197,7 +198,7 @@ public class UWPreLoaderService extends UWUpdaterService {
 
         // Open your local model.db as the input stream
         InputStream inputStream = getApplicationContext().getAssets().open("preloaded_content/" + fileName);
-        String file = IOUtils.toString(inputStream);
+        String file = new String(ByteStreams.toByteArray(inputStream));
         return file;
     }
 

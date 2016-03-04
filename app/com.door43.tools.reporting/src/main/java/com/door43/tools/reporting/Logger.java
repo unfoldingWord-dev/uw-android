@@ -2,8 +2,6 @@ package com.door43.tools.reporting;
 
 import android.util.Log;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +29,7 @@ public class Logger {
      * The pattern to match the leading log line
      */
     public final static String PATTERN = "(\\d+\\/\\d+\\/\\d+\\s+\\d+:\\d+\\s+[A|P]M)\\s+([A-Z|])\\/(((?!:).)*):(.*)";
-    private final File mLogFile;
+    private final File logFile;
     private final Level mMinLoggingLevel;
     private final long mMaxLogFileSize;
     private static Logger sInstance;
@@ -41,31 +39,38 @@ public class Logger {
         sInstance = new Logger(null, Level.Info);
     }
 
+    public File getLogFile() {
+        if(!logFile.exists()){
+            logFile.mkdirs();
+        }
+        return logFile;
+    }
+
     /**
      * @param logFile
-     * @param minLogingLevel
+     * @param minLoggingLevel
      */
-    private Logger(File logFile, Level minLogingLevel) {
-        mLogFile = logFile;
-        if (minLogingLevel == null) {
+    private Logger(File logFile, Level minLoggingLevel) {
+        this.logFile = logFile;
+        if (minLoggingLevel == null) {
             mMinLoggingLevel = Level.Info;
         } else {
-            mMinLoggingLevel = minLogingLevel;
+            mMinLoggingLevel = minLoggingLevel;
         }
         mMaxLogFileSize = DEFAULT_MAX_LOG_FILE_SIZE;
     }
 
     /**
      * @param logFile
-     * @param minLogingLevel
+     * @param minLoggingLevel
      * @param maxLogFileSize
      */
-    private Logger(File logFile, Level minLogingLevel, long maxLogFileSize) {
-        mLogFile = logFile;
-        if (minLogingLevel == null) {
+    private Logger(File logFile, Level minLoggingLevel, long maxLogFileSize) {
+        this.logFile = logFile;
+        if (minLoggingLevel == null) {
             mMinLoggingLevel = Level.Info;
         } else {
-            mMinLoggingLevel = minLogingLevel;
+            mMinLoggingLevel = minLoggingLevel;
         }
         mMaxLogFileSize = maxLogFileSize;
     }
@@ -239,8 +244,8 @@ public class Logger {
      * Empties the log file
      */
     public static void flush() {
-        if (sInstance.mLogFile != null) {
-            sInstance.mLogFile.delete();
+        if (sInstance.logFile != null) {
+            sInstance.logFile.delete();
         } else {
             Log.w(Logger.class.getName(), "The log file has not been configured and cannot be deleted");
         }
@@ -264,22 +269,22 @@ public class Logger {
      */
     private void logToFile(Level level, String logMessageTag, String logMessage) {
         // filter out logging levels
-        if (level.getIndex() >= mMinLoggingLevel.getIndex() && mLogFile != null) {
+        if (level.getIndex() >= mMinLoggingLevel.getIndex() && logFile != null) {
             try {
-                if (!mLogFile.exists()) {
-                    mLogFile.getParentFile().mkdirs();
-                    mLogFile.createNewFile();
+                if (!logFile.exists()) {
+                    logFile.getParentFile().mkdirs();
+                    logFile.createNewFile();
                 }
 
                 // append log message
-                String log = FileUtils.readFileToString(mLogFile);
+                String log = FileUtil.getStringFromFile(logFile);
                 log = String.format("%1s %2s/%3s: %4s\r\n%5s", getDateTimeStamp(), level.getLabel(), logMessageTag, logMessage, log);
-                mLogFile.delete();
-                FileUtils.writeStringToFile(mLogFile, log);
+                logFile.delete();
+                FileUtil.saveFile(logFile, log.getBytes());
 
                 // truncate the log if it gets too big.
-                if (mLogFile.length() > mMaxLogFileSize) {
-                    FileChannel outChan = new FileOutputStream(mLogFile, true).getChannel();
+                if (logFile.length() > mMaxLogFileSize) {
+                    FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
                     outChan.truncate(mMaxLogFileSize * (long) 0.8);
                     outChan.close();
                 }
@@ -295,9 +300,9 @@ public class Logger {
      */
     public static List<Entry> getLogEntries() {
         List<Entry> logs = new ArrayList<>();
-        if (sInstance.mLogFile != null) {
+        if (sInstance.logFile != null) {
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(sInstance.mLogFile)));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(sInstance.getLogFile())));
                 StringBuilder sb = new StringBuilder();
                 String line;
                 Pattern pattern = Pattern.compile(Logger.PATTERN);

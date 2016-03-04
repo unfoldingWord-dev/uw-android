@@ -2,13 +2,7 @@ package com.door43.tools.reporting;
 
 import android.content.Context;
 
-import com.door43.tools.reporting.GithubReporter;
-import com.door43.tools.reporting.GlobalExceptionHandler;
-
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
-import java.io.IOException;
 
 /**
  * This task submits the latest crash report to github
@@ -40,11 +34,11 @@ public class UploadCrashReportTask extends ManagedTask {
                 // upload most recent stacktrace
                 reporter.reportCrash(mMessage, new File(stacktraces[0]), logFile);
                 // empty the log
-                try {
-                    FileUtils.write(logFile, "");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+                    logFile.delete();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
                 // archive extra stacktraces
                 File archiveDir = new File(stacktraceDir, "archive");

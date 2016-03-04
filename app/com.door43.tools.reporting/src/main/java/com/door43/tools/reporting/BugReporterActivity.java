@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -13,15 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by joel on 1/14/2015.
  */
-public class BugReporterActivity extends AppCompatActivity {
+public class BugReporterActivity extends ActionBarActivity {
     private Button mOkButton;
     private Button mCancelButton;
     private ProgressDialog mDialog;
@@ -123,12 +120,12 @@ public class BugReporterActivity extends AppCompatActivity {
             if(upload && githubTokenIdentifier != 0) {
                 GithubReporter reporter = new GithubReporter(getApplicationContext(), githubUrl, getString(githubTokenIdentifier));
                 reporter.reportBug(notes, logFile);
-                // empty the log
-                try {
-                    FileUtils.write(logFile, "");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // delete the log
+//                try {
+                logFile.delete();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
                 Logger.i(BugReporterActivity.class.getName(), "Submitted bug report");
             } else if(githubTokenIdentifier == 0) {
                 Logger.w(BugReporterActivity.class.getName(), "the github oauth2 token is missing");

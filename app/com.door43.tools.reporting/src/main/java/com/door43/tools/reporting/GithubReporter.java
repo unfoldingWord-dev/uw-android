@@ -7,21 +7,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class submits information to a github repository
@@ -49,12 +35,8 @@ public class GithubReporter {
      * @param stacktraceFile the stacktrace file
      */
     public void reportCrash(String notes, File stacktraceFile) {
-        try {
-            String stacktrace = FileUtils.readFileToString(stacktraceFile);
+            String stacktrace = FileUtil.getStringFromFile(stacktraceFile);
             reportCrash(notes, stacktrace, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -66,18 +48,10 @@ public class GithubReporter {
     public void reportCrash(String notes, File stacktraceFile, File logFile) {
         String log = null;
         if(logFile.exists()) {
-            try {
-                log = FileUtils.readFileToString(logFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                log = FileUtil.getStringFromFile(logFile);
         }
-        try {
-            String stacktrace = FileUtils.readFileToString(stacktraceFile);
-            reportCrash(notes, stacktrace, log);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String stacktrace = FileUtil.getStringFromFile(stacktraceFile);
+        reportCrash(notes, stacktrace, log);
     }
 
     /**
@@ -95,7 +69,7 @@ public class GithubReporter {
         bodyBuf.append(getLogBlock(log));
 
         String[] labels = new String[]{"crash report"};
-        String respose = submit(generatePayload(title, bodyBuf.toString(), labels));
+        String response = submit(new GitHubClient.IssueBody(title, bodyBuf.toString(), labels));
         // TODO: handle response
     }
 
@@ -114,11 +88,7 @@ public class GithubReporter {
      */
     public void reportBug(String notes, File logFile) {
         String log = null;
-        try {
-            log = FileUtils.readFileToString(logFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        log = FileUtil.getStringFromFile(logFile);
         reportBug(notes, log);
     }
 
@@ -135,7 +105,7 @@ public class GithubReporter {
         bodyBuf.append(getLogBlock(log));
 
         String[] labels = new String[]{"bug report"};
-        String response = submit(generatePayload(title, bodyBuf.toString(), labels));
+        String response = submit(new GitHubClient.IssueBody(title, bodyBuf.toString(), labels));
 
         Log.i(TAG, "bug Report Response: " + response);
     }
@@ -147,55 +117,61 @@ public class GithubReporter {
      * @param labels the issue labels. These will be created automatically went sent to github
      * @return
      */
-    private JSONObject generatePayload(String title, String body, String[] labels) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("title", title);
-            json.put("body",body);
-            JSONArray labelsJson = new JSONArray();
-            for(String label:labels) {
-                labelsJson.put(label);
-            }
-            try {
-                PackageInfo pInfo = sContext.getPackageManager().getPackageInfo(sContext.getPackageName(), 0);
-                labelsJson.put(pInfo.versionName);
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            json.put("labels", labelsJson);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return json;
-    }
+//    private JsonObject generatePayload(String title, String body, String[] labels) {
+//
+//
+//
+//        JsonObject json = new JsonObject();
+//        try {
+//            json.addProperty("title", title);
+//            json.addProperty("body", body);
+//            JsonArray labelsJson = new JsonArray();
+//            for(String label:labels) {
+//                labelsJson.add(new JsonEllabel);
+//            }
+//            try {
+//                PackageInfo pInfo = sContext.getPackageManager().getPackageInfo(sContext.getPackageName(), 0);
+//                labelsJson.add(pInfo.versionName);
+//            } catch (PackageManager.NameNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//            json.add("labels", labels);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return json;
+//    }
 
     /**
      * Sends the new issue request to github
-     * @param json the payload
+//     * @param json the payload
      * @return
      */
-    private String submit(JSONObject json) {
-        // headers
-        List<NameValuePair> headers = new ArrayList<>();
-        headers.add(new BasicNameValuePair("Authorization", "token " + sGithubOauth2Token));
-        headers.add(new BasicNameValuePair("Content-Type", "application/json"));
+    private String submit(GitHubClient.IssueBody body) {
 
-        // create post request
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(sRepositoryUrl);
-        try {
-            httpPost.setEntity(new StringEntity(json.toString()));
-            if(headers != null) {
-                for(NameValuePair h:headers) {
-                    httpPost.setHeader(h.getName(), h.getValue());
-                }
-            }
-            HttpResponse response = httpClient.execute(httpPost);
-            return response.getStatusLine().toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+        return GitHubClient.submitIssue("token " + sGithubOauth2Token, body);
+
+        // headers
+//        List<NameValuePair> headers = new ArrayList<>();
+//        headers.add(new BasicNameValuePair("Authorization", ));
+//        headers.add(new BasicNameValuePair("Content-Type", "application/json"));
+//
+//        // create post request
+//        DefaultHttpClient httpClient = new DefaultHttpClient();
+//        HttpPost httpPost = new HttpPost(sRepositoryUrl);
+//        try {
+//            httpPost.setEntity(new StringEntity(json.toString()));
+//            if(headers != null) {
+//                for(NameValuePair h:headers) {
+//                    httpPost.setHeader(h.getName(), h.getValue());
+//                }
+//            }
+//            HttpResponse response = httpClient.execute(httpPost);
+//            return response.getStatusLine().toString();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return "";
+//        }
     }
 
     /**

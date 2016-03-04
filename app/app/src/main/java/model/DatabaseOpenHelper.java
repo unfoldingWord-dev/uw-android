@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
-import org.apache.commons.io.IOUtils;
+import com.google.common.io.ByteStreams;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -209,13 +209,13 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         // Open your local model.db as the input stream
         InputStream inputStream = context.getAssets().open("preloaded_content/" + fileName);
 
-        return IOUtils.toByteArray(inputStream);
+        return ByteStreams.toByteArray(inputStream);
     }
 
     private String loadDbFile(String fileName) throws IOException{
 
         // Open your local model.db as the input stream
         InputStream inputStream = context.getAssets().open("preloaded_content/" + fileName);
-        return IOUtils.toString(inputStream);
+        return new String(ByteStreams.toByteArray(inputStream));
     }
 }

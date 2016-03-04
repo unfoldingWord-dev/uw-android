@@ -11,8 +11,7 @@ package utils;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

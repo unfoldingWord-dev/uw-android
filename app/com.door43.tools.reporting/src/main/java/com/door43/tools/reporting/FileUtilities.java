@@ -1,13 +1,14 @@
 package com.door43.tools.reporting;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 
 /**
  * This class provides some utility methods for handling files
@@ -72,6 +73,10 @@ public class FileUtilities {
         fileOrDirectory.delete();
     }
 
+    public static void write(File file) throws IOException {
+
+    }
+
     /**
      * Attempts to move a file or directory. If moving fails it will try to copy instead.
      * @param sourceFile
@@ -79,21 +84,22 @@ public class FileUtilities {
      * @return
      */
     public static boolean moveOrCopy(File sourceFile, File destFile) {
-        if(sourceFile.exists()) {
-            // first try to move
-            if (!sourceFile.renameTo(destFile)) {
-                // try to copy
-                try {
-                    if (sourceFile.isDirectory()) {
-                        FileUtils.copyDirectory(sourceFile, destFile);
-                    } else {
-                        FileUtils.copyFile(sourceFile, destFile);
-                    }
-                    return true;
-                } catch (IOException e) {
-                    Logger.e(FileUtilities.class.getName(), "Failed to copy the file", e);
-                }
-            }
+
+        try {
+            FileInputStream inStream = new FileInputStream(sourceFile);
+            FileOutputStream outStream = new FileOutputStream(destFile);
+            FileChannel inChannel = inStream.getChannel();
+            FileChannel outChannel = outStream.getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            inStream.close();
+            outStream.close();
+            return true;
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
+        catch (IOException e){
+            e.printStackTrace();
         }
         return false;
     }

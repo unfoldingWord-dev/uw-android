@@ -6,18 +6,15 @@
  * PJ Fechner <pj@actsmedia.com>
  */
 
-package utils;
+package com.door43.tools.reporting;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
-import org.unfoldingword.mobile.R;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,16 +23,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
 
 /**
  * Created by Fechner on 12/31/14.
  */
 public class FileUtil {
 
-    private static final String TAG = "FileUtil";
+    private static final String TAG = "FileLoader";
 
-    //region Out Methodsœ
+    //region Out Methods
     /**
      *
      * @param fileSequence
@@ -107,24 +103,24 @@ public class FileUtil {
 //        }
     }
 
-    public static Uri saveFile(File file, byte[] bytes) {
+    public static Uri saveFile(File file, byte[] bytes){
 
-        Log.d(TAG, "Saving file: " + file.getPath());
-        boolean madeDirs = file.getParentFile().mkdirs();
-        FileOutputStream fos;
-        try {
-            boolean createdFile = file.createNewFile();
-            fos = new FileOutputStream(file);
+        file.mkdirs();
+        try{
+            FileOutputStream fos = new FileOutputStream(file);
             fos.write(bytes);
             fos.close();
-            Log.i(TAG, "File Saved");
+//            Log.i(TAG, "File Saved");
             return Uri.fromFile(file);
-        } catch (IOException e) {
+        }
+        catch (IOException e){
             e.printStackTrace();
-            Log.e(TAG, "Error when saving file");
+//            Log.e(TAG, "Error when saving file");
             return null;
+
         }
     }
+
     public static void saveFile(CharSequence fileSequence, String dirName, String fileName){
 
         Log.i(TAG, "Attempting to save file named:" + fileName);
@@ -191,41 +187,10 @@ public class FileUtil {
     public static Uri createTemporaryFile(Context context, byte[] bytes, String fileName){
 
         clearTemporaryFiles(context);
-        String directory = getTempStorageDir(context);
-
-        return saveFile(bytes, directory, fileName);
-    }
-
-    public static Uri createTemporaryFile(Context context, byte[] bytes, String folderName, String fileName){
-
-        String directory = getTempStorageDir(context) + "/" + folderName;
-
-        return saveFile(bytes, directory, fileName);
-    }
-
-    public static Uri getUriForTempDir(Context context, String folderName){
-
-        String directory = getTempStorageDir(context) + "/" + folderName;
-        return Uri.fromFile(new File(directory));
-    }
-
-    public static void copyFile(Uri originalDir, Uri newDir){
-
-        try {
-            File source = new File(originalDir.getPath());
-            FileChannel src = new FileInputStream(source).getChannel();
-            FileChannel dst = new FileOutputStream(new File(newDir.getPath())).getChannel();
-            dst.transferFrom(src, 0, src.size());
-            src.close();
-            dst.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static String getTempStorageDir(Context context){
-        return Environment.getExternalStorageDirectory().getAbsolutePath()
+        String directory = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/" + context.getString(R.string.app_name) + "/temp";
+
+        return saveFile(bytes, directory, fileName);
     }
 
     public static Uri createTemporaryFile(Context context, CharSequence fileSequence, String fileName){
@@ -234,7 +199,8 @@ public class FileUtil {
 //        Log.i(TAG, "Attempting to save temporary file named:" + fileName);
 
         try {
-            File file = new File(getTempStorageDir(context), fileName);
+            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/" + context.getString(R.string.app_name) + "/temp", fileName);
 
             if (!file.exists()) {
                 boolean madeDirs = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -265,31 +231,13 @@ public class FileUtil {
 
     public static void clearTemporaryFiles(Context context){
 
-        File file = new File(getTempStorageDir(context));
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/" + context.getString(R.string.app_name) + "/temp");
         if(file.exists()){
-            deleteContents(file);
-            if(!file.delete()) {
-                Log.d(TAG, "Failed to delete " + file);
-            }
+            final File to = new File(file.getAbsolutePath());
+            boolean success = file.renameTo(to);
+            success = file.delete();
         }
-    }
-
-    public static boolean deleteContents(File dir) {
-        File[] files = dir.listFiles();
-        boolean success = true;
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    success &= deleteContents(file);
-                }
-
-                if (!file.delete()) {
-                    Log.d(TAG, "Failed to delete " + file);
-                    success = false;
-                }
-            }
-        }
-        return success;
     }
 
     //endregion
@@ -317,7 +265,7 @@ public class FileUtil {
             return resultString;
         }
         catch (IOException e){
-            Log.e(TAG, "getJSONStringFromApplicationFiles IOException: " + e.toString());
+            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
             return null;
         }
     }
@@ -337,38 +285,21 @@ public class FileUtil {
             return resultString;
         }
         catch (IOException e){
-            Log.e(TAG, "getJSONStringFromAssets IOException: " + e.toString());
+            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
             return null;
         }
     }
 
     public static String getStringFromFile(File file){
 
-        byte[] bytes = getBytesFromFile(file);
-        if(bytes != null) {
-            return new String(bytes);
-        }
-        else{
-            return null;
-        }
-    }
-
-    public static byte[] getBytesFromFile(File file){
-
         try{
             FileInputStream fileStream = new FileInputStream(file);
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fileStream.read(b)) != -1) {
-                bos.write(b, 0, bytesRead);
-            }
-            byte[] bytes = bos.toByteArray();
-            return bytes;
+            String resultString = getStringFromInputStream(fileStream, file.getName()).toString();
+            return resultString;
         }
         catch (IOException e){
-            Log.e(TAG, "getBytesFromFile IOException: " + e.toString());
+            Log.e(TAG, "initializeKeyboards IOException: " + e.toString());
             return null;
         }
     }

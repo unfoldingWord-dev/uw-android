@@ -1,7 +1,6 @@
 package com.door43.tools.reporting;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
