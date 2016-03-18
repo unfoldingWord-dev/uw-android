@@ -23,7 +23,7 @@ import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import activity.StatementOfFaithActivity;
-import activity.TranslationGuidlinesActivity;
+import activity.TranslationGuidelinesActivity;
 import activity.UWBaseActivity;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -66,7 +66,7 @@ public class CheckingLevelInfoFragment extends DialogFragment {
     }
 
     @OnClick(R.id.translation_guidelines_button) void showGuidelinesDialog() {
-        ((UWBaseActivity) getActivity()).goToNewActivity(TranslationGuidlinesActivity.class);
+        ((UWBaseActivity) getActivity()).goToNewActivity(TranslationGuidelinesActivity.class);
     }
 
     @OnClick(R.id.statement_of_faith_button) void showStatementOfFaithDialog() {

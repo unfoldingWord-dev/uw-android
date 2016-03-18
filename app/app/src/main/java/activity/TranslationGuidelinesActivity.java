@@ -7,7 +7,7 @@ import org.unfoldingword.mobile.R;
 import fragments.StatementOfFaithFragment;
 import fragments.TranslationGuidelinesFragment;
 
-public class TranslationGuidlinesActivity extends UWBaseActivity {
+public class TranslationGuidelinesActivity extends UWBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

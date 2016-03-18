@@ -11,6 +11,7 @@ package adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -110,16 +112,19 @@ public class StoryPagerAdapter extends PagerAdapter {
 
             StoryPage currentMainPage = getMainModelForRow(position);
             StoryPage currentSecondPage = getSecondModelForRow(position);
+            int textColor = (isLandscape)? Color.WHITE : Color.BLACK;
 
             view = inflater.inflate(R.layout.stories_pager_layout, container, false);
             ImageView chapterImageView = (ImageView) view.findViewById(R.id.chapter_image_view);
-            chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.FIT_CENTER);
+            chapterImageView.setScaleType((isLandscape)? ImageView.ScaleType.CENTER_CROP : ImageView.ScaleType.FIT_CENTER);
 //            chapterImageView.setAdjustViewBounds(true);
 
             TextView mainTextView = (TextView) view.findViewById(R.id.story_main_text_view);
             TextView secondaryTextView = (TextView) view.findViewById(R.id.story_secondary_text_view);
             mainTextView.setTextSize((float) textSize);
             secondaryTextView.setTextSize((float) textSize);
+            mainTextView.setTextColor(textColor);
+            secondaryTextView.setTextColor(textColor);
 
             mainTextView.setText(addTestText(currentMainPage.getText()));
             secondaryTextView.setText(addTestText(currentSecondPage.getText()));
@@ -130,6 +135,15 @@ public class StoryPagerAdapter extends PagerAdapter {
             Picasso.with(context).load("file:///android_asset/images/" + path).into(chapterImageView);
 //            chapterImageView.setImageBitmap(ViewContentHelper.getBitmapFromAsset(context, "images/" + path));
             setupPageForDiglot(view.findViewById(R.id.middle_separator), secondaryTextView);
+
+            LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.stories_reading_layout);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(linearLayout.getLayoutParams());
+            layoutParams.addRule(RelativeLayout.BELOW, (isLandscape) ? R.id.center_place_holder : R.id.chapter_image_view);
+            linearLayout.setLayoutParams(layoutParams);
+
+            int color = context.getResources().getColor((isLandscape)? R.color.clear_black : R.color.white);
+            view.findViewById(R.id.stories_pager_first_scroll_view).setBackgroundColor(color);
+            view.findViewById(R.id.stories_pager_second_scroll_view).setBackgroundColor(color);
         }
         ((ViewPager) container).addView(view);
         return view;

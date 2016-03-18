@@ -123,7 +123,7 @@
             android:theme="@style/MainTheme" />
 
         <activity
-            android:name="activity.TranslationGuidlinesActivity"
+            android:name="activity.TranslationGuidelinesActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/MainTheme" />
 
@@ -134,14 +134,12 @@
             </intent-filter>
         </receiver>
 
-
         <service android:name="services.UWUpdaterService" />
         <service android:name="services.UWVersionDownloaderService" />
         <service android:name="services.UWPreLoaderService" />
         <service android:name="services.UWSideLoaderService" />
         <service android:name="services.UWMediaDownloaderService" />
         <service android:name="services.UWBookMediaDownloaderService" />
-
 
     </application>
 
