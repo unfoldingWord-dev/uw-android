@@ -286,10 +286,15 @@ public class UWUpdaterService extends Service {
                         addRunnable(new UpdateProjectsRunnable(json.getJSONArray(PROJECTS_JSON_KEY), getThis()));
                     }
                     runnableFinished();
-                } catch (JSONException e){
+                }
+                catch (JSONException e){
                     e.printStackTrace();
                     runnableFinished();
                 }
+                catch (NullPointerException e) {
+                        e.printStackTrace();
+                        runnableFinished();
+                    }
                 }
             }).execute(UWPreferenceManager.getDataDownloadUrl(getApplicationContext()));
         }

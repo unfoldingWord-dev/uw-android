@@ -97,10 +97,16 @@ public class UWPreferenceDataManager {
             }
         }
         if(requestedChapter == null){
-            requestedChapter = version.getBooks().get(0).getBibleChapters(true).get(0);
+            requestedChapter = version.getFirstBibleChapter();
         }
 
-        changedToBibleChapter(context, requestedChapter.getId(), isSecond);
+        if(requestedChapter != null) {
+            changedToBibleChapter(context, requestedChapter.getId(), isSecond);
+
+        }
+        else{
+            changedToBibleChapter(context, -1, isSecond);
+        }
         EventBus.getDefault().postSticky(UWPreferenceDataAccessor.getSharedInstance(context).createBiblePagingEvent());
     }
 

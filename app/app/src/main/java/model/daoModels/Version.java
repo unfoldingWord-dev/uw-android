@@ -487,6 +487,18 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
         return getLanguage().getProject().getUniqueSlug().equalsIgnoreCase(context.getString(R.string.open_bible_stories_slug));
     }
 
+    @Nullable
+    public BibleChapter getFirstBibleChapter() {
+        List<Book> books = getBooks();
+        if (books != null && !books.isEmpty()) {
+            List<BibleChapter> chapters = books.get(0).getBibleChapters();
+            if(chapters != null && !chapters.isEmpty()) {
+                return chapters.get(0);
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Version{" +

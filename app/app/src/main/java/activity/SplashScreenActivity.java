@@ -9,7 +9,6 @@
 package activity;
 
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +31,7 @@ import services.UWPreLoaderService;
 /**
  * Created by Acts Media Inc. on 2/12/14.
  */
-public class SplashScreenActivity extends Activity {
+public class SplashScreenActivity extends UWBaseActivity {
 
     private static String TAG = "SplashScreenActivity";
 
@@ -78,8 +77,10 @@ public class SplashScreenActivity extends Activity {
     private void initializeDB(){
 
         List<Project> existingProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
-//        DaoDBHelper.saveDatabase(getApplicationContext());
-        goToInitialActivity();
+//        if(verifyOrRequestStoragePermissions()) {
+//            DaoDBHelper.saveDatabase(getApplicationContext());
+            goToInitialActivity();
+//        }
 
 //        preLoadData();
     }
@@ -101,4 +102,9 @@ public class SplashScreenActivity extends Activity {
             goToInitialActivity();
         }
     };
+
+    @Override
+    public AnimationParadigm getAnimationParadigm() {
+        return AnimationParadigm.ANIMATION_STOCK;
+    }
 }
