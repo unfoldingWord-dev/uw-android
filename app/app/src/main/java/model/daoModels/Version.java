@@ -1,7 +1,6 @@
 package model.daoModels;
 
 import java.util.List;
-
 import model.daoModels.DaoSession;
 import de.greenrobot.dao.DaoException;
 

@@ -9,6 +9,8 @@
 package model;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 
 import org.unfoldingword.mobile.R;
 
@@ -30,11 +32,35 @@ public class DaoDBHelper {
     static public DaoSession getDaoSession(Context context){
 
         if(daoMaster == null) {
-            DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
+            DatabaseOpenHelper helper = DatabaseOpenHelper.getSharedInstance(context,
                     context.getResources().getString(R.string.database_name), null);
             daoMaster = new DaoMaster(helper.getWritableDatabase());
         }
         return daoMaster.newSession();
+    }
+
+    static public void getDaoSession(Context context, AsynchronousDatabaseAccessorCompletion completion) {
+        DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
+                context.getResources().getString(R.string.database_name), null);
+        while (true) {
+            try {
+                SQLiteDatabase database = helper.getReadableDatabase();
+                completion.loadedSession(new DaoMaster(database).newSession());
+                return;
+            } catch (SQLiteDatabaseLockedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static public DaoSession getDaoSession(Context context, SQLiteDatabase database) {
+                return new DaoMaster(database).newSession();
     }
 
     /**
@@ -46,5 +72,9 @@ public class DaoDBHelper {
         DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
                 context.getResources().getString(R.string.database_name), null);
         helper.saveDatabase();
+    }
+
+    public interface AsynchronousDatabaseAccessorCompletion {
+        void loadedSession(DaoSession session);
     }
 }

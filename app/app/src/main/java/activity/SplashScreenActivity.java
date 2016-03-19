@@ -25,6 +25,7 @@ import java.util.Map;
 
 import activity.readingSelection.InitialScreenActivity;
 import model.DaoDBHelper;
+import model.daoModels.DaoSession;
 import model.daoModels.Project;
 import services.UWPreLoaderService;
 
@@ -76,10 +77,17 @@ public class SplashScreenActivity extends UWBaseActivity {
 
     private void initializeDB(){
 
-        List<Project> existingProjects = Project.getAllModels(DaoDBHelper.getDaoSession(getApplicationContext()));
+        DaoDBHelper.getDaoSession(getApplicationContext(), new DaoDBHelper.AsynchronousDatabaseAccessorCompletion() {
+            @Override
+            public void loadedSession(DaoSession session) {
+                List<Project> existingProjects = Project.getAllModels(session);
+                goToInitialActivity();
+            }
+        });
+
 //        if(verifyOrRequestStoragePermissions()) {
 //            DaoDBHelper.saveDatabase(getApplicationContext());
-            goToInitialActivity();
+//            goToInitialActivity();
 //        }
 
 //        preLoadData();

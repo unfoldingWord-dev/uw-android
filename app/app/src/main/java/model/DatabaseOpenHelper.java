@@ -43,6 +43,14 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     private static String DB_PATH;
     private static String DB_NAME;
 
+    private static DatabaseOpenHelper sharedInstance;
+    public static DatabaseOpenHelper getSharedInstance(Context context, String name, CursorFactory factory) {
+        if(sharedInstance == null) {
+            sharedInstance = new DatabaseOpenHelper(context, name, factory);
+        }
+        return sharedInstance;
+    }
+
     public DatabaseOpenHelper(Context context, String name, CursorFactory factory) {
         super(context, name, factory);
         this.context = context;
@@ -67,7 +75,6 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion < ModelNames.DB_VERSION_ID){
-
             populateWithPreload();
             UWPreferenceDataManager.resetChapterSelections(context);
         }
@@ -79,6 +86,12 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         String databasePath = DB_PATH + DB_NAME;
         sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
                 (SQLiteDatabase.OPEN_READWRITE));
+    }
+
+    public void openDatabaseReadable() {
+        String databasePath = DB_PATH + DB_NAME;
+        sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
+                (SQLiteDatabase.OPEN_READONLY));
     }
 
     /** Close Database after use */
@@ -108,6 +121,11 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     }
 
     private void populateWithPreload(){
+        copyDataBase();
+        saveSourceFiles();
+    }
+
+    private void populateWithPreload(SQLiteDatabase db) {
         copyDataBase();
         saveSourceFiles();
     }
@@ -169,7 +187,8 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
     private void saveSourceFiles(){
 
-        List<Book> books = DaoDBHelper.getDaoSession(context)
+        openDatabaseReadable();
+        List<Book> books = DaoDBHelper.getDaoSession(context, sqliteDatabase)
                 .getBookDao().queryBuilder().list();
 
         ListIterator li = books.listIterator(books.size());
