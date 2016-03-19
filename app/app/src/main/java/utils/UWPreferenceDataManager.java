@@ -52,7 +52,7 @@ public class UWPreferenceDataManager {
         BibleChapter changingChapter = BibleChapter.getModelForId(changingId, session);
 
         BibleChapter newChapter;
-        if(changingChapter != null) {
+        if(changingChapter != null && activeChapter != null) {
             Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
             if (correctChangingBook != null) {
                 newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber());
@@ -66,10 +66,10 @@ public class UWPreferenceDataManager {
         }
 
         if(isSecond){
-            UWPreferenceManager.setSelectedBibleChapter(context, newChapter.getId());
+            UWPreferenceManager.setSelectedBibleChapter(context, (newChapter != null) ? newChapter.getId() : -1);
         }
         else{
-            UWPreferenceManager.setSelectedBibleChapterSecondary(context, newChapter.getId());
+            UWPreferenceManager.setSelectedBibleChapterSecondary(context, (newChapter != null)? newChapter.getId() : -1);
         }
     }
 
@@ -202,7 +202,11 @@ public class UWPreferenceDataManager {
     private static void willDeleteBibleVersion(Context context, Version version){
 
         BiblePagingEvent currentEvent = BiblePagingEvent.getStickyEvent(context);
-
+        if(currentEvent.secondaryChapter == null || currentEvent.mainChapter == null ){
+            UWPreferenceManager.setSelectedBibleChapter(context, -1);
+            UWPreferenceManager.setSelectedBibleChapterSecondary(context, -1);
+            return;
+        }
         boolean sameChapter = currentEvent.mainChapter.getId().equals(currentEvent.secondaryChapter.getId());
 
         if(currentEvent.mainChapter.getBook().getVersionId() == (version.getId())){

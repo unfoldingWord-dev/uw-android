@@ -11,6 +11,7 @@ package utils;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -62,8 +63,11 @@ public class URLDownloadUtil {
     public static byte[] downloadBytes(String url) {
 
         try {
-            OkHttpClient client = new OkHttpClient();
-
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .connectTimeout(5, TimeUnit.SECONDS)
+                    .readTimeout(5, TimeUnit.SECONDS)
+                    .writeTimeout(5, TimeUnit.SECONDS)
+                    .build();
             Request request = new Request.Builder().url(url).build();
             Response response = client.newCall(request).execute();
             return response.body().bytes();

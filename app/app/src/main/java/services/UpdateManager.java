@@ -39,10 +39,10 @@ public class UpdateManager {
         KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
     }
     // Sets the initial thread pool size to 8
-    private static final int CORE_POOL_SIZE = 8;
+    private static final int CORE_POOL_SIZE = 2;
 
     // Sets the maximum thread pool size to 8
-    private static final int MAXIMUM_POOL_SIZE = 8;
+    private static final int MAXIMUM_POOL_SIZE = 2;
 
     // A managed pool of background decoder threads
     private final Map<Long, Map<MediaType, ThreadPoolExecutor>> updateThreadPools;
@@ -56,7 +56,7 @@ public class UpdateManager {
      * than the total number of cores. The total number of cores is not
      * available in current Android implementations.
      */
-    private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+    private static int NUMBER_OF_CORES = 2;// Runtime.getRuntime().availableProcessors();
 
     private static UpdateManager ourInstance = new UpdateManager();
 
