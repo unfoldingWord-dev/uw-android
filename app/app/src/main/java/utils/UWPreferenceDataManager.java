@@ -54,7 +54,12 @@ public class UWPreferenceDataManager {
         BibleChapter newChapter;
         if(changingChapter != null) {
             Book correctChangingBook = changingChapter.getBook().getVersion().getBookForBookSlug(activeChapter.getBook().getSlug(), session);
-            newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber());
+            if (correctChangingBook != null) {
+                newChapter = correctChangingBook.getBibleChapterForNumber(activeChapter.getNumber());
+            }
+            else{
+                newChapter = activeChapter;
+            }
         }
         else{
             newChapter = activeChapter;

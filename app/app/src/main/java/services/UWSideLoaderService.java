@@ -83,22 +83,23 @@ public class UWSideLoaderService extends UWUpdaterService {
         return START_STICKY;
     }
 
-    private void startWithFilesDir(Uri dir){
+    private void startWithFilesDir(Uri dir) {
 
         File textFile = null;
         File directory = new File(dir.getPath());
-        for(File file : directory.listFiles()){
+        File[] files = directory.listFiles();
+        if (files != null){
+            for (File file : files) {
 
-            String fileName = file.getName();
-            if(fileName.contains("json")){
-                textFile = file;
-            }
-            else if(fileName.contains(FileNameHelper.AUDIO_FILE_PREFIX)){
-                isLoadingAudio = true;
-                bitrate = FileNameHelper.getBitrateFromFileName(file.getName());
-            }
-            else if(fileName.contains(FileNameHelper.VIDEO_FILE_PREFIX)){
-                isLoadingVideo = true;
+                String fileName = file.getName();
+                if (fileName.contains("json")) {
+                    textFile = file;
+                } else if (fileName.contains(FileNameHelper.AUDIO_FILE_PREFIX)) {
+                    isLoadingAudio = true;
+                    bitrate = FileNameHelper.getBitrateFromFileName(file.getName());
+                } else if (fileName.contains(FileNameHelper.VIDEO_FILE_PREFIX)) {
+                    isLoadingVideo = true;
+                }
             }
         }
         if(textFile != null){

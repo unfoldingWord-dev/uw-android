@@ -145,11 +145,16 @@ public class ChaptersFragment extends Fragment implements AdapterView.OnItemClic
         BiblePagingEvent event = BiblePagingEvent.getStickyEvent(getActivity().getApplicationContext());
 
         BibleChapter newChapter = chapters.get(position);
-        BibleChapter secondaryNewChapter = event.secondaryChapter.getBook().getVersion()
-                .getBookForBookSlug(newChapter.getBook().getSlug(), DaoDBHelper.getDaoSession(getActivity().getApplicationContext()))
-                .getBibleChapterForNumber(newChapter.getNumber());
+        BibleChapter secondaryNewChapter = null;
+        Book secondaryBook = event.secondaryChapter.getBook().getVersion()
+                .getBookForBookSlug(newChapter.getBook().getSlug(),
+                        DaoDBHelper.getDaoSession(getActivity().getApplicationContext()));
+        if(secondaryBook != null){
+            secondaryNewChapter = secondaryBook.getBibleChapterForNumber(newChapter.getNumber());
+        }
 
-        EventBus.getDefault().postSticky(new BiblePagingEvent(newChapter, secondaryNewChapter));
+        EventBus.getDefault().postSticky(new BiblePagingEvent(newChapter,
+                (secondaryNewChapter != null)? secondaryNewChapter : newChapter));
         if(listener != null) {
             listener.chapterWasSelected();
         }
