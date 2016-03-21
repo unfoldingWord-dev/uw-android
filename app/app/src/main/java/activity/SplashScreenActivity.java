@@ -81,12 +81,12 @@ public class SplashScreenActivity extends UWBaseActivity {
             @Override
             public void loadedSession(DaoSession session) {
                 List<Project> existingProjects = Project.getAllModels(session);
-//                goToInitialActivity();
+                goToInitialActivity();
 //                preLoadData();
-                if(verifyOrRequestStoragePermissions()) {
-                    DaoDBHelper.saveDatabase(getApplicationContext());
-                    goToInitialActivity();
-                }
+//                if(verifyOrRequestStoragePermissions()) {
+//                    DaoDBHelper.saveDatabase(getApplicationContext());
+//                    goToInitialActivity();
+//                }
             }
         });
 
