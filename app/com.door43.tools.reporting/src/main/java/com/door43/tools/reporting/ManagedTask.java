@@ -91,7 +91,7 @@ public abstract class ManagedTask implements Runnable {
      */
     protected final void sleep(long time) {
         try {
-            mThread.sleep(time);
+            Thread.sleep(time);
         } catch (InterruptedException e) {
 
         } finally {

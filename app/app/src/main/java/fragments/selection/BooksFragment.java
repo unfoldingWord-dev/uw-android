@@ -24,10 +24,8 @@ import java.util.List;
 import adapters.selectionAdapters.ChaptersAdapter;
 import adapters.selectionAdapters.GeneralRowInterface;
 import eventbusmodels.BiblePagingEvent;
-import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import utils.UWPreferenceDataAccessor;
 
 /**
  * Created by PJ Fechner

@@ -26,9 +26,6 @@
  */
 package org.apache.http.examples.client;
 
-import java.net.URI;
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -39,6 +36,9 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import java.net.URI;
+import java.util.List;
 
 /**
  * A example that demonstrates how HttpClient APIs can be used to perform

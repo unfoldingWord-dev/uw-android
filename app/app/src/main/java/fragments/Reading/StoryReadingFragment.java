@@ -23,11 +23,9 @@ import java.util.List;
 
 import adapters.StoryPagerAdapter;
 import de.greenrobot.event.EventBus;
-import eventbusmodels.BiblePagingEvent;
 import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoryPage;
 import singletons.UWAudioPlayer;
-import utils.UWPreferenceDataAccessor;
 import view.ReadingDoubleTapHandler;
 
 /**

@@ -30,7 +30,6 @@ import de.greenrobot.event.EventBus;
 import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
-import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceDataManager;
 
 /**

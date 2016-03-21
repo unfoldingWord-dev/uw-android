@@ -19,7 +19,6 @@ import java.util.List;
 import model.DaoDBHelper;
 import model.daoModels.LanguageLocale;
 import services.UWUpdaterService;
-import unfoldingword.DaoHelperMethods;
 
 /**
  * Created by PJ Fechner on 6/17/15.

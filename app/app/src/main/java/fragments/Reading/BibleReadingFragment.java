@@ -24,10 +24,8 @@ import java.util.List;
 import adapters.ReadingPagerAdapter;
 import de.greenrobot.event.EventBus;
 import eventbusmodels.BiblePagingEvent;
-import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import utils.UWPreferenceDataAccessor;
 import view.ReadingDoubleTapHandler;
 
 /**

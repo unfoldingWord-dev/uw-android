@@ -9,11 +9,9 @@
 package activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.LinearGradient;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -74,7 +72,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.pref_general);
 
-        Preference button = (Preference) findPreference("reset_url");
+        Preference button = findPreference("reset_url");
         button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference arg0) {
@@ -89,10 +87,10 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
 
-        Preference versionPref = (Preference) findPreference("app_version");
+        Preference versionPref = findPreference("app_version");
         versionPref.setSummary(BuildConfig.VERSION_NAME);
 
-        Preference buildPref = (Preference) findPreference("app_build");
+        Preference buildPref = findPreference("app_build");
         buildPref.setSummary(Integer.toString(BuildConfig.VERSION_CODE));
 
 

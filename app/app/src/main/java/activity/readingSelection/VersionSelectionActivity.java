@@ -8,7 +8,6 @@
 
 package activity.readingSelection;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import org.unfoldingword.mobile.R;

@@ -10,7 +10,6 @@ package adapters;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,7 +107,7 @@ public class ReadingPagerAdapter extends PagerAdapter {
             textWebView.loadDataWithBaseURL("", pageText, "text/html", "UTF-8", "");
         }
 
-        ((ViewPager) container).addView(view);
+        container.addView(view);
         return view;
     }
 
@@ -119,12 +118,12 @@ public class ReadingPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((RelativeLayout) object);
+        return view == object;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((RelativeLayout) object);
+        container.removeView((RelativeLayout) object);
     }
 
     @Override

@@ -10,9 +10,7 @@ package runnables;
 
 import android.util.Log;
 
-import model.AudioBitrate;
 import model.DataFileManager;
-import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.parsers.MediaType;
 import services.UWUpdaterService;

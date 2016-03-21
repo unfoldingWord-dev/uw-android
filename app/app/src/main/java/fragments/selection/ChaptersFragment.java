@@ -28,8 +28,6 @@ import eventbusmodels.BiblePagingEvent;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;
 import model.daoModels.Book;
-import utils.UWPreferenceDataAccessor;
-import utils.UWPreferenceDataManager;
 
 /**
  * Fragment used for a user to select a BibleChapter from a list

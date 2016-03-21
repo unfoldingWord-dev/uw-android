@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import model.DaoDBHelper;
-import model.DownloadState;
 import model.daoModels.BibleChapter;
 import model.daoModels.BibleChapterDao;
 import model.daoModels.Book;

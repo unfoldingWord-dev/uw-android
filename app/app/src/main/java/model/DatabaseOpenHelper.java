@@ -54,7 +54,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     public DatabaseOpenHelper(Context context, String name, CursorFactory factory) {
         super(context, name, factory);
         this.context = context;
-        this.DB_NAME = name;
+        DB_NAME = name;
 
         if(android.os.Build.VERSION.SDK_INT >= 17){
             DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
@@ -116,7 +116,7 @@ public SQLiteDatabase getSqliteDatabase() {
             SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             /* Database does not exists create blank database */
             sqliteDatabase.close();
-//            populateWithPreload();
+            populateWithPreload();
         }
 //        else if(needsUpgrade()) {
 //            populateWithPreload();

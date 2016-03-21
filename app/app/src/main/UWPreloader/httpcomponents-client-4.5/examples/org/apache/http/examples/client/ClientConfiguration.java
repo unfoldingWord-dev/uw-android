@@ -27,13 +27,6 @@
 
 package org.apache.http.examples.client;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.CodingErrorAction;
-import java.util.Arrays;
-
-import javax.net.ssl.SSLContext;
-
 import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -81,6 +74,13 @@ import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.LineParser;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.CharArrayBuffer;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.CodingErrorAction;
+import java.util.Arrays;
+
+import javax.net.ssl.SSLContext;
 
 /**
  * This example demonstrates how to customize and configure the most common aspects

@@ -9,8 +9,6 @@
 package model.parsers;
 
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -256,7 +254,7 @@ public class USFMParser {
 
             String qNumber = "";
             while (numberMatcher.find()) {
-                qNumber = (String) numberMatcher.group(0);
+                qNumber = numberMatcher.group(0);
                 break;
             }
             if(qNumber.length() >= 1){

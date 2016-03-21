@@ -10,7 +10,6 @@ package adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -29,18 +28,11 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import activity.reading.BaseReadingActivity;
 import de.greenrobot.event.EventBus;
 import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import utils.AsyncImageLoader;
-import utils.UWPreferenceDataAccessor;
-import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
-import view.ASyncImageView;
-import view.ScalingImageView;
-import view.ViewContentHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -145,7 +137,7 @@ public class StoryPagerAdapter extends PagerAdapter {
             view.findViewById(R.id.stories_pager_first_scroll_view).setBackgroundColor(color);
             view.findViewById(R.id.stories_pager_second_scroll_view).setBackgroundColor(color);
         }
-        ((ViewPager) container).addView(view);
+        container.addView(view);
         return view;
     }
 
@@ -177,12 +169,12 @@ public class StoryPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((RelativeLayout) object);
+        return view == object;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((RelativeLayout) object);
+        container.removeView((RelativeLayout) object);
     }
 
     private void setupPageForDiglot(View separatorView, TextView secondView){

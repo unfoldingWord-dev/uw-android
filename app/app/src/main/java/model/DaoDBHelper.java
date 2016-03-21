@@ -16,7 +16,6 @@ import org.unfoldingword.mobile.R;
 
 import model.daoModels.DaoMaster;
 import model.daoModels.DaoSession;
-import model.daoModels.Project;
 
 /**
  * Created by Fechner on 4/28/15.

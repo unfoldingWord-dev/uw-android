@@ -12,7 +12,6 @@ import android.content.Context;
 
 import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoryPage;
-import utils.UWPreferenceDataAccessor;
 
 /**
  * Created by Fechner on 10/7/15.

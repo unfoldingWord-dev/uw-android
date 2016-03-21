@@ -330,7 +330,7 @@ public class UWAudioPlayer {
         public void onReceive(Context context, Intent intent) {
 
             if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-                KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 
                 if (event != null) {
                     int keyCode = event.getKeyCode();

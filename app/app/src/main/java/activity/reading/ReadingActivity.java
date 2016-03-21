@@ -24,7 +24,6 @@ import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Project;
 import model.daoModels.Version;
-import utils.UWPreferenceDataAccessor;
 import utils.UWPreferenceManager;
 import view.ReadingToolbarViewBibleModel;
 import view.ReadingToolbarViewData;

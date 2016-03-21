@@ -20,8 +20,6 @@ import org.unfoldingword.mobile.R;
 
 import java.util.List;
 
-import view.ViewContentHelper;
-
 /**
  * Created by Fechner on 2/27/15.
  * Basic adapter for initial screen

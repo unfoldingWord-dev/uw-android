@@ -32,7 +32,6 @@ import com.infteh.comboseekbar.ComboSeekBar;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,23 +46,20 @@ import eventbusmodels.BiblePagingEvent;
 import eventbusmodels.DownloadResult;
 import eventbusmodels.StoriesPagingEvent;
 import fragments.BitrateFragment;
+import fragments.Reading.ReadingFragmentListener;
 import fragments.ResourceChoosingFragment;
 import fragments.selection.ChapterSelectionFragment;
-import fragments.Reading.ReadingFragmentListener;
 import fragments.selection.StoryChaptersFragment;
 import model.AudioBitrate;
 import model.DataFileManager;
 import model.DownloadState;
 import model.SharingHelper;
-import model.daoModels.BibleChapter;
 import model.daoModels.Book;
 import model.daoModels.Project;
-import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import services.UWBookMediaDownloaderService;
 import singletons.UWAudioPlayer;
-import utils.UWPreferenceDataAccessor;
 import view.AudioPlayerViewGroup;
 import view.ReadingTabBar;
 import view.ReadingToolbarViewBibleModel;
@@ -691,12 +687,7 @@ public abstract class BaseReadingActivity extends UWBaseActivity implements
     private boolean isTablet(){
 
         int screen_density = (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
-        if (screen_density == Configuration.SCREENLAYOUT_SIZE_LARGE || screen_density == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            return true;
-        }
-        else{
-            return false;
-        }
+        return screen_density == Configuration.SCREENLAYOUT_SIZE_LARGE || screen_density == Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
     /**

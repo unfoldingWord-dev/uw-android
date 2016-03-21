@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import org.unfoldingword.mobile.R;
 
-import fragments.StatementOfFaithFragment;
 import fragments.TranslationGuidelinesFragment;
 
 public class TranslationGuidelinesActivity extends UWBaseActivity {

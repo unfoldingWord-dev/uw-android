@@ -8,11 +8,8 @@
 
 package model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
-import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
 
 /**

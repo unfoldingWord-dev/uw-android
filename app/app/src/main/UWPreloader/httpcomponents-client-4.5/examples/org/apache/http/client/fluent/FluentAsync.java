@@ -26,14 +26,14 @@
  */
 package org.apache.http.client.fluent;
 
+import org.apache.http.concurrent.FutureCallback;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import org.apache.http.concurrent.FutureCallback;
 
 /**
  * This example demonstrates how the he HttpClient fluent API can be used to execute multiple

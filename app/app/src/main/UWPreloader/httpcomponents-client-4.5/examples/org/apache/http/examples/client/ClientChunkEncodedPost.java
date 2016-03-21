@@ -26,9 +26,6 @@
  */
 package org.apache.http.examples.client;
 
-import java.io.File;
-import java.io.FileInputStream;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -36,6 +33,9 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * Example how to use unbuffered chunk-encoded POST request.

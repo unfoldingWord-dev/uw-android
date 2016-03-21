@@ -36,7 +36,6 @@ import java.util.List;
 
 import activity.AnimationParadigm;
 import activity.CustomSettingsActivity;
-import activity.SettingsActivity;
 import activity.UWBaseActivity;
 import activity.reading.ReadingActivity;
 import activity.reading.StoryReadingActivity;

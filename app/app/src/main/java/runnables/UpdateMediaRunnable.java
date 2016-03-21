@@ -8,21 +8,11 @@
 
 package runnables;
 
-import android.content.Context;
-import android.util.Log;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import model.AudioBitrate;
-import model.DataFileManager;
-import model.DownloadState;
 import model.daoModels.AudioChapter;
 import model.daoModels.Book;
 import model.parsers.MediaType;
 import services.UWUpdaterService;
-import tasks.BytesDownloadTask;
-import utils.FileNameHelper;
 
 /**
  * Created by Fechner on 9/24/15.

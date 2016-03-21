@@ -4,7 +4,6 @@ import android.content.Context;
 
 import de.greenrobot.event.EventBus;
 import model.daoModels.BibleChapter;
-import model.daoModels.StoryPage;
 import utils.UWPreferenceDataAccessor;
 
 /**

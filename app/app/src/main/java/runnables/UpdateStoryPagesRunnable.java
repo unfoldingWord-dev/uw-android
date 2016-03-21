@@ -21,8 +21,8 @@ import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
 import model.daoModels.StoryPageDao;
 import model.parsers.MediaType;
-import tasks.ModelCreator;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
 
 /**
  * Created by PJ Fechner on 6/17/15.

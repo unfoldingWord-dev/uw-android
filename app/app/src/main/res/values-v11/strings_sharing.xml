@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+<resources>
 
     <string name="qr_code_title">QR Code</string>
     <string name="bluetooth_title">Bluetooth</string>

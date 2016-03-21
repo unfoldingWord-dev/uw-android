@@ -9,24 +9,17 @@
 package view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import org.unfoldingword.mobile.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import model.daoModels.Version;
 
 /**
  * Created by Fechner on 8/9/15.

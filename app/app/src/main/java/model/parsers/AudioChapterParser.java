@@ -12,11 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Iterator;
-
 import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
-import model.daoModels.Book;
 
 /**
  * Created by Fechner on 9/18/15.

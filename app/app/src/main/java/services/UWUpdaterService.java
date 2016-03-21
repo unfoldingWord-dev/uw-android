@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Process;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +27,8 @@ import eventbusmodels.DownloadResult;
 import eventbusmodels.DownloadingVersionsEvent;
 import model.daoModels.Version;
 import model.parsers.MediaType;
-import tasks.JsonDownloadTask;
 import runnables.UpdateProjectsRunnable;
+import tasks.JsonDownloadTask;
 import utils.UWPreferenceManager;
 
 /**

@@ -1,6 +1,7 @@
 package activity;
 
 import android.os.Bundle;
+
 import org.unfoldingword.mobile.R;
 
 import fragments.StatementOfFaithFragment;

@@ -9,10 +9,6 @@
 package view;
 
 import android.content.Context;
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;

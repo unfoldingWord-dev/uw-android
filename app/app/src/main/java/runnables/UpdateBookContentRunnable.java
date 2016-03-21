@@ -8,21 +8,14 @@
 
 package runnables;
 
-import android.content.Context;
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import model.DataFileManager;
 import model.daoModels.Book;
 import model.parsers.MediaType;
 import services.UWUpdaterService;
 import tasks.VerificationUpdater;
-import utils.FileNameHelper;
 import utils.URLDownloadUtil;
 
 /**

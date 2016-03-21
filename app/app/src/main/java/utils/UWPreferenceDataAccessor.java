@@ -11,12 +11,8 @@ package utils;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.greenrobot.event.EventBus;
 import eventbusmodels.BiblePagingEvent;
-import eventbusmodels.DownloadResult;
 import eventbusmodels.StoriesPagingEvent;
 import model.DaoDBHelper;
 import model.daoModels.BibleChapter;

@@ -1,7 +1,6 @@
 package adapters.sharing;
 
 import android.content.Context;
-import android.widget.ListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +12,6 @@ import model.DaoDBHelper;
 import model.daoModels.Language;
 import model.daoModels.LanguageLocale;
 import model.daoModels.Project;
-import model.daoModels.StoriesChapter;
 import model.daoModels.Version;
 
 /**

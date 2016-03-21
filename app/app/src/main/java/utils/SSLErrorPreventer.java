@@ -13,7 +13,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -72,7 +71,7 @@ public class SSLErrorPreventer extends SSLSocketFactory {
 
 	@Override
 	public Socket createSocket(Socket socket, String host, int port,
-			boolean autoClose) throws IOException, UnknownHostException {
+			boolean autoClose) throws IOException {
 		return sslContext.getSocketFactory().createSocket(socket, host, port,
 				autoClose);
 	}

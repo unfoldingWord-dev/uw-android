@@ -26,8 +26,6 @@
  */
 package org.apache.http.examples.client;
 
-import java.net.URL;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -42,6 +40,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.RFC6265CookieSpecProvider;
 import org.apache.http.util.EntityUtils;
+
+import java.net.URL;
 
 /**
  * This example demonstrates how to use a custom public suffix list.

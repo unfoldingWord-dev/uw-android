@@ -13,10 +13,10 @@ package adapters.selectionAdapters;
  */
 public interface GeneralRowInterface {
 
-    public String getTitle();
-    public String getChildIdentifier();
+    String getTitle();
+    String getChildIdentifier();
 
-    public class BasicGeneralRowInterface implements GeneralRowInterface{
+    class BasicGeneralRowInterface implements GeneralRowInterface{
 
         private String childIdentifier;
         private String title;

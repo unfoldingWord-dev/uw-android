@@ -19,8 +19,8 @@ import model.daoModels.AudioBook;
 import model.daoModels.AudioChapter;
 import model.daoModels.DaoSession;
 import model.parsers.MediaType;
-import tasks.ModelCreator;
 import services.UWUpdaterService;
+import tasks.ModelCreator;
 import tasks.ModelSaveOrUpdater;
 
 /**

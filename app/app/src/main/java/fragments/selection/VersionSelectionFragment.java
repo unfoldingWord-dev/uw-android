@@ -15,7 +15,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -52,11 +51,9 @@ import model.daoModels.StoryPage;
 import model.daoModels.Version;
 import model.parsers.MediaType;
 import services.UWMediaDownloaderService;
-import services.UWUpdaterService;
 import services.UWVersionDownloaderService;
 import utils.NetWorkUtil;
 import utils.UWPreferenceDataManager;
-import utils.UWPreferenceManager;
 
 /**
  * Fragment for users to select a new version

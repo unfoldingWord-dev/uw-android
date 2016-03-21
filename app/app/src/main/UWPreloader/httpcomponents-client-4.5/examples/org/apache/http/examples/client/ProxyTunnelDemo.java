@@ -27,16 +27,16 @@
 
 package org.apache.http.examples.client;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.ProxyClient;
+import org.apache.http.protocol.HTTP;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
-
-import org.apache.http.HttpHost;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.ProxyClient;
-import org.apache.http.protocol.HTTP;
 
 /**
  * Example code for using {@link ProxyClient} in order to establish a tunnel through an HTTP proxy.

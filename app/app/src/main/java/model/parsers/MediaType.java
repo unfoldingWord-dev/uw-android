@@ -2,7 +2,6 @@ package model.parsers;
 
 import org.unfoldingword.mobile.R;
 
-import java.io.File;
 import java.io.Serializable;
 
 /**

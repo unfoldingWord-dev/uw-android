@@ -14,17 +14,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.github.peejweej.androidsideloading.activities.SideLoadActivity;
-import com.github.peejweej.androidsideloading.activities.SideShareActivity;
 import com.github.peejweej.androidsideloading.model.SideLoadInformation;
 import com.github.peejweej.androidsideloading.model.SideLoadVerifier;
 
-import model.daoModels.Version;
-import model.parsers.MediaType;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import model.daoModels.Version;
+import model.parsers.MediaType;
 
 /**
  * Created by Fechner on 8/24/15.

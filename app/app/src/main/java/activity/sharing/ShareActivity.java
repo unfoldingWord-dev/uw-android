@@ -21,7 +21,6 @@ import com.github.peejweej.androidsideloading.model.SideLoadInformation;
 
 import org.unfoldingword.mobile.R;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

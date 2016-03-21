@@ -18,7 +18,7 @@ public enum UWServiceState {
 
     final int num;
 
-    private UWServiceState(int num){
+    UWServiceState(int num){
         this.num = num;
     }
 }

@@ -8,8 +8,6 @@
 
 package fragments.Reading;
 
-import model.daoModels.Version;
-
 /**
  * Created by Fechner on 7/26/15.
  */
