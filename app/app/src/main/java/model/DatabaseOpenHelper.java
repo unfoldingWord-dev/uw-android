@@ -65,59 +65,65 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
         try {
             createDataBase();
-        } catch (Exception ioe) {
-            ioe.printStackTrace();
-            throw new Error("Unable to create database");
+} catch (Exception ioe) {
+        ioe.printStackTrace();
+        throw new Error("Unable to create database");
         }
-    }
+        }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion < ModelNames.DB_VERSION_ID){
             populateWithPreload();
             UWPreferenceDataManager.resetChapterSelections(context);
         }
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
-    }
+        }
 
-    /** Open Database for Use */
-    public void openDatabase() {
+/** Open Database for Use */
+public void openDatabase() {
         String databasePath = DB_PATH + DB_NAME;
         sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
-                (SQLiteDatabase.OPEN_READWRITE));
-    }
+        (SQLiteDatabase.OPEN_READWRITE));
+        }
 
-    public void openDatabaseReadable() {
+public void openDatabaseReadable() {
         String databasePath = DB_PATH + DB_NAME;
         sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
-                (SQLiteDatabase.OPEN_READONLY));
-    }
+        (SQLiteDatabase.OPEN_READONLY));
+        }
 
-    /** Close Database after use */
-    @Override
-    public synchronized void close() {
+/** Close Database after use */
+@Override
+public synchronized void close() {
         if ((sqliteDatabase != null) && sqliteDatabase.isOpen()) {
-            sqliteDatabase.close();
+        sqliteDatabase.close();
         }
         super.close();
-    }
+        }
 
-    /** Get database instance for use */
-    public SQLiteDatabase getSqliteDatabase() {
+/** Get database instance for use */
+public SQLiteDatabase getSqliteDatabase() {
         return sqliteDatabase;
-    }
+        }
 
     /** Create new database if not present */
-    public void createDataBase() {
+    synchronized public void createDataBase() {
 
         if (!databaseExists()) {
 
             SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             /* Database does not exists create blank database */
             sqliteDatabase.close();
-            populateWithPreload();
+//            populateWithPreload();
         }
+//        else if(needsUpgrade()) {
+//            populateWithPreload();
+//            UWPreferenceDataManager.resetChapterSelections(context);
+//            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
+//            Log.i(TAG, "Got here");
+//        }
     }
 
     private void populateWithPreload(){
@@ -156,6 +162,26 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
             sqliteDatabase.close();
         }
         return sqliteDatabase != null ? true : false;
+    }
+
+    private boolean needsUpgrade() {
+        SQLiteDatabase sqliteDatabase = null;
+        try {
+            String databasePath = DB_PATH + DB_NAME;
+            sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
+                    SQLiteDatabase.OPEN_READONLY);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+
+        if (sqliteDatabase != null) {
+            if(sqliteDatabase.getVersion() < ModelNames.DB_VERSION_ID) {
+                sqliteDatabase.close();
+                return true;
+            }
+            sqliteDatabase.close();
+        }
+        return false;
     }
 
     /**
