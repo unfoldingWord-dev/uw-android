@@ -111,4 +111,9 @@ public class FileNameHelper {
         }
         return -1;
     }
+
+    public static String getLastBitFromUrl(String url) {
+        String changedUrl = url.replaceFirst(".*/([^/?]+).*", "$1");
+        return changedUrl;
+    }
 }

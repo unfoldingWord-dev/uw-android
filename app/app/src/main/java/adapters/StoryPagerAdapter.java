@@ -32,7 +32,7 @@ import de.greenrobot.event.EventBus;
 import eventbusmodels.StoriesPagingEvent;
 import model.daoModels.StoriesChapter;
 import model.daoModels.StoryPage;
-import utils.AsyncImageLoader;
+import utils.FileNameHelper;
 
 /**
  * Created by Acts Media Inc on 5/12/14.
@@ -121,7 +121,7 @@ public class StoryPagerAdapter extends PagerAdapter {
             mainTextView.setText(addTestText(currentMainPage.getText()));
             secondaryTextView.setText(addTestText(currentSecondPage.getText()));
             String imgUrl = mainChapter.getStoryPages().get(position).getImageUrl();
-            String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
+            String lastBitFromUrl = FileNameHelper.getLastBitFromUrl(imgUrl);
             String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
             Picasso.with(context).load("file:///android_asset/images/" + path).into(chapterImageView);

@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import model.daoModels.StoriesChapter;
-import utils.AsyncImageLoader;
+import utils.FileNameHelper;
 import view.ASyncImageView;
 import view.ViewContentHelper;
 
@@ -67,7 +67,7 @@ public class StoriesChapterAdapter extends ArrayAdapter<StoriesChapter>{
 
         StoriesChapter positionModel = getItem(position);
         String imgUrl = positionModel.getStoryPages().get(0).getImageUrl();
-        String lastBitFromUrl = AsyncImageLoader.getLastBitFromUrl(imgUrl);
+        String lastBitFromUrl = FileNameHelper.getLastBitFromUrl(imgUrl);
         String path = lastBitFromUrl.replaceAll("[{//:}]", "");
 
         holder.chapterScreenImageView.setImageBitmap(getBitmapFromAsset("images/" + path));
