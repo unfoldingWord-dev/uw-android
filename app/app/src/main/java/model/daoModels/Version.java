@@ -488,7 +488,7 @@ public class Version extends model.UWDatabaseModel  implements java.io.Serializa
     public BibleChapter getFirstBibleChapter() {
         List<Book> books = getBooks();
         if (books != null && !books.isEmpty()) {
-            List<BibleChapter> chapters = books.get(0).getBibleChapters();
+            List<BibleChapter> chapters = books.get(0).getBibleChapters(true);
             if(chapters != null && !chapters.isEmpty()) {
                 return chapters.get(0);
             }
