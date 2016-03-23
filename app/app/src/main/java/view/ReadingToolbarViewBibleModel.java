@@ -39,7 +39,7 @@ public class ReadingToolbarViewBibleModel implements ReadingToolbarViewData {
     private void setup(BibleChapter currentChapter, BibleChapter secondaryChapter){
 
         mainVersionText = (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
-        secondaryVersionText = (currentChapter != null)? currentChapter.getBook().getVersion().getTitle() : "";
+        secondaryVersionText = (secondaryChapter != null)? secondaryChapter.getBook().getVersion().getTitle() : "";
         titleText = (currentChapter != null)? currentChapter.getTitle() : "";
     }
 

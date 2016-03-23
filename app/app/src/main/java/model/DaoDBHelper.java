@@ -9,7 +9,6 @@
 package model;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseLockedException;
 
 import org.unfoldingword.mobile.R;
@@ -24,27 +23,32 @@ public class DaoDBHelper {
 
     static private DaoMaster daoMaster;
 
+    static private DaoMaster getDaoMaster(Context context) {
+        if(daoMaster == null) {
+            DatabaseOpenHelper helper = DatabaseOpenHelper.getSharedInstance(context,
+                    context.getResources().getString(R.string.database_name), null);
+            daoMaster = new DaoMaster(helper.getWritableDatabase());
+            helper.upgradeIfNeeded();
+        }
+        return daoMaster;
+    }
+
     /**
      * @param context context of the application
      * @return a new DaoSession attached to the passed context
      */
     static public DaoSession getDaoSession(Context context){
-
-        if(daoMaster == null) {
-            DatabaseOpenHelper helper = DatabaseOpenHelper.getSharedInstance(context,
-                    context.getResources().getString(R.string.database_name), null);
-            daoMaster = new DaoMaster(helper.getWritableDatabase());
-        }
-        return daoMaster.newSession();
+        return getDaoMaster(context).newSession();
     }
 
     static public void getDaoSession(Context context, AsynchronousDatabaseAccessorCompletion completion) {
+
         DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
                 context.getResources().getString(R.string.database_name), null);
         while (true) {
             try {
-                SQLiteDatabase database = helper.getReadableDatabase();
-                completion.loadedSession(new DaoMaster(database).newSession());
+                DaoSession session = getDaoMaster(context).newSession();
+                completion.loadedSession(session);
                 return;
             } catch (SQLiteDatabaseLockedException e) {
                 e.printStackTrace();
@@ -56,10 +60,6 @@ public class DaoDBHelper {
                 e.printStackTrace();
             }
         }
-    }
-
-    static public DaoSession getDaoSession(Context context, SQLiteDatabase database) {
-                return new DaoMaster(database).newSession();
     }
 
     /**

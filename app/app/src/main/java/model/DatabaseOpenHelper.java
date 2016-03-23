@@ -11,6 +11,7 @@ package model;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
@@ -39,6 +40,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
     private Context context;
     private SQLiteDatabase sqliteDatabase;
+    private static boolean needsUpgrade;
 
     private static String DB_PATH;
     private static String DB_NAME;
@@ -75,8 +77,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion < ModelNames.DB_VERSION_ID){
-            populateWithPreload();
-            UWPreferenceDataManager.resetChapterSelections(context);
+            needsUpgrade = true;
         }
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
         }
@@ -96,17 +97,17 @@ public void openDatabaseReadable() {
 
 /** Close Database after use */
 @Override
-public synchronized void close() {
+    public synchronized void close() {
         if ((sqliteDatabase != null) && sqliteDatabase.isOpen()) {
-        sqliteDatabase.close();
+            sqliteDatabase.close();
         }
         super.close();
-        }
+    }
 
-/** Get database instance for use */
-public SQLiteDatabase getSqliteDatabase() {
+    /** Get database instance for use */
+    public SQLiteDatabase getSqliteDatabase() {
         return sqliteDatabase;
-        }
+    }
 
     /** Create new database if not present */
     synchronized public void createDataBase() {
@@ -126,12 +127,15 @@ public SQLiteDatabase getSqliteDatabase() {
 //        }
     }
 
-    private void populateWithPreload(){
-        copyDataBase();
-        saveSourceFiles();
+    public void upgradeIfNeeded() {
+        if(needsUpgrade) {
+            populateWithPreload();
+            UWPreferenceDataManager.resetChapterSelections(context);
+            needsUpgrade = false;
+        }
     }
 
-    private void populateWithPreload(SQLiteDatabase db) {
+    private void populateWithPreload(){
         copyDataBase();
         saveSourceFiles();
     }
@@ -213,9 +217,26 @@ public SQLiteDatabase getSqliteDatabase() {
 
     private void saveSourceFiles(){
 
-        openDatabaseReadable();
-        List<Book> books = DaoDBHelper.getDaoSession(context, sqliteDatabase)
-                .getBookDao().queryBuilder().list();
+//        openDatabaseReadable();
+        List<Book> books = null;
+
+        while(books == null) {
+            try {
+                books = DaoDBHelper.getDaoSession(context)
+                        .getBookDao().queryBuilder().list();
+            }
+            catch (SQLiteDatabaseLockedException e){
+                e.printStackTrace();
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException newE) {
+                    newE.printStackTrace();
+                }
+//                sqliteDatabase.close();
+//                openDatabaseReadable();
+            }
+        }
 
         ListIterator li = books.listIterator(books.size());
 
