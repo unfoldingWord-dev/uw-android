@@ -9,6 +9,8 @@
 package model.parsers;
 
 
+import junit.framework.Assert;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -73,6 +75,9 @@ public class USFMParser {
                 break;
             }
 
+            if (chapterNumber.trim().length() < 1) {
+                Assert.fail();
+            }
             int chapterStartIndex = chapter.indexOf("\\");
             if(chapterStartIndex > -1) {
                 chapter = chapter.substring(chapterStartIndex);
@@ -127,7 +132,7 @@ public class USFMParser {
 
     private ArrayList<String> getChapters(String chapters) {
 
-        String[] chapterArray = chapters.split("\\\\c");
+        String[] chapterArray = chapters.split("\\\\c ");
 
         ArrayList<String> chapterList = new ArrayList<String>();
 

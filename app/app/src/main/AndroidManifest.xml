@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.unfoldingword.mobile">
 
-    <uses-sdk tools:overrideLibrary="com.joanzapata.android.iconify, com.joanzapata.iconify.fontawesome" />
+    <uses-sdk tools:overrideLibrary="com.joanzapata.android.iconify, com.joanzapata.iconify.fontawesome, android.support.v4, android.support.v7.appcompat, android.support.fragment,
+    android.support.mediacompat, android.support.coreui, android.support.coreutils, android.support.graphics.drawable, android.support.compat" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
