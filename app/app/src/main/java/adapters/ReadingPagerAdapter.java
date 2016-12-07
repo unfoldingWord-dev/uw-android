@@ -96,7 +96,6 @@ public class ReadingPagerAdapter extends PagerAdapter {
             view = getNextBookView(inflater);
         }
         else{
-
             view = inflater.inflate(R.layout.reading_pager_layout, container, false);
             view.setEnabled(false);
             WebView textWebView = (WebView) view.findViewById(R.id.chapterWebView);

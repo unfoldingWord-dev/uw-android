@@ -41,7 +41,7 @@ public class USFMParser {
 
     private static final Pattern SP_REGEX = Pattern.compile("\\\\sp.*");
     private static final Pattern ADD_REGEX = Pattern.compile("\\\\add.*\\\\add\\*", Pattern.DOTALL);
-    private static final Pattern FOOTNOTE_REGEX = Pattern.compile("(\\\\f)(\\s+)((.*)(\\n*)){1,5}(\\\\f[*])");
+    private static final Pattern FOOTNOTE_REGEX = Pattern.compile("\\\\f\\s+.*\\n*\\\\f[*]");
     private static final Pattern FOOTNOTE_TEXT_REGEX = Pattern.compile("\\\\f.*\\\\f\\*", Pattern.DOTALL);
     private static final Pattern FOOTNOTE_VERSE_REGEX = Pattern.compile("\\\\fqa.*\\\\f[*]");
 
@@ -276,16 +276,16 @@ public class USFMParser {
         return text;
     }
 
-    private String findFootnotes(String text){
+    private String findFootnotes(String text) {
 
         Matcher verseMatcher = FOOTNOTE_REGEX.matcher(text);
 
-        ArrayList<String> verseText = new ArrayList<String>();
+        ArrayList<String> verseText = new ArrayList<>();
         while (verseMatcher.find()) {
             verseText.add(verseMatcher.group(0));
         }
 
-        if(verseText.size() > 0){
+        if(verseText.size() > 0) {
             for(String footnote : verseText){
                 String footnoteText = findFootnoteText(footnote);
                 String footnoteNumberText = "<sup class=\"footnote-number\">" + Integer.toString(this.footnoteNumber) + "</sup>";
