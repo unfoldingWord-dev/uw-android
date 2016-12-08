@@ -10,6 +10,7 @@ package model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.support.annotation.Nullable;
 
 import org.unfoldingword.mobile.R;
 
@@ -45,7 +46,8 @@ public class DaoDBHelper {
 
         DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
                 context.getResources().getString(R.string.database_name), null);
-        while (true) {
+        int tries = 0;
+        while (tries < 10) {
             try {
                 DaoSession session = getDaoMaster(context).newSession();
                 completion.loadedSession(session);
@@ -59,7 +61,9 @@ public class DaoDBHelper {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            tries += 1;
         }
+        completion.loadedSession(null);
     }
 
     /**
@@ -74,6 +78,6 @@ public class DaoDBHelper {
     }
 
     public interface AsynchronousDatabaseAccessorCompletion {
-        void loadedSession(DaoSession session);
+        void loadedSession(@Nullable DaoSession session);
     }
 }

@@ -19,7 +19,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,7 +117,7 @@ private VersionSelectionFragmentListener listener;
 
     public void onEventMainThread(DownloadingVersionsEvent event){
 
-        Log.d(TAG, "Received Event: " + event.toString());
+//        Log.d(TAG, "Received Event: " + event.toString());
 
         // need to wait for the event to finish calling before reloading the list
         new AsyncTask<Void, Void, Void>(){
