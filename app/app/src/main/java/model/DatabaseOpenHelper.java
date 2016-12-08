@@ -46,6 +46,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     private static String DB_NAME;
 
     private static DatabaseOpenHelper sharedInstance;
+    private boolean preLoading = false;
     public static DatabaseOpenHelper getSharedInstance(Context context, String name, CursorFactory factory) {
         if(sharedInstance == null) {
             sharedInstance = new DatabaseOpenHelper(context, name, factory);
@@ -111,16 +112,23 @@ public void openDatabaseReadable() {
 
     /** Create new database if not present */
     synchronized public void createDataBase() {
-
-        if (!databaseExists()) {
+        if(preLoading) {
+            return;
+        }
+        else if (!databaseExists()) {
 
             SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             /* Database does not exists create blank database */
             sqliteDatabase.close();
             populateWithPreload();
         }
-
         else {
+            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
+            int version = sqliteDatabase.getVersion();
+//            if(version < ModelNames.DB_VERSION_ID){
+//                needsUpgrade = true;
+//            }
+            sqliteDatabase.close();
             upgradeIfNeeded();
         }
     }
@@ -130,6 +138,7 @@ public void openDatabaseReadable() {
             populateWithPreload();
             UWPreferenceDataManager.resetChapterSelections(context);
             SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
+            sqliteDatabase.close();
             needsUpgrade = false;
         }
     }
