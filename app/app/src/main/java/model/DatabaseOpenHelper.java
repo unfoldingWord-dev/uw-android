@@ -67,10 +67,10 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
         try {
             createDataBase();
-} catch (Exception ioe) {
-        ioe.printStackTrace();
-        throw new Error("Unable to create database");
-        }
+        } catch (Exception ioe) {
+            ioe.printStackTrace();
+            throw new Error("Unable to create database");
+            }
         }
 
 @Override
@@ -119,18 +119,17 @@ public void openDatabaseReadable() {
             sqliteDatabase.close();
             populateWithPreload();
         }
-//        else if(needsUpgrade()) {
-//            populateWithPreload();
-//            UWPreferenceDataManager.resetChapterSelections(context);
-//            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
-//            Log.i(TAG, "Got here");
-//        }
+
+        else {
+            upgradeIfNeeded();
+        }
     }
 
     public void upgradeIfNeeded() {
         if(needsUpgrade) {
             populateWithPreload();
             UWPreferenceDataManager.resetChapterSelections(context);
+            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             needsUpgrade = false;
         }
     }
