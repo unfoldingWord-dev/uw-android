@@ -49,6 +49,7 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     private static String DB_NAME;
 
     private static DatabaseOpenHelper sharedInstance;
+
     public static DatabaseOpenHelper getSharedInstance(Context context, String name, CursorFactory factory) {
         if(sharedInstance == null) {
             sharedInstance = new DatabaseOpenHelper(context, name, factory);
@@ -70,11 +71,11 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
         try {
             createDataBase();
-} catch (Exception ioe) {
-        ioe.printStackTrace();
-        throw new Error("Unable to create database");
+        } catch (Exception ioe) {
+            ioe.printStackTrace();
+            throw new Error("Unable to create database");
         }
-        }
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -91,6 +92,13 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
     }
 
+    public void deleteDatabase() {
+        close();
+        String databasePath = DB_PATH + DB_NAME;
+        boolean result = new File(databasePath).delete();
+        Log.d(TAG, "Database Deleted Result: " + result);
+    }
+
     /** Open Database for Use */
     public void openDatabase() {
         String databasePath = DB_PATH + DB_NAME;
@@ -104,8 +112,8 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         (SQLiteDatabase.OPEN_READONLY));
     }
 
-/** Close Database after use */
-@Override
+    /** Close Database after use */
+    @Override
     public synchronized void close() {
         if ((sqliteDatabase != null) && sqliteDatabase.isOpen()) {
             sqliteDatabase.close();

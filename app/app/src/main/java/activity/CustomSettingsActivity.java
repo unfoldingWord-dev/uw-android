@@ -2,6 +2,7 @@ package activity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.webkit.URLUtil;
@@ -15,6 +16,9 @@ import org.unfoldingword.mobile.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import fragments.CheckingLevelInfoFragment;
+import model.DaoDBHelper;
+import model.DatabaseOpenHelper;
+import model.daoModels.DaoSession;
 import utils.UWPreferenceManager;
 
 public class CustomSettingsActivity extends UWBaseActivity {
@@ -108,5 +112,35 @@ public class CustomSettingsActivity extends UWBaseActivity {
 
     private void resetUrl(){
         changeUrl(getResources().getString(R.string.pref_default_base_url));
+    }
+
+    public void resetDataClicked(View view) {
+        requestResetDatabase();
+    }
+
+    private void requestResetDatabase() {
+        showChoiceDialogue("Reset Database?", "Any new Versions will be lost and reset to most recent update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                resetDatabase();
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+    }
+
+    private void resetDatabase() {
+        setLoadingFragmentVisibility(true, "Resetting Database", false);
+        DatabaseOpenHelper helper = DatabaseOpenHelper.getSharedInstance(getApplicationContext(),
+                getApplicationContext().getResources().getString(R.string.database_name), null);
+        helper.deleteDatabase();
+        DaoDBHelper.getDaoSession(getApplicationContext(), new DaoDBHelper.AsynchronousDatabaseAccessorCompletion() {
+            @Override
+            public void loadedSession(@Nullable DaoSession session) {
+                setLoadingFragmentVisibility(false, "Resetting Database", true);
+            }
+        });
     }
 }

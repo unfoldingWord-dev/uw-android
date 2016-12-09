@@ -5,3 +5,5 @@
 /app/app/src/main/10TalesGreenDAOGenerator/nbproject/private/
 app/app/libs/aFileDialog/FileDialog/build/intermediates/manifest/tmp
 strings_private.xml
+MyDaoGenerator.jar
+com.door43.tools.reporting.iml

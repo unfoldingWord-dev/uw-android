@@ -19,6 +19,7 @@
     <string name="selected_language">"SELECTED_LANGUAGE"</string>
 
     <string name="reset_base_url">Reset URL</string>
+    <string name="reset_to_preload_text">Reset Versions To Preload</string>
 
     <string name="next_chapter">Next Chapter</string>
     <string name="next_book">Go To</string>

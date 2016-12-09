@@ -127,6 +127,21 @@
             android:text="Reset Url"
             android:onClick="resetUrlClicked"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <!--<Button-->
+            <!--android:paddingLeft="10dp"-->
+            <!--android:paddingStart="10dp"-->
+            <!--android:paddingRight="10dp"-->
+            <!--android:paddingEnd="10dp"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--android:textColor="#fff"-->
+            <!--android:background="@drawable/green_button_selector"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:text="Reset Data to Preload"-->
+            <!--android:onClick="resetDataClicked"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"/>-->
     </LinearLayout>
 
     <FrameLayout

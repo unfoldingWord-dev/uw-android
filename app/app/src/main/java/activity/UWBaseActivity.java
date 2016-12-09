@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.unfoldingword.mobile.R;
 
@@ -480,6 +481,20 @@ abstract public class UWBaseActivity extends ActionBarActivity implements UWTool
     }
 
     public void storagePermissionWasGranted() { }
+
+    public void showChoiceDialogue(String title, String message, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListener) {
+
+        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText(title);
+
+        new android.app.AlertDialog.Builder(this)
+                .setCustomTitle(titleView)
+                .setMessage(message)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton("Yes", positiveListener)
+                .setNegativeButton("No", negativeListener)
+                .show();
+    }
 }
 
 

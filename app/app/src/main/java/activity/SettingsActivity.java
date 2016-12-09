@@ -9,7 +9,9 @@
 package activity;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -18,6 +20,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +29,11 @@ import org.unfoldingword.mobile.BuildConfig;
 import org.unfoldingword.mobile.R;
 
 import java.util.List;
+
+import fragments.LoadingFragment;
+import model.DaoDBHelper;
+import model.DatabaseOpenHelper;
+import model.daoModels.DaoSession;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -46,6 +54,8 @@ public class SettingsActivity extends PreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
+
+    private LoadingFragment loadingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +86,15 @@ public class SettingsActivity extends PreferenceActivity {
         button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference arg0) {
+                return resetURL();
+            }
+        });
 
-                Resources resources = getResources();
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).
-                        edit().putString("base_url", resources.getString(R.string.pref_default_base_url)).commit();
-                setPreferenceScreen(null);
-                setupSimplePreferencesScreen();
+        Preference preloadButton = findPreference("reset_preload");
+        button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+                requestResetDatabase();
                 return true;
             }
         });
@@ -92,9 +105,6 @@ public class SettingsActivity extends PreferenceActivity {
 
         Preference buildPref = findPreference("app_build");
         buildPref.setSummary(Integer.toString(BuildConfig.VERSION_CODE));
-
-
-
 
         // Add 'notifications' preferences, and a corresponding header.
 //        PreferenceCategory fakeHeader = new PreferenceCategory(this);
@@ -113,6 +123,95 @@ public class SettingsActivity extends PreferenceActivity {
         textView.setText(BuildConfig.VERSION_NAME);
     }
 
+    boolean resetURL() {
+        Resources resources = getResources();
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).
+                edit().putString("base_url", resources.getString(R.string.pref_default_base_url)).commit();
+        setPreferenceScreen(null);
+        setupSimplePreferencesScreen();
+        return true;
+    }
+
+    void requestResetDatabase() {
+        showChoiceDialogue("Reset Database?", "This will reset all data to that of the most recent update. Any new Versions loaded since then will be lost.", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                resetDatabase();
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+    }
+
+    void resetDatabase() {
+        DatabaseOpenHelper helper = DatabaseOpenHelper.getSharedInstance(getApplicationContext(),
+                getApplicationContext().getResources().getString(R.string.database_name), null);
+        helper.deleteDatabase();
+        DaoDBHelper.getDaoSession(getApplicationContext(), new DaoDBHelper.AsynchronousDatabaseAccessorCompletion() {
+            @Override
+            public void loadedSession(@Nullable DaoSession session) {
+
+            }
+        });
+    }
+
+//    /**
+//     * Creates and Loading fragment.
+//     * @param visible true if the fragment should be visible
+//     * @param loadingText text to show in the loading fragment
+//     * @param cancelable whether the fragment should be cancelable.
+//     */
+//    public void setLoadingFragmentVisibility(final boolean visible, final String loadingText, final boolean cancelable){
+//
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (!visible) {
+//                    if (loadingFragment != null) {
+//                        loadingFragment.dismiss();
+//                    }
+//                    return;
+//                } else {
+//                    if (loadingFragment == null) {
+//                        loadingFragment = LoadingFragment.newInstance(loadingText);
+//
+//                        loadingFragment.setCancelable(cancelable);
+//                        loadingFragment.setListener(new LoadingFragment.LoadingFragmentInteractionListener() {
+//                            @Override
+//                            public void loadingCanceled() {
+//                                loadingFragment.dismiss();
+//                                getFragmentManager().popBackStackImmediate();
+//                                loadingFragment = null;
+//                            }
+//                        });
+//
+//                        loadingFragment.show(getSupportFragmentManager(), LoadingFragment.TAG);
+//
+//                    } else if (!loadingFragment.isVisible()) {
+//                        loadingFragment.show(getSupportFragmentManager(), LoadingFragment.TAG);
+//                    }
+//                    loadingFragment.setLoadingText(loadingText);
+//                    loadingFragment.setCanCancel(cancelable);
+//                }
+//            }
+//        });
+//    }
+
+    public void showChoiceDialogue(String title, String message, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListener) {
+
+        View titleView = View.inflate(getApplicationContext(), R.layout.alert_title, null);
+        ((TextView) titleView.findViewById(R.id.alert_title_text_view)).setText(title);
+
+        new AlertDialog.Builder(this)
+                .setCustomTitle(titleView)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.yes, positiveListener)
+                .setNegativeButton(android.R.string.no, negativeListener)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
     /**
      * {@inheritDoc}
      */

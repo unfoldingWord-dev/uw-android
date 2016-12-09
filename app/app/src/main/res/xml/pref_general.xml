@@ -14,6 +14,9 @@
     <Preference android:title="@string/reset_base_url"
         android:key="reset_url"/>
 
+    <Preference android:title="@string/reset_to_preload_text"
+        android:key="reset_preload"/>
+
     <Preference android:title="@string/application_version"
         android:key="app_version"/>;
 
