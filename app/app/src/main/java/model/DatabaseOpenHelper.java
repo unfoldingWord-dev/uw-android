@@ -28,7 +28,10 @@ import java.util.ListIterator;
 
 import model.daoModels.Book;
 import model.daoModels.DaoMaster;
+import model.daoModels.DaoSession;
+import model.daoModels.Version;
 import model.parsers.MediaType;
+import unfoldingword.DaoHelperMethods;
 import unfoldingword.ModelNames;
 import utils.FileNameHelper;
 import utils.FileUtil;
@@ -46,7 +49,6 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
     private static String DB_NAME;
 
     private static DatabaseOpenHelper sharedInstance;
-    private boolean preLoading = false;
     public static DatabaseOpenHelper getSharedInstance(Context context, String name, CursorFactory factory) {
         if(sharedInstance == null) {
             sharedInstance = new DatabaseOpenHelper(context, name, factory);
@@ -68,33 +70,41 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
 
         try {
             createDataBase();
-        } catch (Exception ioe) {
-            ioe.printStackTrace();
-            throw new Error("Unable to create database");
-            }
+} catch (Exception ioe) {
+        ioe.printStackTrace();
+        throw new Error("Unable to create database");
+        }
         }
 
-@Override
-public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion < ModelNames.DB_VERSION_ID){
             needsUpgrade = true;
         }
-        Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
+        DaoSession session = DaoDBHelper.getDaoSession(context);
+        Version version = Version.getModelForUniqueSlug("bibleasulb", session);
+        if (version != null) {
+            for (Book book : version.getBooks()) {
+                book.delete();
+            }
         }
+        UWPreferenceDataManager.resetChapterSelections(context);
+        Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
+    }
 
-/** Open Database for Use */
-public void openDatabase() {
+    /** Open Database for Use */
+    public void openDatabase() {
         String databasePath = DB_PATH + DB_NAME;
         sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
         (SQLiteDatabase.OPEN_READWRITE));
-        }
+    }
 
-public void openDatabaseReadable() {
+    public void openDatabaseReadable() {
         String databasePath = DB_PATH + DB_NAME;
         sqliteDatabase = SQLiteDatabase.openDatabase(databasePath, null,
         (SQLiteDatabase.OPEN_READONLY));
-        }
+    }
 
 /** Close Database after use */
 @Override
@@ -112,33 +122,26 @@ public void openDatabaseReadable() {
 
     /** Create new database if not present */
     synchronized public void createDataBase() {
-        if(preLoading) {
-            return;
-        }
-        else if (!databaseExists()) {
+
+        if (!databaseExists()) {
 
             SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
             /* Database does not exists create blank database */
             sqliteDatabase.close();
             populateWithPreload();
         }
-        else {
-            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
-            int version = sqliteDatabase.getVersion();
-//            if(version < ModelNames.DB_VERSION_ID){
-//                needsUpgrade = true;
-//            }
-            sqliteDatabase.close();
-            upgradeIfNeeded();
-        }
+//        else if(needsUpgrade()) {
+//            populateWithPreload();
+//            UWPreferenceDataManager.resetChapterSelections(context);
+//            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
+//            Log.i(TAG, "Got here");
+//        }
     }
 
     public void upgradeIfNeeded() {
         if(needsUpgrade) {
-            populateWithPreload();
-            UWPreferenceDataManager.resetChapterSelections(context);
-            SQLiteDatabase sqliteDatabase = this.getReadableDatabase();
-            sqliteDatabase.close();
+//            populateWithPreload();
+//            UWPreferenceDataManager.resetChapterSelections(context);
             needsUpgrade = false;
         }
     }

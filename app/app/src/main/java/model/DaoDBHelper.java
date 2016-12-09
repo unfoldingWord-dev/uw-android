@@ -44,7 +44,7 @@ public class DaoDBHelper {
 
     static public void getDaoSession(Context context, AsynchronousDatabaseAccessorCompletion completion) {
 
-        DatabaseOpenHelper helper = new DatabaseOpenHelper(context,
+        DatabaseOpenHelper helper = DatabaseOpenHelper.getSharedInstance(context,
                 context.getResources().getString(R.string.database_name), null);
         int tries = 0;
         while (tries < 10) {
