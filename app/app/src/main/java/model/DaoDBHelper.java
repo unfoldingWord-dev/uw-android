@@ -55,7 +55,6 @@ public class DaoDBHelper {
             } catch (SQLiteDatabaseLockedException e) {
                 e.printStackTrace();
             }
-
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {

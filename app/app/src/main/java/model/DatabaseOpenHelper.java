@@ -82,14 +82,14 @@ public class DatabaseOpenHelper extends DaoMaster.OpenHelper {
         if(oldVersion < ModelNames.DB_VERSION_ID){
             needsUpgrade = true;
         }
-        DaoSession session = DaoDBHelper.getDaoSession(context);
+        DaoSession session = new DaoMaster(db).newSession();
         Version version = Version.getModelForUniqueSlug("bibleasulb", session);
         if (version != null) {
             for (Book book : version.getBooks()) {
                 book.delete();
             }
         }
-        UWPreferenceDataManager.resetChapterSelections(context);
+        UWPreferenceDataManager.resetChapterSelections(context, false);
         Log.i(TAG, "Upgraded DB From Version " + oldVersion + " To Version " + newVersion);
     }
 

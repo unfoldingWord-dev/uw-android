@@ -27,21 +27,30 @@ import model.daoModels.Version;
 public class UWPreferenceDataManager {
 
     public static void resetChapterSelections(Context context){
-        changedToBibleChapter(context, -1, true);
-        changedToBibleChapter(context, -1, false);
+        resetChapterSelections(context, true);
+    }
+
+    public static void resetChapterSelections(Context context, boolean updateSelections){
+        changedToBibleChapter(context, -1, true, updateSelections);
+        changedToBibleChapter(context, -1, false, updateSelections);
         changedToStoryPage(context, -1, true);
         changedToStoryPage(context, -1, false);
     }
 
     public static void changedToBibleChapter(Context context, long chapterId, boolean isSecond){
+        changedToBibleChapter(context, chapterId, isSecond, true);
+    }
+
+    public static void changedToBibleChapter(Context context, long chapterId, boolean isSecond, boolean updateSelections){
         if(isSecond){
             UWPreferenceManager.setSelectedBibleChapterSecondary(context, chapterId);
         }
         else{
             UWPreferenceManager.setSelectedBibleChapter(context, chapterId);
         }
-
-        updateChapterSelection(context, chapterId, isSecond);
+        if(updateSelections) {
+            updateChapterSelection(context, chapterId, isSecond);
+        }
     }
 
     private static void updateChapterSelection(Context context, long activeChapterId, boolean isSecond){
