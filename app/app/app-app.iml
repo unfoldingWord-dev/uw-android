@@ -120,23 +120,19 @@
     <orderEntry type="library" exported="" name="butterknife-7.0.1" level="project" />
     <orderEntry type="library" exported="" name="greendao-generator-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
-    <orderEntry type="library" exported="" name="guava-annotations-r03" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.5.2" level="project" />
     <orderEntry type="library" exported="" name="prov-1.51.0.0" level="project" />
-    <orderEntry type="library" exported="" name="guava-base-r03" level="project" />
     <orderEntry type="library" exported="" name="support-fragment-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-core-ui-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="freemarker-2.3.22" level="project" />
     <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
     <orderEntry type="library" exported="" name="AndroidSideLoading-layout_fix3" level="project" />
-    <orderEntry type="library" exported="" name="guava-io-r03" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-25.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="multidex-instrumentation-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="android-iconify-2.0.7" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="eventbus-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="gson-2.4" level="project" />
-    <orderEntry type="library" exported="" name="java-common-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="android-iconify-fontawesome-2.0.7" level="project" />
     <orderEntry type="library" exported="" name="greendao-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-compat-25.0.1" level="project" />
