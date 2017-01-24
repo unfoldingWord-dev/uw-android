@@ -66,6 +66,7 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.7'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'de.greenrobot:greendao:2.0.0'
+    compile 'com.google.guava:guava-io:r03'
     compile 'de.greenrobot:java-common:2.2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.sswierczek:android-comboseekbar:v1.1.0'
