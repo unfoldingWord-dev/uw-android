@@ -86,8 +86,6 @@ public class SplashScreenActivity extends UWBaseActivity {
 //                preLoadData();
             }
         });
-
-
     }
 
     private void preLoadData(){

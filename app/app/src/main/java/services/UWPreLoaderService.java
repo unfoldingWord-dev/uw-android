@@ -91,7 +91,6 @@ public class UWPreLoaderService extends UWUpdaterService {
         }
 
         private void updateVersions(){
-
             try {
                 String jsonString = loadDbFile(getApplicationContext().getResources().getString(R.string.preloaded_catalog_file_name));
 
