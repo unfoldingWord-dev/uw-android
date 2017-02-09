@@ -96,7 +96,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/25.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.PeeJWeeJ/AndroidSideLoading/layout_fix3/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.PeeJWeeJ/AndroidSideLoading/PeremissionFix/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.sswierczek/android-comboseekbar/v1.1.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.joanzapata.iconify/android-iconify-fontawesome/2.0.7/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.joanzapata.iconify/android-iconify/2.0.7/jars" />
@@ -119,6 +119,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="butterknife-7.0.1" level="project" />
     <orderEntry type="library" exported="" name="greendao-generator-2.0.0" level="project" />
+    <orderEntry type="library" exported="" name="AndroidSideLoading-PeremissionFix" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="guava-annotations-r03" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.5.2" level="project" />
@@ -128,7 +129,6 @@
     <orderEntry type="library" exported="" name="support-core-ui-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="freemarker-2.3.22" level="project" />
     <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
-    <orderEntry type="library" exported="" name="AndroidSideLoading-layout_fix3" level="project" />
     <orderEntry type="library" exported="" name="guava-io-r03" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-25.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="multidex-instrumentation-1.0.1" level="project" />
