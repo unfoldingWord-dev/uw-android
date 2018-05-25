@@ -17,7 +17,7 @@
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:minWidth="300dp"
-            android:gravity="start|left|center_vertical|"
+            android:gravity="start|left|center_vertical"
             android:height="40dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

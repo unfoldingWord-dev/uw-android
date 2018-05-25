@@ -266,6 +266,19 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             />
 
+        <Button
+            android:layout_marginTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:background="@drawable/green_button_selector"
+            android:textColor="#fff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Privacy Policy"
+            android:id="@+id/privacy_policy_button"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+
     </LinearLayout>
 
     <LinearLayout

@@ -9,6 +9,8 @@
 package fragments;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -71,5 +73,11 @@ public class CheckingLevelInfoFragment extends DialogFragment {
 
     @OnClick(R.id.statement_of_faith_button) void showStatementOfFaithDialog() {
         ((UWBaseActivity) getActivity()).goToNewActivity(StatementOfFaithActivity.class);
+    }
+
+    @OnClick(R.id.privacy_policy_button)
+    void showPrivacyPolicy() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://unfoldingword.org/app/"));
+        getActivity().startActivity(browserIntent);
     }
 }
