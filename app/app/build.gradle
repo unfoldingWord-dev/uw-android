@@ -16,13 +16,13 @@ apply plugin: 'com.android.application'
 android {
 
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId 'com.unfoldingword.androidapp'
         minSdkVersion 8
         targetSdkVersion 25
-        versionCode 33
-        versionName '2.3.1'
+        versionCode 237
+        versionName '2.4.0'
         multiDexEnabled true
     }
     signingConfigs {
